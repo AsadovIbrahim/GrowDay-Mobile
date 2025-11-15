@@ -1,11 +1,22 @@
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
+const { withNativeWind } = require("nativewind/metro");
+const path = require("path");
 
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('@react-native/metro-config').MetroConfig}
- */
-const config = {};
+let config = getDefaultConfig(__dirname);
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+// SVG transformeri üçün lazımdır
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve("react-native-svg-transformer"),
+};
+
+config.resolver = {
+  ...config.resolver,
+  assetExts: [...config.resolver.assetExts.filter(ext => ext !== "svg"), "otf", "ttf"],
+  sourceExts: [...config.resolver.sourceExts, "svg"],
+};
+
+// NativeWind ilə birləşdiririk
+config = mergeConfig(config, {});
+
+module.exports = withNativeWind(config, { input: "./global.css" });
