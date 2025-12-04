@@ -5,8 +5,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sf-bold': ['SFPRODISPLAYBOLD'],
-        'sf-regular': ['SFPRODISPLAYREGULAR'],
+       
+        "redditsans-black": ["RedditSans-Black"],
+        "redditsans-bold": ["RedditSans-Bold"],
+        "redditsans-regular": ["RedditSans-Regular"],
+        "redditsans-medium": ["RedditSans-Medium"],
+
+
+        "sf-bold": ["SFPRODISPLAYBOLD"],
+        "sf-regular": ["SFPRODISPLAYREGULAR"],
       }
     },
   },

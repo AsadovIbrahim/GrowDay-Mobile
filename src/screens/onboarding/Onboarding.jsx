@@ -3,21 +3,23 @@ import { View, Text, FlatList, Dimensions, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
-
 import Onboarding1 from "../../../assets/images/Onboarding1.svg";
 import Onboarding2 from "../../../assets/images/Onboarding2.svg";
 import Onboarding3 from "../../../assets/images/Onboarding3.svg";
+import { useNavigation } from "@react-navigation/native";
+import { storage } from "../../utils/MMKVStore";
 
 const { width } = Dimensions.get("window");
 
 export default function Onboarding() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigation=useNavigation();
 
   const data = [
     {
       title: "create\ngood habits",
       description:
-        "Change your life by slowly adding new healthy habits and sticking to them",
+      "Change your life by slowly adding new healthy habits and sticking to them",
       image: Onboarding1,
     },
     {
@@ -79,15 +81,13 @@ export default function Onboarding() {
 
               <View className="w-full pl-5 gap-5">
                 <Text
-                  style={styles.title}
-                  className="text-5xl font-sf-bold text-white capitalize"
+                  className="text-5xl font-redditsans-bold text-white capitalize"
                 >
                   {item.title}
                 </Text>
 
                 <Text
-                  style={styles.description}
-                  className="text-lg font-sf-regular text-white mt-3"
+                  className="text-lg font-redditsans-regular text-white mt-3"
                 >
                   {item.description}
                 </Text>
@@ -112,8 +112,10 @@ export default function Onboarding() {
           style={[animatedButton]}
           className="p-5 absolute bottom-0 left-0 right-0"
         >
-          <TouchableOpacity className="bg-[#83BB7B] p-5 rounded-full">
-            <Text className="text-center text-white text-2xl font-sf-bold">
+          <TouchableOpacity className="bg-[#83BB7B] p-5 rounded-full" onPress={()=>{
+            storage.set("isOnBoardingShown")
+            navigation.navigate("Login")}}>
+            <Text className="text-center text-white text-2xl font-redditsans-bold">
               Get Started
             </Text>
           </TouchableOpacity>

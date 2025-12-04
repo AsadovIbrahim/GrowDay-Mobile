@@ -1,0 +1,93 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/RedditSans-Black.ttf",
+      "sha1": "ee73e0e7ce504f438881d78518a7763f560f0619"
+    },
+    {
+      "path": "assets/fonts/RedditSans-BlackItalic.ttf",
+      "sha1": "04adcaf1ad69d28b93c14a9eb45439bcc77986a5"
+    },
+    {
+      "path": "assets/fonts/RedditSans-Bold.ttf",
+      "sha1": "1dd5c5b529ab92f83d6f5ffef645d796ab2605e7"
+    },
+    {
+      "path": "assets/fonts/RedditSans-BoldItalic.ttf",
+      "sha1": "ad37ab0d353fbe79eed60b47a3be66fba14a0994"
+    },
+    {
+      "path": "assets/fonts/RedditSans-ExtraBold.ttf",
+      "sha1": "cac49a1c0ecfd698059333dab80fcf9788862fc5"
+    },
+    {
+      "path": "assets/fonts/RedditSans-ExtraBoldItalic.ttf",
+      "sha1": "a547dcef93b8b85fad2ab3b43927e40b00a39562"
+    },
+    {
+      "path": "assets/fonts/RedditSans-ExtraLight.ttf",
+      "sha1": "f4b2c2912ae24e6818e2a6ee619eca0bab50e8d7"
+    },
+    {
+      "path": "assets/fonts/RedditSans-ExtraLightItalic.ttf",
+      "sha1": "d6cd8547bd425f24075af8edf85fed87f96c11fa"
+    },
+    {
+      "path": "assets/fonts/RedditSans-Italic.ttf",
+      "sha1": "00b061dba59c56a4af7625c9d41c05ea485fb5ee"
+    },
+    {
+      "path": "assets/fonts/RedditSans-Light.ttf",
+      "sha1": "c967c3375148f98cce3c65b1c9639588162f83ef"
+    },
+    {
+      "path": "assets/fonts/RedditSans-LightItalic.ttf",
+      "sha1": "2037a4c424295bd5b9422a245f50ad2031c3416a"
+    },
+    {
+      "path": "assets/fonts/RedditSans-Medium.ttf",
+      "sha1": "3bce895efc278404d3d6301b0ca9feee6302e67b"
+    },
+    {
+      "path": "assets/fonts/RedditSans-MediumItalic.ttf",
+      "sha1": "58cd038e4e25ccb781f13138b50e8fe1d6c90476"
+    },
+    {
+      "path": "assets/fonts/RedditSans-Regular.ttf",
+      "sha1": "4506d71c79935c48bb7b067de5d0a84f10c6d0a0"
+    },
+    {
+      "path": "assets/fonts/RedditSans-SemiBold.ttf",
+      "sha1": "4faeedeafd408d2f62c99730fed4dae4cf6f7572"
+    },
+    {
+      "path": "assets/fonts/RedditSans-SemiBoldItalic.ttf",
+      "sha1": "a33eded834f7bf55d2e41c0388a1f5ae6ef97e1f"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYBLACKITALIC.ttf",
+      "sha1": "9e036ddd269e67610a8de134434a75b9440e48ed"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYBOLD.ttf",
+      "sha1": "948913fd1620e7f7594bdde6b20788c0f8d4914f"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYHEAVYITALIC.ttf",
+      "sha1": "e2414fe85e4759777e208e5292ffcfeed98eb136"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYLIGHTITALIC.ttf",
+      "sha1": "9efd83c9a8554695c624cc122f71fcce1f64ef3a"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYMEDIUM.ttf",
+      "sha1": "6fe1b3817fdeffea15577d0ab7ed7f48ebdae46f"
+    },
+    {
+      "path": "assets/fonts/SFPRODISPLAYREGULAR.ttf",
+      "sha1": "b6ba3136179738aebe9b4bc6695fe42241f5cb9b"
+    }
+  ]
+}
