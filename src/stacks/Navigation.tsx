@@ -1,20 +1,25 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { useMMKVString,useMMKVBoolean } from 'react-native-mmkv';
+import { useMMKVString, useMMKVBoolean } from 'react-native-mmkv';
 import TabStack from "./TabStack";
 import AuthStack from './AuthStack';
-const Navigation=()=>{
-    const [accessToken,setAccessToken]=useMMKVString('accessToken');
-    const [isOnBoardingShown]=useMMKVBoolean("isOnBoardingShown");
-    return(
+import UserPreferencesStack from './UserPreferencesStack';
+
+const Navigation = () => {
+    const [accessToken] = useMMKVString('accessToken');
+    const [isOnBoardingShown] = useMMKVBoolean("isOnBoardingShown");
+    const [hasCompletedPreferences] = useMMKVBoolean("hasCompletedPreferences");
+
+    return (
         <NavigationContainer>
-            {accessToken ? (
-                <TabStack />
-            ) : (
+            {!accessToken ? (
                 <AuthStack initialRoute={isOnBoardingShown ? "Login" : "Onboarding"} />
+            ) : !hasCompletedPreferences ? (
+                <UserPreferencesStack />
+            ) : (
+                <TabStack />
             )}
         </NavigationContainer>
-   )
+    );
+};
 
-} 
 export default Navigation;
-

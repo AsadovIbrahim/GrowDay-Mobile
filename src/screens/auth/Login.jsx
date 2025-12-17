@@ -31,8 +31,8 @@ const Login = () => {
         storage.set("accessToken",token);
         console.log(token);
 
-        storage.set("username",formData.username);
-        console.log(formData.username);
+        storage.set("UsernameOrEmail",formData.UsernameOrEmail);
+        console.log(formData.UsernameOrEmail);
       }else{
         console.error("Error",data.message) 
       }
@@ -80,9 +80,9 @@ const Login = () => {
           <View className="relative">
 
             <TextInput
-              placeholder="Email username"
+              placeholder="Email or Username"
               placeholderTextColor="#ddd"
-              onChangeText={(text) => handleInputChange("username", text)}
+              onChangeText={(text) => handleInputChange("UsernameOrEmail", text)}
               className="font-redditsans-medium bg-white rounded-xl p-5 px-4 mb-6 text-black"
               />
           </View>
@@ -102,7 +102,7 @@ const Login = () => {
           </View>
 
 
-        <TouchableOpacity className="mt-2 mb-6">
+        <TouchableOpacity onPress={()=>navigation.navigate("ForgotPassword")} className="mt-2 mb-6">
           <Text className="text-white text-right font-redditsans-regular pt-4">Forgot Password?</Text>
         </TouchableOpacity>
 
