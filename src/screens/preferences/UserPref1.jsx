@@ -26,7 +26,6 @@ const UserPref1 = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      // 07 üçün index (7 -> index 6)
       const hourIndex = BASE_HOURS.indexOf(7);
       const minuteIndex = BASE_MINUTES.indexOf(0);
   
@@ -183,7 +182,14 @@ const UserPref1 = () => {
         </View>
 
         {/* BUTTON */}
-        <TouchableOpacity onPress={() => navigation.navigate("UserPref2")} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
+        <TouchableOpacity onPress={() => {
+          navigation.navigate("UserPref2", {
+            preferences: {
+              wakeUpHour: hour,
+              wakeUpMinute: minute,
+            }
+          });
+        }} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
           <Text className="text-white text-center font-redditsans-bold text-[16px]">
             Continue
           </Text>

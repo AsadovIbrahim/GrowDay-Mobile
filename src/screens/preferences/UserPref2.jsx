@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faMoon } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const ITEM_HEIGHT = 56;
 const VISIBLE_ITEMS = 5;
@@ -19,10 +19,14 @@ const MINUTES = [...BASE_MINUTES, ...BASE_MINUTES, ...BASE_MINUTES];
 const UserPref2 = () => {
   const hourRef = useRef(null);
   const minuteRef = useRef(null);
+  const route = useRoute();
+  const navigation = useNavigation();
 
   const [hour, setHour] = useState(9); 
   const [minute, setMinute] = useState(0);
-  const navigation = useNavigation();
+  
+  // Get preferences from previous screen
+  const previousPreferences = route.params?.preferences || {};
 
   useEffect(() => {
     setTimeout(() => {
@@ -174,7 +178,15 @@ const UserPref2 = () => {
         </View>
 
         {/* BUTTON */}
-        <TouchableOpacity onPress={() => navigation.navigate("UserPref3")} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
+        <TouchableOpacity onPress={() => {
+          navigation.navigate("UserPref3", {
+            preferences: {
+              ...previousPreferences,
+              endOfDayHour: hour,
+              endOfDayMinute: minute,
+            }
+          });
+        }} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
           <Text className="text-white text-center font-redditsans-bold text-[16px]">
             Continue
           </Text>

@@ -113,7 +113,7 @@ export default function Onboarding() {
           className="p-5 absolute bottom-0 left-0 right-0"
         >
           <TouchableOpacity className="bg-[#83BB7B] p-5 rounded-full" onPress={()=>{
-            storage.set("isOnBoardingShown")
+            storage.set("isOnBoardingShown", true);
             navigation.navigate("Login")}}>
             <Text className="text-center text-white text-2xl font-redditsans-bold">
               Get Started
