@@ -1,5 +1,7 @@
 import { View, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { MenuContext } from '../../context/MenuContext';
+import { useContext } from 'react';
 import { 
   faHome, 
   faCompass, 
@@ -9,6 +11,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const TabBar = ({state, navigation}) => {
+    const { isMenuOpen } = useContext(MenuContext);
+    if (isMenuOpen) {
+        return null;
+    }
     return(
         <View className="flex-row justify-around items-center bg-white px-4 py-3 rounded-full mx-4 mb-4"
 

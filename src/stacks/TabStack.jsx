@@ -5,14 +5,13 @@ import CreateStack from './CreateStack';
 import AchievementsStack from './AchievementsStack';
 import ProfileStack from './ProfileStack';
 import TabBar from './components/TabBar';
-
 const Tab = createBottomTabNavigator();
 
 const TabStack = () => {
     return (
       <Tab.Navigator
         tabBar={
-          ({ state , navigation }) =>
+          ({ state , navigation  }) =>
             <TabBar
               state={state}
               navigation={navigation}

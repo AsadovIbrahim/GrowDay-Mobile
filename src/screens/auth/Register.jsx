@@ -8,6 +8,7 @@ import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEye, faEyeSlash,faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { registerfetch } from "../../utils/fetch";
+import { storage } from "../../utils/MMKVStore";
 
 
 const Register = () => {
@@ -15,14 +16,25 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({});
     const [showGoBack,setShowGoBack]=useState(true);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
   
     const handleInputChange = (name, text) => {
       setFormData({ ...formData, [name]: text });
     }
-    const handleRegister = () => {
-      registerfetch(formData)
+    const handleRegister = async() => {
+      await registerfetch(formData)
       .then((data) => {
         console.log(data);
+        storage.set("firstName", formData.firstName);
+        storage.set("lastName", formData.lastName);
+        storage.set("username", formData.username);
+        storage.set("email", formData.email);
+        navigation.navigate("Login");
       }).catch((error) => {
         console.log(error);
       });    
