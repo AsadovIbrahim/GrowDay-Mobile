@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getAllHabitsFetch, getUnreadNotificationCountFetch } from "../../utils/fetch";
+import { getUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
 import { useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
@@ -9,11 +9,7 @@ import {
   faBars, 
   faBell, 
   faSearch,
-  faDroplet,
   faWalking,
-  faLeaf,
-  faPlus,
-  faCircle,
   faHome,
   faCompass,
   faMedal,
@@ -21,16 +17,24 @@ import {
   faRightFromBracket
 } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useContext } from "react";
-import Svg, { Circle } from 'react-native-svg';
 import { MenuContext } from '../../context/MenuContext';
-
+import HomeEmptyState from './HomeEmptyState';
+import CalendarSelector from './CalendarSelector';
+import ProgressSummary from './ProgressSummary';
+import { useNavigation } from '@react-navigation/native';
 const Home = () => {
-  const [selectedDate, setSelectedDate] = useState(3);
+  const navigation = useNavigation();
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = useState(today.getDate());
+  const [selectedDateObject, setSelectedDateObject] = useState(today);
   const [token] = useMMKVString('accessToken');
-  const [habits, setHabits] = useState([]);
+  const [userHabitCount, setUserHabitCount] = useState(0);
+  const [userHabits, setUserHabits] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageIndex, setPageIndex] = useState(0);
+  const [dailyStatistics, setDailyStatistics] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0); 
   const [totalPages, setTotalPages] = useState(0); 
@@ -40,38 +44,73 @@ const Home = () => {
   const { isMenuOpen, setIsMenuOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  // Generate dates for the next 7 days
-  const dates = [];
-  const today = new Date();
-  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   
   const firstName = storage.getString('firstName');
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    dates.push({
-      day: date.getDate(),
-      dayName: dayNames[date.getDay()],
-      isSelected: i === 0
-    });
-  }
+
+  const handleDateSelect = (day, fullDate) => {
+    setSelectedDate(day);
+    setSelectedDateObject(fullDate);
+    // Refresh daily statistics when date changes
+    if (userHabitCount > 0) {
+      getDailyStatistics();
+    }
+  };
   useEffect(() => {
-    getHabits();
+    getUserHabit();
+    getUserHabitCount();
     getUnreadNotificationCount();
+    getDailyStatistics();
   }, []);
-  const getHabits = async () => {
-    setLoading(true);
+  const getDailyStatistics = async () => {
     try {
-      const response = await getAllHabitsFetch(token,pageIndex,3);
-      setHabits(response.data);
+      const response = await getDailyStatisticsFetch(token);
+      console.log('Daily statistics response:', response);
+      setDailyStatistics(response.data);
+    } catch (error) {
+      console.log('Error fetching daily statistics:', error);
+      setError(error);
+    }
+  }
+  const getUserHabit = async () => {
+    try {
+      const response = await getUserHabitFetch(token,pageIndex,3);
+      console.log(response);
+      setUserHabits(response.data || []);
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  }
+  const getUserHabitCount = async () => {
+    try {
+      setIsInitialLoading(true);
+      const response = await getUserHabitCountFetch(token);
+      console.log('getUserHabitCount response =>', response);
+
+      // Backend-dən gələn cavabı həqiqi ədədə çevirək (0, "0", { data: 0 } və s.)
+      let count = 0;
+      if (typeof response === 'number') {
+        count = response;
+      } else if (typeof response === 'string') {
+        const parsed = parseInt(response, 10);
+        count = isNaN(parsed) ? 0 : parsed;
+      } else if (response && typeof response === 'object') {
+        // Ən çox rast gəlinən struktur: { data: 0 } və ya { count: 0 }
+        if (typeof response.data === 'number') {
+          count = response.data;
+        } else if (typeof response.count === 'number') {
+          count = response.count;
+        }
+      }
+
+      setUserHabitCount(count);
     } catch (error) {
       console.log(error);
       setError(error);
     } finally {
-      setLoading(false);
+      setIsInitialLoading(false);
     }
   }
-
   const getUnreadNotificationCount = async () => {
     try {
       const response = await getUnreadNotificationCountFetch(token);
@@ -256,18 +295,25 @@ const Home = () => {
           
           <View className="flex-row items-center gap-3">
             <View className="relative">
-              <TouchableOpacity className="w-10 h-10 bg-white rounded-full items-center justify-center">
+              <TouchableOpacity onPress={() => navigation.navigate('Notification')} className="w-10 h-10 bg-white rounded-full items-center justify-center">
                 <FontAwesomeIcon icon={faBell} color="#2f6f3f" size={18} />
               </TouchableOpacity>
-              <View className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full items-center justify-center border-2 border-white">
-                <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
-              </View>
+              {unreadNotificationCount > 0 && (
+                <View className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full items-center justify-center border-2 border-white">
+                  <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
+                </View>
+              )}
             </View>
             
           </View>
         </View>
-           
 
+      {/* Main Content */}
+      <ScrollView 
+        className="flex-1" 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
         {/* Greeting */}
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
             <Text className="text-2xl font-redditsans-bold  text-black mb-1">
@@ -277,247 +323,81 @@ const Home = () => {
                 <Text className="text-white text-lg">😇</Text>
             </View>
         </View>
-        <Text className="text-base text-black font-redditsans-regular px-4">
+        <Text className="text-base text-black font-redditsans-regular px-4 mb-4">
           Let's make habits together!
         </Text>
-
-      {/* Main Content */}
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Date Selector */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          className="px-4 py-4"
-          contentContainerStyle={{ gap: 12 }}
-        >
-          {dates.map((date, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setSelectedDate(date.day)}
-              className={`px-4 py-3 rounded-2xl ${
-                date.day === selectedDate ? 'bg-white border-2 border-blue-500' : 'bg-gray-100'
-              }`}
-              style={{
-                shadowColor: date.day === selectedDate ? "#000" : "transparent",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: date.day === selectedDate ? 3 : 0,
-              }}
-            >
-              <Text 
-                className={`text-lg font-bold ${
-                  date.day === selectedDate ? 'text-blue-500' : 'text-black'
-                }`}
-                style={{ fontFamily: 'redditsans-bold' }}
-              >
-                {date.day}
-              </Text>
-              <Text 
-                className={`text-xs ${
-                  date.day === selectedDate ? 'text-black' : 'text-gray-500'
-                }`}
-                style={{ fontFamily: 'redditsans-regular' }}
-              >
-                {date.dayName}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Search Bar */}
-        <View className="px-4 mb-4">
-          <View className="flex-row items-center bg-white rounded-xl px-4 py-3 border border-gray-200">
-            <FontAwesomeIcon icon={faSearch} color="#9ca3af" size={18} />
-            <TextInput
-              placeholder="Search habits..."
-              placeholderTextColor="#9ca3af"
-              className="flex-1 ml-3 text-base"
-              style={{ fontFamily: 'redditsans-regular' }}
-            />
-          </View>
-        </View>
-
-        {/* Habits Section */}
-        <View className="px-4 mb-4">
-          <View className="flex-row justify-between items-center mb-3">
-            <Text 
-              className="text-xl font-redditsans-bold text-black"
-            >
-              Habits
+        {/* Habits / Empty State Section */}
+        {isInitialLoading ? (
+          <View className="px-4 py-8 items-center justify-center">
+            <Text className="text-base text-gray-600 font-redditsans-regular">
+              Loading...
             </Text>
-            <TouchableOpacity>
-              <Text 
-                className="text-base text-green-600 font-redditsans-medium"
-              >
-                VIEW ALL
-              </Text>
-            </TouchableOpacity>
           </View>
+        ) : (userHabitCount === 0) ? (
+          <HomeEmptyState />
+        ) : (
+          <>
+            {/* Calendar Selector */}
+            <CalendarSelector 
+              selectedDate={selectedDate} 
+              onDateSelect={handleDateSelect}
+            />
 
-          {habits.map((habit) => (
-            <View
-              key={habit.id}
-              className="bg-white rounded-xl p-4 mb-3 flex-row items-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <View className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center mr-3">
-              </View>
-              
-              <View className="flex-1">
+            
+            {/* Habits Section */}
+            <View className="px-4 mb-4">
+              <View className="flex-row justify-between items-center mb-3">
                 <Text 
-                  className="text-base font-redditsans-medium text-black mb-1"
+                  className="text-xl font-redditsans-bold text-black"
                 >
-                  {habit.title}
+                 Your Habits
                 </Text>
-                <Text 
-                  className="text-sm text-gray-500 font-redditsans-regular"
-                >
-                  {habit.frequency}
-                </Text>
+                <TouchableOpacity>
+                  <Text 
+                    className="text-base text-green-600 font-redditsans-medium"
+                  >
+                    VIEW ALL
+                  </Text>
+                </TouchableOpacity>
               </View>
-              
-              <TouchableOpacity className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center">
-                <FontAwesomeIcon icon={faPlus} color="#000" size={18} />
-              </TouchableOpacity>
-            </View>
-          ))}
-          {habits.length === 0 && (
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-gray-500 font-redditsans-bold">
-                No habits found
-              </Text>
-            </View>
-          )}
-        </View> 
 
-        {/* Progress Summary */}
-        <View className="px-4 mb-6">
-          <View className="flex-row gap-3">
-            {/* Completed Card */}
-            <View 
-              className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <View className="relative w-16 h-16 mr-3 items-center justify-center">
-                <Svg width={64} height={64} style={{ position: 'absolute' }}>
-                  {/* Background circle */}
-                  <Circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="#e5e7eb"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  {/* Progress circle - 75% */}
-                  <Circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="#8bc37a"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 28}`}
-                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - 0.75)}`}
-                    strokeLinecap="round"
-                    transform="rotate(-90 32 32)"
-                  />
-                </Svg>
-                <Text 
-                  className="text-sm font-redditsans-bold text-black"
+              {userHabits && Array.isArray(userHabits) && userHabits.map((userHabit, index) => (
+                <View
+                  key={userHabit.id || `habit-${index}`}
+                  className="bg-white rounded-xl p-4 mb-3 flex-row items-center"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 3,
+                  }}
                 >
-                  75%
-                </Text>
-              </View>
-              
-              <View className="flex-1">
-                <Text 
-                  className="text-base font-redditsans-medium text-black mb-1"
-                >
-                  Completed
-                </Text>
-                <Text 
-                  className="text-xs text-gray-500 font-redditsans-regular"
-                >
-                  92 Completed
-                </Text>
-              </View>
-            </View>
+                  <View className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center mr-3">
+                  </View>
+                  
+                  <View className="flex-1">
+                    <Text 
+                      className="text-base font-redditsans-medium text-black mb-1"
+                    >
+                      {userHabit.title}
+                    </Text>
+                    <Text 
+                      className="text-sm text-gray-500 font-redditsans-regular"
+                    >
+                      {userHabit.frequency}
+                    </Text>
+                  </View>
+                  
+                  
+                </View>
+              ))}
+            </View> 
 
-            {/* Missed Card */}
-            <View 
-              className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <View className="relative w-16 h-16 mr-3 items-center justify-center">
-                <Svg width={64} height={64} style={{ position: 'absolute' }}>
-                  {/* Background circle */}
-                  <Circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="#e5e7eb"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  {/* Progress circle - 25% */}
-                  <Circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="#ef4444"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 28}`}
-                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - 0.25)}`}
-                    strokeLinecap="round"
-                    transform="rotate(-90 32 32)"
-                  />
-                </Svg>
-                <Text 
-                  className="text-sm font-bold text-black"
-                  style={{ fontFamily: 'redditsans-bold' }}
-                >
-                  25%
-                </Text>
-              </View>
-              
-              <View className="flex-1">
-                <Text 
-                  className="text-base font-semibold text-black mb-1"
-                  style={{ fontFamily: 'redditsans-medium' }}
-                >
-                  Missed
-                </Text>
-                <Text 
-                  className="text-xs text-gray-500"
-                  style={{ fontFamily: 'redditsans-regular' }}
-                >
-                  20 Missed
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
+            {/* Progress Summary */}
+            <ProgressSummary dailyStatistics={dailyStatistics} />
+          </>
+        )}
       </ScrollView>
     </LinearGradient>
   );

@@ -5,6 +5,7 @@ import AuthStack from './AuthStack';
 import UserPreferencesStack from './UserPreferencesStack';
 import { MenuContext } from '../context/MenuContext';
 import { useState } from 'react';
+
 const Navigation = () => {
     const [accessToken] = useMMKVString('accessToken');
     const [isOnBoardingShown] = useMMKVBoolean("isOnBoardingShown");
@@ -12,10 +13,10 @@ const Navigation = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     
     return (
-        <MenuContext.Provider value={{ isMenuOpen, setIsMenuOpen: () => setIsMenuOpen(!isMenuOpen) }}>
+        <MenuContext.Provider value={{ isMenuOpen, setIsMenuOpen }}>
             <NavigationContainer>
                 {!accessToken ? (
-                    <AuthStack initialRoute={isOnBoardingShown ? "Login" : "Onboarding"} />
+                    <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
                 ) : !hasCompletedPreferences ? (
                     <UserPreferencesStack />
                 ) : (

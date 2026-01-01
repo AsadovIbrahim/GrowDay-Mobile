@@ -34,6 +34,9 @@ const Register = () => {
         storage.set("lastName", formData.lastName);
         storage.set("username", formData.username);
         storage.set("email", formData.email);
+        
+        storage.set("hasCompletedPreferences", false);
+        
         navigation.navigate("Login");
       }).catch((error) => {
         console.log(error);

@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { storage } from "../../utils/MMKVStore";
 import { View } from "react-native";  
-import {loginfetch} from "../../utils/fetch"
+import {loginfetch, getUserPreferencesFetch} from "../../utils/fetch"
 
 
 
@@ -23,22 +23,38 @@ const Login = () => {
   const handleInputChange = (name, text) => {
     setFormData({ ...formData, [name]: text });
   }
-  const handleLogin = () => {
-    loginfetch(formData)
-    .then((data) => {
+  const handleLogin = async () => {
+    try {
+      const data = await loginfetch(formData);
       if(data.success){
-        const token=data.data.accessToken.token
-        storage.set("accessToken",token);
+        const token = data.data.accessToken.token;
+        storage.set("accessToken", token);
         console.log(token);
 
-        storage.set("UsernameOrEmail",formData.UsernameOrEmail);
+        storage.set("UsernameOrEmail", formData.UsernameOrEmail);
         console.log(formData.UsernameOrEmail);
-      }else{
-        console.error("Error",data.message) 
+        
+        // Check if user has completed preferences
+        try {
+          const preferencesResponse = await getUserPreferencesFetch(token);
+          // If user has preferences, set hasCompletedPreferences to true
+          // Otherwise, it will remain false (default)
+          if (preferencesResponse && preferencesResponse.data && !preferencesResponse.error) {
+            storage.set("hasCompletedPreferences", true);
+          } else {
+            storage.set("hasCompletedPreferences", false);
+          }
+        } catch (prefError) {
+          // If API call fails, assume user hasn't completed preferences
+          console.log("Error checking user preferences:", prefError);
+          storage.set("hasCompletedPreferences", false);
+        }
+      } else {
+        console.error("Error", data.message);
       }
-    }).catch((error) => {
+    } catch (error) {
       console.log(error);
-    });    
+    }    
   }
 
   return (

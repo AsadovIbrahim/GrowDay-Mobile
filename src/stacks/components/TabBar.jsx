@@ -15,6 +15,18 @@ const TabBar = ({state, navigation}) => {
     if (isMenuOpen) {
         return null;
     }
+
+    // Check if we're on Notification screen
+    const homeRoute = state.routes.find(route => route.name === 'Home');
+    const isNotificationScreen = homeRoute?.state?.routes?.[homeRoute.state.index]?.name === 'Notification';
+    const isNotificationDetailScreen = homeRoute?.state?.routes?.[homeRoute.state.index]?.name === 'NotificationDetail';
+    if (isNotificationDetailScreen) {
+        return null;
+    }
+    if (isNotificationScreen) {
+        return null;
+    }
+
     return(
         <View className="flex-row justify-around items-center bg-white px-4 py-3 rounded-full mx-4 mb-4"
 

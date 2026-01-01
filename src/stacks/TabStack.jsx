@@ -10,13 +10,12 @@ const Tab = createBottomTabNavigator();
 const TabStack = () => {
     return (
       <Tab.Navigator
-        tabBar={
-          ({ state , navigation  }) =>
-            <TabBar
-              state={state}
-              navigation={navigation}
-            />
-        }
+        tabBar={({ state, navigation }) => (
+          <TabBar
+            state={state}
+            navigation={navigation}
+          />
+        )}
         screenOptions={{ headerShown: false }}>
         <Tab.Screen name='Home' component={HomeStack} />
         <Tab.Screen name='Explore' component={ExploreStack} />
