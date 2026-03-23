@@ -7,15 +7,16 @@ const CalendarSelector = ({ selectedDate, onDateSelect }) => {
   
   // Generate dates for the next 7 days
   const dates = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    dates.push({
-      day: date.getDate(),
-      dayName: dayNames[date.getDay()],
-      fullDate: new Date(date)
-    });
-  }
+for (let i = -3; i <= 3; i++) {
+  const date = new Date(today);
+  date.setDate(today.getDate() + i);
+  dates.push({
+    day: date.getDate(),
+    dayName: dayNames[date.getDay()],
+    fullDate: date,
+  });
+}
+
 
   return (
     <ScrollView 

@@ -1,9 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
-import { getUserNotificationsFetch, getUserUnreadNotificationsFetch,markAsAllReadNotificationFetch,getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
+import { getUserNotificationsFetch, getUserUnreadNotificationsFetch, markAsAllReadNotificationFetch, getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const Notification = () => {
@@ -19,43 +19,76 @@ const Notification = () => {
   const [loading, setLoading] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedNotifications, setSelectedNotifications] = useState(new Set());
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize] = useState(10);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    getNotifications();
-    getUnreadNotifications();
-    getUnreadNotificationCount();
-  }, []);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setPageIndex(0);
+    setHasMore(true);
+    await Promise.all([
+      getNotifications(0, true),
+      getUnreadNotifications(),
+      getUnreadNotificationCount()
+    ]);
+  };
 
   // Refresh notifications when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      getNotifications();
-      getUnreadNotifications();
-      getUnreadNotificationCount();
+      handleRefresh();
     }, [])
   );
 
   const handleGoBack = () => {
     navigation.navigate('Home');
   };
-  const getNotifications = async () => {
-    setLoading(true);
+  const getNotifications = async (page = 0, isRefresh = false) => {
+    if (page === 0 && !isRefresh) setLoading(true);
+    else if (page > 0) setIsLoadingMore(true);
+
     try {
-      const response = await getUserNotificationsFetch(token);
-      console.log('Notifications response:', response);
+      const response = await getUserNotificationsFetch(token, page, pageSize);
+      let newNotifications = [];
       if (Array.isArray(response)) {
-        setNotifications(response);
+        newNotifications = response;
       } else if (response && Array.isArray(response.data)) {
-        setNotifications(response.data);
+        newNotifications = response.data;
+      }
+
+      if (newNotifications.length < pageSize) {
+        setHasMore(false);
       } else {
-        setNotifications([]);
+        setHasMore(true);
+      }
+
+      if (page === 0) {
+        setNotifications(newNotifications);
+      } else {
+        setNotifications(prev => {
+          const prevailingIds = new Set(prev.map(i => i.id));
+          const uniqueNew = newNotifications.filter(i => !prevailingIds.has(i.id));
+          return [...prev, ...uniqueNew];
+        });
       }
     } catch (error) {
       console.log('Error fetching notifications:', error);
-      setNotifications([]);
+      if (page === 0) setNotifications([]);
     } finally {
-      setLoading(false);
+      if (page === 0) setLoading(false);
+      setIsLoadingMore(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleLoadMore = () => {
+    if (!hasMore || loading || isLoadingMore || selectedTab === 'unread') return;
+    const nextPage = pageIndex + 1;
+    setPageIndex(nextPage);
+    getNotifications(nextPage);
   };
   const getUnreadNotifications = async () => {
     setLoading(true);
@@ -80,21 +113,17 @@ const Notification = () => {
     try {
       const response = await deleteNotificationFetch(token, notificationId);
       console.log('Notification deleted response:', response);
-      
+
       // Immediately update states to remove the deleted notification
-      setNotifications(prevNotifications => 
+      setNotifications(prevNotifications =>
         prevNotifications.filter(notification => notification.id !== notificationId)
       );
-      setUnreadNotifications(prevUnreadNotifications => 
+      setUnreadNotifications(prevUnreadNotifications =>
         prevUnreadNotifications.filter(notification => notification.id !== notificationId)
       );
-      
+
       // Refresh data from server to ensure consistency
-      await Promise.all([
-        getNotifications(),
-        getUnreadNotifications(),
-        getUnreadNotificationCount()
-      ]);
+      handleRefresh();
     } catch (error) {
       console.log('Error deleting notification:', error);
     }
@@ -102,7 +131,7 @@ const Notification = () => {
 
   const deleteSelectedNotifications = async () => {
     if (selectedNotifications.size === 0) return;
-    
+
     Alert.alert(
       "Delete Notifications",
       `Are you sure you want to delete ${selectedNotifications.size} notification(s)?`,
@@ -116,11 +145,11 @@ const Notification = () => {
           style: "destructive",
           onPress: async () => {
             // Delete all selected notifications
-            const deletePromises = Array.from(selectedNotifications).map(id => 
+            const deletePromises = Array.from(selectedNotifications).map(id =>
               deleteNotification(id)
             );
             await Promise.all(deletePromises);
-            
+
             // Clear selection and exit selection mode
             setSelectedNotifications(new Set());
             setIsSelectionMode(false);
@@ -152,24 +181,20 @@ const Notification = () => {
     try {
       const response = await markAsAllReadNotificationFetch(token);
       console.log('Mark as all read response:', response);
-      
-      setNotifications(prevNotifications => 
+
+      setNotifications(prevNotifications =>
         prevNotifications.map(notification => ({
           ...notification,
           isRead: true
         }))
       );
-      
+
       setUnreadNotifications([]);
-      
+
       setUnreadNotificationCount(0);
-      
-      await Promise.all([
-        getNotifications(),
-        getUnreadNotifications(),
-        getUnreadNotificationCount()
-      ]);
-      
+
+      handleRefresh();
+
       setMarkAsAllRead(true);
     } catch (error) {
       console.log('Error marking as all read:', error);
@@ -211,28 +236,26 @@ const Notification = () => {
           <View className="flex-row items-start flex-1 mr-2">
             {isSelectionMode && (
               <View className="mr-3 mt-1">
-                <FontAwesomeIcon 
-                  icon={isSelected ? faCheckSquare : faSquare} 
-                  size={24} 
-                  color={isSelected ? '#3b82f6' : '#9ca3af'} 
+                <FontAwesomeIcon
+                  icon={isSelected ? faCheckSquare : faSquare}
+                  size={24}
+                  color={isSelected ? '#3b82f6' : '#9ca3af'}
                 />
               </View>
             )}
             <View className="flex-1">
               <View className="flex-row items-center mb-1">
-                <Text className={`text-base ${
-                  !notification.isRead 
-                    ? 'font-redditsans-bold text-black' 
-                    : 'font-redditsans-regular text-black'
-                }`}>
+                <Text className={`text-base ${!notification.isRead
+                  ? 'font-redditsans-bold text-black'
+                  : 'font-redditsans-regular text-black'
+                  }`}>
                   {notification.habitTitle}
                 </Text>
               </View>
-              <Text className={`text-sm ${
-                !notification.isRead 
-                  ? 'font-redditsans-medium text-gray-700' 
-                  : 'font-redditsans-regular text-gray-700'
-              }`}>
+              <Text className={`text-sm ${!notification.isRead
+                ? 'font-redditsans-medium text-gray-700'
+                : 'font-redditsans-regular text-gray-700'
+                }`}>
                 {notification.message}
               </Text>
             </View>
@@ -244,15 +267,15 @@ const Notification = () => {
               <View className="w-3 h-3 bg-green-500 rounded-full mb-2" />
             )}
             <Text className="text-xs text-gray-400 font-redditsans-regular">
-              {notification.createdAt 
+              {notification.createdAt
                 ? new Date(notification.createdAt).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                  }).replace(',', '')
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                }).replace(',', '')
                 : '2025-10-17 20:12:36'
               }
             </Text>
@@ -261,10 +284,10 @@ const Notification = () => {
       </TouchableOpacity>
     );
   };
-  const filteredNotifications = selectedTab === 'unread' 
-    ? unreadNotifications 
+  const filteredNotifications = selectedTab === 'unread'
+    ? unreadNotifications
     : notifications;
-           
+
 
 
   const unreadCount = unreadNotificationCount;
@@ -274,12 +297,12 @@ const Notification = () => {
       {/* Header */}
       <View className="pt-12 px-4 pb-4 bg-white">
         <View className="flex-row items-center gap-4 mb-4">
-            <TouchableOpacity onPress={handleGoBack}>
+          <TouchableOpacity onPress={handleGoBack}>
             <FontAwesomeIcon icon={faArrowLeft} size={20} color="#1f2937" />
-            </TouchableOpacity>
-            <Text className="text-3xl mt-3 font-redditsans-bold text-black mb-4">
-                Notifications
-            </Text>
+          </TouchableOpacity>
+          <Text className="text-3xl mt-3 font-redditsans-bold text-black mb-4">
+            Notifications
+          </Text>
         </View>
 
         {/* Tabs */}
@@ -290,10 +313,9 @@ const Notification = () => {
               onPress={() => setSelectedTab('all')}
               className="flex-row items-center"
             >
-              <Text 
-                className={`text-base font-redditsans-medium ${
-                  selectedTab === 'all' ? 'text-black' : 'text-gray-500'
-                }`}
+              <Text
+                className={`text-base font-redditsans-medium ${selectedTab === 'all' ? 'text-black' : 'text-gray-500'
+                  }`}
               >
                 View All
               </Text>
@@ -307,11 +329,10 @@ const Notification = () => {
               onPress={() => setSelectedTab('unread')}
               className="flex-row items-center"
             >
-              <Text 
-                className={`text-base font-redditsans-medium ${
-                  selectedTab === 'unread' ? 'text-black' : 'text-gray-500'
-                }`}
-              > 
+              <Text
+                className={`text-base font-redditsans-medium ${selectedTab === 'unread' ? 'text-black' : 'text-gray-500'
+                  }`}
+              >
                 Unread
               </Text>
               {unreadCount > 0 && (
@@ -369,29 +390,31 @@ const Notification = () => {
       </View>
 
       {/* Notifications List */}
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        {loading ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-gray-500 font-redditsans-regular">
-              Loading...
-            </Text>
-          </View>
-        ) : filteredNotifications.length === 0 ? (
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-gray-500 font-redditsans-regular">
-              No notifications found
-            </Text>
-          </View>
-        ) : (
-          filteredNotifications.map((notification, index) => (
-            <NotificationItem 
-              key={notification.id || index}
-              notification={notification}
-              index={index}
-            />
-          ))
+      <FlatList
+        className="flex-1 px-4"
+        showsVerticalScrollIndicator={false}
+        data={filteredNotifications}
+        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+        renderItem={({ item, index }) => (
+          <NotificationItem notification={item} index={index} />
         )}
-      </ScrollView>
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={() => (
+          <View className="py-4 mt-2 mb-8">
+            {isLoadingMore && <ActivityIndicator size="small" color="#22c55e" />}
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <View className="flex-1 items-center justify-center py-20">
+            <Text className="text-gray-500 font-redditsans-regular">
+              {loading ? "Loading..." : "No notifications found"}
+            </Text>
+          </View>
+        )}
+      />
     </View>
   );
 };

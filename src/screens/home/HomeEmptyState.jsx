@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import CalendarSelector from './CalendarSelector';
+import CalendarSelector from './components/CalendarSelector';
 
 const HomeEmptyState = () => {
   return (

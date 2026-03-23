@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
+import { getUserHabitFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
 import { useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
@@ -14,13 +14,15 @@ import {
   faCompass,
   faMedal,
   faGear,
-  faRightFromBracket
+  faRightFromBracket,
+  faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useContext } from "react";
 import { MenuContext } from '../../context/MenuContext';
 import HomeEmptyState from './HomeEmptyState';
-import CalendarSelector from './CalendarSelector';
-import ProgressSummary from './ProgressSummary';
+import CalendarSelector from './components/CalendarSelector';
+import ProgressSummary from './components/ProgressSummary';
+import HabitCard from '../../components/HabitCard';
 import { useNavigation } from '@react-navigation/native';
 const Home = () => {
   const navigation = useNavigation();
@@ -28,6 +30,7 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(today.getDate());
   const [selectedDateObject, setSelectedDateObject] = useState(today);
   const [token] = useMMKVString('accessToken');
+  const [todaysUserHabit, setTodaysUserHabit] = useState([]);
   const [userHabitCount, setUserHabitCount] = useState(0);
   const [userHabits, setUserHabits] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -50,20 +53,44 @@ const Home = () => {
   const handleDateSelect = (day, fullDate) => {
     setSelectedDate(day);
     setSelectedDateObject(fullDate);
-    // Refresh daily statistics when date changes
-    if (userHabitCount > 0) {
-      getDailyStatistics();
-    }
   };
   useEffect(() => {
     getUserHabit();
     getUserHabitCount();
     getUnreadNotificationCount();
     getDailyStatistics();
+    getTodaysUserHabit();
   }, []);
+
+  // Update statistics and habits when selected date changes
+  useEffect(() => {
+    if (userHabitCount > 0 && selectedDateObject) { 
+      getDailyStatistics();
+      getTodaysUserHabit();
+    }
+  }, [selectedDateObject]);
+
+  const getTodaysUserHabit = async () => {
+    try {
+      // Format date as YYYY-MM-DD for API
+      const dateStr = selectedDateObject 
+        ? selectedDateObject.toISOString().split('T')[0]
+        : null;
+      const response = await getTodaysUserHabitFetch(token, dateStr);
+      console.log('Todays user habit response:', response);
+      setTodaysUserHabit(response.data);
+    } catch (error) {
+      console.log('Error fetching todays user habit:', error);
+      setError(error);
+    }
+  }
   const getDailyStatistics = async () => {
     try {
-      const response = await getDailyStatisticsFetch(token);
+      // Format date as YYYY-MM-DD for API
+      const dateStr = selectedDateObject 
+        ? selectedDateObject.toISOString().split('T')[0]
+        : null;
+      const response = await getDailyStatisticsFetch(token, dateStr);
       console.log('Daily statistics response:', response);
       setDailyStatistics(response.data);
     } catch (error) {
@@ -350,51 +377,44 @@ const Home = () => {
                 <Text 
                   className="text-xl font-redditsans-bold text-black"
                 >
-                 Your Habits
+                 {(() => {
+                   const today = new Date();
+                   today.setHours(0, 0, 0, 0);
+                   const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                   selected.setHours(0, 0, 0, 0);
+                   const isToday = selected.getTime() === today.getTime();
+                   
+                   if (isToday) {
+                     return "Today's Habits";
+                   } else {
+                     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                     const dayName = dayNames[selected.getDay()];
+                     return `${dayName}'s Habits`;
+                   }
+                 })()}
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('UserHabits')}
+                  className="flex-row items-center gap-1"
+                >
                   <Text 
                     className="text-base text-green-600 font-redditsans-medium"
                   >
                     VIEW ALL
                   </Text>
+                  <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
                 </TouchableOpacity>
               </View>
 
-              {userHabits && Array.isArray(userHabits) && userHabits.map((userHabit, index) => (
-                <View
-                  key={userHabit.id || `habit-${index}`}
-                  className="bg-white rounded-xl p-4 mb-3 flex-row items-center"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                  }}
-                >
-                  <View className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center mr-3">
-                  </View>
-                  
-                  <View className="flex-1">
-                    <Text 
-                      className="text-base font-redditsans-medium text-black mb-1"
-                    >
-                      {userHabit.title}
-                    </Text>
-                    <Text 
-                      className="text-sm text-gray-500 font-redditsans-regular"
-                    >
-                      {userHabit.frequency}
-                    </Text>
-                  </View>
-                  
-                  
-                </View>
+              {todaysUserHabit && Array.isArray(todaysUserHabit) && todaysUserHabit.map((habit, index) => (
+                <HabitCard 
+                  key={habit.id || `habit-${index}`}
+                  habit={habit} 
+                  index={index}
+                />
               ))}
             </View> 
 
-            {/* Progress Summary */}
             <ProgressSummary dailyStatistics={dailyStatistics} />
           </>
         )}
