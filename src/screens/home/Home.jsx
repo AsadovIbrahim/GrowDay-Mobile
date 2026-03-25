@@ -5,6 +5,7 @@ import { getUserHabitFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFet
 import { useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
+import { ICONS } from "../../constants/icons";
 import { 
   faBars, 
   faBell, 
@@ -55,14 +56,12 @@ const Home = () => {
     setSelectedDateObject(fullDate);
   };
   useEffect(() => {
-    getUserHabit();
     getUserHabitCount();
     getUnreadNotificationCount();
     getDailyStatistics();
     getTodaysUserHabit();
   }, []);
 
-  // Update statistics and habits when selected date changes
   useEffect(() => {
     if (userHabitCount > 0 && selectedDateObject) { 
       getDailyStatistics();
@@ -70,13 +69,12 @@ const Home = () => {
     }
   }, [selectedDateObject]);
 
-  const getTodaysUserHabit = async () => {
+  const getTodaysUserHabit = async (pageIndex=0,pageSize=4) => {
     try {
-      // Format date as YYYY-MM-DD for API
       const dateStr = selectedDateObject 
         ? selectedDateObject.toISOString().split('T')[0]
         : null;
-      const response = await getTodaysUserHabitFetch(token, dateStr);
+      const response = await getTodaysUserHabitFetch(token, dateStr,pageIndex,pageSize);
       console.log('Todays user habit response:', response);
       setTodaysUserHabit(response.data);
     } catch (error) {
@@ -86,7 +84,6 @@ const Home = () => {
   }
   const getDailyStatistics = async () => {
     try {
-      // Format date as YYYY-MM-DD for API
       const dateStr = selectedDateObject 
         ? selectedDateObject.toISOString().split('T')[0]
         : null;
@@ -98,23 +95,12 @@ const Home = () => {
       setError(error);
     }
   }
-  const getUserHabit = async () => {
-    try {
-      const response = await getUserHabitFetch(token,pageIndex,3);
-      console.log(response);
-      setUserHabits(response.data || []);
-    } catch (error) {
-      console.log(error);
-      setError(error);
-    }
-  }
+  
   const getUserHabitCount = async () => {
     try {
       setIsInitialLoading(true);
       const response = await getUserHabitCountFetch(token);
       console.log('getUserHabitCount response =>', response);
-
-      // Backend-dən gələn cavabı həqiqi ədədə çevirək (0, "0", { data: 0 } və s.)
       let count = 0;
       if (typeof response === 'number') {
         count = response;
@@ -122,7 +108,6 @@ const Home = () => {
         const parsed = parseInt(response, 10);
         count = isNaN(parsed) ? 0 : parsed;
       } else if (response && typeof response === 'object') {
-        // Ən çox rast gəlinən struktur: { data: 0 } və ya { count: 0 }
         if (typeof response.data === 'number') {
           count = response.data;
         } else if (typeof response.count === 'number') {
@@ -151,7 +136,6 @@ const Home = () => {
 
   const toggleMenu = () => {
     if (isMenuOpen) {
-      // Close menu
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: -Dimensions.get('window').width * 0.7,
@@ -165,7 +149,6 @@ const Home = () => {
         }),
       ]).start(() => setIsMenuOpen(false));
     } else {
-      // Open menu
       setIsMenuOpen(true);
       Animated.parallel([
         Animated.timing(slideAnim, {
@@ -208,7 +191,6 @@ const Home = () => {
 
   return (
     <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1 px-1 pt-12">
-      {/* Overlay */}
       {isMenuOpen && (
         <Animated.View
           style={{
@@ -230,7 +212,6 @@ const Home = () => {
         </Animated.View>
       )}
 
-      {/* Offcanvas Menu */}
       <Animated.View
         style={{
           position: 'absolute',
@@ -251,7 +232,6 @@ const Home = () => {
         }}
       >
         <View className="flex-1 pt-12 px-4">
-          {/* Hamburger Icon */}
           <TouchableOpacity
             onPress={toggleMenu}
             className="w-10 h-10 items-center justify-center mb-6"
@@ -259,14 +239,12 @@ const Home = () => {
             <FontAwesomeIcon icon={faBars} color="#2f6f3f" size={20} />
           </TouchableOpacity>
 
-          {/* Menu Items */}
           <View className="flex-1">
             {menuItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
                 onPress={() => {
                   closeMenu();
-                  // Add navigation logic here if needed
                 }}
                 style={{
                   flexDirection: 'row',
@@ -294,11 +272,9 @@ const Home = () => {
             ))}
           </View>
 
-          {/* Logout */}
           <TouchableOpacity
             onPress={() => {
               closeMenu();
-              // Add logout logic here
             }}
             className="flex-row items-center py-4 px-3 rounded-xl mb-4"
           >
@@ -310,8 +286,7 @@ const Home = () => {
         </View>
       </Animated.View>
 
-      {/* Header Section */}
-        {/* Top Bar */}
+     
         <View className="flex-row justify-between items-center mb-4 px-4">
           <TouchableOpacity
             onPress={toggleMenu}
@@ -335,13 +310,11 @@ const Home = () => {
           </View>
         </View>
 
-      {/* Main Content */}
       <ScrollView 
         className="flex-1" 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
-        {/* Greeting */}
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
             <Text className="text-2xl font-redditsans-bold  text-black mb-1">
               Hi {firstName}!
@@ -353,7 +326,6 @@ const Home = () => {
         <Text className="text-base text-black font-redditsans-regular px-4 mb-4">
           Let's make habits together!
         </Text>
-        {/* Habits / Empty State Section */}
         {isInitialLoading ? (
           <View className="px-4 py-8 items-center justify-center">
             <Text className="text-base text-gray-600 font-redditsans-regular">
@@ -364,14 +336,12 @@ const Home = () => {
           <HomeEmptyState />
         ) : (
           <>
-            {/* Calendar Selector */}
             <CalendarSelector 
               selectedDate={selectedDate} 
               onDateSelect={handleDateSelect}
             />
 
             
-            {/* Habits Section */}
             <View className="px-4 mb-4">
               <View className="flex-row justify-between items-center mb-3">
                 <Text 

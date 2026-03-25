@@ -2,40 +2,12 @@ import { View, Text, Pressable, ScrollView, TouchableOpacity, TextInput } from "
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faTrash, faFire } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faEdit, faTrash, faFire,faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { getUserHabitByIdFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
 import { useEffect, useState } from "react";
-import Svg, { Circle } from "react-native-svg";
-
-// ---------- Clean SVG Circular Progress ----------
-const CircularProgress = ({ percent = 75, size = 120, strokeWidth = 11, color = "#2f6f3f" }) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (percent / 100) * circumference;
-    const center = size / 2;
-
-    return (
-        <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}>
-            <Svg width={size} height={size} style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}>
-                {/* Track */}
-                <Circle
-                    cx={center} cy={center} r={radius}
-                    stroke="#e5e7eb" strokeWidth={strokeWidth} fill="none"
-                />
-                {/* Progress */}
-                <Circle
-                    cx={center} cy={center} r={radius}
-                    stroke={color} strokeWidth={strokeWidth} fill="none"
-                    strokeDasharray={`${circumference} ${circumference}`}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                />
-            </Svg>
-            <Text style={{ fontSize: 22, fontWeight: "800", color: "#111827" }}>{percent}%</Text>
-        </View>
-    );
-};
+import CircularProgress from "./components/CircularProgress";
+import { ICONS } from "../../constants/icons";
 
 // ---------- Weekly Bar Chart ----------
 const DAYS = ["F", "S", "S", "M", "T", "W", "T"];
@@ -77,7 +49,11 @@ const UserHabitDetails = () => {
     const [token] = useMMKVString("accessToken");
 
     useEffect(() => {
-        const load = async () => {
+        getUserHabitById();
+    }, []);
+
+
+    const getUserHabitById = async () => {
             try {
                 const habitId = route.params?.habitId;
                 if (!habitId || !token) return;
@@ -87,11 +63,6 @@ const UserHabitDetails = () => {
                 console.log("Habit fetch error:", e);
             }
         };
-        load();
-    }, []);
-
-    const streakDays = userHabit?.streakCount ?? 12;
-    const frequency = userHabit?.frequency ?? "Daily";
 
     return (
         <LinearGradient colors={["#d8ead0", "#2f6f3f"]} style={{ flex: 1 }}>
@@ -104,7 +75,7 @@ const UserHabitDetails = () => {
                 <Pressable onPress={() => navigation.goBack()} hitSlop={12}>
                     <FontAwesomeIcon icon={faArrowLeft} color="#111827" size={21} />
                 </Pressable>
-                <Text style={{ fontSize: 17, fontWeight: "700", color: "#111827", letterSpacing: 0.2 }}>
+                <Text style={{ fontSize: 25, fontWeight: "700", color: "#111827", letterSpacing: 0.2 }}>
                     Habit Details
                 </Text>
                 <View style={{ flexDirection: "row", gap: 16 }}>
@@ -112,7 +83,7 @@ const UserHabitDetails = () => {
                         <FontAwesomeIcon icon={faEdit} color="#111827" size={18} />
                     </Pressable>
                     <Pressable hitSlop={12}>
-                        <FontAwesomeIcon icon={faTrash} color="#111827" size={18} />
+                        <FontAwesomeIcon icon={faTrash} color="#E23754" size={18} />
                     </Pressable>
                 </View>
             </View>
@@ -125,11 +96,24 @@ const UserHabitDetails = () => {
                 <View style={{ marginTop: 8, marginBottom: 22 }}>
                     <Text style={{ fontSize: 28, fontWeight: "800", color: "#111827" }}>
                         {userHabit?.title ?? "Loading..."}{" "}
-                        <Text style={{ fontSize: 24 }}>💧</Text>
+                        {ICONS[userHabit?.icon]}
                     </Text>
-                    <Text style={{ fontSize: 14, color: "#374151", marginTop: 5 }}>
-                        {frequency} Habit
+                   <Text style={{ fontSize: 14, color: "#6b7280", marginTop: 5 }}>
+                        {userHabit?.description}
                     </Text>
+
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+            <View style={{
+                backgroundColor: "#e5e7eb",
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 12
+            }}>
+                <Text style={{ fontSize: 12, color: "#111827" }}>
+                {userHabit?.frequency ?? "Daily"}
+                </Text>
+            </View>
+            </View>
                 </View>
 
                 {/* ── Stats Card ── */}
@@ -146,17 +130,26 @@ const UserHabitDetails = () => {
                 }}>
                     {/* Row: progress circle + numbers */}
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 22 }}>
-                        <CircularProgress percent={75} size={120} strokeWidth={11} color="#2f6f3f" />
+                        <CircularProgress percent={userHabit?.progressPercentage ?? 0} size={120} strokeWidth={11} color="#2f6f3f" />
                         <View style={{ flex: 1 }}>
                             <Text style={{ fontSize: 20, fontWeight: "800", color: "#111827", lineHeight: 26 }}>
-                                500 / 2000 ML
+                                {userHabit?.currentValue} / {userHabit?.targetValue} {userHabit?.unit}
                             </Text>
-                            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10, gap: 5 }}>
-                                <FontAwesomeIcon icon={faFire} color="#f59e0b" size={14} />
-                                <Text style={{ fontSize: 13, color: "#6b7280" }}>
-                                    Streak{" "}
-                                    <Text style={{ color: "#111827", fontWeight: "700" }}>{streakDays} days</Text>
-                                </Text>
+                            <View style={{ marginTop: 10, gap: 4 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                    <FontAwesomeIcon icon={faFire} color="#f59e0b" size={14} />
+                                    <Text style={{ fontSize: 13, color: "#6b7280" }}>
+                                        Streak:{" "}
+                                        <Text style={{ color: "#111827", fontWeight: "700" }}>{userHabit?.currentStreak} {userHabit?.currentStreak===1?"day":"days"}</Text>
+                                    </Text>
+                                </View>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                    <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={14} />
+                                    <Text style={{ fontSize: 13, color: "#6b7280" }}>
+                                        Best:{" "}
+                                        <Text style={{ color: "#111827", fontWeight: "700" }}>{userHabit?.longestStreak} {userHabit?.longestStreak===1?"day":"days"}</Text>
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     </View>

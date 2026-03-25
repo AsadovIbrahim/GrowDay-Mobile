@@ -6,7 +6,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
   return (
     <View className="px-4 mb-6">
       <View className="flex-row gap-3">
-        {/* Completed Card */}
         <View 
           className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
           style={{
@@ -19,7 +18,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
         >
           <View className="relative w-16 h-16 mr-3 items-center justify-center">
             <Svg width={64} height={64} style={{ position: 'absolute' }}>
-              {/* Background circle */}
               <Circle
                 cx="32"
                 cy="32"
@@ -28,7 +26,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 strokeWidth="8"
                 fill="none"
               />
-              {/* Progress circle - dynamic from backend */}
               <Circle
                 cx="32"
                 cy="32"
@@ -65,7 +62,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
           </View>
         </View>
 
-        {/* Missed Card */}
         <View 
           className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
           style={{
@@ -78,7 +74,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
         >
           <View className="relative w-16 h-16 mr-3 items-center justify-center">
             <Svg width={64} height={64} style={{ position: 'absolute' }}>
-              {/* Background circle */}
               <Circle
                 cx="32"
                 cy="32"
@@ -87,7 +82,6 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 strokeWidth="8"
                 fill="none"
               />
-              {/* Progress circle - dynamic from backend */}
               <Circle
                 cx="32"
                 cy="32"

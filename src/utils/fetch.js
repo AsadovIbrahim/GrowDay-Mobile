@@ -75,13 +75,13 @@ export const getUserHabitFetch = async (token,pageIndex=0,pageSize=3) => {
     return data;
 }
 
-export const getTodaysUserHabitFetch = async (token, date = null) => {
-    let url = `${VITE_API_URL}/api/UserHabit/GetTodayHabits`;
+export const getTodaysUserHabitFetch = async (token, date = null,pageIndex=0,pageSize=10) => {
+    let url = `${VITE_API_URL}/api/UserHabit/GetTodayHabits?pageIndex=${pageIndex}&pageSize=${pageSize}`;
     if (date) {
         const dateStr = date instanceof Date 
             ? date.toISOString().split('T')[0]
             : date;
-        url += `?date=${dateStr}`;
+        url += `&date=${dateStr}`;
     }
     const response = await fetch(url, {
         method: "GET",

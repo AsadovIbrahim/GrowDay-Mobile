@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCheck, faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from "@react-navigation/native";
+import { ICONS } from "../constants/icons";
 
 const HabitCard = ({ habit, index, onPress }) => {
   const isCompleted = habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done';
@@ -57,6 +58,7 @@ const HabitCard = ({ habit, index, onPress }) => {
     <View
       className="bg-white rounded-xl p-4 mb-3 flex-row items-center">
       <View 
+
         className={`w-12 h-12 rounded-full items-center justify-center mr-3 ${
           isCompleted ? 'bg-green-100' : 'bg-gray-100'
         }`}
@@ -64,7 +66,7 @@ const HabitCard = ({ habit, index, onPress }) => {
         {isCompleted ? (
           <FontAwesomeIcon icon={faCheck} color="#16a34a" size={20} />
         ) : (
-          <FontAwesomeIcon icon={faHourglassHalf} color="#9ca3af" size={18} />
+          <Text className="text-2xl">{ICONS[habit.icon]}</Text>
         )}
       </View>
       

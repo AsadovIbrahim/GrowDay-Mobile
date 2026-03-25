@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faClock, faChevronRight, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { ICONS } from "../constants/icons";
 
 const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress }) => {
   const formatTime = (timeValue) => {
@@ -46,21 +47,9 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
   // Get habit frequency/type
   const habitType = habit.frequency || habit.frequencyType || habit.type || 'Daily';
   const displayType = habitType.charAt(0).toUpperCase() + habitType.slice(1).toLowerCase();
-
+  
   // Get icon based on habit title or icon property
-  const getIcon = () => {
-    if (habit.icon) return habit.icon;
-
-    const title = (habit.title || '').toLowerCase();
-    if (title.includes('water') || title.includes('drink')) {
-      return '💧'; // Water drop
-    } else if (title.includes('walk') || title.includes('exercise')) {
-      return '🚶'; // Walking person
-    } else if (title.includes('plant')) {
-      return '🌿'; // Leaf
-    }
-    return '📋'; // Default icon
-  };
+  
 
   const handlePress = () => {
     if (isSelectionMode) {
@@ -105,7 +94,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
       {/* Icon */}
       <View className="w-12 h-12 rounded-full items-center justify-center mr-4">
-        <Text className="text-2xl">{getIcon()}</Text>
+        <Text className="text-2xl">{ICONS[habit.icon]}</Text>
       </View>
 
       {/* Title and Type */}
