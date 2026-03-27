@@ -76,18 +76,20 @@ const TabBar = ({state, navigation}) => {
             iconColor = '#ffffff';
             iconSize = 28;
             containerStyle = {
-              width: 56,
-              height: 56,
-              borderRadius: 28,
+              width: 64,
+              height: 64,
+              borderRadius: 32,
               backgroundColor: '#2f6f3f',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: -20,
+              marginTop: -32,
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 6,
-              elevation: 8,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.35,
+              shadowRadius: 10,
+              elevation: 12,
+              borderWidth: 4,
+              borderColor: '#f9fafb'
             };
             break;
 

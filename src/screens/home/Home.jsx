@@ -25,6 +25,14 @@ import CalendarSelector from './components/CalendarSelector';
 import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
 import { useNavigation } from '@react-navigation/native';
+const getLocalDateString = (d) => {
+  if (!d) return null;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const Home = () => {
   const navigation = useNavigation();
   const today = new Date();
@@ -71,9 +79,7 @@ const Home = () => {
 
   const getTodaysUserHabit = async (pageIndex=0,pageSize=4) => {
     try {
-      const dateStr = selectedDateObject 
-        ? selectedDateObject.toISOString().split('T')[0]
-        : null;
+      const dateStr = getLocalDateString(selectedDateObject);
       const response = await getTodaysUserHabitFetch(token, dateStr,pageIndex,pageSize);
       console.log('Todays user habit response:', response);
       setTodaysUserHabit(response.data);
@@ -84,9 +90,7 @@ const Home = () => {
   }
   const getDailyStatistics = async () => {
     try {
-      const dateStr = selectedDateObject 
-        ? selectedDateObject.toISOString().split('T')[0]
-        : null;
+      const dateStr = getLocalDateString(selectedDateObject);
       const response = await getDailyStatisticsFetch(token, dateStr);
       console.log('Daily statistics response:', response);
       setDailyStatistics(response.data);
@@ -381,6 +385,7 @@ const Home = () => {
                   key={habit.id || `habit-${index}`}
                   habit={habit} 
                   index={index}
+                  selectedDate={getLocalDateString(selectedDateObject)}
                 />
               ))}
             </View> 

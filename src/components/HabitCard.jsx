@@ -4,13 +4,14 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from "@react-navigation/native";
 import { ICONS } from "../constants/icons";
 
-const HabitCard = ({ habit, index, onPress }) => {
+const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const isCompleted = habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done';
   const navigation = useNavigation(); 
 
   const handlePress=(()=>{
     navigation.navigate("UserHabitDetails",{
-      habitId: habit.userHabitId || habit.id
+      habitId: habit.userHabitId || habit.id,
+      date: selectedDate
     })
   })
   const formatTime = (timeValue) => {

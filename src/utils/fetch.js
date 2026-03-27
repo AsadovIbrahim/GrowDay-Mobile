@@ -317,8 +317,61 @@ export const getUserTotalPoints=async(token)=>{
     return data;
 }
 
-export const getUserHabitByIdFetch = async (token, userHabitId) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
+export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => {
+    const url = date 
+        ? `${VITE_API_URL}/api/UserHabit/${userHabitId}?date=${date}`
+        : `${VITE_API_URL}/api/UserHabit/${userHabitId}`;
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const completeUserHabitFetch = async (token, userHabitId, note = null) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: note ? JSON.stringify(note) : null,
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const incrementUserHabitFetch = async (token, userHabitId, note = null) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: note ? JSON.stringify(note) : null,
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const reportHabitProgressFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/report-progress`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const getWeeklyProgressFetch = async (token, userHabitId) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetWeeklyProgress/${userHabitId}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,

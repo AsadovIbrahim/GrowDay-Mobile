@@ -1,209 +1,256 @@
-import { View, Text, Pressable, ScrollView, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faTrash, faFire,faTrophy } from "@fortawesome/free-solid-svg-icons";
-import { getUserHabitByIdFetch } from "../../utils/fetch";
+import { faArrowLeft, faEdit, faTrash, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
+import { getUserHabitByIdFetch, getWeeklyProgressFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
 import { useEffect, useState } from "react";
-import CircularProgress from "./components/CircularProgress";
 import { ICONS } from "../../constants/icons";
+import HabitProgressCard from "./components/HabitProgressCard";
+import HabitActionSection from "./components/HabitActionSection";
 
-// ---------- Weekly Bar Chart ----------
-const DAYS = ["F", "S", "S", "M", "T", "W", "T"];
-
-const WeeklyChart = ({ data }) => {
-    const maxVal = Math.max(...data.map(d => d.value), 1);
-    return (
-        <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", height: 68, marginTop: 20 }}>
-            {data.map((d, i) => {
-                const barH = Math.max((d.value / maxVal) * 52, 8);
-                const bg = d.isToday ? "#ef4444" : d.active ? "#2f6f3f" : "#d1d5db";
-                return (
-                    <View key={i} style={{ alignItems: "center", flex: 1 }}>
-                        <View style={{ width: 14, height: barH, borderRadius: 7, backgroundColor: bg }} />
-                        <Text style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>{DAYS[i]}</Text>
-                    </View>
-                );
-            })}
-        </View>
-    );
-};
-
-// ---------- Main Screen ----------
-const weeklyData = [
-    { value: 80, active: true },
-    { value: 90, active: true },
-    { value: 70, active: true },
-    { value: 95, active: true },
-    { value: 40, active: false, isToday: true },
-    { value: 30, active: false },
-    { value: 20, active: false },
+const weeklyDataPlaceholder = [
+    { value: 0, active: false },
+    { value: 0, active: false },
+    { value: 0, active: false },
+    { value: 0, active: false },
+    { value: 0.1, active: false, isToday: true },
+    { value: 0, active: false },
+    { value: 0, active: false },
 ];
 
 const UserHabitDetails = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const [userHabit, setUserHabit] = useState(null);
+    const [weeklyProgress, setWeeklyProgress] = useState(null);
+    const [weeklyStats, setWeeklyStats] = useState(null);
     const [note, setNote] = useState("");
+    const [liveDelta, setLiveDelta] = useState(0);
     const [token] = useMMKVString("accessToken");
+    const [isFocused, setIsFocused] = useState(false);
+
+    const isAlreadyDone = userHabit?.lastCompletedDate && 
+        new Date(userHabit.lastCompletedDate).toDateString() === new Date().toDateString();
+
+    const isProgressCompleted = userHabit && (
+        (userHabit.progressPercentage >= 100) || 
+        ((userHabit.currentValue ?? 0) + liveDelta >= (userHabit.targetValue ?? 0))
+    );
+
+    const isFullyCompleted = isAlreadyDone || isProgressCompleted;
 
     useEffect(() => {
-        getUserHabitById();
+        const habitId = route.params?.habitId;
+        const date = route.params?.date;
+        if (habitId) {
+            getUserHabitById(habitId, date);
+            getWeeklyProgress(habitId);
+        }
     }, []);
 
+    const getUserHabitById = async (habitId, date = null) => {
+        try {
+            if (!token) return;
+            const response = await getUserHabitByIdFetch(token, habitId, date);
+            if (response?.data) setUserHabit(response.data);
+        } catch (e) {
+            console.log("Habit fetch error:", e);
+        }
+    };
 
-    const getUserHabitById = async () => {
-            try {
-                const habitId = route.params?.habitId;
-                if (!habitId || !token) return;
-                const response = await getUserHabitByIdFetch(token, habitId);
-                if (response?.data) setUserHabit(response.data);
-            } catch (e) {
-                console.log("Habit fetch error:", e);
+    const getWeeklyProgress = async (habitId) => {
+        try {
+            if (!token) return;
+            const response = await getWeeklyProgressFetch(token, habitId);
+            // API returns WeeklyHabitProgressResponseDTO: { weeklyProgress: [...], totalDays, completedDays, completionPercentage }
+            const dto = response?.data;
+            const raw = dto?.weeklyProgress ?? dto;
+            if (Array.isArray(raw)) {
+                const mapped = raw.map(d => ({
+                    ...d,
+                    value: d.isCompleted ? 100 : 0,
+                }));
+                setWeeklyProgress(mapped);
+                // Store summary stats separately
+                if (dto?.totalDays !== undefined) {
+                    setWeeklyStats({
+                        totalDays: dto.totalDays,
+                        completedDays: dto.completedDays,
+                        completionPercentage: dto.completionPercentage,
+                    });
+                }
             }
-        };
+        } catch (e) {
+            console.log("Weekly progress fetch error:", e);
+        }
+    };
+
 
     return (
         <LinearGradient colors={["#d8ead0", "#2f6f3f"]} style={{ flex: 1 }}>
 
             {/* ── Header ── */}
-            <View style={{
-                flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-                paddingHorizontal: 20, paddingTop: 56, paddingBottom: 14,
-            }}>
-                <Pressable onPress={() => navigation.goBack()} hitSlop={12}>
-                    <FontAwesomeIcon icon={faArrowLeft} color="#111827" size={21} />
+            <View style={styles.header}>
+                <Pressable onPress={() => navigation.goBack()} style={styles.iconCircle} hitSlop={10}>
+                    <FontAwesomeIcon icon={faArrowLeft} color="#374151" size={18} />
                 </Pressable>
-                <Text style={{ fontSize: 25, fontWeight: "700", color: "#111827", letterSpacing: 0.2 }}>
-                    Habit Details
-                </Text>
-                <View style={{ flexDirection: "row", gap: 16 }}>
-                    <Pressable hitSlop={12}>
-                        <FontAwesomeIcon icon={faEdit} color="#111827" size={18} />
+                <View style={{ flex: 1, marginLeft: 16 }}>
+                    <Text style={styles.headerTitle}>Habit Details</Text>
+                    <Text style={styles.headerSubtitle}>Track your daily progress</Text>
+                </View>
+                <View style={styles.headerActions}>
+                    <Pressable style={styles.iconCircle} hitSlop={10}>
+                        <FontAwesomeIcon icon={faEdit} color="#4b5563" size={16} />
                     </Pressable>
-                    <Pressable hitSlop={12}>
-                        <FontAwesomeIcon icon={faTrash} color="#E23754" size={18} />
+                    <Pressable style={[styles.iconCircle, { backgroundColor: "#fee2e2" }]} hitSlop={10}>
+                        <FontAwesomeIcon icon={faTrash} color="#ef4444" size={16} />
                     </Pressable>
                 </View>
             </View>
 
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 48 }}
+                contentContainerStyle={styles.scrollContent}
             >
                 {/* ── Title ── */}
-                <View style={{ marginTop: 8, marginBottom: 22 }}>
-                    <Text style={{ fontSize: 28, fontWeight: "800", color: "#111827" }}>
+                <View style={styles.titleSection}>
+                    <Text className="text-4xl font-redditsans-bold" style={styles.mainTitle}>
                         {userHabit?.title ?? "Loading..."}{" "}
                         {ICONS[userHabit?.icon]}
                     </Text>
-                   <Text style={{ fontSize: 14, color: "#6b7280", marginTop: 5 }}>
+                    <Text className="font-redditsans-regular" style={styles.descriptionText}>
                         {userHabit?.description}
                     </Text>
 
-            <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
-            <View style={{
-                backgroundColor: "#e5e7eb",
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 12
-            }}>
-                <Text style={{ fontSize: 12, color: "#111827" }}>
-                {userHabit?.frequency ?? "Daily"}
-                </Text>
-            </View>
-            </View>
-                </View>
-
-                {/* ── Stats Card ── */}
-                <View style={{
-                    backgroundColor: "#fff",
-                    borderRadius: 22,
-                    padding: 22,
-                    marginBottom: 16,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.07,
-                    shadowRadius: 10,
-                    elevation: 4,
-                }}>
-                    {/* Row: progress circle + numbers */}
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 22 }}>
-                        <CircularProgress percent={userHabit?.progressPercentage ?? 0} size={120} strokeWidth={11} color="#2f6f3f" />
-                        <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 20, fontWeight: "800", color: "#111827", lineHeight: 26 }}>
-                                {userHabit?.currentValue} / {userHabit?.targetValue} {userHabit?.unit}
+                    <View style={styles.tagRow}>
+                        <View style={styles.tag}>
+                            <Text style={styles.tagText}>
+                                {userHabit?.frequency ?? "Daily"}
                             </Text>
-                            <View style={{ marginTop: 10, gap: 4 }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                    <FontAwesomeIcon icon={faFire} color="#f59e0b" size={14} />
-                                    <Text style={{ fontSize: 13, color: "#6b7280" }}>
-                                        Streak:{" "}
-                                        <Text style={{ color: "#111827", fontWeight: "700" }}>{userHabit?.currentStreak} {userHabit?.currentStreak===1?"day":"days"}</Text>
-                                    </Text>
-                                </View>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                    <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={14} />
-                                    <Text style={{ fontSize: 13, color: "#6b7280" }}>
-                                        Best:{" "}
-                                        <Text style={{ color: "#111827", fontWeight: "700" }}>{userHabit?.longestStreak} {userHabit?.longestStreak===1?"day":"days"}</Text>
-                                    </Text>
-                                </View>
-                            </View>
                         </View>
                     </View>
-
-                    {/* Weekly bars */}
-                    <WeeklyChart data={weeklyData} />
                 </View>
+
+                {/* ── Stats Card 1 (Current) ── */}
+                <HabitProgressCard 
+                    habit={userHabit} 
+                    weeklyData={weeklyDataPlaceholder} 
+                    liveDelta={liveDelta}
+                    title="Today's Performance"
+                />
+
+                {/* ── Stats Card 2 (API Weekly Progress) ── */}
+                {weeklyProgress && (
+                    <HabitProgressCard 
+                        habit={userHabit} 
+                        weeklyData={weeklyProgress} 
+                        title="Weekly Performance"
+                        weeklyStats={weeklyStats}
+                    />
+                )}
+
+
+
+                {/* ── Dynamic Action Section ── */}
+                {userHabit && !isFullyCompleted && (
+                    <HabitActionSection 
+                        habit={userHabit}
+                        token={token}
+                        note={note}
+                        onActionComplete={() => {
+                            setLiveDelta(0);
+                            getUserHabitById();
+                        }}
+                        onLiveUpdate={setLiveDelta}
+                    />
+                )}
 
                 {/* ── Notes ── */}
-                <View style={{
-                    backgroundColor: "#fff",
-                    borderRadius: 22,
-                    paddingHorizontal: 18,
-                    paddingVertical: 16,
-                    marginBottom: 26,
-                    minHeight: 90,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 3,
-                }}>
-                    <TextInput
-                        value={note}
-                        onChangeText={setNote}
-                        placeholder="Today I drank 1.5L of water and felt great."
-                        placeholderTextColor="#9ca3af"
-                        multiline
-                        style={{ fontSize: 14, color: "#111827", lineHeight: 22 }}
-                    />
-                </View>
-
-                {/* ── Mark as Done ── */}
-                <TouchableOpacity
-                    activeOpacity={0.85}
-                    style={{
-                        backgroundColor: "#2f6f3f",
-                        borderRadius: 50,
-                        paddingVertical: 18,
-                        alignItems: "center",
-                        shadowColor: "#2f6f3f",
-                        shadowOffset: { width: 0, height: 5 },
-                        shadowOpacity: 0.35,
-                        shadowRadius: 10,
-                        elevation: 7,
-                    }}
-                >
-                    <Text style={{ fontSize: 17, fontWeight: "700", color: "#fff", letterSpacing: 0.3 }}>
-                        Mark as done
-                    </Text>
-                </TouchableOpacity>
+                {!isFullyCompleted && (
+                    <View style={[styles.notesCard, isFocused && styles.notesCardFocused]}>
+                        <View style={styles.notesHeader}>
+                            <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? "#2f6f3f" : "#9ca3af"} size={16} />
+                            <Text style={[styles.notesLabel, isFocused && { color: "#2f6f3f" }]}>Today's Notes</Text>
+                        </View>
+                        <TextInput
+                            value={note}
+                            onChangeText={setNote}
+                            placeholder="Add a note..."
+                            placeholderTextColor="#9ca3af"
+                            multiline
+                            style={styles.notesInput}
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={() => setIsFocused(false)}
+                        />
+                    </View>
+                )}
+                
             </ScrollView>
         </LinearGradient>
     );
 };
+
+const styles = StyleSheet.create({
+    header: {
+        flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+        paddingHorizontal: 20, paddingTop: 56, paddingBottom: 14,
+    },
+    headerTitle: {
+        fontSize: 22, fontWeight: "700", color: "#111827", letterSpacing: 0.1
+    },
+    headerSubtitle: {
+        fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: "500"
+    },
+    headerActions: {
+        flexDirection: "row", gap: 12
+    },
+    iconCircle: {
+        width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff",
+        alignItems: "center", justifyContent: "center",
+        elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15, shadowRadius: 2
+    },
+    scrollContent: {
+        paddingHorizontal: 20, paddingBottom: 80
+    },
+    titleSection: {
+        marginTop: 12, marginBottom: 28
+    },
+    habitTitle: {
+        fontSize: 40, fontWeight: "900", color: "#111827", letterSpacing: -1
+    },
+    habitDesc: {
+        fontSize: 20, color: "#4b5563", marginTop: 8, fontWeight: "600"
+    },
+    tag: {
+        backgroundColor: "rgba(255,255,255,0.6)", paddingHorizontal: 10, paddingVertical: 4,
+        borderRadius: 8, alignSelf: "flex-start", marginTop: 12
+    },
+    tagText: {
+        fontSize: 12, fontWeight: "600", color: "#4b5563"
+    },
+    notesCard: {
+        backgroundColor: "#fff", borderRadius: 16, padding: 16,
+        marginBottom: 20, borderWidth: 1.5, borderColor: "transparent",
+        elevation: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1, shadowRadius: 4
+    },
+    notesCardFocused: {
+        borderColor: "#2f6f3f",
+        shadowOpacity: 0.15, shadowRadius: 6
+    },
+    notesHeader: {
+        flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10
+    },
+    notesLabel: {
+        fontSize: 13, fontWeight: "700", color: "#6b7280", letterSpacing: 0.5
+    },
+    notesInput: {
+        fontSize: 15, color: "#111827", minHeight: 80, textAlignVertical: "top",
+        padding: 0
+    }
+});
 
 export default UserHabitDetails;
