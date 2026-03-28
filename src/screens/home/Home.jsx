@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getUserHabitFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
-import { useEffect } from "react";
+import { useEffect, useState, useRef, useContext, useCallback } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
 import { ICONS } from "../../constants/icons";
@@ -18,13 +18,12 @@ import {
   faRightFromBracket,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
-import { useState, useRef, useContext } from "react";
 import { MenuContext } from '../../context/MenuContext';
 import HomeEmptyState from './HomeEmptyState';
 import CalendarSelector from './components/CalendarSelector';
 import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 const getLocalDateString = (d) => {
   if (!d) return null;
   const year = d.getFullYear();
@@ -63,19 +62,16 @@ const Home = () => {
     setSelectedDate(day);
     setSelectedDateObject(fullDate);
   };
-  useEffect(() => {
-    getUserHabitCount();
-    getUnreadNotificationCount();
-    getDailyStatistics();
-    getTodaysUserHabit();
-  }, []);
-
-  useEffect(() => {
-    if (userHabitCount > 0 && selectedDateObject) { 
-      getDailyStatistics();
-      getTodaysUserHabit();
-    }
-  }, [selectedDateObject]);
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        getUserHabitCount();
+        getUnreadNotificationCount();
+        getDailyStatistics();
+        getTodaysUserHabit();
+      }
+    }, [token, selectedDateObject])
+  );
 
   const getTodaysUserHabit = async (pageIndex=0,pageSize=4) => {
     try {
@@ -102,7 +98,9 @@ const Home = () => {
   
   const getUserHabitCount = async () => {
     try {
-      setIsInitialLoading(true);
+      if (userHabitCount === 0) {
+        setIsInitialLoading(true);
+      }
       const response = await getUserHabitCountFetch(token);
       console.log('getUserHabitCount response =>', response);
       let count = 0;
@@ -330,9 +328,15 @@ const Home = () => {
         <Text className="text-base text-black font-redditsans-regular px-4 mb-4">
           Let's make habits together!
         </Text>
+          <CalendarSelector 
+            selectedDate={selectedDate} 
+            onDateSelect={handleDateSelect}
+          />
+        
         {isInitialLoading ? (
-          <View className="px-4 py-8 items-center justify-center">
-            <Text className="text-base text-gray-600 font-redditsans-regular">
+          <View className="px-4 py-12 items-center justify-center">
+            <ActivityIndicator size="large" color="#2f6f3f" />
+            <Text className="mt-4 text-base text-gray-600 font-redditsans-regular">
               Loading...
             </Text>
           </View>
@@ -340,40 +344,44 @@ const Home = () => {
           <HomeEmptyState />
         ) : (
           <>
-            <CalendarSelector 
-              selectedDate={selectedDate} 
-              onDateSelect={handleDateSelect}
-            />
 
             
             <View className="px-4 mb-4">
               <View className="flex-row justify-between items-center mb-3">
-                <Text 
-                  className="text-xl font-redditsans-bold text-black"
-                >
-                 {(() => {
-                   const today = new Date();
-                   today.setHours(0, 0, 0, 0);
-                   const selected = selectedDateObject ? new Date(selectedDateObject) : today;
-                   selected.setHours(0, 0, 0, 0);
-                   const isToday = selected.getTime() === today.getTime();
-                   
-                   if (isToday) {
-                     return "Today's Habits";
-                   } else {
-                     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                     const dayName = dayNames[selected.getDay()];
-                     return `${dayName}'s Habits`;
-                   }
-                 })()}
-                </Text>
+                <View>
+                  <Text className="text-xl font-redditsans-bold text-black">
+                    {(() => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                      selected.setHours(0, 0, 0, 0);
+                      const isToday = selected.getTime() === today.getTime();
+                      
+                      if (isToday) return "Today's Habits";
+                      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                      return `${dayNames[selected.getDay()]}'s Habits`;
+                    })()}
+                  </Text>
+                  {(() => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                    selected.setHours(0, 0, 0, 0);
+                    if (selected.getTime() > today.getTime()) {
+                      return (
+                        <Text className="text-xs text-gray-500 font-redditsans-regular italic">
+                          Viewing upcoming habits
+                        </Text>
+                      );
+                    }
+                    return null;
+                  })()}
+                </View>
                 <TouchableOpacity 
                   onPress={() => navigation.navigate('UserHabits')}
                   className="flex-row items-center gap-1"
                 >
-                  <Text 
-                    className="text-base text-green-600 font-redditsans-medium"
-                  >
+                  <Text className="text-base text-green-600 font-redditsans-medium">
                     VIEW ALL
                   </Text>
                   <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
@@ -382,7 +390,7 @@ const Home = () => {
 
               {todaysUserHabit && Array.isArray(todaysUserHabit) && todaysUserHabit.map((habit, index) => (
                 <HabitCard 
-                  key={habit.id || `habit-${index}`}
+                  key={habit.userHabitId || `habit-${index}`}
                   habit={habit} 
                   index={index}
                   selectedDate={getLocalDateString(selectedDateObject)}

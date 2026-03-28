@@ -4,6 +4,7 @@ import { useMMKVString } from 'react-native-mmkv';
 import Geolocation from 'react-native-geolocation-service';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlay, faPause, faStop } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 import { completeUserHabitFetch, reportHabitProgressFetch } from '../../../utils/fetch';
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
@@ -18,6 +19,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate }) => {
+    const navigation = useNavigation();
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
     const startKey = `timer_start_${hId}`;
     const accKey = `timer_acc_${hId}`;
@@ -39,6 +41,7 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
     const lastPos = useRef({ lat: null, lon: null });
     const totalDistRef = useRef(0);
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const autoStopTriggered = useRef(false);
 
     const unit = habit.unit?.toLowerCase();
 
@@ -56,6 +59,23 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
             pulseAnim.setValue(1);
         }
     }, [timerActive]);
+
+    useEffect(() => {
+        if (!timerActive) return;
+        
+        const currentVal = habit.currentValue || 0;
+        const targetVal = habit.targetValue || 1;
+        
+        let currentDelta = isDistance ? distance : (seconds / 60);
+        if (isDistance && unit === "m") currentDelta = distance * 1000;
+        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs")) currentDelta = seconds / 3600;
+
+        if (currentVal + currentDelta >= targetVal && !autoStopTriggered.current) {
+            autoStopTriggered.current = true;
+            handleStop();
+        }
+    }, [distance, seconds, timerActive]);
+
     const isBoolean = useMemo(() => !habit.unit || !habit.targetValue || habit.targetValue <= 0, [habit]);
     const isDuration = useMemo(() => ["minute", "hour", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
     const isDistance = useMemo(() => ["km", "m", "mile", "miles"].includes(unit), [unit]);
@@ -196,6 +216,7 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
         setStoredLat(undefined); setStoredLon(undefined);
         totalDistRef.current = 0; setDistance(0);
         setTimerActive(false); stopTracking();
+        autoStopTriggered.current = false;
     };
 
     const handleReportProgress = async (delta, source = "manual") => {
@@ -205,6 +226,11 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
                 onActionComplete();
+                const totalProgress = (habit.currentValue ?? 0) + delta;
+                if (totalProgress >= (habit.targetValue ?? 1) && (habit.currentValue ?? 0) < (habit.targetValue ?? 1)) {
+                    const updatedHabit = { ...habit, currentValue: totalProgress };
+                    navigation.navigate("HabitCelebration", { habit: updatedHabit });
+                }
                 return true;
             }
             return false;
@@ -226,8 +252,8 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
             const res = await completeUserHabitFetch(token, hId, note);
             if (res.success) {
-                Alert.alert("GrowDay", res.message || "Great job! Completed for today.");
                 onActionComplete();
+                navigation.navigate("HabitCelebration", { habit });
             } else {
                 Alert.alert("Error", res.message || "Failed to complete habit.");
             }

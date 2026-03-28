@@ -50,12 +50,13 @@ export const createUserPreferencesFetch = async (token,payload) => {
 }
 
 export const getAllHabitsFetch = async (token,pageIndex=0,pageSize=3) => {
-    const response = await fetch(`${VITE_API_URL}/api/Habit/GetAllHabits?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/Habit/GetAllHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
 
     const data=await response.json();
@@ -64,19 +65,20 @@ export const getAllHabitsFetch = async (token,pageIndex=0,pageSize=3) => {
 }
 
 export const getUserHabitFetch = async (token,pageIndex=0,pageSize=3) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetMyHabits?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetMyHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
 }
 
 export const getTodaysUserHabitFetch = async (token, date = null,pageIndex=0,pageSize=10) => {
-    let url = `${VITE_API_URL}/api/UserHabit/GetTodayHabits?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    let url = `${VITE_API_URL}/api/UserHabit/GetTodayHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`;
     if (date) {
         const dateStr = date instanceof Date 
             ? date.toISOString().split('T')[0]
@@ -89,39 +91,42 @@ export const getTodaysUserHabitFetch = async (token, date = null,pageIndex=0,pag
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
 }
 
 export const getUnreadNotificationCountFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/Notification/unreadcount`, {
+    const response = await fetch(`${VITE_API_URL}/api/Notification/unreadcount?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
 }
 
 export const getUserHabitCountFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/getuserhabitcount`, {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/getuserhabitcount?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
 }
 export const getUserHabitByFrequencyFetch = async (token, frequency) => {
-    const url =
-      frequency && frequency !== "All"
-        ? `${VITE_API_URL}/api/UserHabit/GetUserHabitByFrequency?frequency=${frequency}`
-        : `${VITE_API_URL}/api/UserHabit/GetUserHabitByFrequency`;
+    const baseUrl = `${VITE_API_URL}/api/UserHabit/GetUserHabitByFrequency`;
+    const url = frequency && frequency !== "All"
+        ? `${baseUrl}?frequency=${frequency}&_t=${Date.now()}`
+        : `${baseUrl}?_t=${Date.now()}`;
   
     const response = await fetch(url, {
       method: "GET",
@@ -129,6 +134,7 @@ export const getUserHabitByFrequencyFetch = async (token, frequency) => {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
       },
+      cache: "no-store",
     });
   
     return await response.json();
@@ -136,24 +142,26 @@ export const getUserHabitByFrequencyFetch = async (token, frequency) => {
   
 
 export const getUserNotificationsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/Notification/getnotification?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/Notification/getnotification?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
 }
 
 export const getUserUnreadNotificationsFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/Notification/unreadnotifications`, {
+    const response = await fetch(`${VITE_API_URL}/api/Notification/unreadnotifications?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
@@ -182,12 +190,13 @@ export const markAsAllReadNotificationFetch = async (token) => {
 };
 
 export const getUserPreferencesFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserPreferences/GetUserPreferences`, {
+    const response = await fetch(`${VITE_API_URL}/api/UserPreferences/GetUserPreferences?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
@@ -200,6 +209,7 @@ export const getNotificationDetailFetch = async (token,notificationId) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
@@ -218,35 +228,38 @@ export const readNotificationFetch = async (token,notificationId) => {
 
 export const getDailyStatisticsFetch = async (token, date = null) => {
     const url = date 
-        ? `${VITE_API_URL}/api/Statistic/daily?date=${date}`
-        : `${VITE_API_URL}/api/Statistic/daily`;
+        ? `${VITE_API_URL}/api/Statistic/daily?date=${date}&_t=${Date.now()}`
+        : `${VITE_API_URL}/api/Statistic/daily?_t=${Date.now()}`;
     const response = await fetch(url, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
 };
 
 export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/GetUserSuggestedHabits?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/GetUserSuggestedHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
 };
 
 export const getUserTasksFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserTask/GetMyTasks`, {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/GetMyTasks?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
@@ -285,33 +298,36 @@ export const deleteUserHabitFetch = async (token,userHabitId) => {
 };
 
 export const getAllAchievementsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetAllAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetAllAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
 };
 
 export const getUserAchievementsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetUserAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}`, {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetUserAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
 };
 
 export const getUserTotalPoints=async(token)=>{
-    const response=await fetch(`${VITE_API_URL}/api/UserActivity/GetTotalPoints`,{
+    const response=await fetch(`${VITE_API_URL}/api/UserActivity/GetTotalPoints?_t=${Date.now()}`,{
         method:"GET",
         headers:{
             "Authorization":`Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data=await response.json();
     return data;
@@ -319,13 +335,14 @@ export const getUserTotalPoints=async(token)=>{
 
 export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => {
     const url = date 
-        ? `${VITE_API_URL}/api/UserHabit/${userHabitId}?date=${date}`
-        : `${VITE_API_URL}/api/UserHabit/${userHabitId}`;
+        ? `${VITE_API_URL}/api/UserHabit/${userHabitId}?date=${date}&_t=${Date.now()}`
+        : `${VITE_API_URL}/api/UserHabit/${userHabitId}?_t=${Date.now()}`;
     const response = await fetch(url, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;
@@ -371,11 +388,12 @@ export const reportHabitProgressFetch = async (token, payload) => {
 };
 
 export const getWeeklyProgressFetch = async (token, userHabitId) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetWeeklyProgress/${userHabitId}`, {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetWeeklyProgress/${userHabitId}?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
         },
+        cache: "no-store",
     });
     const data = await response.json();
     return data;

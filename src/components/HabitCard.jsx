@@ -5,13 +5,23 @@ import { useNavigation } from "@react-navigation/native";
 import { ICONS } from "../constants/icons";
 
 const HabitCard = ({ habit, index, onPress, selectedDate }) => {
-  const isCompleted = habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done';
-  const navigation = useNavigation(); 
+  const isFuture = (() => {
+    if (!selectedDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(selectedDate);
+    target.setHours(0, 0, 0, 0);
+    return target > today;
+  })();
 
+  const isCompleted = !isFuture && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
+  const navigation = useNavigation();
+  
   const handlePress=(()=>{
     navigation.navigate("UserHabitDetails",{
       habitId: habit.userHabitId || habit.id,
-      date: selectedDate
+      date: selectedDate,
+      isFuture: isFuture
     })
   })
   const formatTime = (timeValue) => {
@@ -55,8 +65,9 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const formattedTime = formatTime(notificationTime);
 
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
     <View
+      style={{ opacity: isFuture ? 0.85 : 1 }}
       className="bg-white rounded-xl p-4 mb-3 flex-row items-center">
       <View 
 
@@ -81,7 +92,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
           <Text 
             className="text-sm text-gray-500 font-redditsans-regular"
           >
-            {habit.status || (isCompleted ? 'Completed' : 'Pending')}
+            {isFuture ? 'Upcoming' : (habit.status || (isCompleted ? 'Completed' : 'Pending'))}
           </Text>
           {formattedTime && (
             <>

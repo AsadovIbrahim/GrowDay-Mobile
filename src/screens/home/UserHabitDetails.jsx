@@ -30,14 +30,20 @@ const UserHabitDetails = () => {
     const [liveDelta, setLiveDelta] = useState(0);
     const [token] = useMMKVString("accessToken");
     const [isFocused, setIsFocused] = useState(false);
+    const isFutureDate = route.params?.isFuture || (() => {
+        const dateParam = route.params?.date;
+        if (!dateParam) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const target = new Date(dateParam);
+        target.setHours(0, 0, 0, 0);
+        return target > today;
+    })();
 
     const isAlreadyDone = userHabit?.lastCompletedDate && 
         new Date(userHabit.lastCompletedDate).toDateString() === new Date().toDateString();
 
-    const isProgressCompleted = userHabit && (
-        (userHabit.progressPercentage >= 100) || 
-        ((userHabit.currentValue ?? 0) + liveDelta >= (userHabit.targetValue ?? 0))
-    );
+    const isProgressCompleted = userHabit && (userHabit.progressPercentage >= 100);
 
     const isFullyCompleted = isAlreadyDone || isProgressCompleted;
 
@@ -101,12 +107,16 @@ const UserHabitDetails = () => {
                     <Text style={styles.headerSubtitle}>Track your daily progress</Text>
                 </View>
                 <View style={styles.headerActions}>
-                    <Pressable style={styles.iconCircle} hitSlop={10}>
-                        <FontAwesomeIcon icon={faEdit} color="#4b5563" size={16} />
-                    </Pressable>
-                    <Pressable style={[styles.iconCircle, { backgroundColor: "#fee2e2" }]} hitSlop={10}>
-                        <FontAwesomeIcon icon={faTrash} color="#ef4444" size={16} />
-                    </Pressable>
+                    {!isFutureDate && (
+                        <>
+                            <Pressable style={styles.iconCircle} hitSlop={10}>
+                                <FontAwesomeIcon icon={faEdit} color="#4b5563" size={16} />
+                            </Pressable>
+                            <Pressable style={[styles.iconCircle, { backgroundColor: "#fee2e2" }]} hitSlop={10}>
+                                <FontAwesomeIcon icon={faTrash} color="#ef4444" size={16} />
+                            </Pressable>
+                        </>
+                    )}
                 </View>
             </View>
 
@@ -138,7 +148,7 @@ const UserHabitDetails = () => {
                     habit={userHabit} 
                     weeklyData={weeklyDataPlaceholder} 
                     liveDelta={liveDelta}
-                    title="Today's Performance"
+                    title={isFutureDate ? "Upcoming Performance" : "Today's Performance"}
                 />
 
                 {/* ── Stats Card 2 (API Weekly Progress) ── */}
@@ -154,21 +164,30 @@ const UserHabitDetails = () => {
 
 
                 {/* ── Dynamic Action Section ── */}
-                {userHabit && !isFullyCompleted && (
+                {isFutureDate ? (
+                    <View style={styles.futureNotice}>
+                        <Text style={styles.futureNoticeText}>
+                            You can start tracking this habit on the selected day.
+                        </Text>
+                    </View>
+                ) : userHabit && !isFullyCompleted && (
                     <HabitActionSection 
                         habit={userHabit}
                         token={token}
                         note={note}
                         onActionComplete={() => {
                             setLiveDelta(0);
-                            getUserHabitById();
+                            if (route.params?.habitId) {
+                                getUserHabitById(route.params.habitId, route.params?.date);
+                                getWeeklyProgress(route.params.habitId);
+                            }
                         }}
                         onLiveUpdate={setLiveDelta}
                     />
                 )}
 
                 {/* ── Notes ── */}
-                {!isFullyCompleted && (
+                {!isFutureDate && !isFullyCompleted && (
                     <View style={[styles.notesCard, isFocused && styles.notesCardFocused]}>
                         <View style={styles.notesHeader}>
                             <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? "#2f6f3f" : "#9ca3af"} size={16} />
@@ -250,6 +269,15 @@ const styles = StyleSheet.create({
     notesInput: {
         fontSize: 15, color: "#111827", minHeight: 80, textAlignVertical: "top",
         padding: 0
+    },
+    futureNotice: {
+        backgroundColor: "rgba(255,255,255,0.7)", borderRadius: 16, padding: 20,
+        marginBottom: 20, alignItems: "center", borderStyle: 'dashed',
+        borderWidth: 1, borderColor: '#9ca3af'
+    },
+    futureNoticeText: {
+        fontSize: 14, color: "#4b5563", textAlign: "center", fontStyle: 'italic',
+        lineHeight: 20
     }
 });
 

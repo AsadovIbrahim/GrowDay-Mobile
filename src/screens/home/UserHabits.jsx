@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, deleteUserHabitFetch } from '../../utils/fetch';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
@@ -89,10 +89,14 @@ const UserHabits = () => {
         }
     };
 
-    useEffect(() => {
-        getUserHabitsByFrequency();
-        getUnreadNotificationCount();
-    }, [token]);
+    useFocusEffect(
+        useCallback(() => {
+            if (token) {
+                getUserHabitsByFrequency();
+                getUnreadNotificationCount();
+            }
+        }, [token])
+    );
 
     const handleGoBack = () => {
         navigation.goBack();
