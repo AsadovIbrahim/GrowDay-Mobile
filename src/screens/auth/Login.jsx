@@ -49,13 +49,17 @@ const Login = () => {
           console.log("Error checking user preferences:", prefError);
           storage.set("hasCompletedPreferences", false);
         }
-      } else {
-        console.error("Error", data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }    
-  }
+        } else {
+          if (data.message === "Email not confirmed.") {
+            navigation.navigate("OtpVerification", { email: formData.UsernameOrEmail });
+          } else {
+            console.error("Error", data.message);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }    
+    }
 
   return (
     <LinearGradient

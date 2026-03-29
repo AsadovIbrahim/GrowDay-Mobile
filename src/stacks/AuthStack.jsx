@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from "../screens/auth/Login";
 import Register from '../screens/auth/Register';
 import ForgotPassword from '../screens/auth/ForgotPassword';
+import OtpVerification from '../screens/auth/OtpVerification';
 import Onboarding from '../screens/onboarding/Onboarding';
 const Stack = createNativeStackNavigator()
 
@@ -14,6 +15,7 @@ const AuthStack=({initialRoute})=>{
             <Stack.Screen name="Login" component={Login}></Stack.Screen>
             <Stack.Screen name="Register" component={Register}></Stack.Screen>
             <Stack.Screen name="ForgotPassword" component={ForgotPassword}></Stack.Screen>
+            <Stack.Screen name="OtpVerification" component={OtpVerification}></Stack.Screen>
         </Stack.Navigator>
     )
 }

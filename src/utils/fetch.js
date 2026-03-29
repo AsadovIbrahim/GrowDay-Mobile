@@ -398,3 +398,15 @@ export const getWeeklyProgressFetch = async (token, userHabitId) => {
     const data = await response.json();
     return data;
 };
+
+export const verifyOtpFetch=async (email,otpCode)=>{
+    const response=await fetch(`${VITE_API_URL}/api/auth/verify-otp`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify({email,otpCode}),
+    });
+    const data=await response.json();
+    return data;
+}

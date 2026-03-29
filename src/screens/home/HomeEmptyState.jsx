@@ -1,10 +1,15 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CalendarSelector from './components/CalendarSelector';
 
 const HomeEmptyState = () => {
+  const navigation = useNavigation();
+
   return (
     <>
-      {/* Calendar inactive info */}
+      {/* ... previous code ... */}
       <View className="px-4 mb-4">
         <View className="bg-[#d9dfd3] rounded-2xl px-4 py-3 items-center justify-center">
           <Text className="text-gray-700 font-redditsans-regular text-sm">
@@ -12,8 +17,6 @@ const HomeEmptyState = () => {
           </Text>
         </View>
       </View>
-
-      
 
       {/* Empty State Card */}
       <View className="px-4 mb-6">
@@ -38,7 +41,10 @@ const HomeEmptyState = () => {
             Start small, stay consistent
           </Text>
 
-          <TouchableOpacity className="w-full bg-green-500 rounded-full py-3 flex-row items-center justify-center mb-4">
+          <TouchableOpacity 
+            className="w-full bg-green-500 rounded-full py-3 flex-row items-center justify-center mb-4"
+            onPress={() => navigation.navigate("Create")}
+          >
             <FontAwesomeIcon icon={faPlus} color="#ffffff" size={18} />
             <Text className="ml-2 text-white text-base font-redditsans-medium">
               Add your first habit

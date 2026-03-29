@@ -37,7 +37,7 @@ const Register = () => {
         
         storage.set("hasCompletedPreferences", false);
         
-        navigation.navigate("Login");
+        navigation.navigate("OtpVerification", { email: formData.email });
       }).catch((error) => {
         console.log(error);
       });    
