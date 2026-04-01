@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const TabBar = ({state, navigation}) => {
-    const { isMenuOpen } = useContext(MenuContext);
+    const { isMenuOpen, setIsCreateModalOpen } = useContext(MenuContext);
     if (isMenuOpen) {
         return null;
     }
@@ -111,7 +111,13 @@ const TabBar = ({state, navigation}) => {
         return(
             <TouchableOpacity 
               key={index} 
-              onPress={() => navigation.navigate(route.name)}
+              onPress={() => {
+                if (routeName === 'Create') {
+                  setIsCreateModalOpen(true);
+                } else {
+                  navigation.navigate(route.name);
+                }
+              }}
               style={containerStyle}
               className="items-center justify-center"
             >

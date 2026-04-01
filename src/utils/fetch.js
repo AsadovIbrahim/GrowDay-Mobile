@@ -410,3 +410,4 @@ export const verifyOtpFetch=async (email,otpCode)=>{
     const data=await response.json();
     return data;
 }
+
