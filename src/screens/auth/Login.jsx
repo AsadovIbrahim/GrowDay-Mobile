@@ -5,7 +5,6 @@ import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
-import GoBack from "../../../assets/icons/back-vector.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { storage } from "../../utils/MMKVStore";
@@ -30,22 +29,18 @@ const Login = () => {
         const token = data.data.accessToken.token;
         storage.set("accessToken", token);
         console.log(token);
-
         storage.set("UsernameOrEmail", formData.UsernameOrEmail);
         console.log(formData.UsernameOrEmail);
         
-        // Check if user has completed preferences
         try {
           const preferencesResponse = await getUserPreferencesFetch(token);
-          // If user has preferences, set hasCompletedPreferences to true
-          // Otherwise, it will remain false (default)
+          
           if (preferencesResponse && preferencesResponse.data && !preferencesResponse.error) {
             storage.set("hasCompletedPreferences", true);
           } else {
             storage.set("hasCompletedPreferences", false);
           }
         } catch (prefError) {
-          // If API call fails, assume user hasn't completed preferences
           console.log("Error checking user preferences:", prefError);
           storage.set("hasCompletedPreferences", false);
         }
@@ -71,17 +66,15 @@ const Login = () => {
       <SafeAreaView className="flex-1 w-full px-6">
 
        
-        {/* Logo */} 
+   
         <View className="items-center mt-2 mb-6">
           <GrowDayLogo width={140} height={140} />
         </View>
 
-        {/* Welcome */}
         <Text className="text-white text-center text-4xl font-redditsans-bold mb-8">
           Welcome Back!
         </Text>
 
-        {/* GOOGLE LOGIN */}
         <TouchableOpacity
           className="flex-row justify-center bg-white rounded-full p-5 px-5 mb-6"
         >
@@ -91,12 +84,10 @@ const Login = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* OR TEXT */}
         <Text className="text-lg text-white text-center font-redditsans-medium mb-6 font-medium">
           OR LOG IN WITH EMAIL
         </Text>
 
-        {/* Email input */}
           <View className="relative">
 
             <TextInput
@@ -107,7 +98,6 @@ const Login = () => {
               />
           </View>
           <View className="relative">
-            {/* Password input */}
             <TextInput
               placeholder="Password"
               placeholderTextColor="#ddd"
@@ -126,14 +116,12 @@ const Login = () => {
           <Text className="text-white text-right font-redditsans-regular pt-4">Forgot Password?</Text>
         </TouchableOpacity>
 
-        {/* LOGIN BUTTON */}
         <TouchableOpacity className="bg-[#78C67E] p-5 rounded-full" onPress={handleLogin}>
           <Text className="text-white text-center font-redditsans-bold text-lg">
             Sign In
           </Text>
         </TouchableOpacity>
 
-        {/* SIGN UP LINK */}
         <View className="flex-row justify-center mt-6">
           <Text className="text-white font-redditsans-regular">Don’t have an account? </Text>
           <TouchableOpacity onPress={()=>navigation.navigate("Register")}>

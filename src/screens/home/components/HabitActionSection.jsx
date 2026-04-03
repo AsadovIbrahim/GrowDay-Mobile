@@ -18,7 +18,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
-const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate }) => {
+const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLiveUpdate }) => {
     const navigation = useNavigation();
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
     const startKey = `timer_start_${hId}`;
@@ -222,7 +222,14 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
     const handleReportProgress = async (delta, source = "manual") => {
         try {
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-            const payload = { userHabitId: hId, deltaValue: delta, source, note, timestamp: new Date().toISOString() };
+            const payload = { 
+                userHabitId: hId, 
+                deltaValue: delta, 
+                source, 
+                note, 
+                timestamp: new Date().toISOString(),
+                date: date // Pass the intended date
+            };
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
                 onActionComplete();
@@ -250,7 +257,7 @@ const HabitActionSection = ({ habit, token, note, onActionComplete, onLiveUpdate
     if (isBoolean) return (
         <TouchableOpacity onPress={async () => {
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-            const res = await completeUserHabitFetch(token, hId, note);
+            const res = await completeUserHabitFetch(token, hId, note, date);
             if (res.success) {
                 onActionComplete();
                 navigation.navigate("HabitCelebration", { habit });

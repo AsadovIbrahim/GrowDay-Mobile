@@ -348,8 +348,12 @@ export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => 
     return data;
 };
 
-export const completeUserHabitFetch = async (token, userHabitId, note = null) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`, {
+export const completeUserHabitFetch = async (token, userHabitId, note = null, date = null) => {
+    let url = `${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`;
+    if (date) {
+        url += `?date=${date}`;
+    }
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -361,8 +365,12 @@ export const completeUserHabitFetch = async (token, userHabitId, note = null) =>
     return data;
 };
 
-export const incrementUserHabitFetch = async (token, userHabitId, note = null) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`, {
+export const incrementUserHabitFetch = async (token, userHabitId, note = null, date = null) => {
+    let url = `${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`;
+    if (date) {
+        url += `?date=${date}`;
+    }
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

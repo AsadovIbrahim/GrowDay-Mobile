@@ -175,6 +175,7 @@ const UserHabitDetails = () => {
                         habit={userHabit}
                         token={token}
                         note={note}
+                        date={route.params?.date}
                         onActionComplete={() => {
                             setLiveDelta(0);
                             if (route.params?.habitId) {
