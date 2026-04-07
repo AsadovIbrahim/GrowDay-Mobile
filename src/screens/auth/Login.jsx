@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity } from "react-native";
+import { Text, TextInput, TouchableOpacity,KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
@@ -59,77 +59,104 @@ const Login = () => {
   return (
     <LinearGradient
       colors={["#E9E6D7", "rgba(32,137,58,1)"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
       className="flex-1"
     >
-      <SafeAreaView className="flex-1 w-full px-6">
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <SafeAreaView className="flex-1">
 
-       
-   
-        <View className="items-center mt-2 mb-6">
-          <GrowDayLogo width={140} height={140} />
-        </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+          >
 
-        <Text className="text-white text-center text-4xl font-redditsans-bold mb-8">
-          Welcome Back!
-        </Text>
+            {/* Logo */}
+            <View className="items-center mt-4 mb-6">
+              <GrowDayLogo width={140} height={140} />
+            </View>
 
-        <TouchableOpacity
-          className="flex-row justify-center bg-white rounded-full p-5 px-5 mb-6"
-        >
-          <GoogleIcon width={22} height={22} />
-          <Text className="text-black text-lg font-redditsans-regular ml-4">
-            CONTINUE WITH GOOGLE
-          </Text>
-        </TouchableOpacity>
+            {/* Title */}
+            <Text className="text-white text-center text-4xl font-bold mb-8">
+              Welcome Back!
+            </Text>
 
-        <Text className="text-lg text-white text-center font-redditsans-medium mb-6 font-medium">
-          OR LOG IN WITH EMAIL
-        </Text>
+            {/* Google */}
+            <TouchableOpacity className="flex-row justify-center bg-white rounded-full p-5 mb-6">
+              <GoogleIcon width={22} height={22} />
+              <Text className="text-black text-lg ml-4">
+                CONTINUE WITH GOOGLE
+              </Text>
+            </TouchableOpacity>
 
-          <View className="relative">
+            <Text className="text-white text-center mb-6">
+              OR LOG IN WITH EMAIL
+            </Text>
 
+            {/* Email */}
             <TextInput
               placeholder="Email or Username"
-              placeholderTextColor="#ddd"
+              placeholderTextColor="#aaa"
               onChangeText={(text) => handleInputChange("UsernameOrEmail", text)}
-              className="font-redditsans-medium bg-white rounded-xl p-5 px-4 mb-6 text-black"
-              />
-          </View>
-          <View className="relative">
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="#ddd"
-              secureTextEntry={!showPassword}
-              onChangeText={(text) => handleInputChange("password", text)}
-              className="font-redditsans-medium bg-white rounded-xl p-5 px-4 text-black"
+              className="bg-white rounded-xl p-4 mb-4 text-black"
             />
-            <TouchableOpacity className="absolute top-5 right-4" onPress={() => setShowPassword(!showPassword)}>
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#ddd" />
+
+            {/* Password */}
+            <View className="relative">
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="#aaa"
+                secureTextEntry={!showPassword}
+                onChangeText={(text) => handleInputChange("password", text)}
+                className="bg-white rounded-xl p-4 mb-2 text-black"
+              />
+              <TouchableOpacity 
+                className="absolute right-4 top-4"
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <FontAwesomeIcon 
+                  icon={showPassword ? faEye : faEyeSlash} 
+                  size={20} 
+                  color="#999" 
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Forgot */}
+            <TouchableOpacity 
+              onPress={()=>navigation.navigate("ForgotPassword")} 
+              className="mb-6"
+            >
+              <Text className="text-white text-right">
+                Forgot Password?
+              </Text>
             </TouchableOpacity>
-            
-          </View>
 
+            {/* Button */}
+            <TouchableOpacity 
+              className="bg-[#78C67E] p-4 rounded-full"
+              onPress={handleLogin}
+            >
+              <Text className="text-white text-center font-bold text-lg">
+                Sign In
+              </Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>navigation.navigate("ForgotPassword")} className="mt-2 mb-6">
-          <Text className="text-white text-right font-redditsans-regular pt-4">Forgot Password?</Text>
-        </TouchableOpacity>
+            {/* Register */}
+            <View className="flex-row justify-center mt-6">
+              <Text className="text-white">
+                Don’t have an account? 
+              </Text>
+              <TouchableOpacity onPress={()=>navigation.navigate("Register")}>
+                <Text className="text-white font-bold"> Sign Up</Text>
+              </TouchableOpacity>
+            </View>
 
-        <TouchableOpacity className="bg-[#78C67E] p-5 rounded-full" onPress={handleLogin}>
-          <Text className="text-white text-center font-redditsans-bold text-lg">
-            Sign In
-          </Text>
-        </TouchableOpacity>
+          </ScrollView>
 
-        <View className="flex-row justify-center mt-6">
-          <Text className="text-white font-redditsans-regular">Don’t have an account? </Text>
-          <TouchableOpacity onPress={()=>navigation.navigate("Register")}>
-            <Text className="text-white font-redditsans-bold">Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-
-      </SafeAreaView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };

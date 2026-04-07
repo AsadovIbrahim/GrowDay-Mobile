@@ -74,7 +74,7 @@ export default function Onboarding() {
           onViewableItemsChanged={onViewableItemsChanged}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ width }} className="pt-36 px-10">
+            <View style={{ width }} className="pt-24 px-10">
               <View className="w-full items-center mb-6">
                 {item.image && <item.image height={300} />}
               </View>

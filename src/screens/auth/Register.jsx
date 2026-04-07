@@ -1,4 +1,4 @@
-import { View, Text,TouchableOpacity,TextInput } from "react-native";
+import { View, Text,TouchableOpacity,TextInput,ScrollView, KeyboardAvoidingView, Platform  } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
@@ -48,119 +48,134 @@ const Register = () => {
   
     return (
       <LinearGradient
-        colors={["#E9E6D7", "rgba(32,137,58,1)"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        className="flex-1"
-      >
-        <SafeAreaView className="flex-1 w-full px-6">
-  
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
-        </TouchableOpacity>
-              
-          {/* Logo */} 
-          <View className="items-center">
+    colors={["#E9E6D7", "rgba(32,137,58,1)"]}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 0, y: 1 }}
+    className="flex-1"
+  >
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }} 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <SafeAreaView className="flex-1">
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+        >
+
+          {/* BACK */}
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
+          </TouchableOpacity>
+
+          {/* Logo */}
+          <View className="items-center mt-4">
             <GrowDayLogo width={140} height={140} />
           </View>
-  
-          {/* Welcome */}
-          <Text className="capitalize text-white text-center text-4xl font-redditsans-bold mb-4">
+
+          {/* Title */}
+          <Text className="text-white text-center text-4xl font-redditsans-bold mb-4">
             Create your account!
           </Text>
-  
-          {/* GOOGLE LOGIN */}
-          <TouchableOpacity
-            className="flex-row justify-center bg-white rounded-full p-5 px-5 mb-6"
-          >
+
+          {/* GOOGLE */}
+          <TouchableOpacity className="flex-row justify-center bg-white rounded-full p-5 mb-6">
             <GoogleIcon width={22} height={22} />
-            <Text className="text-black text-lg font-redditsans-regular ml-4">
+            <Text className="text-black text-lg ml-4">
               CONTINUE WITH GOOGLE
             </Text>
           </TouchableOpacity>
-  
-         
-  
-          {/* Email input */}
-            <View className=" flex-row gap-10">
-  
-              <TextInput
-                placeholder="First Name"
-                placeholderTextColor="#ddd"
-                onChangeText={(text) => handleInputChange("firstName", text)}
-                className="font-redditsans-medium w-48 bg-white rounded-xl p-5 px-4 mb-6 text-black"
-                />
 
+          {/* First + Last */}
+          <View className="flex-row gap-3">
+            <TextInput
+              placeholder="First Name"
+              placeholderTextColor="#aaa"
+              onChangeText={(text) => handleInputChange("firstName", text)}
+              className="flex-1 bg-white rounded-xl p-4 mb-4 text-black"
+            />
+            <TextInput
+              placeholder="Last Name"
+              placeholderTextColor="#aaa"
+              onChangeText={(text) => handleInputChange("lastName", text)}
+              className="flex-1 bg-white rounded-xl p-4 mb-4 text-black"
+            />
+          </View>
 
-                <TextInput
-                placeholder="Last Name"
-                placeholderTextColor="#ddd"
-                onChangeText={(text) => handleInputChange("lastName", text)}
-                className="font-redditsans-medium w-48 bg-white rounded-xl mb-6 p-5 px-4 text-black"
-              />
-            </View>
-            <View className="relative">
-              <TextInput
-                placeholder="Username"
-                placeholderTextColor="#ddd"
-                onChangeText={(text) => handleInputChange("username", text)}
-                className="font-redditsans-medium bg-white rounded-xl mb-6 p-5 px-4 text-black"
-              />
-            </View>
-            <View className="relative">
-              <TextInput
-                placeholder="Email"
-                placeholderTextColor="#ddd"
-                onChangeText={(text) => handleInputChange("email", text)}
-                className="font-redditsans-medium bg-white rounded-xl mb-6 p-5 px-4 text-black"
-              />
-            </View>
-            <View className="relative">
-              <TextInput
-                placeholder="Password"
-                placeholderTextColor="#ddd"
-                secureTextEntry={!showPassword}
-                onChangeText={(text) => handleInputChange("password", text)}
-                className="font-redditsans-medium bg-white rounded-xl mb-6 p-5 px-4 text-black"
-              />
+          {/* Username */}
+          <TextInput
+            placeholder="Username"
+            placeholderTextColor="#aaa"
+            onChangeText={(text) => handleInputChange("username", text)}
+            className="bg-white rounded-xl p-4 mb-4 text-black"
+          />
 
-              <TouchableOpacity className="absolute top-5 right-4" onPress={() => setShowPassword(!showPassword)}>
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#ddd" />
+          {/* Email */}
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor="#aaa"
+            onChangeText={(text) => handleInputChange("email", text)}
+            className="bg-white rounded-xl p-4 mb-4 text-black"
+          />
+
+          {/* Password */}
+          <View className="relative">
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#aaa"
+              secureTextEntry={!showPassword}
+              onChangeText={(text) => handleInputChange("password", text)}
+              className="bg-white rounded-xl p-4 mb-4 text-black"
+            />
+            <TouchableOpacity 
+              className="absolute right-4 top-4"
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#999" />
             </TouchableOpacity>
-            
-            </View>
-  
-            <View className="relative">
-              <TextInput
-                placeholder="Confirm Password"
-                placeholderTextColor="#ddd"
-                secureTextEntry={!showPassword}
-                onChangeText={(text) => handleInputChange("confirmPassword", text)}
-                className="font-redditsans-medium bg-white rounded-xl mb-6 p-5 px-4 text-black"
-              />
+          </View>
 
-              <TouchableOpacity className="absolute top-5 right-4" onPress={() => setShowPassword(!showPassword)}>
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#ddd" />
+          {/* Confirm Password */}
+          <View className="relative">
+            <TextInput
+              placeholder="Confirm Password"
+              placeholderTextColor="#aaa"
+              secureTextEntry={!showPassword}
+              onChangeText={(text) => handleInputChange("confirmPassword", text)}
+              className="bg-white rounded-xl p-4 mb-6 text-black"
+            />
+            <TouchableOpacity 
+              className="absolute right-4 top-4"
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#999" />
             </TouchableOpacity>
-            
-            </View>
-          {/* LOGIN BUTTON */}
-          <TouchableOpacity className="bg-[#78C67E] p-5 rounded-full" onPress={handleRegister}>
-            <Text className="text-white text-center font-redditsans-bold text-lg">
+          </View>
+
+          {/* BUTTON */}
+          <TouchableOpacity 
+            className="bg-[#78C67E] p-4 rounded-full"
+            onPress={handleRegister}
+          >
+            <Text className="text-white text-center font-bold text-lg">
               Sign Up
             </Text>
           </TouchableOpacity>
-  
-          {/* SIGN UP LINK */}
+
+          {/* LOGIN */}
           <View className="flex-row justify-center mt-6">
-            <Text className="text-white font-redditsans-regular">Already have an account? </Text>
+            <Text className="text-white">Already have an account? </Text>
             <TouchableOpacity onPress={()=>navigation.navigate("Login")}>
-              <Text className="text-white font-redditsans-bold">Sign In</Text>
+              <Text className="text-white font-bold">Sign In</Text>
             </TouchableOpacity>
           </View>
-  
-        </SafeAreaView>
-      </LinearGradient>
+
+        </ScrollView>
+
+      </SafeAreaView>
+    </KeyboardAvoidingView>
+  </LinearGradient>
     );
   };
   

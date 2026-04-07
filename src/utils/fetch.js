@@ -1,4 +1,6 @@
-const VITE_API_URL = "http://10.0.2.2:5207";
+// const VITE_API_URL = "http://10.0.2.2:5207";
+const VITE_API_URL = "http://192.168.100.57:5207";
+
 
 export const loginfetch = async (formData) => {
     const response = await fetch(`${VITE_API_URL}/api/auth/login`, {

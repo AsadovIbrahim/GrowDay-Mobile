@@ -4,7 +4,7 @@ import Svg, { Circle } from 'react-native-svg';
 
 const ProgressSummary = ({ dailyStatistics }) => {
   return (
-    <View className="px-4 mb-6">
+    <View className="px-4 mb-8">
       <View className="flex-row gap-3">
         <View 
           className="flex-1 bg-white rounded-xl p-4 flex-row items-center"

@@ -315,7 +315,7 @@ const Home = () => {
       <ScrollView 
         className="flex-1" 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
             <Text className="text-2xl font-redditsans-bold  text-black mb-1">
@@ -346,7 +346,7 @@ const Home = () => {
           <>
 
             
-            <View className="px-4 mb-4">
+            <View className="px-4 mb-4 ">
               <View className="flex-row justify-between items-center mb-3">
                 <View>
                   <Text className="text-xl font-redditsans-bold text-black">
