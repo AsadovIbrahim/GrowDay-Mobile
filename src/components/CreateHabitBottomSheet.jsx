@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   Animated,
   Dimensions,
   Modal,
@@ -15,6 +14,7 @@ import {
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 import { MenuContext } from '../context/MenuContext';
 import { getAllHabitsFetch } from '../utils/fetch';
 import { ICONS } from '../constants/icons';
@@ -23,6 +23,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CreateHabitBottomSheet = () => {
   const { isCreateModalOpen, setIsCreateModalOpen } = useContext(MenuContext);
+  const navigation = useNavigation();
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const opacity = useRef(new Animated.Value(0)).current;
    const [accessToken] = useMMKVString('accessToken');
@@ -152,23 +153,30 @@ const CreateHabitBottomSheet = () => {
           </View>
 
           <View style={styles.content}>
-            <Text style={styles.sectionTitle}>NEW GOOD HABIT</Text>
+            <Text className='font-redditsans-bold text-gray-500 mb-5'>NEW GOOD HABIT</Text>
             
             <View style={styles.inputContainer}>
-              <View style={styles.inputShadowContainer}>
-                <TextInput
-                className="font-redditsans-black"
-                  placeholder="Create Custom Habit"
-                  placeholderTextColor="#9ca3af"
-                  style={styles.input}
-                />
-                <TouchableOpacity style={styles.addIconContainer}>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={() => {
+                  closeModal();
+                  navigation.navigate('Create', { 
+                    screen: 'CreateCustomHabit',
+                    params: { isCustom: true }
+                  });
+                }}
+                style={styles.inputShadowContainer}
+              >
+                <Text className="flex-1 font-redditsans-black text-gray-400">
+                  Create Custom Habit
+                </Text>
+                <View style={styles.addIconContainer}>
                    <FontAwesomeIcon icon={faPlus} size={14} color="#000" />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             </View>
 
-            <Text style={[styles.sectionTitle, { marginTop: 32 }]}>POPULAR HABITS</Text>
+            <Text className='font-redditsans-bold text-gray-500 mb-5 mt-5'>POPULAR HABITS</Text>
             
             <FlatList
               horizontal
@@ -190,13 +198,20 @@ const CreateHabitBottomSheet = () => {
                   key={habit.id}
                   activeOpacity={0.8}
                   style={[styles.habitCard]}
+                  onPress={() => {
+                    closeModal();
+                    navigation.navigate('Create', { 
+                      screen: 'CreateCustomHabit',
+                      params: { habitData: habit, isCustom: false }
+                    });
+                  }}
                 >
                   <View style={styles.habitIconContainer}>
                     <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
                   </View>
                   <View>
-                    <Text style={styles.habitTitle}>{habit.title}</Text>
-                    <Text style={styles.habitSubtitle}>{habit.frequency}</Text>
+                    <Text className='font-redditsans-bold' style={styles.habitTitle}>{habit.title}</Text>
+                    <Text className='font-redditsans-regular text-gray-500' style={styles.habitSubtitle}>{habit.frequency}</Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -246,12 +261,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionTitle: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#94a3b8',
-    letterSpacing: 0.5,
-    marginBottom: 16,
-    fontFamily: 'redditsans-bold',
+    
   },
   inputContainer: {
     marginBottom: 8,
@@ -270,14 +280,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
-  },
-  input: {
-    flex: 1,
-    fontSize: 17,
-    fontFamily:"redditsans-regular",
-    color: '#0f172a',
-    fontWeight: '700',
-    padding: 0,
   },
   addIconContainer: {
     width: 38,
@@ -327,18 +329,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   habitTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    fontFamily:"redditsans-regular",
-    color: '#1e293b',
-    marginBottom: 2,
+  
   },
-  habitSubtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-    fontFamily:"redditsans-regular",
-  },
+  
   bottomSpacing: {
     height: 20,
   },

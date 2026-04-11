@@ -378,7 +378,7 @@ const Home = () => {
                   })()}
                 </View>
                 <TouchableOpacity 
-                  onPress={() => navigation.navigate('UserHabits')}
+                  onPress={() => navigation.navigate('UserHabits', { initialFilter: 'Today' })}
                   className="flex-row items-center gap-1"
                 >
                   <Text className="text-base text-green-600 font-redditsans-medium">

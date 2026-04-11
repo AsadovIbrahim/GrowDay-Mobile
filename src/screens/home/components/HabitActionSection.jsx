@@ -68,7 +68,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         
         let currentDelta = isDistance ? distance : (seconds / 60);
         if (isDistance && unit === "m") currentDelta = distance * 1000;
-        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs")) currentDelta = seconds / 3600;
+        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours")) currentDelta = seconds / 3600;
 
         if (currentVal + currentDelta >= targetVal && !autoStopTriggered.current) {
             autoStopTriggered.current = true;
@@ -77,7 +77,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     }, [distance, seconds, timerActive]);
 
     const isBoolean = useMemo(() => !habit.unit || !habit.targetValue || habit.targetValue <= 0, [habit]);
-    const isDuration = useMemo(() => ["minute", "hour", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
+    const isDuration = useMemo(() => ["minute","minutes", "hour","hours", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
     const isDistance = useMemo(() => ["km", "m", "mile", "miles"].includes(unit), [unit]);
     const isNumeric = useMemo(() => !isBoolean && !isDuration && !isDistance, [isBoolean, isDuration, isDistance]);
 
@@ -93,7 +93,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
         const initialAcc = parseInt(storedAcc || "0", 10);
         if (isDuration && initialAcc > 0) {
-            const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs") ? 3600 : 60;
+            const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
             onLiveUpdate?.(initialAcc / unitMod);
         }
     }, []);
@@ -109,7 +109,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 total += Math.floor((now - start) / 1000);
             }
             if (isDuration) {
-                const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs") ? 3600 : 60;
+                const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
                 onLiveUpdate?.(total / unitMod);
             }
             setSeconds(Math.max(0, total));
@@ -197,7 +197,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         
         let delta = isDistance ? totalDistRef.current : (totalTime / 60);
         if (isDistance && unit === "m") delta *= 1000;
-        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs")) delta = totalTime / 3600;
+        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours")) delta = totalTime / 3600;
 
         // Validation
         if (isDistance ? (delta < (unit === "km" ? 0.01 : 10)) : (totalTime < 60)) {
@@ -249,7 +249,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
     const formatTime = (s) => {
         const hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
-        return (unit === "hour" || unit === "hr" || unit === "hrs") ? `${hh}:${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}` : `${mm}:${ss < 10 ? '0' : ''}${ss}`;
+        return (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? `${hh}:${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}` : `${mm}:${ss < 10 ? '0' : ''}${ss}`;
     };
 
     const formatDistance = (km) => unit === "m" ? `${(km * 1000).toFixed(0)} m` : `${km.toFixed(2)} km`;
@@ -300,7 +300,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         {isDistance ? formatDistance(distance) : formatTime(seconds)}
                     </Text>
                     <Text style={styles.timerLabel}>
-                        {isDistance ? "LIVE DISTANCE" : (["hour", "hr", "hrs"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC")}
+                        {isDistance ? "LIVE DISTANCE" : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC")}
                     </Text>
                     {isDistance && <Text style={styles.subTimer}>{formatTime(seconds)}</Text>}
                 </Animated.View>

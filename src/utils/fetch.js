@@ -1,5 +1,5 @@
-// const VITE_API_URL = "http://10.0.2.2:5207";
-const VITE_API_URL = "http://192.168.100.57:5207";
+const VITE_API_URL = "http://10.0.2.2:5207";
+// const VITE_API_URL = "http://192.168.31.138:5207";
 
 
 export const loginfetch = async (formData) => {
@@ -280,6 +280,18 @@ export const addUserHabitFetch = async (token,payload) => {
     return data;
 };
 
+export const addCustomUserHabitFetch=async(token,payload)=>{
+    const response=await fetch(`${VITE_API_URL}/api/UserHabit/CreateMyOwnHabit`,{
+        method:"POST",
+        headers:{
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const data=await response.json();
+    return data;
+}
 export const deleteUserHabitFetch = async (token,userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
         method: "DELETE",

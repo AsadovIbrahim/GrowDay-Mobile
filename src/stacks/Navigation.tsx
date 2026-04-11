@@ -30,8 +30,8 @@ const Navigation = () => {
                 ) : (
                     <TabStack />
                 )}
+                <CreateHabitBottomSheet />
             </NavigationContainer>
-            <CreateHabitBottomSheet />
         </MenuContext.Provider>
     );
 };

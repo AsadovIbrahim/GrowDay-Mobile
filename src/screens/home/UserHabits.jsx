@@ -5,14 +5,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, deleteUserHabitFetch } from '../../utils/fetch';
+import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, deleteUserHabitFetch, getTodaysUserHabitFetch } from '../../utils/fetch';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
 
 
-const UserHabits = () => {
+const UserHabits = ({ route }) => {
     const [token] = useMMKVString('accessToken');
     const [userHabitsByFrequency, setUserHabitsByFrequency] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -21,47 +21,58 @@ const UserHabits = () => {
     const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
     const [displayLimit, setDisplayLimit] = useState(10);
     const [pageSize] = useState(10);
-    const [selectedFrequency, setSelectedFrequency] = useState('All');
+    
+    // Default to 'Today' if coming from Home's VIEW ALL, otherwise 'All'
+    const [selectedFrequency, setSelectedFrequency] = useState(route.params?.initialFilter || 'All');
+    
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [selectedHabits, setSelectedHabits] = useState(new Set());
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-    const frequencyOptions = ['All', 'Daily', 'Weekly', 'Monthly', 'Custom'];
+    const frequencyOptions = ['Today', 'All', 'Daily', 'Weekly', 'Monthly', 'Custom'];
 
     const navigation = useNavigation();
 
     const getUserHabitsByFrequency = async () => {
         if (!token) return;
 
-
         setLoading(true);
         setDisplayLimit(10);
         try {
-            const allPromises = frequencyList.map(frequency =>
-                getUserHabitByFrequencyFetch(token, frequency)
-            );
+            let habits = [];
+            
+            if (selectedFrequency === 'Today') {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+                
+                const response = await getTodaysUserHabitFetch(token, dateStr, 0, 100);
+                habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : [];
+            } else if (selectedFrequency === 'All') {
+                const allPromises = frequencyList.map(frequency =>
+                    getUserHabitByFrequencyFetch(token, frequency)
+                );
+                const responses = await Promise.all(allPromises);
+                habits = responses.reduce((acc, response) => {
+                    let h = [];
+                    if (response && response.data) {
+                        h = Array.isArray(response.data) ? response.data : [];
+                    } else if (Array.isArray(response)) {
+                        h = response;
+                    }
+                    return acc.concat(h);
+                }, []);
+            } else {
+                const response = await getUserHabitByFrequencyFetch(token, selectedFrequency);
+                habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : 
+                         (Array.isArray(response) ? response : []);
+            }
 
-            const responses = await Promise.all(allPromises);
-
-            console.log('API Responses:', responses);
-
-            const allHabits = responses.reduce((acc, response) => {
-                let habits = [];
-                if (response && response.data) {
-                    habits = Array.isArray(response.data) ? response.data : [];
-                } else if (Array.isArray(response)) {
-                    habits = response;
-                }
-
-                console.log('Habits from response:', habits.length, habits);
-                return acc.concat(habits);
-            }, []);
-
-            console.log('All habits before deduplication:', allHabits.length, allHabits);
-
-            // Remove duplicates based on userHabitId (since API uses userHabitId, not id)
-            const uniqueHabits = allHabits.filter((habit, index, self) => {
+            // Deduplication
+            const uniqueHabits = habits.filter((habit, index, self) => {
                 const habitId = habit.userHabitId || habit.id;
                 const firstIndex = self.findIndex(h =>
                     (h.userHabitId || h.id) === habitId
@@ -69,7 +80,6 @@ const UserHabits = () => {
                 return index === firstIndex;
             });
 
-            console.log('Unique habits after deduplication:', uniqueHabits.length, uniqueHabits);
             setUserHabitsByFrequency(uniqueHabits);
         } catch (error) {
             console.log('Error fetching user habits:', error);
@@ -95,7 +105,7 @@ const UserHabits = () => {
                 getUserHabitsByFrequency();
                 getUnreadNotificationCount();
             }
-        }, [token])
+        }, [token, selectedFrequency])
     );
 
     const handleGoBack = () => {
@@ -221,8 +231,8 @@ const UserHabits = () => {
     const allFilteredHabits = useMemo(() => {
         let habits = userHabitsByFrequency;
 
-        // Filter by frequency
-        if (selectedFrequency !== 'All') {
+        // Filter by frequency (Note: 'Today' and 'All' are handled by API call logic now)
+        if (selectedFrequency !== 'All' && selectedFrequency !== 'Today') {
             habits = habits.filter(habit => {
                 const habitFrequency = habit.frequency || habit.frequencyType || habit.type || '';
                 return habitFrequency.toLowerCase() === selectedFrequency.toLowerCase();
@@ -313,71 +323,45 @@ const UserHabits = () => {
                         </View>
                     ) : (
                         <>
-                            {/* Filter and Load More Section */}
-                            <View className="mb-3">
-                                <View className="flex-row items-center justify-between mb-2">
-                                    {/* Frequency Filter Dropdown */}
-                                    <View style={{ flex: 0, minWidth: 100 }}>
+                            {/* Filter Chips Section */}
+                            <View className="mb-4">
+                                <ScrollView 
+                                    horizontal 
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={{ paddingBottom: 4 }}
+                                >
+                                    {frequencyOptions.map((option) => (
                                         <TouchableOpacity
-                                            onPress={() => setDropdownVisible(!dropdownVisible)}
-                                            className="bg-white rounded-lg px-3 py-2 flex-row items-center justify-between"
-                                            activeOpacity={0.7}
-                                            style={{ alignSelf: 'flex-start' }}
+                                            key={option}
+                                            onPress={() => {
+                                                setSelectedFrequency(option);
+                                                setDisplayLimit(pageSize);
+                                                setSelectedHabits(new Set());
+                                                setIsSelectionMode(false);
+                                            }}
+                                            className={`px-5 py-2.5 rounded-full mr-2 shadow-sm ${
+                                                selectedFrequency === option 
+                                                ? 'bg-green-600 border border-green-600' 
+                                                : 'bg-white border border-gray-100'
+                                            }`}
+                                            activeOpacity={0.8}
                                         >
-                                            <Text className="text-sm font-redditsans-medium text-gray-800">
-                                                {selectedFrequency}
-                                            </Text>
-                                            <FontAwesomeIcon
-                                                icon={dropdownVisible ? faChevronUp : faChevronDown}
-                                                color="#9ca3af"
-                                                size={12}
-                                                style={{ marginLeft: 6 }}
-                                            />
-                                        </TouchableOpacity>
-
-                                        <Modal
-                                            visible={dropdownVisible}
-                                            transparent={true}
-                                            animationType="fade"
-                                            onRequestClose={() => setDropdownVisible(false)}
-                                        >
-                                            <TouchableOpacity
-                                                className="flex-1 bg-black/50"
-                                                activeOpacity={1}
-                                                onPress={() => setDropdownVisible(false)}
+                                            <Text
+                                                className={`text-sm font-redditsans-medium ${
+                                                    selectedFrequency === option
+                                                        ? 'text-white'
+                                                        : 'text-gray-600'
+                                                }`}
                                             >
-                                                <View className="absolute top-0 left-4" style={{ marginTop: 180, minWidth: 100 }}>
-                                                    <View className="bg-white rounded-lg overflow-hidden">
-                                                        {frequencyOptions.map((option, index) => (
-                                                            <TouchableOpacity
-                                                                key={option}
-                                                                onPress={() => {
-                                                                    setSelectedFrequency(option);
-                                                                    setDisplayLimit(pageSize); // Reset display limit when filter changes
-                                                                    setSelectedHabits(new Set()); // Clear selections when filter changes
-                                                                    setIsSelectionMode(false); // Exit selection mode when filter changes
-                                                                    setDropdownVisible(false);
-                                                                }}
-                                                                className={`px-3 py-2 ${index < frequencyOptions.length - 1 ? 'border-b border-gray-100' : ''
-                                                                    } ${selectedFrequency === option ? 'bg-green-50' : ''
-                                                                    }`}
-                                                                activeOpacity={0.7}
-                                                            >
-                                                                <Text
-                                                                    className={`text-sm font-redditsans-medium ${selectedFrequency === option
-                                                                            ? 'text-green-600'
-                                                                            : 'text-gray-800'
-                                                                        }`}
-                                                                >
-                                                                    {option}
-                                                                </Text>
-                                                            </TouchableOpacity>
-                                                        ))}
-                                                    </View>
-                                                </View>
-                                            </TouchableOpacity>
-                                        </Modal>
-                                    </View>
+                                                {option}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                            </View>
+
+                            <View className="mb-3">
+                                <View className="flex-row items-center justify-end mb-2">
 
                                     {/* Load More */}
                                     {hasMore && !loading && !isSelectionMode && (
@@ -454,6 +438,7 @@ const UserHabits = () => {
                                         isSelected={selectedHabits.has(habitId)}
                                         isSelectionMode={isSelectionMode}
                                         onToggleSelect={() => handleToggleSelect(habit)}
+                                        showStatus={selectedFrequency === 'Today'}
                                     />
                                 );
                             })}

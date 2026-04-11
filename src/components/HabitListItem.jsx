@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClock, faChevronRight, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faChevronRight, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from "../constants/icons";
 
-const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress }) => {
+const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress, showStatus }) => {
   const formatTime = (timeValue) => {
     if (!timeValue) return '';
     try {
@@ -48,6 +48,8 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
   const habitType = habit.frequency || habit.frequencyType || habit.type || 'Daily';
   const displayType = habitType.charAt(0).toUpperCase() + habitType.slice(1).toLowerCase();
   
+  const isCompleted = showStatus && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
+  
   // Get icon based on habit title or icon property
   
 
@@ -65,13 +67,14 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
     <TouchableOpacity
       onPress={handlePress}
       onLongPress={onLongPress}
-      className={`bg-white rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2 border-green-500' : ''}`}
+      className={`bg-white rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2 border-green-500' : ''} ${isCompleted ? 'opacity-80' : ''}`}
       style={{
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: isCompleted ? 0 : 2 },
+        shadowOpacity: isCompleted ? 0 : 0.1,
         shadowRadius: 4,
-        elevation: 3,
+        elevation: isCompleted ? 0 : 3,
+        backgroundColor: isCompleted ? '#f0fdf4' : '#fff'
       }}
     >
       {/* Checkbox - Only visible in selection mode */}
@@ -93,8 +96,12 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
       )}
 
       {/* Icon */}
-      <View className="w-12 h-12 rounded-full items-center justify-center mr-4">
-        <Text className="text-2xl">{ICONS[habit.icon]}</Text>
+      <View className={`w-12 h-12 rounded-full items-center justify-center mr-4 ${isCompleted ? 'bg-green-100' : 'bg-gray-100'}`}>
+        {isCompleted ? (
+          <FontAwesomeIcon icon={faCheck} color="#16a34a" size={20} />
+        ) : (
+          <Text className="text-2xl">{ICONS[habit.icon]}</Text>
+        )}
       </View>
 
       {/* Title and Type */}
@@ -103,7 +110,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
           {habit.title}
         </Text>
         <Text className="text-sm text-gray-500 font-redditsans-regular">
-          {displayType}
+          {isCompleted ? 'Completed' : displayType}
         </Text>
       </View>
 

@@ -75,22 +75,22 @@ const Profile = () => {
                 contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: 100 }}
                 showsVerticalScrollIndicator={false}
             >
-                <Text className="text-2xl font-extrabold text-black mb-6">Your Profile</Text>
+                <Text className="text-2xl font-redditsans-bold text-black mb-6">Your Profile</Text>
 
                 <View className="bg-white rounded-3xl p-5 mb-8 flex-row items-center justify-between shadow-sm">
                     <View>
-                        <Text className="text-xl font-bold text-black mb-2">Ibrahim Asadov</Text>
+                        <Text className="text-xl font-redditsans-bold text-black mb-2">Ibrahim Asadov</Text>
                         <View className="bg-[#fff4e6] px-3 py-1.5 rounded-full flex-row items-center self-start">
                             <FontAwesomeIcon icon={faMedal} size={16} color="#f5a623" />
-                            <Text className="text-[#f5a623] font-bold ml-1 text-sm">{points} Points</Text>
+                            <Text className="text-[#f5a623] font-redditsans-bold ml-1 text-sm">{points} Points</Text>
                         </View>
                     </View>
                     <TouchableOpacity className="bg-gray-200 px-4 py-2 rounded-xl">
-                        <Text className="text-gray-800 font-medium text-sm">Edit Profile</Text>
+                        <Text className="text-gray-800 font-redditsans-bold text-sm">Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
 
-                <Text className="text-gray-800 ml-2 mb-2 text-sm font-medium">General</Text>
+                <Text className="text-gray-800 ml-2 mb-2 text-sm font-redditsans-bold">General</Text>
                 <View className="bg-white rounded-3xl overflow-hidden mb-6 shadow-sm">
                     <MenuItem icon={faMoon} title="Dark Mode" isToggle={true} value={isDarkMode} onToggle={setIsDarkMode} />
                     <MenuItem icon={faBell} title="Notifications" />
@@ -98,14 +98,14 @@ const Profile = () => {
                     <MenuItem icon={faMobileAlt} title="App Version" hideBorder={true} />
                 </View>
 
-                <Text className="text-gray-800 ml-2 mb-2 text-sm font-medium">Privacy</Text>
+                <Text className="text-gray-800 ml-2 mb-2 text-sm font-redditsans-bold">Privacy</Text>
                 <View className="bg-white rounded-3xl overflow-hidden mb-6 shadow-sm">
                     <MenuItem icon={faLock} title="Change Password" />
                     <MenuItem icon={faFileAlt} title="Privacy Policy" />
                     <MenuItem icon={faScaleBalanced} title="Terms of Service" hideBorder={true} />
                 </View>
 
-                <Text className="text-gray-800 ml-2 mb-2 text-sm font-medium">Support</Text>
+                <Text className="text-gray-800 ml-2 mb-2 text-sm font-redditsans-bold">Support</Text>
                 <View className="bg-white rounded-3xl overflow-hidden mb-6 shadow-sm">
                     <MenuItem icon={faComment} title="Contact Support" />
                     <MenuItem icon={faStar} title="Rate The App" hideBorder={true} />
@@ -115,7 +115,7 @@ const Profile = () => {
                     onPress={handleLogOut} 
                     className="bg-white rounded-3xl p-4 flex-row items-center justify-center mt-2 mb-10 shadow-sm border border-red-100"
                 >
-                    <Text className="text-red-500 font-bold text-lg">Logout</Text>
+                    <Text className="text-red-500 font-redditsans-bold text-lg">Logout</Text>
                 </TouchableOpacity>
             </ScrollView>
         </LinearGradient>  
