@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getUserHabitFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
+import { getUserHabitFetch,getAccountDataFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
 import { useEffect, useState, useRef, useContext, useCallback } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
@@ -55,17 +55,28 @@ const Home = () => {
   const { isMenuOpen, setIsMenuOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  
-  const firstName = storage.getString('firstName');
 
+  const [accountData, setAccountData] = useState(null);
+  const firstName=accountData?.firstName;  
   const handleDateSelect = (day, fullDate) => {
     setSelectedDate(day);
     setSelectedDateObject(fullDate);
   };
+
+  const fetchAccountData = async () => {
+    try {
+        const token = storage.getString("accessToken");
+        const accountData = await getAccountDataFetch(token);
+        setAccountData(accountData.data);
+    } catch (error) {
+        console.error("Failed to fetch account data", error);
+    }
+};
   useFocusEffect(
     useCallback(() => {
       if (token) {
         getUserHabitCount();
+        fetchAccountData();
         getUnreadNotificationCount();
         getDailyStatistics();
         getTodaysUserHabit();

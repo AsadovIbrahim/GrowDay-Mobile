@@ -44,7 +44,7 @@ const Notification = () => {
   );
 
   const handleGoBack = () => {
-    navigation.navigate('Home');
+    navigation.navigate('HomeScreen');
   };
   const getNotifications = async (page = 0, isRefresh = false) => {
     if (page === 0 && !isRefresh) setLoading(true);

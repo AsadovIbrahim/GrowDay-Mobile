@@ -1,90 +1,89 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faLock, faFire, faStar, faCheck, faBottleWater } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faTrophy } from "@fortawesome/free-solid-svg-icons";
 
-const AchievementCard = ({
-  title,
-  description,
-  streakLabel,
-  pointsLabel,
-  isUnlocked = false,
-  leadingIcon = null,
-}) => {
+const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) => {
+  const earned = !!earnedAt;
+
+  const formattedDate = earned
+    ? new Date(earnedAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+
   return (
     <View
-      className="bg-white rounded-[24px] p-5 mb-4 shadow-sm"
+      className="bg-white rounded-[24px] p-5 mb-4"
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
+        shadowOpacity: 0.06,
         shadowRadius: 8,
         elevation: 3,
+        opacity: earned ? 1 : 0.55,
       }}
     >
-      {/* Top Section: Icon and Text */}
-      <View className="flex-row items-center mb-5">
-        {/* Leading icon */}
+      <View className="flex-row items-center mb-4">
+        {/* Icon circle */}
         <View
-          className={`w-[52px] h-[52px] rounded-full items-center justify-center mr-4 ${isUnlocked ? "bg-green-100" : "bg-gray-200"
-            }`}
+          className="w-[54px] h-[54px] rounded-full items-center justify-center mr-4"
+          style={{ backgroundColor: earned ? "#dcfce7" : "#f3f4f6" }}
         >
-          {leadingIcon ? (
-            leadingIcon
-          ) : isUnlocked ? (
-            <FontAwesomeIcon icon={faBottleWater} size={24} color="#4ade80" />
+          {icon ? (
+            <Text style={{ fontSize: 26 }}>{icon}</Text>
+          ) : earned ? (
+            <FontAwesomeIcon icon={faTrophy} size={24} color="#22c55e" />
           ) : (
             <FontAwesomeIcon icon={faLock} size={22} color="#9ca3af" />
           )}
         </View>
 
-        {/* Title and Description */}
+        {/* Title + description */}
         <View className="flex-1">
-          <Text
-            numberOfLines={1}
-            className="text-[17px] font-redditsans-bold text-gray-900 mb-1"
-          >
-            {title}
-          </Text>
+          <View className="flex-row items-center mb-1">
+            <Text
+              numberOfLines={1}
+              className="text-[17px] font-redditsans-bold text-gray-900 flex-1"
+            >
+              {title}
+            </Text>
+            {isNew && (
+              <View className="ml-2 bg-green-500 rounded-full px-2 py-[2px]">
+                <Text className="text-white text-[10px] font-redditsans-bold">NEW</Text>
+              </View>
+            )}
+          </View>
           <Text
             numberOfLines={2}
-            className="text-[13px] font-redditsans-regular text-gray-600 leading-[18px] pr-2"
+            className="text-[13px] font-redditsans-regular text-gray-500 leading-[18px]"
           >
             {description}
           </Text>
         </View>
       </View>
 
-      {/* Bottom Section: Stats and Status */}
-      <View className="flex-row items-end justify-between ml-1">
-        <View className="space-y-[6px]">
-          {/* Streak */}
-          <View className="flex-row items-center">
-            <FontAwesomeIcon icon={faFire} size={14} color="#fb923c" />
-            <Text className="ml-2 text-[13px] font-redditsans-regular text-gray-600">
-              Streak: <Text className="font-redditsans-bold text-gray-900">{streakLabel}</Text>
-            </Text>
-          </View>
-
-          {/* Points */}
-          <View className="flex-row items-center mt-1.5">
-            <FontAwesomeIcon icon={faStar} size={14} color="#facc15" />
-            <Text className="ml-2 text-[13px] font-redditsans-regular text-gray-600">
-              Points: <Text className="font-redditsans-bold text-gray-900">{pointsLabel}</Text>
-            </Text>
-          </View>
-        </View>
-
-        <Text
-          className={`text-[13px] font-redditsans-regular ${isUnlocked ? "text-green-500" : "text-gray-400"
-            }`}
-        >
-          {isUnlocked ? "Unlocked" : "Locked"}
+      {/* Footer */}
+      <View className="flex-row items-center justify-between mt-1 ml-1">
+        <Text className="text-[12px] font-redditsans-regular text-gray-400">
+          {earned ? `Earned on ${formattedDate}` : "Not yet unlocked"}
         </Text>
+        <View
+          className="px-3 py-1 rounded-full"
+          style={{ backgroundColor: earned ? "#dcfce7" : "#f3f4f6" }}
+        >
+          <Text
+            className="text-[12px] font-redditsans-bold"
+            style={{ color: earned ? "#16a34a" : "#9ca3af" }}
+          >
+            {earned ? "✓ Unlocked" : "Locked"}
+          </Text>
+        </View>
       </View>
     </View>
   );
 };
 
 export default AchievementCard;
-

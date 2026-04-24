@@ -160,9 +160,9 @@ const CreateHabitBottomSheet = () => {
                 activeOpacity={0.7}
                 onPress={() => {
                   closeModal();
-                  navigation.navigate('Create', { 
+                  navigation.navigate('Home', { 
                     screen: 'CreateCustomHabit',
-                    params: { isCustom: true }
+                    params: { isCustom: true } 
                   });
                 }}
                 style={styles.inputShadowContainer}
@@ -200,9 +200,9 @@ const CreateHabitBottomSheet = () => {
                   style={[styles.habitCard]}
                   onPress={() => {
                     closeModal();
-                    navigation.navigate('Create', { 
+                    navigation.navigate('Home', { 
                       screen: 'CreateCustomHabit',
-                      params: { habitData: habit, isCustom: false }
+                      params: { habitData: habit, isCustom: false } 
                     });
                   }}
                 >

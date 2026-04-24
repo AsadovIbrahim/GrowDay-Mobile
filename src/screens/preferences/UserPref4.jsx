@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -47,71 +47,78 @@ const UserPref4 = () => {
           </Text>
         </View>
 
-        {/* TITLE */}
-        <View className="items-center mb-6">
-          <Text className="text-[26px] font-redditsans-bold text-gray-800 text-center">
-          Do you often find it hard to
-          </Text>
-
-          <View className="flex-row items-center justify-center gap-2 mt-1">
-            <Text className="text-[26px] font-redditsans-bold text-green-500">
-              focus?
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+        >
+          {/* TITLE */}
+          <View className="items-center mb-6">
+            <Text className="text-[26px] font-redditsans-bold text-gray-800 text-center">
+            Do you often find it hard to
             </Text>
-            <FontAwesomeIcon icon={faBullseye} size={20} color="#ef4444" />
+
+            <View className="flex-row items-center justify-center gap-2 mt-1">
+              <Text className="text-[26px] font-redditsans-bold text-green-500">
+                focus?
+              </Text>
+              <FontAwesomeIcon icon={faBullseye} size={20} color="#ef4444" />
+            </View>
+
+            <Text className="text-[13px] font-redditsans-regular text-gray-500 mt-3 text-center px-10">
+            Understanding your motivations helps us align GrowDay with your goals.Select all that apply.
+            </Text>
           </View>
 
-          <Text className="text-[13px] font-redditsans-regular text-gray-500 mt-3 text-center px-10">
-          Understanding your motivations helps us align GrowDay with your goals.Select all that apply.
-          </Text>
-        </View>
+          {/* OPTIONS */}
+          <View className="mb-8">
+            {options.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                onPress={() => setSelectedOption(option.id)}
+                className={`bg-white rounded-2xl p-6 mb-4 flex-row items-center ${
+                  selectedOption === option.id
+                    ? "border-2 border-green-500"
+                    : "border-2 border-transparent"
+                }`}
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
+                {option.SvgIcon && (
+                  <View className="mr-3">
+                    <option.SvgIcon width={30} height={30} />
+                  </View>
+                )}
+                <Text className="text-[16px] font-redditsans-bold text-gray-800">
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-        {/* OPTIONS */}
-        <View className="flex-1 mt-16">
-          {options.map((option) => (
-            <TouchableOpacity
-              key={option.id}
-              onPress={() => setSelectedOption(option.id)}
-              className={`bg-white rounded-2xl p-6 mb-4 flex-row items-center ${
-                selectedOption === option.id
-                  ? "border-2 border-green-500"
-                  : "border-2 border-transparent"
-              }`}
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              {option.SvgIcon && (
-                <View className="mr-3">
-                  <option.SvgIcon width={30} height={30} />
-                </View>
-              )}
-              <Text className="text-[16px] font-redditsans-bold text-gray-800">
-                {option.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+          <View style={{ flex: 1 }} />
 
-        {/* BUTTON */}
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("UserPref5", {
-              preferences: {
-                ...previousPreferences,
-                focusDifficulty: selectedOption,
-              }
-            });
-          }}
-          className="mb-20 bg-[#8bc37a] py-5 rounded-full"
-        >
-          <Text className="text-white text-center font-redditsans-bold text-[16px]">
-            Continue
-          </Text>
-        </TouchableOpacity>
+          {/* BUTTON */}
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("UserPref5", {
+                preferences: {
+                  ...previousPreferences,
+                  focusDifficulty: selectedOption,
+                }
+              });
+            }}
+            className="bg-[#8bc37a] py-5 rounded-full"
+          >
+            <Text className="text-white text-center font-redditsans-bold text-[16px]">
+              Continue
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

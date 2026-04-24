@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage } from "../../utils/MMKVStore";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { getUserTotalPoints } from "../../utils/fetch";
+import { getUserTotalXPFetch,getAccountDataFetch } from "../../utils/fetch";
 import { 
     faMedal, 
     faMoon, 
@@ -47,25 +47,38 @@ const MenuItem = ({ icon, title, isToggle, value, onToggle, onPress, hideBorder 
 const Profile = () => {
     const insets = useSafeAreaInsets();
     const [isDarkMode, setIsDarkMode] = useState(false);
-
     const [points, setPoints] = useState(0);
 
+    const [accountData, setAccountData] = useState(null);
+    const firstName=accountData?.firstName;
+    const lastName=accountData?.lastName;
     const handleLogOut = () => {
         storage.delete("accessToken");
     };
     const fetchPoints = async () => {
             try {
                 const token = storage.getString("accessToken");
-                const userPoints = await getUserTotalPoints(token);
+                const userPoints = await getUserTotalXPFetch(token);
                 console.log(userPoints)
                 setPoints(userPoints.data);
             } catch (error) {
                 console.error("Failed to fetch points", error);
             }
         };
-
+    
+    const fetchAccountData = async () => {
+        try {
+            const token = storage.getString("accessToken");
+            const accountData = await getAccountDataFetch(token);
+            setAccountData(accountData.data);
+        } catch (error) {
+            console.error("Failed to fetch account data", error);
+        }
+    };
+    
     useEffect(() => {
         fetchPoints();
+        fetchAccountData();
     }, []);
 
     return (
@@ -79,7 +92,7 @@ const Profile = () => {
 
                 <View className="bg-white rounded-3xl p-5 mb-8 flex-row items-center justify-between shadow-sm">
                     <View>
-                        <Text className="text-xl font-redditsans-bold text-black mb-2">Ibrahim Asadov</Text>
+                        <Text className="text-xl font-redditsans-bold text-black mb-2">{firstName} {lastName}</Text>
                         <View className="bg-[#fff4e6] px-3 py-1.5 rounded-full flex-row items-center self-start">
                             <FontAwesomeIcon icon={faMedal} size={16} color="#f5a623" />
                             <Text className="text-[#f5a623] font-redditsans-bold ml-1 text-sm">{points} Points</Text>

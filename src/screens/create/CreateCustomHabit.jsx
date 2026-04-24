@@ -148,7 +148,7 @@ const CreateCustomHabit = () => {
         };
         const response = await addUserHabitFetch(accessToken, payload);
         if (response) {
-          navigation.navigate("Home");
+          navigation.navigate("HomeScreen");
         }
       } else {
         // Custom Habit
@@ -169,7 +169,7 @@ const CreateCustomHabit = () => {
         };
         const response = await addCustomUserHabitFetch(accessToken, payload);
         if (response) {
-          navigation.navigate("Home");
+          navigation.navigate("HomeScreen");
         }
       }
     } catch (error) {

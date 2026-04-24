@@ -1,11 +1,13 @@
+import { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import CalendarSelector from './components/CalendarSelector';
+import { MenuContext } from '../../context/MenuContext';
 
 const HomeEmptyState = () => {
   const navigation = useNavigation();
+  const { setIsCreateModalOpen } = useContext(MenuContext);
 
   return (
     <>
@@ -43,7 +45,7 @@ const HomeEmptyState = () => {
 
           <TouchableOpacity 
             className="w-full bg-green-500 rounded-full py-3 flex-row items-center justify-center mb-4"
-            onPress={() => navigation.navigate("Create")}
+            onPress={() => setIsCreateModalOpen(true)}
           >
             <FontAwesomeIcon icon={faPlus} color="#ffffff" size={18} />
             <Text className="ml-2 text-white text-base font-redditsans-medium">

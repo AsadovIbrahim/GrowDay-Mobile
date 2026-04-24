@@ -4,8 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getAllHabitsFetch, getUserSuggestedHabitsFetch } from "../../utils/fetch";
+import {getUserSuggestedHabitsFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
+import UserTasksList from "../../components/UserTasksList";
 
 import { 
   faSearch, 
@@ -13,7 +14,8 @@ import {
   faBook,
   faWater,
   faMinus,
-  faChevronRight
+  faChevronRight,
+  faStar
 } from '@fortawesome/free-solid-svg-icons';
 import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
@@ -22,7 +24,6 @@ import HabitAddModal from "../../components/HabitAddModal";
 const Explore = () => {
   const navigation = useNavigation();
 
-  const [allHabits, setAllHabits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [suggestedHabits, setSuggestedHabits] = useState([]);
   const [token] = useMMKVString('accessToken');
@@ -31,21 +32,9 @@ const Explore = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState(null);
   useEffect(() => {
-    getAllHabits();
     getUserSuggestedHabits();
   }, []);
-  const getAllHabits = async () => {
-    try {
-      setLoading(true);
-      const response = await getAllHabitsFetch(token, pageIndex, pageSize);
-      setAllHabits(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-    finally {
-      setLoading(false);
-    }
-  }
+  
 
   const getUserSuggestedHabits = async () => {
     try {
@@ -134,24 +123,24 @@ const Explore = () => {
             </ScrollView>
           </View>
 
-          {/* Habits Section */}
+          {/* Tasks Section */}
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-redditsans-bold text-black">Habits</Text>
-              <TouchableOpacity className="flex-row items-center gap-1">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-xl font-redditsans-bold text-black">Tasks</Text>
+                <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
+              </View>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('UserTasks')}
+                className="flex-row items-center gap-1"
+              >
                 <Text className="text-base text-green-600 font-redditsans-medium">VIEW ALL</Text>
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
               </TouchableOpacity>
             </View>
+            <UserTasksList />
             
-            {allHabits.map((habit) => (
-              <HabitAddCard
-                key={habit.id}
-                title={habit.title}
-                frequency={habit.frequency}
-                onAdd={() => handleOpenAddModal(habit)}
-              />
-            ))}
+            
           </View>
 
           {/* Learning Section */}

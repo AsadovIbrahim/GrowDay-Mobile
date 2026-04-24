@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -163,97 +163,104 @@ const UserPref5 = () => {
           </Text>
         </View>
 
-        {/* TITLE */}
-        <View className="items-center mb-8">
-          <Text className="text-[26px] font-redditsans-bold text-gray-800 text-center leading-tight">
-            What influenced you to
-          </Text>
-
-          <View className="flex-row items-center justify-center mt-1">
-            <Text className="text-[26px] font-redditsans-bold text-gray-800">
-              become{" "}
-            </Text>
-            <Text className="text-[26px] font-redditsans-bold text-green-500">
-              organized?
-            </Text>
-            <Text className="text-2xl ml-2">🧘</Text>
-            </View>
-
-          <Text className="text-[13px] font-redditsans-regular text-gray-500 mt-4 text-center px-8 leading-5">
-            Let us know if focus is a struggle for you so we can provide
-            targeted support.
-          </Text>
-        </View>
-
-        {/* OPTIONS */}
-        <View className="flex-1 mt-8">
-          {options.map((option) => {
-            const isSelected = selectedOptions.includes(option.id);
-            return (
-              <TouchableOpacity
-                key={option.id}
-                onPress={() => toggleOption(option.id)}
-                className={`bg-white rounded-2xl p-5 mb-3 flex-row items-center justify-between ${
-                  isSelected
-                    ? "border-2 border-green-500"
-                    : "border border-green-100"
-                }`}
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.08,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View className="mr-4">
-                    <FontAwesomeIcon
-                      icon={option.icon}
-                      size={28}
-                      color={option.iconColor}
-                    />
-                  </View>
-                  <Text className="text-[16px] font-redditsans-bold text-gray-800 flex-1">
-                    {option.label}
-                  </Text>
-                </View>
-                {isSelected && (
-                  <View className="ml-3">
-                    <FontAwesomeIcon
-                      icon={faCheck}
-                      size={18}
-                      color="#22c55e"
-                    />
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* BUTTON */}
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={isLoading}
-          className="mb-8 bg-[#8bc37a] py-4 rounded-full"
-          style={{
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 4,
-            elevation: 4,
-            opacity: isLoading ? 0.6 : 1,
-          }}
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
-          {isLoading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text className="text-white text-center font-redditsans-bold text-[16px]">
-              Continue
+          {/* TITLE */}
+          <View className="items-center mb-8">
+            <Text className="text-[26px] font-redditsans-bold text-gray-800 text-center leading-tight">
+              What influenced you to
             </Text>
-          )}
-        </TouchableOpacity>
+
+            <View className="flex-row items-center justify-center mt-1">
+              <Text className="text-[26px] font-redditsans-bold text-gray-800">
+                become{" "}
+              </Text>
+              <Text className="text-[26px] font-redditsans-bold text-green-500">
+                organized?
+              </Text>
+              <Text className="text-2xl ml-2">🧘</Text>
+              </View>
+
+            <Text className="text-[13px] font-redditsans-regular text-gray-500 mt-4 text-center px-8 leading-5">
+              Let us know if focus is a struggle for you so we can provide
+              targeted support.
+            </Text>
+          </View>
+
+          {/* OPTIONS */}
+          <View className="mb-8">
+            {options.map((option) => {
+              const isSelected = selectedOptions.includes(option.id);
+              return (
+                <TouchableOpacity
+                  key={option.id}
+                  onPress={() => toggleOption(option.id)}
+                  className={`bg-white rounded-2xl p-5 mb-3 flex-row items-center justify-between ${
+                    isSelected
+                      ? "border-2 border-green-500"
+                      : "border border-green-100"
+                  }`}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 3,
+                    elevation: 2,
+                  }}
+                >
+                  <View className="flex-row items-center flex-1">
+                    <View className="mr-4">
+                      <FontAwesomeIcon
+                        icon={option.icon}
+                        size={28}
+                        color={option.iconColor}
+                      />
+                    </View>
+                    <Text className="text-[16px] font-redditsans-bold text-gray-800 flex-1">
+                      {option.label}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <View className="ml-3">
+                      <FontAwesomeIcon
+                        icon={faCheck}
+                        size={18}
+                        color="#22c55e"
+                      />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <View style={{ flex: 1 }} />
+
+          {/* BUTTON */}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={isLoading}
+            className="bg-[#8bc37a] py-4 rounded-full"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 4,
+              opacity: isLoading ? 0.6 : 1,
+            }}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <Text className="text-white text-center font-redditsans-bold text-[16px]">
+                Continue
+              </Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );

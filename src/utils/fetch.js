@@ -1,6 +1,23 @@
 const VITE_API_URL = "http://10.0.2.2:5207";
-// const VITE_API_URL = "http://192.168.31.138:5207";
+// const VITE_API_URL = "http://192.168.0.104:5207";
 
+const handleResponse = async (response) => {
+    const contentType = response.headers.get("content-type");
+    if (response.ok) {
+        if (contentType && contentType.includes("application/json")) {
+            const text = await response.text();
+            return text ? JSON.parse(text) : { success: true };
+        }
+        return { success: true };
+    } else {
+        // Even for errors, try to parse JSON for error messages
+        if (contentType && contentType.includes("application/json")) {
+            const text = await response.text();
+            return text ? JSON.parse(text) : { success: false, error: response.statusText };
+        }
+        return { success: false, error: response.statusText };
+    }
+};
 
 export const loginfetch = async (formData) => {
     const response = await fetch(`${VITE_API_URL}/api/auth/login`, {
@@ -255,18 +272,6 @@ export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10)
     return data;
 };
 
-export const getUserTasksFetch = async (token) => {
-    const response = await fetch(`${VITE_API_URL}/api/UserTask/GetMyTasks?_t=${Date.now()}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-        cache: "no-store",
-    });
-    const data = await response.json();
-    return data;
-};
-
 export const addUserHabitFetch = async (token,payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateSharedHabit`, {
         method: "POST",
@@ -311,8 +316,9 @@ export const deleteUserHabitFetch = async (token,userHabitId) => {
     return { status: response.status, ok: response.ok, success: response.ok };
 };
 
-export const getAllAchievementsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetAllAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
+// ─── ACHIEVEMENT ────────────────────────────────────────────────────────────
+export const getUserAchievementsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -323,8 +329,8 @@ export const getAllAchievementsFetch = async (token,pageIndex=0,pageSize=10) => 
     return data;
 };
 
-export const getUserAchievementsFetch = async (token,pageIndex=0,pageSize=10) => {
-    const response = await fetch(`${VITE_API_URL}/api/Achievement/GetUserAchievements?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
+export const getNewAchievementsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement/new?_t=${Date.now()}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -335,8 +341,31 @@ export const getUserAchievementsFetch = async (token,pageIndex=0,pageSize=10) =>
     return data;
 };
 
-export const getUserTotalPoints=async(token)=>{
-    const response=await fetch(`${VITE_API_URL}/api/UserActivity/GetTotalPoints?_t=${Date.now()}`,{
+export const getAchievementStatsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement/stats?_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const markAchievementsAsSeenFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Achievement/mark-seen`, {
+        method: "PATCH",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const getUserTotalXPFetch=async(token)=>{
+    const response=await fetch(`${VITE_API_URL}/api/User/GetUserTotalXPCount`,{
         method:"GET",
         headers:{
             "Authorization":`Bearer ${token}`,
@@ -429,7 +458,93 @@ export const verifyOtpFetch=async (email,otpCode)=>{
         },
         body:JSON.stringify({email,otpCode}),
     });
+    return handleResponse(response);
+};
+
+export const getUserTasksFetch = async (token, pageIndex = 0, pageSize = 10) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const getUserTaskByIdFetch = async (token, id) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}?_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const getUserTaskStatsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/stats?_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const getUserTasksByStatusFetch = async (token, status) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/status/${status}?_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const completeUserTaskFetch = async (token, id) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}/complete`, {
+        method: "PATCH",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    return handleResponse(response);
+};
+
+export const updateUserTaskFetch = async (token, id, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
+};
+
+export const deleteUserTaskFetch = async (token, id) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    return handleResponse(response);
+};
+
+export const getAccountDataFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Account/GetAccountData`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
     const data=await response.json();
     return data;
-}
-
+};
