@@ -8,12 +8,14 @@ import Onboarding2 from "../../../assets/images/Onboarding2.svg";
 import Onboarding3 from "../../../assets/images/Onboarding3.svg";
 import { useNavigation } from "@react-navigation/native";
 import { storage } from "../../utils/MMKVStore";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
 export default function Onboarding() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const navigation=useNavigation();
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const data = [
     {
@@ -74,7 +76,7 @@ export default function Onboarding() {
           onViewableItemsChanged={onViewableItemsChanged}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ width }} className="pt-24 px-10">
+            <View style={{ width, paddingTop: insets.top + 40 }} className="px-10">
               <View className="w-full items-center mb-6">
                 {item.image && <item.image height={300} />}
               </View>
@@ -96,7 +98,10 @@ export default function Onboarding() {
           )}
         />
 
-        <View className="gap-5" style={styles.dotContainer}>
+        <View 
+          className="gap-5" 
+          style={[styles.dotContainer, { marginBottom: insets.bottom + 100 }]}
+        >
           {data.map((_, i) => (
             <View
               key={i}
@@ -109,7 +114,7 @@ export default function Onboarding() {
         </View>
 
         <Animated.View
-          style={[animatedButton]}
+          style={[animatedButton, { paddingBottom: insets.bottom + 10 }]}
           className="p-5 absolute bottom-0 left-0 right-0"
         >
           <TouchableOpacity className="bg-[#83BB7B] p-5 rounded-full" onPress={()=>{
@@ -129,7 +134,6 @@ const styles = StyleSheet.create({
   dotContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 130,
   },
   dot: {
     width: 10,

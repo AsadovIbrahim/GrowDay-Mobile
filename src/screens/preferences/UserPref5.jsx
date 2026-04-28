@@ -93,8 +93,8 @@ const UserPref5 = () => {
       }
 
       
-      const wakeUpHour24 = wakeUpHour === 12 ? 0 : wakeUpHour;
-      const endOfDayHour24 = endOfDayHour === 12 ? 12 : endOfDayHour + 12;
+      const wakeUpHour24 = wakeUpHour;
+      const endOfDayHour24 = endOfDayHour;
 
       const motivationalFactorsMap = {
         "Lack of Motivation": "LackOfMotivation",

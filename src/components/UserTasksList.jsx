@@ -108,15 +108,7 @@ const UserTasksList = ({ maxItems = 3 }) => {
                     onComplete={handleToggleStatus}
                 />
             ))}
-            <TouchableOpacity
-                onPress={() => navigation.navigate('UserTasks')}
-                className="flex-row items-center justify-center py-3 mt-1"
-            >
-                <Text className="text-green-600 font-redditsans-bold text-sm mr-1">
-                    View all tasks
-                </Text>
-                <FontAwesomeIcon icon={faChevronRight} size={12} color="#16a34a" />
-            </TouchableOpacity>
+            
         </View>
     );
 };

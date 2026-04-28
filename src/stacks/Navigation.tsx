@@ -4,6 +4,7 @@ import TabStack from "./TabStack";
 import AuthStack from './AuthStack';
 import UserPreferencesStack from './UserPreferencesStack';
 import { MenuContext } from '../context/MenuContext';
+import { ThemeProvider } from '../context/ThemeContext';
 import { useState } from 'react';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
 
@@ -16,23 +17,25 @@ const Navigation = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     
     return (
-        <MenuContext.Provider value={{ 
-            isMenuOpen, 
-            setIsMenuOpen, 
-            isCreateModalOpen, 
-            setIsCreateModalOpen 
-        }}>
-            <NavigationContainer>
-                {!accessToken ? (
-                    <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
-                 ) : !hasCompletedPreferences ? (
-                    <UserPreferencesStack />
-                ) : (
-                    <TabStack />
-                )}
-                <CreateHabitBottomSheet />
-            </NavigationContainer>
-        </MenuContext.Provider>
+        <ThemeProvider>
+            <MenuContext.Provider value={{ 
+                isMenuOpen, 
+                setIsMenuOpen, 
+                isCreateModalOpen, 
+                setIsCreateModalOpen 
+            }}>
+                <NavigationContainer>
+                    {!accessToken ? (
+                        <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
+                     ) : !hasCompletedPreferences ? (
+                        <UserPreferencesStack />
+                    ) : (
+                        <TabStack />
+                    )}
+                    <CreateHabitBottomSheet />
+                </NavigationContainer>
+            </MenuContext.Provider>
+        </ThemeProvider>
     );
 };
 

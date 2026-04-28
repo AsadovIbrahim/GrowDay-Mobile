@@ -1,22 +1,10 @@
-const VITE_API_URL = "http://10.0.2.2:5207";
-// const VITE_API_URL = "http://192.168.0.104:5207";
+import { API_URL } from '@env';
+
+const VITE_API_URL = API_URL;
 
 const handleResponse = async (response) => {
-    const contentType = response.headers.get("content-type");
-    if (response.ok) {
-        if (contentType && contentType.includes("application/json")) {
-            const text = await response.text();
-            return text ? JSON.parse(text) : { success: true };
-        }
-        return { success: true };
-    } else {
-        // Even for errors, try to parse JSON for error messages
-        if (contentType && contentType.includes("application/json")) {
-            const text = await response.text();
-            return text ? JSON.parse(text) : { success: false, error: response.statusText };
-        }
-        return { success: false, error: response.statusText };
-    }
+    const data = await response.json();
+    return data;
 };
 
 export const loginfetch = async (formData) => {
@@ -29,6 +17,24 @@ export const loginfetch = async (formData) => {
     });
     const data=await response.json();
     return data;
+}
+
+export const googleLoginFetch = async (idToken) => {
+    const response = await fetch(`${VITE_API_URL}/api/auth/google-login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idToken }),
+    });
+    const text = await response.text();
+    console.log("RAW GOOGLE LOGIN RESPONSE:", text);
+    try {
+        const data = JSON.parse(text);
+        return data;
+    } catch (e) {
+        throw new Error(`JSON Parse Error. Raw response was: ${text.substring(0, 50)}...`);
+    }
 }
 
 export const registerfetch = async (formData) => {
@@ -193,8 +199,11 @@ export const deleteNotificationFetch = async (token,notificationId) => {
             "Authorization": `Bearer ${token}`,
         },
     });
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const markAsAllReadNotificationFetch = async (token) => {
@@ -204,8 +213,11 @@ export const markAsAllReadNotificationFetch = async (token) => {
             "Authorization": `Bearer ${token}`,
         },
     });
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const getUserPreferencesFetch = async (token) => {
@@ -230,8 +242,11 @@ export const getNotificationDetailFetch = async (token,notificationId) => {
         },
         cache: "no-store",
     });
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return null;
 };
 
 export const readNotificationFetch = async (token,notificationId) => {
@@ -241,8 +256,11 @@ export const readNotificationFetch = async (token,notificationId) => {
             "Authorization": `Bearer ${token}`,
         },
     });
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const getDailyStatisticsFetch = async (token, date = null) => {

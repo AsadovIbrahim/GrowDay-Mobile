@@ -1,19 +1,18 @@
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { forgotPasswordfetch } from "../../utils/fetch";
 import Toast from "../../components/common/Toast";
 
-
-
 const ForgotPassword = () => {
 
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState([]);
@@ -48,6 +47,7 @@ const ForgotPassword = () => {
       setLoading(false);
     }
   }
+
   return (
     <View style={{ flex: 1 }}>
       <Toast
@@ -69,19 +69,24 @@ const ForgotPassword = () => {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+          contentContainerStyle={{ 
+            paddingHorizontal: 24, 
+            paddingTop: insets.top + 20, 
+            paddingBottom: insets.bottom + 60,
+            flexGrow: 1,
+            justifyContent: 'center'
+          }}
           keyboardShouldPersistTaps="handled"
         >
-          <SafeAreaView>
 
             {/* Back */}
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start' }}>
               <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
             </TouchableOpacity>
 
             {/* Logo */}
             <View className="items-center mt-2 mb-6">
-              <GrowDayLogo width={140} height={140} />
+              <GrowDayLogo width={120} height={120} />
             </View>
 
             {/* Title */}
@@ -144,22 +149,24 @@ const ForgotPassword = () => {
               <>
                 <TextInput
                   placeholder="Enter your email"
-                  placeholderTextColor="#ddd"
+                  placeholderTextColor="#aaa"
                   value={email}
                   onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  className="font-redditsans-medium bg-white rounded-xl p-5 px-4 mb-6 text-black"
+                  className="font-redditsans-medium bg-white rounded-xl p-4 mb-6 text-black"
+                  style={styles.modernInput}
                 />
 
                 {/* Button */}
                 <TouchableOpacity
-                  className="bg-[#78C67E] p-5 rounded-full"
+                  className="bg-[#78C67E] p-3 rounded-full"
                   onPress={handleForgotPassword}
                   disabled={loading}
-                  style={{ opacity: loading ? 0.75 : 1 }}
+                  style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+                  activeOpacity={0.8}
                 >
-                  <Text className="capitalize text-white text-center font-redditsans-bold text-lg">
+                  <Text className="text-white text-center font-redditsans-bold text-lg">
                     {loading ? "Sending..." : "Send Reset Link"}
                   </Text>
                 </TouchableOpacity>
@@ -169,17 +176,33 @@ const ForgotPassword = () => {
             {/* Back to Sign In */}
             <View className="flex-row justify-center mt-6">
               <Text className="text-white font-redditsans-regular">Back to </Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                 <Text className="text-white font-redditsans-bold">Sign In</Text>
               </TouchableOpacity>
             </View>
 
-          </SafeAreaView>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  modernInput: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  modernButton: {
+    shadowColor: "#78C67E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  }
+});
 
 export default ForgotPassword;

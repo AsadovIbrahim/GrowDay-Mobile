@@ -10,7 +10,7 @@ const ITEM_HEIGHT = 56;
 const VISIBLE_ITEMS = 5;
 const CENTER_OFFSET = Math.floor(VISIBLE_ITEMS / 2) * ITEM_HEIGHT;
 
-const BASE_HOURS = [...Array(12).keys()].map(i => i + 1);
+const BASE_HOURS = [...Array(24).keys()];
 const BASE_MINUTES = [...Array(60).keys()];
 
 const HOURS = [...BASE_HOURS, ...BASE_HOURS, ...BASE_HOURS];
@@ -87,7 +87,7 @@ const UserPref1 = () => {
 
         {/* HEADER */}
         <View className="flex-row items-center mt-4 mb-8">
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <FontAwesomeIcon  icon={faArrowLeft} size={20} color="#1f2937"/>
           </TouchableOpacity>
 
@@ -168,17 +168,6 @@ const UserPref1 = () => {
               <View key={i}>{renderItem(m, m === minute)}</View>
             ))}
           </ScrollView>
-
-          {/* AM */}
-          <View
-            style={{
-              position: "absolute",
-              right: 80,
-              top: CENTER_OFFSET + ITEM_HEIGHT / 2 - 8,
-            }}
-          >
-            <Text className="text-[14px] font-redditsans-bold text-gray-700">AM</Text>
-          </View>
         </View>
 
         {/* BUTTON */}

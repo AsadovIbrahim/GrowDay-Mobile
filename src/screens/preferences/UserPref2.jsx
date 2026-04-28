@@ -10,7 +10,7 @@ const ITEM_HEIGHT = 56;
 const VISIBLE_ITEMS = 5;
 const CENTER_OFFSET = Math.floor(VISIBLE_ITEMS / 2) * ITEM_HEIGHT;
 
-const BASE_HOURS = [...Array(12).keys()].map(i => i + 1);
+const BASE_HOURS = [...Array(24).keys()];
 const BASE_MINUTES = [...Array(60).keys()];
 
 const HOURS = [...BASE_HOURS, ...BASE_HOURS, ...BASE_HOURS];
@@ -22,7 +22,7 @@ const UserPref2 = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const [hour, setHour] = useState(9); 
+  const [hour, setHour] = useState(21); 
   const [minute, setMinute] = useState(0);
   
   // Get preferences from previous screen
@@ -30,7 +30,8 @@ const UserPref2 = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      hourRef.current?.scrollTo({ y: (8 + BASE_HOURS.length) * ITEM_HEIGHT, animated: false });
+      const hourIndex = BASE_HOURS.indexOf(21);
+      hourRef.current?.scrollTo({ y: (hourIndex + BASE_HOURS.length) * ITEM_HEIGHT, animated: false });
       minuteRef.current?.scrollTo({ y: BASE_MINUTES.length * ITEM_HEIGHT, animated: false });
     }, 50);
   }, []);
@@ -164,17 +165,6 @@ const UserPref2 = () => {
               <View key={i}>{renderItem(m, m === minute)}</View>
             ))}
           </ScrollView>
-
-          {/* PM */}
-          <View
-            style={{
-              position: "absolute",
-              right: 80,
-              top: CENTER_OFFSET + ITEM_HEIGHT / 2 - 8,
-            }}
-          >
-            <Text className="text-[14px] font-redditsans-bold text-gray-700">PM</Text>
-          </View>
         </View>
 
         {/* BUTTON */}

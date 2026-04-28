@@ -115,7 +115,11 @@ const UserHabits = ({ route }) => {
     const handleHabitPress = (habit) => {
         // Navigate to habit detail or handle press
         if (!isSelectionMode) {
-            console.log('Habit pressed:', habit);
+            navigation.navigate("UserHabitDetails", {
+                habitId: habit.userHabitId || habit.id || habit.habitId,
+                date: new Date().toISOString(),
+                isFuture: false
+            });
         }
     };
 

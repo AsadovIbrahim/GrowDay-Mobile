@@ -1,19 +1,21 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { registerfetch } from "../../utils/fetch";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GOOGLE_WEB_CLIENT_ID } from '@env';
+import { registerfetch, googleLoginFetch, getUserPreferencesFetch } from "../../utils/fetch";
 import { storage } from "../../utils/MMKVStore";
 import Toast from "../../components/common/Toast";
 
-
 const Register = () => {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({});
@@ -45,7 +47,6 @@ const Register = () => {
           const msgs = data.errors?.length > 0
             ? data.errors
             : [data.message || "Registration failed. Please try again."];
-          // Register-də həmişə inline list — şifrə qaydaları çox ola bilər
           setServerErrors(msgs);
         }
       } catch (error) {
@@ -57,6 +58,57 @@ const Register = () => {
     const handleGoBack = () => {
       navigation.goBack();
     }
+
+    const handleGoogleLogin = async () => {
+      // 1. Configure GoogleSignin
+      GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
+      
+      try {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        
+        // In @react-native-google-signin/google-signin v14+, the structure is userInfo.data.idToken
+        const idToken = userInfo?.data?.idToken || userInfo?.idToken;
+        
+        if (!idToken) {
+           setLoading(false);
+           if (userInfo?.type === 'cancelled') return;
+           showToast("Google token not found.", "error");
+           return;
+        }
+        
+        setLoading(true);
+        const data = await googleLoginFetch(idToken);
+        console.log("SERVER RESPONSE FROM GOOGLE LOGIN:", data);
+        
+        if (data && data.success) {
+          const token = data.data.accessToken.token;
+          
+          let hasPrefs = false;
+          try {
+            const preferencesResponse = await getUserPreferencesFetch(token);
+            hasPrefs = !!(preferencesResponse && preferencesResponse.data && !preferencesResponse.error);
+          } catch (prefError) {
+            console.log("Error checking user preferences:", prefError);
+          }
+  
+          showToast("Google signup successful! 🌱", "success");
+  
+          setTimeout(() => {
+            storage.set("hasCompletedPreferences", hasPrefs);
+            storage.set("accessToken", token);
+          }, 1100);
+        } else {
+          const errorMsg = data?.message || data?.title || "Google signup failed on server";
+          showToast(errorMsg, "error");
+        }
+      } catch (error) {
+        console.error("Google Sign-In Error:", error);
+        showToast(error.message || "Google Sign-In failed.", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
   
     return (
       <View style={{ flex: 1 }}>
@@ -68,163 +120,203 @@ const Register = () => {
         />
 
       <LinearGradient
-    colors={["#E9E6D7", "rgba(32,137,58,1)"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 0, y: 1 }}
-    className="flex-1"
-  >
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <SafeAreaView className="flex-1">
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+        colors={["#E9E6D7", "rgba(32,137,58,1)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="flex-1"
+      >
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-
-          {/* BACK */}
-          <TouchableOpacity onPress={handleGoBack}>
-            <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
-          </TouchableOpacity>
-
-          {/* Logo */}
-          <View className="items-center mt-4">
-            <GrowDayLogo width={140} height={140} />
-          </View>
-
-          {/* Title */}
-          <Text className="text-white text-center text-4xl font-redditsans-bold mb-4">
-            Create your account!
-          </Text>
-
-          {/* GOOGLE */}
-          <TouchableOpacity className="flex-row justify-center bg-white rounded-full p-5 mb-6">
-            <GoogleIcon width={22} height={22} />
-            <Text className="text-black font-redditsans-medium text-lg ml-4">
-              CONTINUE WITH GOOGLE
-            </Text>
-          </TouchableOpacity>
-
-          {/* Server Errors */}
-          {serverErrors.length > 0 && (
-            <View style={{
-              backgroundColor: "rgba(255,107,107,0.15)",
-              borderRadius: 12,
-              padding: 14,
-              marginBottom: 16,
-              borderWidth: 1,
-              borderColor: "rgba(255,107,107,0.4)",
-            }}>
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: serverErrors.length > 1 ? 8 : 0 }}>
-                <FontAwesomeIcon icon={faCircleExclamation} size={15} color="#ff6b6b" />
-                <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Bold", fontSize: 14, marginLeft: 8 }}>
-                  {serverErrors.length === 1 ? serverErrors[0] : "Please fix the following:"}
-                </Text>
-              </View>
-              {serverErrors.length > 1 && serverErrors.map((err, i) => (
-                <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 4 }}>
-                  <Text style={{ color: "#ff6b6b", fontSize: 13, marginRight: 6, marginTop: 2 }}>•</Text>
-                  <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Medium", fontSize: 13, flex: 1 }}>{err}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* First + Last */}
-          <View className="flex-row gap-3">
-            <TextInput
-              placeholder="First Name"
-              placeholderTextColor="#aaa"
-              onChangeText={(text) => handleInputChange("firstname", text)}
-              className="flex-1 font-redditsans-medium bg-white rounded-xl p-4 mb-4 text-black"
-            />
-            <TextInput
-              placeholder="Last Name"
-              placeholderTextColor="#aaa"
-              onChangeText={(text) => handleInputChange("lastname", text)}
-              className="flex-1 font-redditsans-medium bg-white rounded-xl p-4 mb-4 text-black"
-            />
-          </View>
-
-          {/* Username */}
-          <TextInput
-            placeholder="Username"
-            placeholderTextColor="#aaa"
-            onChangeText={(text) => handleInputChange("username", text)}
-            className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
-          />
-
-          {/* Email */}
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#aaa"
-            onChangeText={(text) => handleInputChange("email", text)}
-            className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
-          />
-
-          {/* Password */}
-          <View className="relative">
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="#aaa"
-              secureTextEntry={!showPassword}
-              onChangeText={(text) => handleInputChange("password", text)}
-              className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
-            />
-            <TouchableOpacity 
-              className="absolute right-4 top-4"
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#999" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Confirm Password */}
-          <View className="relative">
-            <TextInput
-              placeholder="Confirm Password"
-              placeholderTextColor="#aaa"
-              secureTextEntry={!showConfirmPassword}
-              onChangeText={(text) => handleInputChange("confirmPassword", text)}
-              className="bg-white font-redditsans-medium rounded-xl p-4 mb-6 text-black"
-            />
-            <TouchableOpacity 
-              className="absolute right-4 top-4"
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={20} color="#999" />
-            </TouchableOpacity>
-          </View>
-
-          {/* BUTTON */}
-          <TouchableOpacity 
-            className="bg-[#78C67E] p-4 rounded-full"
-            onPress={handleRegister}
-            disabled={loading}
-            style={{ opacity: loading ? 0.75 : 1 }}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ 
+              paddingHorizontal: 24, 
+              paddingTop: insets.top + 20, 
+              paddingBottom: insets.bottom + 60,
+              flexGrow: 1,
+              justifyContent: 'center'
+            }}
           >
-            <Text className="text-white text-center font-redditsans-bold text-lg">
-              {loading ? "Creating Account..." : "Sign Up"}
-            </Text>
-          </TouchableOpacity>
 
-          {/* LOGIN */}
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-white font-redditsans-medium">Already have an account? </Text>
-            <TouchableOpacity onPress={()=>navigation.navigate("Login")}>
-              <Text className="text-white font-redditsans-bold">Sign In</Text>
+            {/* BACK */}
+            <TouchableOpacity onPress={handleGoBack} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start' }}>
+              <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
             </TouchableOpacity>
-          </View>
 
-        </ScrollView>
+            {/* Logo */}
+            <View className="items-center">
+              <GrowDayLogo width={100} height={100} />
+            </View>
 
-      </SafeAreaView>
-    </KeyboardAvoidingView>
-  </LinearGradient>
+            {/* Title */}
+            <Text className="text-white text-center text-3xl font-redditsans-bold mb-4 mt-2">
+              Let’s get started!
+            </Text>
+
+            {/* GOOGLE */}
+            <TouchableOpacity 
+              className="flex-row justify-center bg-white rounded-full p-3 mb-6"
+              style={styles.googleButton}
+              onPress={handleGoogleLogin}
+              disabled={loading}
+            >
+              <GoogleIcon width={22} height={22} />
+              <Text className="text-black font-redditsans-medium text-lg ml-4">
+                CONTINUE WITH GOOGLE
+              </Text>
+            </TouchableOpacity>
+
+            {/* Server Errors */}
+            {serverErrors.length > 0 && (
+              <View style={{
+                backgroundColor: "rgba(255,107,107,0.15)",
+                borderRadius: 12,
+                padding: 14,
+                marginBottom: 16,
+                borderWidth: 1,
+                borderColor: "rgba(255,107,107,0.4)",
+              }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: serverErrors.length > 1 ? 8 : 0 }}>
+                  <FontAwesomeIcon icon={faCircleExclamation} size={15} color="#ff6b6b" />
+                  <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Bold", fontSize: 14, marginLeft: 8 }}>
+                    {serverErrors.length === 1 ? serverErrors[0] : "Please fix the following:"}
+                  </Text>
+                </View>
+                {serverErrors.length > 1 && serverErrors.map((err, i) => (
+                  <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 4 }}>
+                    <Text style={{ color: "#ff6b6b", fontSize: 13, marginRight: 6, marginTop: 2 }}>•</Text>
+                    <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Medium", fontSize: 13, flex: 1 }}>{err}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* First + Last */}
+            <View className="flex-row gap-3">
+              <TextInput
+                placeholder="First Name"
+                placeholderTextColor="#aaa"
+                onChangeText={(text) => handleInputChange("firstname", text)}
+                className="flex-1 font-redditsans-medium bg-white rounded-xl p-4 mb-4 text-black"
+                style={styles.modernInput}
+              />
+              <TextInput
+                placeholder="Last Name"
+                placeholderTextColor="#aaa"
+                onChangeText={(text) => handleInputChange("lastname", text)}
+                className="flex-1 font-redditsans-medium bg-white rounded-xl p-4 mb-4 text-black"
+                style={styles.modernInput}
+              />
+            </View>
+
+            {/* Username */}
+            <TextInput
+              placeholder="Username"
+              placeholderTextColor="#aaa"
+              onChangeText={(text) => handleInputChange("username", text)}
+              className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
+              style={styles.modernInput}
+            />
+
+            {/* Email */}
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#aaa"
+              onChangeText={(text) => handleInputChange("email", text)}
+              className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
+              style={styles.modernInput}
+            />
+
+            {/* Password */}
+            <View className="relative">
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="#aaa"
+                secureTextEntry={!showPassword}
+                onChangeText={(text) => handleInputChange("password", text)}
+                className="bg-white font-redditsans-medium rounded-xl p-4 mb-4 text-black"
+                style={styles.modernInput}
+              />
+              <TouchableOpacity 
+                className="absolute right-4 top-4"
+                onPress={() => setShowPassword(!showPassword)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color="#999" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Confirm Password */}
+            <View className="relative">
+              <TextInput
+                placeholder="Confirm Password"
+                placeholderTextColor="#aaa"
+                secureTextEntry={!showConfirmPassword}
+                onChangeText={(text) => handleInputChange("confirmPassword", text)}
+                className="bg-white font-redditsans-medium rounded-xl p-4 mb-6 text-black"
+                style={styles.modernInput}
+              />
+              <TouchableOpacity 
+                className="absolute right-4 top-4"
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
+                <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={20} color="#999" />
+              </TouchableOpacity>
+            </View>
+
+            {/* BUTTON */}
+            <TouchableOpacity 
+              className="bg-[#78C67E] p-3 rounded-full"
+              onPress={handleRegister}
+              disabled={loading}
+              style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+              activeOpacity={0.8}
+            >
+              <Text className="text-white text-center font-redditsans-bold text-lg">
+                {loading ? "Creating Account..." : "Sign Up"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* LOGIN */}
+            <View className="flex-row justify-center mt-6">
+              <Text className="text-white font-redditsans-medium">Already have an account? </Text>
+              <TouchableOpacity onPress={()=>navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <Text className="text-white font-redditsans-bold">Sign In</Text>
+              </TouchableOpacity>
+            </View>
+
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
       </View>
     );
-  };
-  
-  export default Register;
+};
+
+const styles = StyleSheet.create({
+  modernInput: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  modernButton: {
+    shadowColor: "#78C67E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  googleButton: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  }
+});
+
+export default Register;

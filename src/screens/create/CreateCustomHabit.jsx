@@ -189,6 +189,7 @@ const CreateCustomHabit = () => {
       onPress={() => setCategory(item)}
     >
       <Text
+        className="font-redditsans-medium"
         style={[
           styles.categoryText,
           { color: colors.textSecondary },
@@ -209,7 +210,7 @@ const CreateCustomHabit = () => {
         >
           <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary, ...typography.h1 }]}>
+        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.textPrimary, ...typography.h1 }]}>
           {isCustom ? "Create Custom Habit" : "Setup Popular Habit"}
         </Text>
       </View>
@@ -224,32 +225,33 @@ const CreateCustomHabit = () => {
           showsVerticalScrollIndicator={false}
         >
           {/* Name Section */}
-          {isCustom && (
-            <View style={styles.fieldSection}>
-              <Text style={styles.label}>NAME</Text>
-              <TextInput
-                style={styles.input}
-                value={title}
-                onChangeText={setTitle}
-                placeholder="e.g. Walk"
-                placeholderTextColor="#9ca3af"
-              />
-            </View>
-          )}
+          <View style={styles.fieldSection}>
+            <Text className="font-redditsans-bold" style={styles.label}>NAME</Text>
+            <TextInput
+              style={[styles.input, !isCustom && { color: colors.textSecondary }]}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="e.g. Walk"
+              className="font-redditsans-medium"
+              placeholderTextColor="#9ca3af"
+              
+              editable={isCustom}
+            />
+          </View>
 
           {/* Description Section */}
-          {isCustom && (
-            <View style={styles.fieldSection}>
-              <Text style={styles.label}>DESCRIPTION</Text>
-              <TextInput
-                style={styles.input}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="e.g. Daily morning walk"
-                placeholderTextColor="#9ca3af"
-              />
-            </View>
-          )}
+          <View style={styles.fieldSection}>
+            <Text className="font-redditsans-medium" style={styles.label}>DESCRIPTION</Text>
+            <TextInput
+              style={[styles.input, !isCustom && { color: colors.textSecondary }]}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="e.g. Daily morning walk"
+              placeholderTextColor="#9ca3af"
+              editable={isCustom}
+              className="font-redditsans-medium"
+            />
+          </View>
 
           {/* Category Section */}
           <View style={styles.fieldSection}>
@@ -371,7 +373,7 @@ const CreateCustomHabit = () => {
               {/* Duration Toggle */}
               <View style={styles.durationSection}>
                 <View style={styles.durationHeader}>
-                  <Text style={[styles.sentenceLabel, { color: colors.textPrimary }]}>Track duration</Text>
+                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.textPrimary }]}>Track duration</Text>
                   <Switch
                     value={trackDuration}
                     onValueChange={setTrackDuration}
@@ -714,11 +716,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "800",
     marginLeft: 15,
-    fontFamily: "redditsans-bold",
   },
   scrollContent: {
     padding: 24,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   fieldSection: {
     marginBottom: 24,
@@ -728,7 +729,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#94a3b8",
     marginBottom: 10,
-    fontFamily: "redditsans-bold",
     letterSpacing: 1,
   },
   input: {
@@ -737,7 +737,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 18,
     color: "#1e293b",
-    fontFamily: "redditsans-medium",
   },
   categoryList: {
     paddingLeft: 0,
@@ -751,7 +750,6 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 14,
-    fontFamily: "redditsans-medium",
   },
   row: {
     flexDirection: "row",
@@ -915,7 +913,6 @@ const styles = StyleSheet.create({
   sentenceLabel: {
     fontSize: 18,
     fontWeight: '600',
-    fontFamily: 'redditsans-medium',
   },
   frequencyRow: {
     flexDirection: 'row',
