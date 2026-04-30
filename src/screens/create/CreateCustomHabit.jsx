@@ -19,7 +19,8 @@ import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup } fro
 import { useMMKVString } from "react-native-mmkv";
 import { addCustomUserHabitFetch, addUserHabitFetch } from "../../utils/fetch";
 import { ICONS } from "../../constants/icons";
-import { useTheme } from "../../constants/theme";
+import { useTheme as useThemeConstants } from "../../constants/theme";
+import { useTheme } from "../../context/ThemeContext";
 
 const CATEGORIES = [
   "General",
@@ -61,7 +62,9 @@ const CreateCustomHabit = () => {
   const route = useRoute();
   const { habitData = null, isCustom = true } = route.params || {};
   const [accessToken] = useMMKVString("accessToken");
-  const { colors, spacing, typography, radius } = useTheme();
+  const { spacing, typography, radius } = useThemeConstants();
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
 
   // Core Fields
   const [title, setTitle] = useState(habitData?.title || "");
@@ -183,8 +186,8 @@ const CreateCustomHabit = () => {
     <TouchableOpacity
       style={[
         styles.categoryChip,
-        { backgroundColor: colors.surface, borderColor: colors.border },
-        category === item && { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+        { backgroundColor: colors.card, borderColor: colors.border },
+        category === item && { backgroundColor: colors.primarySurface, borderColor: colors.primary },
       ]}
       onPress={() => setCategory(item)}
     >
@@ -193,7 +196,7 @@ const CreateCustomHabit = () => {
         style={[
           styles.categoryText,
           { color: colors.textSecondary },
-          category === item && { color: colors.primaryDark, fontWeight: "bold" },
+          category === item && { color: colors.primary, fontWeight: "bold" },
         ]}
       >
         {item}
@@ -202,15 +205,15 @@ const CreateCustomHabit = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.background }]}>
         <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[styles.backButton, { backgroundColor: colors.card, borderColor: colors.border }]}
           onPress={() => navigation.goBack()}
         >
-          <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.textPrimary} />
+          <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
         </TouchableOpacity>
-        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.textPrimary, ...typography.h1 }]}>
+        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text, ...typography.h1 }]}>
           {isCustom ? "Create Custom Habit" : "Setup Popular Habit"}
         </Text>
       </View>
@@ -228,12 +231,12 @@ const CreateCustomHabit = () => {
           <View style={styles.fieldSection}>
             <Text className="font-redditsans-bold" style={styles.label}>NAME</Text>
             <TextInput
-              style={[styles.input, !isCustom && { color: colors.textSecondary }]}
+              style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }, !isCustom && { color: colors.textSecondary }]}
               value={title}
               onChangeText={setTitle}
               placeholder="e.g. Walk"
               className="font-redditsans-medium"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textSecondary}
               
               editable={isCustom}
             />
@@ -243,11 +246,11 @@ const CreateCustomHabit = () => {
           <View style={styles.fieldSection}>
             <Text className="font-redditsans-medium" style={styles.label}>DESCRIPTION</Text>
             <TextInput
-              style={[styles.input, !isCustom && { color: colors.textSecondary }]}
+              style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }, !isCustom && { color: colors.textSecondary }]}
               value={description}
               onChangeText={setDescription}
               placeholder="e.g. Daily morning walk"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textSecondary}
               editable={isCustom}
               className="font-redditsans-medium"
             />
@@ -274,17 +277,17 @@ const CreateCustomHabit = () => {
               <View style={[styles.fieldSection, { flex: 1, marginRight: 10 }]}>
                 <Text style={styles.label}>ICON</Text>
                 <TouchableOpacity
-                  style={styles.selectionBox}
+                  style={[styles.selectionBox, { backgroundColor: colors.card, borderColor: colors.border }]}
                   onPress={() => setShowIconModal(true)}
                 >
-                  <View style={styles.iconCircle}>
+                  <View style={[styles.iconCircle, { backgroundColor: colors.cardSecondary }]}>
                     <Text style={{ fontSize: 20 }}>{ICONS[icon] || ICONS.default}</Text>
                   </View>
                   <View>
-                    <Text style={styles.selectionTitle}>
+                    <Text style={[styles.selectionTitle, { color: colors.text }]}>
                       {icon.charAt(0).toUpperCase() + icon.slice(1)}
                     </Text>
-                    <Text style={styles.selectionSubtitle}>Icon</Text>
+                    <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>Icon</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -294,7 +297,7 @@ const CreateCustomHabit = () => {
           {/* Goal & Tracking Section - PRODUCTION REFACTOR */}
           <View style={styles.fieldSection}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>GOAL & TRACKING</Text>
-            <View style={[styles.goalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.goalCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               
               {isCustom && <Text style={[styles.introText, { color: colors.textSecondary }]}>I want to do this</Text>}
               
@@ -311,14 +314,14 @@ const CreateCustomHabit = () => {
                     />
                     
                     <TouchableOpacity 
-                      style={styles.unitSelector}
+                      style={[styles.unitSelector, { backgroundColor: colors.primarySurface }]}
                       onPress={() => setShowUnitModal(true)}
                     >
                       <Text style={[styles.unitText, { color: colors.primary }]}>{unit}</Text>
                       <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />
                     </TouchableOpacity>
 
-                    <Text style={[styles.sentenceLabel, { color: colors.textPrimary }]}>every</Text>
+                    <Text style={[styles.sentenceLabel, { color: colors.text }]}>every</Text>
                   </View>
 
                   {/* Frequency Selection (Chips) */}
@@ -328,12 +331,14 @@ const CreateCustomHabit = () => {
                         key={freq}
                         style={[
                           styles.freqChip,
+                          { backgroundColor: colors.card, borderColor: colors.border },
                           frequency === freq && { backgroundColor: colors.primary, borderColor: colors.primary }
                         ]}
                         onPress={() => setFrequency(freq)}
                       >
                         <Text style={[
                           styles.freqChipText,
+                          { color: colors.text },
                           frequency === freq && { color: colors.white }
                         ]}>
                           {freq}
@@ -352,12 +357,14 @@ const CreateCustomHabit = () => {
                             key={day}
                             style={[
                               styles.dayChip,
-                              selectedDays.includes(day) && { backgroundColor: colors.primaryLight, borderColor: colors.primary }
+                              { backgroundColor: colors.card, borderColor: colors.border },
+                              selectedDays.includes(day) && { backgroundColor: colors.primarySurface, borderColor: colors.primary }
                             ]}
                             onPress={() => toggleDay(day)}
                           >
                             <Text style={[
                               styles.dayChipText,
+                              { color: colors.textSecondary },
                               selectedDays.includes(day) && { color: colors.primary, fontWeight: 'bold' }
                             ]}>
                               {day.substring(0, 1)}
@@ -373,7 +380,7 @@ const CreateCustomHabit = () => {
               {/* Duration Toggle */}
               <View style={styles.durationSection}>
                 <View style={styles.durationHeader}>
-                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.textPrimary }]}>Track duration</Text>
+                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.text }]}>Track duration</Text>
                   <Switch
                     value={trackDuration}
                     onValueChange={setTrackDuration}
@@ -383,11 +390,12 @@ const CreateCustomHabit = () => {
                 {trackDuration && (
                   <View style={styles.durationInputRow}>
                     <TextInput
-                      style={[styles.compactInput, { flex: 1, marginRight: 10 }]}
+                      style={[styles.compactInput, { flex: 1, marginRight: 10, color: colors.text, borderBottomColor: colors.textGray }]}
                       value={durationInMinutes}
                       onChangeText={setDurationInMinutes}
                       keyboardType="numeric"
                       placeholder="e.g. 10"
+                      placeholderTextColor={colors.textSecondary}
                     />
                     <Text style={{ color: colors.textSecondary }}>minutes per session</Text>
                   </View>
@@ -398,8 +406,8 @@ const CreateCustomHabit = () => {
             {/* Natural Language Preview */}
             {isCustom && (
               <View style={styles.previewContainer}>
-                <View style={[styles.previewBadge, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.previewText, { color: colors.primaryDark }]}>
+                <View style={[styles.previewBadge, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}>
+                  <Text style={[styles.previewText, { color: colors.primary }]}>
                     ✨ You will {title || "habit"} {targetValue} {unit} every {frequency.toLowerCase() === 'daily' ? 'day' : frequency.toLowerCase()}
                   </Text>
                 </View>
@@ -410,13 +418,13 @@ const CreateCustomHabit = () => {
           {/* Schedule Section */}
           <View style={styles.fieldSection}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>SCHEDULE</Text>
-            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.cardRow}>
-                <View style={[styles.iconBox, { backgroundColor: colors.primaryLight }]}>
+                <View style={[styles.iconBox, { backgroundColor: colors.primarySurface }]}>
                    <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                   <Text style={[styles.selectionTitle, { color: colors.textPrimary }]}>Start Date</Text>
+                   <Text style={[styles.selectionTitle, { color: colors.text }]}>Start Date</Text>
                    <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{startDate}</Text>
                 </View>
                 <TouchableOpacity 
@@ -428,11 +436,11 @@ const CreateCustomHabit = () => {
               </View>
               
               <View style={[styles.cardRow, { marginTop: 15, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 15 }]}>
-                <View style={[styles.iconBox, { backgroundColor: '#fee2e2' }]}>
-                   <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.error} />
+                <View style={[styles.iconBox, { backgroundColor: colors.dangerSurface }]}>
+                   <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.danger} />
                 </View>
                 <View style={{ flex: 1 }}>
-                   <Text style={[styles.selectionTitle, { color: colors.textPrimary }]}>End Date</Text>
+                   <Text style={[styles.selectionTitle, { color: colors.text }]}>End Date</Text>
                    <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{endDate || "No end date"}</Text>
                 </View>
                 <TouchableOpacity 
@@ -448,7 +456,7 @@ const CreateCustomHabit = () => {
           {/* Reminders Section */}
           <View style={styles.fieldSection}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>REMINDERS</Text>
-            <View style={[styles.reminderCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.reminderCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.reminderRow}>
                 <Text style={[styles.reminderText, { color: colors.textSecondary }]}>
                   Send me a notification to stay on track.
@@ -463,11 +471,11 @@ const CreateCustomHabit = () => {
                 style={[styles.reminderTimeRow, { backgroundColor: colors.background }]}
                 onPress={() => setShowTimeModal(true)}
               >
-                <View style={[styles.badge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.badgeText, { color: colors.textPrimary }]}>🕒 {reminderTime}</Text>
+                <View style={[styles.badge, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                  <Text style={[styles.badgeText, { color: colors.text }]}>🕒 {reminderTime}</Text>
                 </View>
-                <View style={[styles.badge, { marginLeft: 10, backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.badgeText, { color: colors.textPrimary }]}>📋 Every day</Text>
+                <View style={[styles.badge, { marginLeft: 10, backgroundColor: colors.card, borderColor: colors.border }]}>
+                  <Text style={[styles.badgeText, { color: colors.text }]}>📋 Every day</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -508,19 +516,20 @@ const CreateCustomHabit = () => {
             setShowCustomUnitInput(false);
           }}
         >
-          <View style={styles.bottomSheetContent}>
-            <View style={styles.bottomSheetHandle} />
-            <Text style={styles.modalTitle}>
+          <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
+            <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
               {showCustomUnitInput ? "Custom Unit" : "Select Unit"}
             </Text>
 
             {showCustomUnitInput ? (
               <View style={{ paddingBottom: 20 }}>
                 <TextInput
-                  style={[styles.input, { marginBottom: 20 }]}
+                  style={[styles.input, { marginBottom: 20, color: colors.text, borderBottomColor: colors.border }]}
                   value={tempCustomUnit}
                   onChangeText={setTempCustomUnit}
                   placeholder="e.g. sketches"
+                  placeholderTextColor={colors.textSecondary}
                   autoFocus
                 />
                 <TouchableOpacity
@@ -546,7 +555,7 @@ const CreateCustomHabit = () => {
                     key={u}
                     style={[
                       styles.unitOption,
-                      unit === u && { backgroundColor: colors.primaryLight },
+                      unit === u && { backgroundColor: colors.primarySurface },
                     ]}
                     onPress={() => {
                       if (u === "Other") {
@@ -560,6 +569,7 @@ const CreateCustomHabit = () => {
                     <Text
                       style={[
                         styles.unitOptionText,
+                        { color: colors.text },
                         unit === u && { color: colors.primary, fontWeight: "bold" },
                       ]}
                     >
@@ -588,26 +598,29 @@ const CreateCustomHabit = () => {
           activeOpacity={1}
           onPress={() => setShowIconModal(false)}
         >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Icon</Text>
-            <View style={styles.iconGrid}>
-              {Object.keys(ICONS).map((key) => (
-                <TouchableOpacity
-                  key={key}
-                  style={[
-                    styles.gridIconBox,
-                    icon === key && styles.gridIconBoxSelected,
-                  ]}
-                  onPress={() => {
-                    setIcon(key);
-                    setShowIconModal(false);
-                  }}
-                >
-                  <Text style={{ fontSize: 28 }}>{ICONS[key]}</Text>
-                  <Text style={styles.gridIconLabel}>{key}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Icon</Text>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+              <View style={styles.iconGrid}>
+                {Object.keys(ICONS).map((key) => (
+                  <TouchableOpacity
+                    key={key}
+                    style={[
+                      styles.gridIconBox,
+                      { backgroundColor: colors.cardSecondary, borderColor: colors.border },
+                      icon === key && { borderColor: colors.primary, backgroundColor: colors.primarySurface },
+                    ]}
+                    onPress={() => {
+                      setIcon(key);
+                      setShowIconModal(false);
+                    }}
+                  >
+                    <Text style={{ fontSize: 28 }}>{ICONS[key]}</Text>
+                    <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]}>{key}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -624,24 +637,25 @@ const CreateCustomHabit = () => {
           activeOpacity={1}
           onPress={() => setShowTimeModal(false)}
         >
-          <View style={[styles.modalContent, { paddingBottom: 30 }]}>
-            <Text style={styles.modalTitle}>Set Reminder Time</Text>
+          <View style={[styles.modalContent, { paddingBottom: 30, backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Set Reminder Time</Text>
             <View style={styles.timePickerContainer}>
               <View style={styles.timeColumn}>
-                <Text style={styles.pickerLabel}>Hour</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>Hour</Text>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {HOURS.map((h) => (
                     <TouchableOpacity
                       key={h}
                       style={[
                         styles.timeSlot,
-                        tempHours === h && styles.timeSlotSelected,
+                        tempHours === h && { backgroundColor: colors.primarySurface },
                       ]}
                       onPress={() => setTempHours(h)}
                     >
                       <Text
                         style={[
                           styles.timeSlotText,
+                          { color: colors.textSecondary },
                           tempHours === h && styles.timeSlotTextSelected,
                         ]}
                       >
@@ -653,20 +667,21 @@ const CreateCustomHabit = () => {
               </View>
 
               <View style={styles.timeColumn}>
-                <Text style={styles.pickerLabel}>Minute</Text>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>Minute</Text>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {MINUTES.map((m) => (
                     <TouchableOpacity
                       key={m}
                       style={[
                         styles.timeSlot,
-                        tempMinutes === m && styles.timeSlotSelected,
+                        tempMinutes === m && { backgroundColor: colors.primarySurface },
                       ]}
                       onPress={() => setTempMinutes(m)}
                     >
                       <Text
                         style={[
                           styles.timeSlotText,
+                          { color: colors.textSecondary },
                           tempMinutes === m && styles.timeSlotTextSelected,
                         ]}
                       >
@@ -679,7 +694,7 @@ const CreateCustomHabit = () => {
             </View>
 
             <TouchableOpacity
-              style={styles.confirmButton}
+              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
               onPress={handleConfirmTime}
             >
               <Text style={styles.confirmButtonText}>Confirm</Text>

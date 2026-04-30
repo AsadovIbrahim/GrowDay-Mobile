@@ -21,8 +21,12 @@ import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
 import HabitAddModal from "../../components/HabitAddModal";
 
+import { useTheme } from "../../context/ThemeContext";
+
 const Explore = () => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const { colors } = theme;
 
   const [loading, setLoading] = useState(false);
   const [suggestedHabits, setSuggestedHabits] = useState([]);
@@ -80,7 +84,7 @@ const Explore = () => {
   ];
   
   return (
-    <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1">
+    <LinearGradient colors={colors.backgroundGradient} className="flex-1">
       <SafeAreaView className="flex-1">
         <ScrollView 
           className="flex-1"
@@ -89,19 +93,19 @@ const Explore = () => {
         >
           {/* Header Section */}
           <View className="flex-row items-center justify-between px-4 pt-4 mb-6">
-              <Text className="text-black text-3xl font-redditsans-bold">Explore</Text>
+              <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>Explore</Text>
             <TouchableOpacity 
-              className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center"
-              style={{ backgroundColor: '#e5e7eb' }}
+              className="w-10 h-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.cardSecondary }}
             >
-              <FontAwesomeIcon icon={faSearch} size={18} color="#6b7280" />
+              <FontAwesomeIcon icon={faSearch} size={18} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
           {/* Suggested Habits Section */}
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-redditsans-bold text-black">Suggested Habits</Text>
+              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Suggested Habits</Text>
               <TouchableOpacity className="flex-row items-center gap-1">
                 <Text className="text-base text-green-600 font-redditsans-medium">VIEW ALL</Text> 
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
@@ -127,7 +131,7 @@ const Explore = () => {
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center gap-2">
-                <Text className="text-xl font-redditsans-bold text-black">Tasks</Text>
+                <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Tasks</Text>
                 <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
               </View>
               <TouchableOpacity 
@@ -146,7 +150,7 @@ const Explore = () => {
           {/* Learning Section */}
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-redditsans-bold text-black">Learning</Text>
+              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Learning</Text>
               <TouchableOpacity className="flex-row items-center gap-1">
                 <Text className="text-base text-green-600 font-redditsans-medium">VIEW ALL</Text>
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
@@ -159,7 +163,7 @@ const Explore = () => {
                   key={item.id}
                   className="flex-1 rounded-xl overflow-hidden"
                   style={{
-                    backgroundColor: '#16a34a',
+                    backgroundColor: colors.primary,
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.1,
@@ -177,8 +181,8 @@ const Explore = () => {
                   </View>
                   <View className="p-3">
                     <View className="flex-row items-center gap-2">
-                      <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
-                        <FontAwesomeIcon icon={faMinus} size={12} color="#16a34a" />
+                      <View className="w-6 h-6 rounded-full items-center justify-center" style={{ backgroundColor: colors.card }}>
+                        <FontAwesomeIcon icon={faMinus} size={12} color={colors.primary} />
                       </View>
                       <Text 
                         className="flex-1 text-sm font-redditsans-medium text-white"

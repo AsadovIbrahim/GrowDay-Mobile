@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlay, faPause, faStop } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { completeUserHabitFetch, reportHabitProgressFetch } from '../../../utils/fetch';
+import { useTheme } from '../../../context/ThemeContext';
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -20,6 +21,8 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 
 const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLiveUpdate }) => {
     const navigation = useNavigation();
+    const { theme } = useTheme();
+    const { colors } = theme;
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
     const startKey = `timer_start_${hId}`;
     const accKey = `timer_acc_${hId}`;
@@ -264,7 +267,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             } else {
                 Alert.alert("Error", res.message || "Failed to complete habit.");
             }
-        }} style={styles.mainBtn}>
+        }} style={[styles.mainBtn, { backgroundColor: colors.primary }]}>
             <Text style={styles.btnText}>Mark as done</Text>
         </TouchableOpacity>
     );
@@ -277,7 +280,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         let incs = [1, 2, 5];
         if (unit === "ml") incs = [100, 250, 500];
         if (unit === "count") incs = [1, 5, 10];
-        return <View style={styles.numericContainer}><View style={styles.incrementsRow}>{incs.map(inc => <TouchableOpacity key={inc} onPress={() => handleReportProgress(inc)} style={styles.incBtn}><Text style={styles.incText}>+{inc}</Text></TouchableOpacity>)}</View><Text style={styles.helperText}>Tap to add {habit.unit}</Text></View>;
+        return <View style={styles.numericContainer}><View style={styles.incrementsRow}>{incs.map(inc => <TouchableOpacity key={inc} onPress={() => handleReportProgress(inc)} style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary }]}><Text style={[styles.incText, { color: colors.primary }]}>+{inc}</Text></TouchableOpacity>)}</View><Text style={[styles.helperText, { color: colors.textSecondary }]}>Tap to add {habit.unit}</Text></View>;
     }
 
     if (isDuration || isDistance) {
@@ -293,20 +296,20 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 <Animated.View style={[
                     styles.timerDisplay, 
                     isDistance && styles.workoutDisplay,
-                    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? '#2f6f3f' : '#e5e7eb', borderWidth: timerActive ? 1.5 : 1 }
+                    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
                 ]}>
-                    <Text style={styles.sessionLabel}>TODAY SESSION</Text>
-                    <Text style={styles.timerValue}>
+                    <Text style={[styles.sessionLabel, { color: colors.textSecondary }]}>TODAY SESSION</Text>
+                    <Text style={[styles.timerValue, { color: colors.text }]}>
                         {isDistance ? formatDistance(distance) : formatTime(seconds)}
                     </Text>
-                    <Text style={styles.timerLabel}>
+                    <Text style={[styles.timerLabel, { color: colors.textSecondary }]}>
                         {isDistance ? "LIVE DISTANCE" : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC")}
                     </Text>
-                    {isDistance && <Text style={styles.subTimer}>{formatTime(seconds)}</Text>}
+                    {isDistance && <Text style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(seconds)}</Text>}
                 </Animated.View>
                 <View style={styles.controlsRow}>
                     {!timerActive ? (
-                        <TouchableOpacity onPress={handleStartResume} style={[styles.controlBtn, styles.startBtn]}>
+                        <TouchableOpacity onPress={handleStartResume} style={[styles.controlBtn, styles.startBtn, { backgroundColor: colors.primary }]}>
                             <FontAwesomeIcon icon={faPlay} color="#fff" size={20} />
                         </TouchableOpacity>
                     ) : (
@@ -319,7 +322,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     </TouchableOpacity>
                 </View>
                 {timerActive && (
-                    <Text style={styles.activeHint}>
+                    <Text style={[styles.activeHint, { color: colors.primary }]}>
                         {isDistance ? "Location tracking active." : "Session started."} You can close the app.
                     </Text>
                 )}

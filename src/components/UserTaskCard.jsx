@@ -24,7 +24,11 @@ const STATUS_CONFIG = {
   Cancelled: { color: "#ef4444", bg: "#fee2e2", label: "Cancelled" },
 };
 
+import { useTheme } from "../context/ThemeContext";
+
 const UserTaskCard = ({ task, onComplete, onDelete }) => {
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
   const isCompleted = task.status === "Completed";
   const isOverdue = task.isOverdue;
 
@@ -40,8 +44,9 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
 
   return (
     <View
-      className="bg-white rounded-[20px] p-5 mb-4"
+      className="rounded-[20px] p-5 mb-4"
       style={{
+        backgroundColor: colors.card,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
@@ -67,10 +72,10 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
             style={{ marginTop: 2 }}
           />
           <Text
-            className="ml-3 text-[16px] font-redditsans-bold text-gray-900 flex-1 leading-6"
+            className="ml-3 text-[16px] font-redditsans-bold flex-1 leading-6"
             style={{
               textDecorationLine: isCompleted ? "line-through" : "none",
-              color: isCompleted ? "#9ca3af" : "#111827",
+              color: isCompleted ? colors.textSecondary : colors.text,
             }}
           >
             {task.title}
@@ -81,7 +86,8 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
         {!isCompleted && onDelete && (
           <TouchableOpacity
             onPress={() => onDelete(task.id)}
-            className="w-8 h-8 items-center justify-center rounded-full bg-red-50"
+            className="w-8 h-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2' }}
           >
             <FontAwesomeIcon icon={faTrash} size={13} color="#ef4444" />
           </TouchableOpacity>
@@ -90,7 +96,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
 
       {/* Description */}
       {task.description ? (
-        <Text className="text-[13px] font-redditsans-regular text-gray-500 mb-3 ml-9 leading-5">
+        <Text className="text-[13px] font-redditsans-regular mb-3 ml-9 leading-5" style={{ color: colors.textSecondary }}>
           {task.description}
         </Text>
       ) : null}
@@ -100,7 +106,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
         {/* Priority badge */}
         <View
           className="flex-row items-center px-2.5 py-1 rounded-full"
-          style={{ backgroundColor: priority.bg }}
+          style={{ backgroundColor: isDark ? `${priority.color}20` : priority.bg }}
         >
           <FontAwesomeIcon icon={faFlag} size={10} color={priority.color} />
           <Text
@@ -114,7 +120,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
         {/* Status badge */}
         <View
           className="flex-row items-center px-2.5 py-1 rounded-full"
-          style={{ backgroundColor: status.bg }}
+          style={{ backgroundColor: isDark ? `${status.color}20` : status.bg }}
         >
           <Text
             className="text-[11px] font-redditsans-bold"
@@ -126,9 +132,9 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
 
         {/* XP badge */}
         {task.xpReward > 0 && (
-          <View className="flex-row items-center px-2.5 py-1 rounded-full bg-yellow-50">
+          <View className="flex-row items-center px-2.5 py-1 rounded-full" style={{ backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#fefce8' }}>
             <FontAwesomeIcon icon={faStar} size={10} color="#f59e0b" />
-            <Text className="ml-1 text-[11px] font-redditsans-bold text-yellow-600">
+            <Text className="ml-1 text-[11px] font-redditsans-bold text-yellow-600" style={{ color: isDark ? '#fbbf24' : '#d97706' }}>
               +{task.xpReward} XP
             </Text>
           </View>
@@ -138,16 +144,16 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
         {dueDateStr && (
           <View
             className="flex-row items-center px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: isOverdue ? "#fee2e2" : "#f3f4f6" }}
+            style={{ backgroundColor: isOverdue ? (isDark ? 'rgba(239, 68, 68, 0.15)' : '#fee2e2') : (isDark ? 'rgba(107, 114, 128, 0.15)' : '#f3f4f6') }}
           >
             <FontAwesomeIcon
               icon={faClock}
               size={10}
-              color={isOverdue ? "#ef4444" : "#6b7280"}
+              color={isOverdue ? "#ef4444" : colors.textSecondary}
             />
             <Text
               className="ml-1 text-[11px] font-redditsans-bold"
-              style={{ color: isOverdue ? "#ef4444" : "#6b7280" }}
+              style={{ color: isOverdue ? "#ef4444" : colors.textSecondary }}
             >
               {isOverdue ? "Overdue · " : ""}{dueDateStr}
             </Text>

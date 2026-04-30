@@ -10,6 +10,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
+import { useTheme } from '../../context/ThemeContext';
 
 
 const UserHabits = ({ route }) => {
@@ -33,6 +34,8 @@ const UserHabits = ({ route }) => {
     const frequencyOptions = ['Today', 'All', 'Daily', 'Weekly', 'Monthly', 'Custom'];
 
     const navigation = useNavigation();
+    const { theme } = useTheme();
+    const { colors } = theme;
 
     const getUserHabitsByFrequency = async () => {
         if (!token) return;
@@ -268,15 +271,15 @@ const UserHabits = ({ route }) => {
     const hasMore = !searchQuery.trim() && allFilteredHabits.length > displayLimit;
 
     return (
-        <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1">
+        <LinearGradient colors={colors.backgroundGradient} className="flex-1">
             <SafeAreaView className="flex-1">
                 {/* Header */}
                 <View className="flex-row items-center justify-between px-4 pt-4 mb-4">
                     <View className="flex-row items-center flex-1">
                         <TouchableOpacity onPress={handleGoBack} className="mr-4">
-                            <FontAwesomeIcon icon={faArrowLeft} size={20} color="#1f2937" />
+                            <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
                         </TouchableOpacity>
-                        <Text className="text-gray-800 text-2xl font-redditsans-bold">
+                        <Text className="text-2xl font-redditsans-bold" style={{ color: colors.text }}>
                             My Habits
                         </Text>
                     </View>
@@ -286,14 +289,15 @@ const UserHabits = ({ route }) => {
 
                 {/* Search Bar */}
                 <View className="px-4 mb-4">
-                    <View className="bg-white rounded-xl px-4 py-3 flex-row items-center">
-                        <FontAwesomeIcon icon={faSearch} color="#9ca3af" size={16} />
+                    <View className="rounded-xl px-4 py-3 flex-row items-center" style={{ backgroundColor: colors.card }}>
+                        <FontAwesomeIcon icon={faSearch} color={colors.textSecondary} size={16} />
                         <TextInput
                             placeholder="Search habits..."
-                            placeholderTextColor="#9ca3af"
+                            placeholderTextColor={colors.textSecondary}
                             value={searchQuery}
                             onChangeText={setSearchQuery}
                             className="flex-1 ml-3 text-base font-redditsans-regular"
+                            style={{ color: colors.text }}
                         />
                     </View>
                 </View>
@@ -306,8 +310,8 @@ const UserHabits = ({ route }) => {
                 >
                     {loading ? (
                         <View className="flex-1 items-center justify-center py-20">
-                            <ActivityIndicator size="large" color="#2f6f3f" />
-                            <Text className="text-gray-600 mt-4 font-redditsans-regular">
+                            <ActivityIndicator size="large" color={colors.primary} />
+                            <Text className="mt-4 font-redditsans-regular" style={{ color: colors.textSecondary }}>
                                 Loading habits...
                             </Text>
                         </View>
@@ -343,19 +347,18 @@ const UserHabits = ({ route }) => {
                                                 setSelectedHabits(new Set());
                                                 setIsSelectionMode(false);
                                             }}
-                                            className={`px-5 py-2.5 rounded-full mr-2 shadow-sm ${
-                                                selectedFrequency === option 
-                                                ? 'bg-green-600 border border-green-600' 
-                                                : 'bg-white border border-gray-100'
-                                            }`}
+                                            className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
+                                            style={{
+                                                backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
+                                                borderColor: selectedFrequency === option ? colors.primary : colors.border
+                                            }}
                                             activeOpacity={0.8}
                                         >
                                             <Text
-                                                className={`text-sm font-redditsans-medium ${
-                                                    selectedFrequency === option
-                                                        ? 'text-white'
-                                                        : 'text-gray-600'
-                                                }`}
+                                                className="text-sm font-redditsans-medium"
+                                                style={{
+                                                    color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
+                                                }}
                                             >
                                                 {option}
                                             </Text>
@@ -373,7 +376,7 @@ const UserHabits = ({ route }) => {
                                             onPress={handleLoadMore}
                                             activeOpacity={0.7}
                                         >
-                                            <Text className="text-green-600 text-base font-redditsans-medium">
+                                            <Text className="text-base font-redditsans-medium" style={{ color: colors.primary }}>
                                                 Load More
                                             </Text>
                                         </TouchableOpacity>
@@ -393,11 +396,11 @@ const UserHabits = ({ route }) => {
                                             >
                                                 <FontAwesomeIcon
                                                     icon={isAllSelected ? faCheckSquare : faSquare}
-                                                    color={isAllSelected ? "#16a34a" : "#9ca3af"}
+                                                    color={isAllSelected ? colors.primary : colors.textSecondary}
                                                     size={20}
                                                 />
                                             </TouchableOpacity>
-                                            <Text className="text-gray-800 text-sm font-redditsans-medium ml-2">
+                                            <Text className="text-sm font-redditsans-medium ml-2" style={{ color: colors.text }}>
                                                 {isAllSelected ? 'Deselect All' : 'Select All'}
                                             </Text>
                                         </View>
@@ -406,17 +409,19 @@ const UserHabits = ({ route }) => {
                                         <View className="flex-row gap-2">
                                             <TouchableOpacity
                                                 onPress={exitSelectionMode}
-                                                className="bg-gray-200 rounded-full py-2 px-4 items-center"
+                                                className="rounded-full py-2 px-4 items-center"
+                                                style={{ backgroundColor: colors.cardSecondary }}
                                                 activeOpacity={0.7}
                                             >
-                                                <Text className="text-gray-700 text-sm font-redditsans-medium">
+                                                <Text className="text-sm font-redditsans-medium" style={{ color: colors.text }}>
                                                     Cancel
                                                 </Text>
                                             </TouchableOpacity>
                                             {selectedHabits.size > 0 && (
                                                 <TouchableOpacity
                                                     onPress={handleDeleteSelected}
-                                                    className="bg-red-500 rounded-full py-2 px-4 flex-row items-center justify-center"
+                                                    className="rounded-full py-2 px-4 flex-row items-center justify-center"
+                                                    style={{ backgroundColor: colors.danger }}
                                                     activeOpacity={0.7}
                                                 >
                                                     <FontAwesomeIcon icon={faTrash} color="#ffffff" size={14} />
@@ -455,26 +460,28 @@ const UserHabits = ({ route }) => {
                                 onRequestClose={handleCancelDelete}
                             >
                                 <View className="flex-1 bg-black/50 justify-center items-center px-6">
-                                    <View className="bg-white rounded-2xl px-6 py-5 w-full max-w-sm">
-                                        <Text className="text-xl font-redditsans-bold text-black mb-2">
+                                    <View className="rounded-2xl px-6 py-5 w-full max-w-sm" style={{ backgroundColor: colors.card }}>
+                                        <Text className="text-xl font-redditsans-bold mb-2" style={{ color: colors.text }}>
                                             Delete Habits
                                         </Text>
-                                        <Text className="text-base font-redditsans-regular text-gray-600 mb-6">
+                                        <Text className="text-base font-redditsans-regular mb-6" style={{ color: colors.textSecondary }}>
                                             Are you sure you want to delete {selectedHabits.size} habit{selectedHabits.size > 1 ? 's' : ''}? This action cannot be undone.
                                         </Text>
                                         <View className="flex-row gap-3">
                                             <TouchableOpacity
                                                 onPress={handleCancelDelete}
-                                                className="flex-1 bg-gray-100 rounded-full py-3 items-center"
+                                                className="flex-1 rounded-full py-3 items-center"
+                                                style={{ backgroundColor: colors.cardSecondary }}
                                                 activeOpacity={0.7}
                                             >
-                                                <Text className="text-gray-700 text-base font-redditsans-medium">
+                                                <Text className="text-base font-redditsans-medium" style={{ color: colors.text }}>
                                                     Cancel
                                                 </Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 onPress={handleConfirmDelete}
-                                                className="flex-1 bg-red-500 rounded-full py-3 items-center"
+                                                className="flex-1 rounded-full py-3 items-center"
+                                                style={{ backgroundColor: colors.danger }}
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-white text-base font-redditsans-medium">

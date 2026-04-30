@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faFire, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "./CircularProgress";
+import { useTheme } from "../../../context/ThemeContext";
+
+
 
 // ── Design tokens ─────────────────────────────────────────────
 const GREEN       = "#2f6f3f";
@@ -22,7 +25,7 @@ const BAR_W       = 12;
 // future / not done    → gray, lower opacity
 
 // ── Animated mini bar ─────────────────────────────────────────
-const AnimatedBar = ({ d, isPast }) => {
+const AnimatedBar = ({ d, isPast, colors, isDark }) => {
     const fillAnim  = useRef(new Animated.Value(0)).current;
     const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -71,15 +74,17 @@ const AnimatedBar = ({ d, isPast }) => {
     ];
 
     // Fill color: completed → green, else transparent
-    const fillColor = isDone ? GREEN_MID : "transparent";
+    const fillColor = isDone ? colors.primary : "transparent";
 
     // Track background — always gray
-    const trackBg = GRAY_BAR;
+    const trackBg = colors.cardSecondary;
 
     return (
         <View style={styles.barWrapper}>
             <Animated.View style={[
                 ...trackStyle,
+                isTodayComplete && { borderColor: colors.primary, shadowColor: colors.primary },
+                isTodayIncomplete && { borderColor: colors.primary },
                 { transform: isTodayIncomplete ? [{ scaleY: pulseAnim }] : [], backgroundColor: trackBg },
             ]}>
                 <Animated.View style={[
@@ -90,7 +95,8 @@ const AnimatedBar = ({ d, isPast }) => {
 
             <Text style={[
                 styles.dayLabel,
-                d.isToday && styles.dayLabelToday,
+                { color: colors.textSecondary },
+                d.isToday && [styles.dayLabelToday, { color: colors.primary }],
                 isFuture  && !d.isToday && styles.dayLabelFuture,
             ]}>
                 {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"][d._index ?? 0]}
@@ -99,8 +105,7 @@ const AnimatedBar = ({ d, isPast }) => {
     );
 };
 
-// ── Weekly bar chart ──────────────────────────────────────────
-const WeeklyChart = ({ data }) => {
+const WeeklyChart = ({ data, colors, isDark }) => {
     if (!data || data.length === 0) return null;
     // Find today's index to distinguish past vs future
     const todayIdx = data.findIndex(d => d.isToday);
@@ -111,13 +116,14 @@ const WeeklyChart = ({ data }) => {
                     key={i}
                     d={{ ...d, _index: i }}
                     isPast={todayIdx >= 0 ? i < todayIdx : false}
+                    colors={colors}
+                    isDark={isDark}
                 />
             ))}
         </View>
     );
 };
 
-// ── Main card ─────────────────────────────────────────────────
 const HabitProgressCard = ({
     habit,
     weeklyData,
@@ -125,6 +131,9 @@ const HabitProgressCard = ({
     title       = null,
     weeklyStats = null,
 }) => {
+    const { theme, isDark } = useTheme();
+    const { colors } = theme;
+
     if (!habit) return <View />;
 
     const isWeekly = weeklyStats != null;
@@ -142,43 +151,41 @@ const HabitProgressCard = ({
     };
 
     return (
-        <View style={styles.card}>
-            {/* Title */}
-            {title && <Text style={styles.cardTitle}>{title}</Text>}
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
+            {title && <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>{title}</Text>}
 
-            {/* Circle + Stats */}
             <View style={styles.row}>
                 <CircularProgress
                     percent={displayPercent}
                     size={120}
                     strokeWidth={STROKE}
-                    color={GREEN}
+                    color={colors.primary}
+                    textColor={colors.text}
+                    trackColor={colors.border}
                 />
 
                 <View style={styles.statsCol}>
-                    {/* Primary value */}
                     {isWeekly ? (
-                        <Text style={styles.primaryText}>
+                        <Text style={[styles.primaryText, { color: colors.text }]}>
                             {weeklyStats.completedDays}
-                            <Text style={styles.primarySub}>
+                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}>
                                 {" "}of {weeklyStats.totalDays} days completed{" "}
                             </Text>
-                            <Text style={styles.contextLabel}>this week</Text>
+                            <Text style={[styles.contextLabel, { color: colors.primary }]}>this week</Text>
                         </Text>
                     ) : (
-                        <Text style={styles.primaryText}>
+                        <Text style={[styles.primaryText, { color: colors.text }]}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
-                            <Text style={styles.primarySub}> {habit.unit}</Text>
+                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}> {habit.unit}</Text>
                         </Text>
                     )}
 
-                    {/* Streak + Best */}
                     <View style={styles.metaGroup}>
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faFire}   color="#f59e0b" size={13} />
-                            <Text style={styles.metaLabel}>
+                            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                                 Streak:{" "}
-                                <Text style={styles.metaValue}>
+                                <Text style={[styles.metaValue, { color: colors.text }]}>
                                     {habit.currentStreak ?? 0}{" "}
                                     {habit.currentStreak === 1 ? "day" : "days"}
                                 </Text>
@@ -186,9 +193,9 @@ const HabitProgressCard = ({
                         </View>
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={13} />
-                            <Text style={styles.metaLabel}>
+                            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                                 Best:{" "}
-                                <Text style={styles.metaValue}>
+                                <Text style={[styles.metaValue, { color: colors.text }]}>
                                     {habit.longestStreak ?? 0}{" "}
                                     {habit.longestStreak === 1 ? "day" : "days"}
                                 </Text>
@@ -198,15 +205,13 @@ const HabitProgressCard = ({
                 </View>
             </View>
 
-            {/* Mini bars — only in Weekly card */}
-            {isWeekly && <WeeklyChart data={weeklyData} />}
+            {isWeekly && <WeeklyChart data={weeklyData} colors={colors} isDark={isDark} />}
         </View>
     );
 };
 
 HabitProgressCard.displayName = "HabitProgressCard";
 
-// ── Styles ────────────────────────────────────────────────────
 const styles = StyleSheet.create({
     card: {
         backgroundColor: "#fff",
@@ -228,7 +233,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 
-    /* ── Row ── */
     row: {
         flexDirection: "row",
         alignItems: "center",
@@ -239,7 +243,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
 
-    /* ── Text ── */
     primaryText: {
         fontSize: 19,
         fontWeight: "800",
@@ -257,7 +260,6 @@ const styles = StyleSheet.create({
         color: GREEN,
     },
 
-    /* ── Meta ── */
     metaGroup: {
         marginTop: 10,
         gap: 5,
@@ -276,7 +278,6 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
 
-    /* ── Chart ── */
     chartRow: {
         flexDirection: "row",
         alignItems: "flex-end",
@@ -323,7 +324,6 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
 
-    /* ── Day labels ── */
     dayLabel: {
         fontSize: 9,
         color: "#b0b8c4",

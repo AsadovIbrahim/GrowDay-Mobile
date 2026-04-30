@@ -15,6 +15,7 @@ export const lightTheme = {
     text: '#111827',
     textSecondary: '#6B7280',
     textMuted: '#9CA3AF',
+    textGray:'#676666',
     // Primary (green)
     primary: '#2f6f3f',
     primaryLight: '#4caf66',
@@ -58,6 +59,7 @@ export const darkTheme = {
     text: '#F1F5F9',
     textSecondary: '#94A3B8',
     textMuted: '#64748B',
+    textGray: '#CBD5E1',
     // Primary (green)
     primary: '#4caf66',
     primaryLight: '#6fcf85',

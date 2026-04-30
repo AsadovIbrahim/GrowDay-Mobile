@@ -28,16 +28,18 @@ import {
   deleteUserTaskFetch,
 } from "../../utils/fetch";
 import UserTaskCard from "../../components/UserTaskCard";
+import { useTheme } from "../../context/ThemeContext";
 
 const STATUS_FILTERS = ["All", "Pending", "InProgress", "Completed"];
 
-const StatBox = ({ value, label, color = "#16a34a" }) => (
-  <View className="flex-1 bg-white rounded-2xl p-4 items-center mx-1">
+const StatBox = ({ value, label, color = "#16a34a", colors }) => (
+  <View className="flex-1 rounded-2xl p-4 items-center mx-1" style={{ backgroundColor: colors.card }}>
     <Text className="text-2xl font-redditsans-bold" style={{ color }}>
       {value}
     </Text>
     <Text
-      className="text-[11px] font-redditsans-regular text-gray-500 mt-1 text-center"
+      className="text-[11px] font-redditsans-regular mt-1 text-center"
+      style={{ color: colors.textSecondary }}
       numberOfLines={1}
     >
       {label}
@@ -48,6 +50,8 @@ const StatBox = ({ value, label, color = "#16a34a" }) => (
 const UserTasks = () => {
   const [token] = useMMKVString("accessToken");
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const { colors } = theme;
 
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState(null);
@@ -180,18 +184,19 @@ const UserTasks = () => {
   };
 
   return (
-    <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1">
+    <LinearGradient colors={colors.backgroundGradient} className="flex-1">
       <SafeAreaView className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 pt-4 mb-5">
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              className="mr-4 w-9 h-9 bg-white/70 rounded-full items-center justify-center"
+              className="mr-4 w-9 h-9 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.cardSecondary }}
             >
-              <FontAwesomeIcon icon={faArrowLeft} size={18} color="#111827" />
+              <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
             </TouchableOpacity>
-            <Text className="text-[26px] font-redditsans-bold text-gray-900 tracking-tight">
+            <Text className="text-[26px] font-redditsans-bold tracking-tight" style={{ color: colors.text }}>
               My Tasks
             </Text>
           </View>
@@ -207,8 +212,8 @@ const UserTasks = () => {
 
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#fff" />
-            <Text className="mt-3 text-white font-redditsans-regular text-base">
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text className="mt-3 font-redditsans-regular text-base" style={{ color: colors.text }}>
               Loading…
             </Text>
           </View>
@@ -221,7 +226,7 @@ const UserTasks = () => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor="#fff"
+                tintColor={colors.primary}
               />
             }
           >
@@ -232,35 +237,38 @@ const UserTasks = () => {
                   <StatBox
                     value={stats.totalTasks}
                     label="Total"
-                    color="#374151"
+                    color={colors.text}
+                    colors={colors}
                   />
                   <StatBox
                     value={stats.completedTasks}
                     label="Completed"
                     color="#16a34a"
+                    colors={colors}
                   />
                   <StatBox
                     value={stats.pendingTasks}
                     label="Pending"
                     color="#f59e0b"
+                    colors={colors}
                   />
                 </View>
 
                 {/* Completion rate + streak row */}
                 <View className="flex-row mb-5">
-                  <View className="flex-1 bg-white rounded-2xl p-4 mr-1 items-center">
+                  <View className="flex-1 rounded-2xl p-4 mr-1 items-center" style={{ backgroundColor: colors.card }}>
                     <Text className="text-2xl font-redditsans-bold text-blue-500">
                       {Math.round(stats.completionRate)}%
                     </Text>
-                    <Text className="text-[11px] font-redditsans-regular text-gray-500 mt-1">
+                    <Text className="text-[11px] font-redditsans-regular mt-1" style={{ color: colors.textSecondary }}>
                       Completion Rate
                     </Text>
                   </View>
-                  <View className="flex-1 bg-white rounded-2xl p-4 ml-1 items-center">
+                  <View className="flex-1 rounded-2xl p-4 ml-1 items-center" style={{ backgroundColor: colors.card }}>
                     <Text className="text-2xl font-redditsans-bold text-orange-500">
                       🔥 {stats.currentTaskStreak}
                     </Text>
-                    <Text className="text-[11px] font-redditsans-regular text-gray-500 mt-1">
+                    <Text className="text-[11px] font-redditsans-regular mt-1" style={{ color: colors.textSecondary }}>
                       Day Streak
                     </Text>
                   </View>
@@ -281,12 +289,12 @@ const UserTasks = () => {
                   onPress={() => setFilter(f)}
                   className="mr-2 px-4 py-2 rounded-full"
                   style={{
-                    backgroundColor: filter === f ? "#fff" : "rgba(255,255,255,0.3)",
+                    backgroundColor: filter === f ? colors.card : colors.cardSecondary,
                   }}
                 >
                   <Text
                     className="font-redditsans-bold text-[13px]"
-                    style={{ color: filter === f ? "#16a34a" : "#374151" }}
+                    style={{ color: filter === f ? colors.primary : colors.textSecondary }}
                   >
                     {filterLabel(f)}
                     {f !== "All" && stats
@@ -316,16 +324,16 @@ const UserTasks = () => {
 
             {/* Task list */}
             {filteredTasks.length === 0 ? (
-              <View className="bg-white rounded-3xl p-10 items-center mt-2">
-                <FontAwesomeIcon icon={faTasks} size={40} color="#d1d5db" />
-                <Text className="text-gray-400 font-redditsans-bold text-base mt-4 text-center">
+              <View className="rounded-3xl p-10 items-center mt-2" style={{ backgroundColor: colors.card }}>
+                <FontAwesomeIcon icon={faTasks} size={40} color={colors.textSecondary} />
+                <Text className="font-redditsans-bold text-base mt-4 text-center" style={{ color: colors.textSecondary }}>
                   {filter === "Completed"
                     ? "No completed tasks yet"
                     : filter === "Pending"
                     ? "No pending tasks"
                     : "No tasks found"}
                 </Text>
-                <Text className="text-gray-400 font-redditsans-regular text-sm mt-1 text-center">
+                <Text className="font-redditsans-regular text-sm mt-1 text-center" style={{ color: colors.textSecondary }}>
                   Tasks are assigned by admins
                 </Text>
               </View>

@@ -1,14 +1,18 @@
 import React from 'react';
 import { View, Text } from "react-native";
 import Svg, { Circle } from 'react-native-svg';
+import { useTheme } from '../../../context/ThemeContext';
 
 const ProgressSummary = ({ dailyStatistics }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   return (
     <View className="px-4 mb-8">
       <View className="flex-row gap-3">
         <View 
-          className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
+          className="flex-1 rounded-xl p-4 flex-row items-center"
           style={{
+            backgroundColor: colors.card,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
@@ -22,7 +26,7 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 cx="32"
                 cy="32"
                 r="28"
-                stroke="#e5e7eb"
+                stroke={colors.border}
                 strokeWidth="8"
                 fill="none"
               />
@@ -30,7 +34,7 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 cx="32"
                 cy="32"
                 r="28"
-                stroke="#8bc37a"
+                stroke={colors.primary}
                 strokeWidth="8"
                 fill="none"
                 strokeDasharray={`${2 * Math.PI * 28}`}
@@ -40,7 +44,8 @@ const ProgressSummary = ({ dailyStatistics }) => {
               />
             </Svg>
             <Text 
-              className="text-sm font-redditsans-bold text-black"
+              style={{ color: colors.text }}
+              className="text-sm font-redditsans-bold"
             >
               {dailyStatistics?.completionRate !== undefined && dailyStatistics?.completionRate !== null 
                 ? `${Math.round(dailyStatistics.completionRate)}%` 
@@ -50,12 +55,14 @@ const ProgressSummary = ({ dailyStatistics }) => {
           
           <View className="flex-1">
             <Text 
-              className="text-base font-redditsans-medium text-black mb-1"
+              style={{ color: colors.text }}
+              className="text-base font-redditsans-medium mb-1"
             >
               Completed
             </Text>
             <Text 
-              className="text-xs text-gray-500 font-redditsans-regular"
+              style={{ color: colors.textSecondary }}
+              className="text-xs font-redditsans-regular"
             >
               {dailyStatistics?.completedCount || 0} Completed
             </Text>
@@ -63,8 +70,9 @@ const ProgressSummary = ({ dailyStatistics }) => {
         </View>
 
         <View 
-          className="flex-1 bg-white rounded-xl p-4 flex-row items-center"
+          className="flex-1 rounded-xl p-4 flex-row items-center"
           style={{
+            backgroundColor: colors.card,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
@@ -78,7 +86,7 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 cx="32"
                 cy="32"
                 r="28"
-                stroke="#e5e7eb"
+                stroke={colors.border}
                 strokeWidth="8"
                 fill="none"
               />
@@ -86,7 +94,7 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 cx="32"
                 cy="32"
                 r="28"
-                stroke="#ef4444"
+                stroke={colors.danger}
                 strokeWidth="8"
                 fill="none"
                 strokeDasharray={`${2 * Math.PI * 28}`}
@@ -96,8 +104,8 @@ const ProgressSummary = ({ dailyStatistics }) => {
               />
             </Svg>
             <Text 
-              className="text-sm font-bold text-black"
-              style={{ fontFamily: 'redditsans-bold' }}
+              style={{ color: colors.text, fontFamily: 'redditsans-bold' }}
+              className="text-sm font-bold"
             >
               {dailyStatistics?.missedRate !== undefined && dailyStatistics?.missedRate !== null 
                 ? `${Math.round(dailyStatistics.missedRate)}%` 
@@ -107,14 +115,14 @@ const ProgressSummary = ({ dailyStatistics }) => {
           
           <View className="flex-1">
             <Text 
-              className="text-base font-semibold text-black mb-1"
-              style={{ fontFamily: 'redditsans-medium' }}
+              style={{ color: colors.text, fontFamily: 'redditsans-medium' }}
+              className="text-base font-semibold mb-1"
             >
               Missed
             </Text>
             <Text 
-              className="text-xs text-gray-500"
-              style={{ fontFamily: 'redditsans-regular' }}
+              style={{ color: colors.textSecondary, fontFamily: 'redditsans-regular' }}
+              className="text-xs"
             >
               {dailyStatistics?.missedCount || 0} Missed
             </Text>

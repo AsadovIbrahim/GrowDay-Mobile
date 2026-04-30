@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ICONS } from "../../constants/icons";
 import HabitProgressCard from "./components/HabitProgressCard";
 import HabitActionSection from "./components/HabitActionSection";
+import { useTheme } from '../../context/ThemeContext';
 
 const weeklyDataPlaceholder = [
     { value: 0, active: false },
@@ -30,6 +31,8 @@ const UserHabitDetails = () => {
     const [liveDelta, setLiveDelta] = useState(0);
     const [token] = useMMKVString("accessToken");
     const [isFocused, setIsFocused] = useState(false);
+    const { theme } = useTheme();
+    const { colors } = theme;
     const isFutureDate = route.params?.isFuture || (() => {
         const dateParam = route.params?.date;
         if (!dateParam) return false;
@@ -95,25 +98,24 @@ const UserHabitDetails = () => {
 
 
     return (
-        <LinearGradient colors={["#d8ead0", "#2f6f3f"]} style={{ flex: 1 }}>
+        <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
 
-            {/* ── Header ── */}
             <View style={styles.header}>
-                <Pressable onPress={() => navigation.goBack()} style={styles.iconCircle} hitSlop={10}>
-                    <FontAwesomeIcon icon={faArrowLeft} color="#374151" size={18} />
+                <Pressable onPress={() => navigation.goBack()} style={[styles.iconCircle, { backgroundColor: colors.card }]} hitSlop={10}>
+                    <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
                 </Pressable>
                 <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={styles.headerTitle}>Habit Details</Text>
-                    <Text style={styles.headerSubtitle}>Track your daily progress</Text>
+                    <Text style={[styles.headerTitle, { color: colors.text }]}>Habit Details</Text>
+                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Track your daily progress</Text>
                 </View>
                 <View style={styles.headerActions}>
                     {!isFutureDate && (
                         <>
-                            <Pressable style={styles.iconCircle} hitSlop={10}>
-                                <FontAwesomeIcon icon={faEdit} color="#4b5563" size={16} />
+                            <Pressable style={[styles.iconCircle, { backgroundColor: colors.card }]} hitSlop={10}>
+                                <FontAwesomeIcon icon={faEdit} color={colors.textSecondary} size={16} />
                             </Pressable>
-                            <Pressable style={[styles.iconCircle, { backgroundColor: "#fee2e2" }]} hitSlop={10}>
-                                <FontAwesomeIcon icon={faTrash} color="#ef4444" size={16} />
+                            <Pressable style={[styles.iconCircle, { backgroundColor: colors.dangerSurface }]} hitSlop={10}>
+                                <FontAwesomeIcon icon={faTrash} color={colors.danger} size={16} />
                             </Pressable>
                         </>
                     )}
@@ -124,26 +126,24 @@ const UserHabitDetails = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* ── Title ── */}
                 <View style={styles.titleSection}>
-                    <Text className="text-4xl font-redditsans-bold" style={styles.mainTitle}>
+                    <Text className="text-4xl font-redditsans-bold" style={[styles.mainTitle, { color: colors.text }]}>
                         {userHabit?.title ?? "Loading..."}{" "}
                         {ICONS[userHabit?.icon]}
                     </Text>
-                    <Text className="font-redditsans-regular" style={styles.descriptionText}>
+                    <Text className="font-redditsans-regular" style={[styles.descriptionText, { color: colors.textSecondary }]}>
                         {userHabit?.description}
                     </Text>
 
                     <View style={styles.tagRow}>
-                        <View style={styles.tag}>
-                            <Text style={styles.tagText}>
+                        <View style={[styles.tag, { backgroundColor: colors.cardSecondary }]}>
+                            <Text style={[styles.tagText, { color: colors.textSecondary }]}>
                                 {userHabit?.frequency ?? "Daily"}
                             </Text>
                         </View>
                     </View>
                 </View>
 
-                {/* ── Stats Card 1 (Current) ── */}
                 <HabitProgressCard 
                     habit={userHabit} 
                     weeklyData={weeklyDataPlaceholder} 
@@ -151,7 +151,6 @@ const UserHabitDetails = () => {
                     title={isFutureDate ? "Upcoming Performance" : "Today's Performance"}
                 />
 
-                {/* ── Stats Card 2 (API Weekly Progress) ── */}
                 {weeklyProgress && (
                     <HabitProgressCard 
                         habit={userHabit} 
@@ -163,10 +162,9 @@ const UserHabitDetails = () => {
 
 
 
-                {/* ── Dynamic Action Section ── */}
                 {isFutureDate ? (
-                    <View style={styles.futureNotice}>
-                        <Text style={styles.futureNoticeText}>
+                    <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
+                        <Text style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
                             You can start tracking this habit on the selected day.
                         </Text>
                     </View>
@@ -187,20 +185,19 @@ const UserHabitDetails = () => {
                     />
                 )}
 
-                {/* ── Notes ── */}
                 {!isFutureDate && !isFullyCompleted && (
-                    <View style={[styles.notesCard, isFocused && styles.notesCardFocused]}>
+                    <View style={[styles.notesCard, { backgroundColor: colors.card }, isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }]}>
                         <View style={styles.notesHeader}>
-                            <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? "#2f6f3f" : "#9ca3af"} size={16} />
-                            <Text style={[styles.notesLabel, isFocused && { color: "#2f6f3f" }]}>Today's Notes</Text>
+                            <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
+                            <Text style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>Today's Notes</Text>
                         </View>
                         <TextInput
                             value={note}
                             onChangeText={setNote}
                             placeholder="Add a note..."
-                            placeholderTextColor="#9ca3af"
+                            placeholderTextColor={colors.textMuted}
                             multiline
-                            style={styles.notesInput}
+                            style={[styles.notesInput, { color: colors.text }]}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
                         />

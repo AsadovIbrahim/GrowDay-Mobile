@@ -2,8 +2,11 @@ import React from "react";
 import { View, Text } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLock, faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "../context/ThemeContext";
 
 const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) => {
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
   const earned = !!earnedAt;
 
   const formattedDate = earned
@@ -16,8 +19,9 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
 
   return (
     <View
-      className="bg-white rounded-[24px] p-5 mb-4"
+      className="rounded-[24px] p-5 mb-4"
       style={{
+        backgroundColor: colors.card,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
@@ -30,7 +34,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
         {/* Icon circle */}
         <View
           className="w-[54px] h-[54px] rounded-full items-center justify-center mr-4"
-          style={{ backgroundColor: earned ? "#dcfce7" : "#f3f4f6" }}
+          style={{ backgroundColor: earned ? (isDark ? 'rgba(34, 197, 94, 0.15)' : '#dcfce7') : colors.cardSecondary }}
         >
           {icon ? (
             <Text style={{ fontSize: 26 }}>{icon}</Text>
@@ -46,7 +50,8 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
           <View className="flex-row items-center mb-1">
             <Text
               numberOfLines={1}
-              className="text-[17px] font-redditsans-bold text-gray-900 flex-1"
+              className="text-[17px] font-redditsans-bold flex-1"
+              style={{ color: colors.text }}
             >
               {title}
             </Text>
@@ -58,7 +63,8 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
           </View>
           <Text
             numberOfLines={2}
-            className="text-[13px] font-redditsans-regular text-gray-500 leading-[18px]"
+            className="text-[13px] font-redditsans-regular leading-[18px]"
+            style={{ color: colors.textSecondary }}
           >
             {description}
           </Text>
@@ -67,16 +73,16 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
 
       {/* Footer */}
       <View className="flex-row items-center justify-between mt-1 ml-1">
-        <Text className="text-[12px] font-redditsans-regular text-gray-400">
+        <Text className="text-[12px] font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {earned ? `Earned on ${formattedDate}` : "Not yet unlocked"}
         </Text>
         <View
           className="px-3 py-1 rounded-full"
-          style={{ backgroundColor: earned ? "#dcfce7" : "#f3f4f6" }}
+          style={{ backgroundColor: earned ? (isDark ? 'rgba(34, 197, 94, 0.15)' : '#dcfce7') : colors.cardSecondary }}
         >
           <Text
             className="text-[12px] font-redditsans-bold"
-            style={{ color: earned ? "#16a34a" : "#9ca3af" }}
+            style={{ color: earned ? colors.primary : colors.textSecondary }}
           >
             {earned ? "✓ Unlocked" : "Locked"}
           </Text>

@@ -5,8 +5,11 @@ import React, { useState, useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { getUserNotificationsFetch, getUserUnreadNotificationsFetch, markAsAllReadNotificationFetch, getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useTheme } from "../../context/ThemeContext";
 
 const Notification = () => {
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
 
   const navigation = useNavigation();
   const [token] = useMMKVString('accessToken');
@@ -218,11 +221,11 @@ const Notification = () => {
         onPress={handlePress}
         onLongPress={() => handleLongPress(notification)}
         activeOpacity={0.7}
-        className="mb-3 bg-white p-4 rounded-xl"
+        className="mb-3 p-4 rounded-xl"
         style={{
-          backgroundColor: isSelected ? '#f0f9ff' : 'white',
+          backgroundColor: isSelected ? (isDark ? 'rgba(59, 130, 246, 0.15)' : '#f0f9ff') : colors.card,
           borderWidth: 2,
-          borderColor: isSelected ? '#3b82f6' : '#e5e7eb',
+          borderColor: isSelected ? '#3b82f6' : colors.border,
           borderRadius: 12,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
@@ -246,16 +249,20 @@ const Notification = () => {
             <View className="flex-1">
               <View className="flex-row items-center mb-1">
                 <Text className={`text-base ${!notification.isRead
-                  ? 'font-redditsans-bold text-black'
-                  : 'font-redditsans-regular text-black'
-                  }`}>
+                  ? 'font-redditsans-bold'
+                  : 'font-redditsans-regular'
+                  }`}
+                  style={{ color: colors.text }}
+                >
                   {notification.habitTitle}
                 </Text>
               </View>
               <Text className={`text-sm ${!notification.isRead
-                ? 'font-redditsans-medium text-gray-700'
-                : 'font-redditsans-regular text-gray-700'
-                }`}>
+                ? 'font-redditsans-medium'
+                : 'font-redditsans-regular'
+                }`}
+                style={{ color: colors.textSecondary }}
+              >
                 {notification.message}
               </Text>
             </View>
@@ -266,7 +273,7 @@ const Notification = () => {
             {!notification.isRead && !isSelectionMode && (
               <View className="w-3 h-3 bg-green-500 rounded-full mb-2" />
             )}
-            <Text className="text-xs text-gray-400 font-redditsans-regular">
+            <Text className="text-xs font-redditsans-regular" style={{ color: colors.textSecondary }}>
               {notification.createdAt
                 ? new Date(notification.createdAt).toLocaleString('en-US', {
                   year: 'numeric',
@@ -293,14 +300,14 @@ const Notification = () => {
   const unreadCount = unreadNotificationCount;
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
-      <View className="pt-12 px-4 pb-4 bg-white">
+      <View className="pt-12 px-4 pb-4" style={{ backgroundColor: colors.background }}>
         <View className="flex-row items-center gap-4 mb-4">
           <TouchableOpacity onPress={handleGoBack}>
-            <FontAwesomeIcon icon={faArrowLeft} size={20} color="#1f2937" />
+            <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
           </TouchableOpacity>
-          <Text className="text-3xl mt-3 font-redditsans-bold text-black mb-4">
+          <Text className="text-3xl mt-3 font-redditsans-bold mb-4" style={{ color: colors.text }}>
             Notifications
           </Text>
         </View>
@@ -314,8 +321,8 @@ const Notification = () => {
               className="flex-row items-center"
             >
               <Text
-                className={`text-base font-redditsans-medium ${selectedTab === 'all' ? 'text-black' : 'text-gray-500'
-                  }`}
+                className="text-base font-redditsans-medium"
+                style={{ color: selectedTab === 'all' ? colors.text : colors.textSecondary }}
               >
                 View All
               </Text>
@@ -330,14 +337,14 @@ const Notification = () => {
               className="flex-row items-center"
             >
               <Text
-                className={`text-base font-redditsans-medium ${selectedTab === 'unread' ? 'text-black' : 'text-gray-500'
-                  }`}
+                className="text-base font-redditsans-medium"
+                style={{ color: selectedTab === 'unread' ? colors.text : colors.textSecondary }}
               >
                 Unread
               </Text>
               {unreadCount > 0 && (
-                <View className="ml-2 bg-gray-200 rounded-full px-2 py-0.5">
-                  <Text className="text-xs font-redditsans-medium text-gray-700">
+                <View className="ml-2 rounded-full px-2 py-0.5" style={{ backgroundColor: colors.cardSecondary }}>
+                  <Text className="text-xs font-redditsans-medium" style={{ color: colors.text }}>
                     {unreadCount}
                   </Text>
                 </View>
@@ -409,7 +416,7 @@ const Notification = () => {
         )}
         ListEmptyComponent={() => (
           <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-gray-500 font-redditsans-regular">
+            <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>
               {loading ? "Loading..." : "No notifications found"}
             </Text>
           </View>

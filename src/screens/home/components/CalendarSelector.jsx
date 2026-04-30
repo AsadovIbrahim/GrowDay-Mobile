@@ -1,7 +1,10 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useState } from "react";
+import { useTheme } from '../../../context/ThemeContext';
 
 const CalendarSelector = ({ selectedDate, onDateSelect }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const today = new Date();
   const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   
@@ -29,30 +32,33 @@ for (let i = -3; i <= 3; i++) {
         <TouchableOpacity
           key={index}
           onPress={() => onDateSelect(date.day, date.fullDate)}
-          className={`px-4 py-3 rounded-2xl ${
-            date.day === selectedDate ? 'bg-white border-2 border-blue-500' : 'bg-gray-100'
-          }`}
           style={{
+            backgroundColor: date.day === selectedDate ? colors.card : colors.cardSecondary,
+            borderColor: date.day === selectedDate ? colors.primary : 'transparent',
+            borderWidth: date.day === selectedDate ? 2 : 0,
             shadowColor: date.day === selectedDate ? "#000" : "transparent",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 4,
             elevation: date.day === selectedDate ? 3 : 0,
           }}
+          className="px-4 py-3 rounded-2xl"
         >
           <Text 
-            className={`text-lg font-bold ${
-              date.day === selectedDate ? 'text-blue-500' : 'text-black'
-            }`}
-            style={{ fontFamily: 'redditsans-bold' }}
+            style={{ 
+              color: date.day === selectedDate ? colors.primary : colors.text,
+              fontFamily: 'redditsans-bold' 
+            }}
+            className="text-lg font-bold"
           >
             {date.day}
           </Text>
           <Text 
-            className={`text-xs ${
-              date.day === selectedDate ? 'text-black' : 'text-gray-500'
-            }`}
-            style={{ fontFamily: 'redditsans-regular' }}
+            style={{ 
+              color: date.day === selectedDate ? colors.text : colors.textSecondary,
+              fontFamily: 'redditsans-regular' 
+            }}
+            className="text-xs"
           >
             {date.dayName}
           </Text>

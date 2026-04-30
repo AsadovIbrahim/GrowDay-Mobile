@@ -2,8 +2,11 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faClock, faChevronRight, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from "../constants/icons";
+import { useTheme } from "../context/ThemeContext";
 
 const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress, showStatus }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const formatTime = (timeValue) => {
     if (!timeValue) return '';
     try {
@@ -67,14 +70,15 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
     <TouchableOpacity
       onPress={handlePress}
       onLongPress={onLongPress}
-      className={`bg-white rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2 border-green-500' : ''} ${isCompleted ? 'opacity-80' : ''}`}
+      className={`rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2' : ''} ${isCompleted ? 'opacity-80' : ''}`}
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: isCompleted ? 0 : 2 },
         shadowOpacity: isCompleted ? 0 : 0.1,
         shadowRadius: 4,
         elevation: isCompleted ? 0 : 3,
-        backgroundColor: isCompleted ? '#f0fdf4' : '#fff'
+        backgroundColor: isCompleted ? colors.primarySurface : colors.card,
+        borderColor: isSelected ? colors.primary : 'transparent'
       }}
     >
       {/* Checkbox - Only visible in selection mode */}
@@ -89,16 +93,19 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
         >
           <FontAwesomeIcon
             icon={isSelected ? faCheckSquare : faSquare}
-            color={isSelected ? "#16a34a" : "#9ca3af"}
+            color={isSelected ? colors.primary : colors.textSecondary}
             size={24}
           />
         </TouchableOpacity>
       )}
 
       {/* Icon */}
-      <View className={`w-12 h-12 rounded-full items-center justify-center mr-4 ${isCompleted ? 'bg-green-100' : 'bg-gray-100'}`}>
+      <View 
+        className="w-12 h-12 rounded-full items-center justify-center mr-4"
+        style={{ backgroundColor: isCompleted ? colors.primarySurface : colors.cardSecondary }}
+      >
         {isCompleted ? (
-          <FontAwesomeIcon icon={faCheck} color="#16a34a" size={20} />
+          <FontAwesomeIcon icon={faCheck} color={colors.primary} size={20} />
         ) : (
           <Text className="text-2xl">{ICONS[habit.icon]}</Text>
         )}
@@ -106,10 +113,10 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
       {/* Title and Type */}
       <View className="flex-1">
-        <Text className="text-base font-redditsans-medium text-black mb-1">
+        <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
           {habit.title}
         </Text>
-        <Text className="text-sm text-gray-500 font-redditsans-regular">
+        <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {isCompleted ? 'Completed' : displayType}
         </Text>
       </View>
@@ -118,14 +125,14 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
       <View className="flex-row items-center gap-2">
         {formattedTime && (
           <View className="flex-row items-center gap-1">
-            <FontAwesomeIcon icon={faClock} color="#9ca3af" size={14} />
-            <Text className="text-sm text-gray-500 font-redditsans-regular">
+            <FontAwesomeIcon icon={faClock} color={colors.textSecondary} size={14} />
+            <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
               {formattedTime}
             </Text>
           </View>
         )}
         {!isSelectionMode && (
-          <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" size={14} />
+          <FontAwesomeIcon icon={faChevronRight} color={colors.textSecondary} size={14} />
         )}
       </View>
     </TouchableOpacity>

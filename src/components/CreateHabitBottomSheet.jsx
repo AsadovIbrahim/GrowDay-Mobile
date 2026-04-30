@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MenuContext } from '../context/MenuContext';
 import { getAllHabitsFetch } from '../utils/fetch';
 import { ICONS } from '../constants/icons';
+import { useTheme } from '../context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -33,6 +34,8 @@ const CreateHabitBottomSheet = () => {
    const [isLoadingMore, setIsLoadingMore] = useState(false);
    const [hasMore, setHasMore] = useState(true);
    const [pageSize, setPageSize] = useState(3);
+   const { theme } = useTheme();
+   const { colors } = theme;
 
   const fetchPopularHabits = async (isLoadMore = false) => {
     if (!accessToken || (!hasMore && isLoadMore) || (isLoading || isLoadingMore)) return;
@@ -145,15 +148,15 @@ const CreateHabitBottomSheet = () => {
         <Animated.View
           style={[
             styles.sheet,
-            { transform: [{ translateY }] }
+            { transform: [{ translateY }], backgroundColor: colors.card }
           ]}
         >
           <View style={styles.handleContainer}>
-            <View style={styles.handle} />
+            <View style={[styles.handle, { backgroundColor: colors.cardSecondary }]} />
           </View>
 
           <View style={styles.content}>
-            <Text className='font-redditsans-bold text-gray-500 mb-5'>NEW GOOD HABIT</Text>
+            <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>NEW GOOD HABIT</Text>
             
             <View style={styles.inputContainer}>
               <TouchableOpacity 
@@ -165,18 +168,18 @@ const CreateHabitBottomSheet = () => {
                     params: { isCustom: true } 
                   });
                 }}
-                style={styles.inputShadowContainer}
+                style={[styles.inputShadowContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
               >
-                <Text className="flex-1 font-redditsans-black text-gray-400">
+                <Text className="flex-1 font-redditsans-black" style={{ color: colors.textGray }}>
                   Create Custom Habit
                 </Text>
-                <View style={styles.addIconContainer}>
-                   <FontAwesomeIcon icon={faPlus} size={14} color="#000" />
+                <View style={[styles.addIconContainer, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
+                   <FontAwesomeIcon icon={faPlus} size={14} color={colors.text} />
                 </View>
               </TouchableOpacity>
             </View>
 
-            <Text className='font-redditsans-bold text-gray-500 mb-5 mt-5'>POPULAR HABITS</Text>
+            <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>POPULAR HABITS</Text>
             
             <FlatList
               horizontal
@@ -189,7 +192,7 @@ const CreateHabitBottomSheet = () => {
               ListFooterComponent={() => (
                 isLoadingMore && (
                   <View style={styles.loaderFooter}>
-                    <ActivityIndicator color="#2f6f3f" size="small" />
+                    <ActivityIndicator color={colors.primary} size="small" />
                   </View>
                 )
               )}
@@ -197,7 +200,7 @@ const CreateHabitBottomSheet = () => {
                 <TouchableOpacity
                   key={habit.id}
                   activeOpacity={0.8}
-                  style={[styles.habitCard]}
+                  style={[styles.habitCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                   onPress={() => {
                     closeModal();
                     navigation.navigate('Home', { 
@@ -206,12 +209,12 @@ const CreateHabitBottomSheet = () => {
                     });
                   }}
                 >
-                  <View style={styles.habitIconContainer}>
+                  <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
                     <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
                   </View>
                   <View>
-                    <Text className='font-redditsans-bold' style={styles.habitTitle}>{habit.title}</Text>
-                    <Text className='font-redditsans-regular text-gray-500' style={styles.habitSubtitle}>{habit.frequency}</Text>
+                    <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]}>{habit.title}</Text>
+                    <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]}>{habit.frequency}</Text>
                   </View>
                 </TouchableOpacity>
               )}

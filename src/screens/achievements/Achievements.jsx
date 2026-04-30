@@ -26,13 +26,14 @@ import {
   markAchievementsAsSeenFetch,
 } from "../../utils/fetch";
 import AchievementCard from "../../components/AchievementCard";
+import { useTheme } from "../../context/ThemeContext";
 
-const StatBox = ({ value, label, color = "#16a34a" }) => (
-  <View className="flex-1 bg-white rounded-2xl p-4 items-center mx-1">
+const StatBox = ({ value, label, color = "#16a34a", colors }) => (
+  <View className="flex-1 rounded-2xl p-4 items-center mx-1" style={{ backgroundColor: colors.card }}>
     <Text className="text-2xl font-redditsans-bold" style={{ color }}>
       {value}
     </Text>
-    <Text className="text-[11px] font-redditsans-regular text-gray-500 mt-1 text-center">
+    <Text className="text-[11px] font-redditsans-regular mt-1 text-center" style={{ color: colors.textSecondary }}>
       {label}
     </Text>
   </View>
@@ -41,6 +42,8 @@ const StatBox = ({ value, label, color = "#16a34a" }) => (
 const Achievements = () => {
   const [token] = useMMKVString("accessToken");
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const { colors } = theme;
 
   const [achievements, setAchievements] = useState([]);
   const [stats, setStats] = useState(null);
@@ -101,18 +104,19 @@ const Achievements = () => {
   const FILTERS = ["All", "Unlocked", "Locked"];
 
   return (
-    <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1">
+    <LinearGradient colors={colors.backgroundGradient} className="flex-1">
       <SafeAreaView className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 pt-4 mb-5">
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              className="mr-4 w-9 h-9 bg-white/70 rounded-full items-center justify-center"
+              className="mr-4 w-9 h-9 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.cardSecondary }}
             >
-              <FontAwesomeIcon icon={faArrowLeft} size={18} color="#111827" />
+              <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
             </TouchableOpacity>
-            <Text className="text-[26px] font-redditsans-bold text-gray-900 tracking-tight">
+            <Text className="text-[26px] font-redditsans-bold tracking-tight" style={{ color: colors.text }}>
               Achievements
             </Text>
           </View>
@@ -128,8 +132,8 @@ const Achievements = () => {
 
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#fff" />
-            <Text className="mt-3 text-white font-redditsans-regular text-base">
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text className="mt-3 font-redditsans-regular text-base" style={{ color: colors.text }}>
               Loading…
             </Text>
           </View>
@@ -142,7 +146,7 @@ const Achievements = () => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor="#fff"
+                tintColor={colors.primary}
               />
             }
           >
@@ -152,37 +156,40 @@ const Achievements = () => {
                 <StatBox
                   value={stats.totalAchievements}
                   label="Unlocked"
-                  color="#16a34a"
+                  color={colors.primary}
+                  colors={colors}
                 />
                 <StatBox
                   value={stats.newAchievements}
                   label="New"
                   color="#f59e0b"
+                  colors={colors}
                 />
                 <StatBox
                   value={achievements.length - stats.totalAchievements > 0
                     ? achievements.length - stats.totalAchievements
                     : 0}
                   label="Remaining"
-                  color="#6b7280"
+                  color={colors.textSecondary}
+                  colors={colors}
                 />
               </View>
             )}
 
             {/* Filter Tabs */}
-            <View className="flex-row mb-5 bg-white/30 rounded-2xl p-1">
+            <View className="flex-row mb-5 rounded-2xl p-1" style={{ backgroundColor: colors.cardSecondary }}>
               {FILTERS.map((f) => (
                 <TouchableOpacity
                   key={f}
                   onPress={() => setFilter(f)}
                   className="flex-1 items-center py-2 rounded-xl"
                   style={{
-                    backgroundColor: filter === f ? "#fff" : "transparent",
+                    backgroundColor: filter === f ? colors.card : "transparent",
                   }}
                 >
                   <Text
                     className="font-redditsans-bold text-[13px]"
-                    style={{ color: filter === f ? "#16a34a" : "#4b5563" }}
+                    style={{ color: filter === f ? colors.primary : colors.textSecondary }}
                   >
                     {f}
                   </Text>
@@ -201,9 +208,9 @@ const Achievements = () => {
 
             {/* Achievement list */}
             {filteredAchievements.length === 0 ? (
-              <View className="bg-white rounded-3xl p-10 items-center mt-4">
-                <FontAwesomeIcon icon={faTrophy} size={40} color="#d1d5db" />
-                <Text className="text-gray-400 font-redditsans-bold text-base mt-4">
+              <View className="rounded-3xl p-10 items-center mt-4" style={{ backgroundColor: colors.card }}>
+                <FontAwesomeIcon icon={faTrophy} size={40} color={colors.textSecondary} />
+                <Text className="font-redditsans-bold text-base mt-4" style={{ color: colors.textSecondary }}>
                   {filter === "Unlocked"
                     ? "No achievements unlocked yet"
                     : filter === "Locked"

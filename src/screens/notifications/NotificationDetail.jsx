@@ -25,6 +25,7 @@ import {
 import { useMMKVString } from "react-native-mmkv";
 import { useState, useEffect, useRef } from "react";
 import { Animated } from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 
 /* ─── constants ──────────────────────────────────────────────── */
 const GREEN = "#20893A";
@@ -45,68 +46,82 @@ const formatDate = (iso) => {
 };
 
 /* ─── sub-components ─────────────────────────────────────────── */
-const InfoRow = ({ icon, label, value, isLast = false, bold = false }) => (
-  <View style={[styles.infoRow, !isLast && styles.infoRowBorder]}>
-    <View style={styles.infoIcon}>
-      <FontAwesomeIcon icon={icon} size={14} color={GREEN} />
+const InfoRow = ({ icon, label, value, isLast = false, bold = false }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
+  return (
+    <View style={[styles.infoRow, !isLast && { borderBottomColor: colors.border, borderBottomWidth: 1 }]}>
+      <View style={[styles.infoIcon, { backgroundColor: colors.cardSecondary }]}>
+        <FontAwesomeIcon icon={icon} size={14} color={GREEN} />
+      </View>
+      <View style={styles.infoContent}>
+        <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>{label}</Text>
+        <Text
+          style={[styles.infoValue, { color: colors.text }, bold && { fontFamily: "RedditSans-Bold" }]}
+        >
+          {value}
+        </Text>
+      </View>
     </View>
-    <View style={styles.infoContent}>
-      <Text style={styles.infoLabel}>{label}</Text>
+  );
+};
+
+const StatusBadge = ({ isRead }) => {
+  const { isDark } = useTheme();
+  return (
+    <View style={[styles.badge, isRead ? (isDark ? { backgroundColor: 'rgba(32, 137, 58, 0.15)', borderColor: '#20893A', borderWidth: 1 } : styles.badgeRead) : (isDark ? { backgroundColor: 'rgba(229, 62, 62, 0.15)', borderColor: '#E53E3E', borderWidth: 1 } : styles.badgeUnread)]}>
+      <FontAwesomeIcon
+        icon={isRead ? faCircleCheck : faCircleDot}
+        size={12}
+        color={isRead ? GREEN : "#E53E3E"}
+        style={{ marginRight: 6 }}
+      />
       <Text
-        style={[styles.infoValue, bold && { fontFamily: "RedditSans-Bold" }]}
+        style={[
+          styles.badgeText,
+          { color: isRead ? GREEN : "#E53E3E" },
+        ]}
       >
-        {value}
+        {isRead ? "Read" : "Unread"}
       </Text>
     </View>
-  </View>
-);
-
-const StatusBadge = ({ isRead }) => (
-  <View style={[styles.badge, isRead ? styles.badgeRead : styles.badgeUnread]}>
-    <FontAwesomeIcon
-      icon={isRead ? faCircleCheck : faCircleDot}
-      size={12}
-      color={isRead ? GREEN : "#E53E3E"}
-      style={{ marginRight: 6 }}
-    />
-    <Text
-      style={[
-        styles.badgeText,
-        { color: isRead ? GREEN : "#E53E3E" },
-      ]}
-    >
-      {isRead ? "Read" : "Unread"}
-    </Text>
-  </View>
-);
+  );
+};
 
 /* ─── skeleton placeholder ───────────────────────────────────── */
-const SkeletonBlock = ({ height = 16, width = "100%", mb = 12 }) => (
-  <View
-    style={{
-      height,
-      width,
-      backgroundColor: "#E8EEE9",
-      borderRadius: 8,
-      marginBottom: mb,
-    }}
-  />
-);
+const SkeletonBlock = ({ height = 16, width = "100%", mb = 12 }) => {
+  const { theme } = useTheme();
+  return (
+    <View
+      style={{
+        height,
+        width,
+        backgroundColor: theme.colors.cardSecondary,
+        borderRadius: 8,
+        marginBottom: mb,
+      }}
+    />
+  );
+};
 
 /* ─── shared header component ────────────────────────────────── */
-const Header = ({ onBack }) => (
-  <View style={styles.header}>
-    <TouchableOpacity
-      onPress={onBack}
-      style={styles.backBtn}
-      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-      activeOpacity={0.7}
-    >
-      <FontAwesomeIcon icon={faArrowLeft} size={18} color="#1f2937" />
-    </TouchableOpacity>
-    <Text style={styles.headerTitle}>Notification Details</Text>
-  </View>
-);
+const Header = ({ onBack }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
+  return (
+    <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+      <TouchableOpacity
+        onPress={onBack}
+        style={[styles.backBtn, { backgroundColor: colors.cardSecondary }]}
+        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        activeOpacity={0.7}
+      >
+        <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
+      </TouchableOpacity>
+      <Text style={[styles.headerTitle, { color: colors.text }]}>Notification Details</Text>
+    </View>
+  );
+};
 
 /* ═══════════════════════════════════════════════════════════════
    Main Screen
@@ -119,6 +134,8 @@ const NotificationDetail = () => {
   const [notification, setNotification] = useState(routeNotification || null);
   const [token] = useMMKVString("accessToken");
   const [loading, setLoading] = useState(false);
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(24)).current;
@@ -179,15 +196,15 @@ const NotificationDetail = () => {
   /* ── Loading state ── */
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
         <Header onBack={handleGoBack} />
         <ScrollView
-          style={styles.scroll}
+          style={[styles.scroll, { backgroundColor: colors.background }]}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
             <SkeletonBlock height={12} width="35%" mb={10} />
             <SkeletonBlock height={28} width="80%" mb={20} />
             <SkeletonBlock height={12} width="35%" mb={10} />
@@ -205,17 +222,17 @@ const NotificationDetail = () => {
   /* ── Not found state ── */
   if (!notification) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
         <Header onBack={handleGoBack} />
         <View style={styles.emptyContainer}>
           <FontAwesomeIcon
             icon={faEnvelopeOpen}
             size={48}
-            color="#D1D5DB"
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyTitle}>Notification Not Found</Text>
-          <Text style={styles.emptySubtitle}>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Notification Not Found</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
             This notification may have been deleted or is unavailable.
           </Text>
         </View>
@@ -225,12 +242,12 @@ const NotificationDetail = () => {
 
   /* ── Main content ── */
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
       <Header onBack={handleGoBack} />
 
       <ScrollView
-        style={styles.scroll}
+        style={[styles.scroll, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
@@ -241,20 +258,21 @@ const NotificationDetail = () => {
           }}
         >
           {/* ── Main card ── */}
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
             {/* Accent strip */}
             <View style={styles.cardAccent} />
 
             {/* Habit Title section */}
             <View style={styles.titleSection}>
-              <View style={styles.titleIconWrap}>
+              <View style={[styles.titleIconWrap, { backgroundColor: colors.cardSecondary }]}>
                 <FontAwesomeIcon icon={faTag} size={14} color={GREEN} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.sectionLabel}>Habit</Text>
+                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>Habit</Text>
                 <Text
                   style={[
                     styles.habitTitle,
+                    { color: colors.text },
                     !notification.isRead && { fontFamily: "RedditSans-Bold" },
                   ]}
                 >
@@ -263,7 +281,7 @@ const NotificationDetail = () => {
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
             {/* Info rows */}
             <InfoRow
@@ -281,7 +299,7 @@ const NotificationDetail = () => {
 
             {/* Status row */}
             <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
-              <View style={styles.infoIcon}>
+              <View style={[styles.infoIcon, { backgroundColor: colors.cardSecondary }]}>
                 <FontAwesomeIcon
                   icon={notification.isRead ? faCircleCheck : faCircleDot}
                   size={14}
@@ -289,7 +307,7 @@ const NotificationDetail = () => {
                 />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Status</Text>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Status</Text>
                 <StatusBadge isRead={notification.isRead} />
               </View>
             </View>

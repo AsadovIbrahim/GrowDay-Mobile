@@ -8,11 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { forgotPasswordfetch } from "../../utils/fetch";
 import Toast from "../../components/common/Toast";
+import { useTheme } from "../../context/ThemeContext";
 
 const ForgotPassword = () => {
 
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const { colors } = theme;
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState([]);
@@ -58,7 +61,7 @@ const ForgotPassword = () => {
       />
 
     <LinearGradient
-      colors={["#E9E6D7", "rgba(32,137,58,1)"]}
+      colors={colors.backgroundGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       className="flex-1"
@@ -81,7 +84,7 @@ const ForgotPassword = () => {
 
             {/* Back */}
             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start' }}>
-              <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
+              <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
             {/* Logo */}
@@ -90,11 +93,11 @@ const ForgotPassword = () => {
             </View>
 
             {/* Title */}
-            <Text className="text-white text-center text-4xl font-redditsans-bold mb-4">
+            <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
               Forgot Password?
             </Text>
 
-            <Text className="text-lg text-white text-center font-redditsans-medium mb-6">
+            <Text className="text-lg text-center font-redditsans-medium mb-6" style={{ color: colors.textSecondary }}>
               Enter your email address below and we'll send you a link to reset your password.
             </Text>
 
@@ -149,21 +152,21 @@ const ForgotPassword = () => {
               <>
                 <TextInput
                   placeholder="Enter your email"
-                  placeholderTextColor="#aaa"
+                  placeholderTextColor={colors.textSecondary}
                   value={email}
                   onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  className="font-redditsans-medium bg-white rounded-xl p-4 mb-6 text-black"
-                  style={styles.modernInput}
+                  className="font-redditsans-medium rounded-xl p-4 mb-6"
+                  style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
                 />
 
                 {/* Button */}
                 <TouchableOpacity
-                  className="bg-[#78C67E] p-3 rounded-full"
+                  className="p-3 rounded-full"
                   onPress={handleForgotPassword}
                   disabled={loading}
-                  style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+                  style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
                   activeOpacity={0.8}
                 >
                   <Text className="text-white text-center font-redditsans-bold text-lg">
@@ -175,9 +178,9 @@ const ForgotPassword = () => {
 
             {/* Back to Sign In */}
             <View className="flex-row justify-center mt-6">
-              <Text className="text-white font-redditsans-regular">Back to </Text>
+              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>Back to </Text>
               <TouchableOpacity onPress={() => navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="text-white font-redditsans-bold">Sign In</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>Sign In</Text>
               </TouchableOpacity>
             </View>
 

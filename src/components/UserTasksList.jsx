@@ -8,7 +8,11 @@ import { getUserTasksFetch, completeUserTaskFetch, updateUserTaskFetch } from ".
 import { theme } from "../constants/theme";
 import UserTaskCard from "./UserTaskCard";
 
+import { useTheme } from "../context/ThemeContext";
+
 const UserTasksList = ({ maxItems = 3 }) => {
+    const { theme } = useTheme();
+    const { colors } = theme;
     const [userTasks, setUserTasks] = useState([]);
     const [token] = useMMKVString('accessToken');
     const [loading, setLoading] = useState(false);
@@ -80,7 +84,7 @@ const UserTasksList = ({ maxItems = 3 }) => {
 
     if (error) {
         return (
-            <View className="bg-white rounded-xl p-6 items-center justify-center border border-red-100">
+            <View className="rounded-xl p-6 items-center justify-center border" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
                 <FontAwesomeIcon icon={faTasks} color="#ef4444" size={24} />
                 <Text className="text-red-500 font-redditsans-medium mt-2">Failed to load tasks</Text>
                 <TouchableOpacity onPress={getUserTasks} className="mt-2">
@@ -92,9 +96,9 @@ const UserTasksList = ({ maxItems = 3 }) => {
 
     if (userTasks.length === 0) {
         return (
-            <View className="bg-white rounded-xl p-8 items-center justify-center border border-dashed border-gray-200">
-                <FontAwesomeIcon icon={faTasks} color="#9ca3af" size={24} />
-                <Text className="text-gray-500 font-redditsans-medium mt-2">No tasks assigned</Text>
+            <View className="rounded-xl p-8 items-center justify-center border border-dashed" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
+                <FontAwesomeIcon icon={faTasks} color={colors.textSecondary} size={24} />
+                <Text className="font-redditsans-medium mt-2" style={{ color: colors.textSecondary }}>No tasks assigned</Text>
             </View>
         );
     }

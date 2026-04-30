@@ -7,12 +7,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import { verifyOtpFetch } from "../../utils/fetch";
+import { useTheme } from "../../context/ThemeContext";
 
 const OtpVerification = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { email } = route.params || {};
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const { colors } = theme;
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -63,7 +66,7 @@ const OtpVerification = () => {
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={["#E9E6D7", "rgba(32,137,58,1)"]}
+        colors={colors.backgroundGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         className="flex-1"
@@ -84,20 +87,20 @@ const OtpVerification = () => {
             keyboardShouldPersistTaps="handled"
           >
             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start', marginBottom: 16 }}>
-              <FontAwesomeIcon icon={faArrowLeft} size={20} color="#3F414E" />
+              <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
             <View className="items-center mb-6">
               <GrowDayLogo width={100} height={100} />
             </View>
 
-            <Text className="text-white text-center text-4xl font-redditsans-bold mb-4">
+            <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
               Verify Email
             </Text>
             
-            <Text className="text-white text-center text-lg font-redditsans-regular mb-10 opacity-90">
+            <Text className="text-center text-lg font-redditsans-regular mb-10 opacity-90" style={{ color: colors.textSecondary }}>
               We've sent a 6-digit verification code to{"\n"}
-              <Text className="font-redditsans-bold">{email}</Text>
+              <Text className="font-redditsans-bold" style={{ color: colors.text }}>{email}</Text>
             </Text>
 
             <View className="flex-row justify-between mb-8">
@@ -105,8 +108,8 @@ const OtpVerification = () => {
                 <TextInput
                   key={index}
                   ref={(ref) => (inputRefs.current[index] = ref)}
-                  className="w-12 h-14 bg-white rounded-xl text-center text-2xl font-redditsans-bold text-black border-2 border-transparent focus:border-[#78C67E]"
-                  style={styles.modernInput}
+                  className="w-12 h-14 rounded-xl text-center text-2xl font-redditsans-bold border-2"
+                  style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text, borderColor: digit ? colors.primary : 'transparent' }]}
                   keyboardType="number-pad"
                   maxLength={1}
                   value={digit}
@@ -117,14 +120,14 @@ const OtpVerification = () => {
             </View>
 
             {error ? (
-              <Text className="text-red-200 text-center font-redditsans-medium mb-6">
+              <Text className="text-red-400 text-center font-redditsans-medium mb-6">
                 {error}
               </Text>
             ) : null}
 
             <TouchableOpacity 
-              className="bg-[#78C67E] p-3 rounded-full"
-              style={[styles.modernButton, loading ? { opacity: 0.7 } : {}]}
+              className="p-3 rounded-full"
+              style={[styles.modernButton, { backgroundColor: colors.primary }, loading ? { opacity: 0.7 } : {}]}
               onPress={handleVerify}
               disabled={loading}
               activeOpacity={0.8}
@@ -139,9 +142,9 @@ const OtpVerification = () => {
             </TouchableOpacity>
 
             <View className="flex-row justify-center mt-8">
-              <Text className="text-white font-redditsans-regular">Didn't receive code? </Text>
+              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>Didn't receive code? </Text>
               <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="text-white font-redditsans-bold">Resend</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>Resend</Text>
               </TouchableOpacity>
             </View>
 

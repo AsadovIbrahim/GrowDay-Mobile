@@ -3,8 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from "@react-navigation/native";
 import { ICONS } from "../constants/icons";
+import { useTheme } from '../context/ThemeContext';
 
 const HabitCard = ({ habit, index, onPress, selectedDate }) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const isFuture = (() => {
     if (!selectedDate) return false;
     const today = new Date();
@@ -67,16 +70,14 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
     <View
-      style={{ opacity: isFuture ? 0.85 : 1 }}
-      className="bg-white rounded-xl p-4 mb-3 flex-row items-center">
+      style={{ opacity: isFuture ? 0.85 : 1, backgroundColor: colors.card }}
+      className="rounded-xl p-4 mb-3 flex-row items-center">
       <View 
-
-        className={`w-12 h-12 rounded-full items-center justify-center mr-3 ${
-          isCompleted ? 'bg-green-100' : 'bg-gray-100'
-        }`}
+        style={{ backgroundColor: isCompleted ? colors.primarySurface : colors.cardSecondary }}
+        className="w-12 h-12 rounded-full items-center justify-center mr-3"
       >
         {isCompleted ? (
-          <FontAwesomeIcon icon={faCheck} color="#16a34a" size={20} />
+          <FontAwesomeIcon icon={faCheck} color={colors.primary} size={20} />
         ) : (
           <Text className="text-2xl">{ICONS[habit.icon]}</Text>
         )}
@@ -84,21 +85,24 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
       
       <View className="flex-1">
         <Text 
-          className="text-base font-redditsans-medium text-black mb-1"
+          style={{ color: colors.text }}
+          className="text-base font-redditsans-medium mb-1"
         >
           {habit.title}
         </Text>
         <View className="flex-row items-center">
           <Text 
-            className="text-sm text-gray-500 font-redditsans-regular"
+            style={{ color: colors.textSecondary }}
+            className="text-sm font-redditsans-regular"
           >
             {isFuture ? 'Upcoming' : (habit.status || (isCompleted ? 'Completed' : 'Pending'))}
           </Text>
           {formattedTime && (
             <>
-              <Text className="text-sm text-gray-500 mx-1">•</Text>
+              <Text style={{ color: colors.textSecondary }} className="text-sm mx-1">•</Text>
               <Text 
-                className="text-sm text-gray-500 font-redditsans-regular"
+                style={{ color: colors.textSecondary }}
+                className="text-sm font-redditsans-regular"
               >
                 {formattedTime}
               </Text>

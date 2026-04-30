@@ -24,6 +24,7 @@ import CalendarSelector from './components/CalendarSelector';
 import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useTheme } from '../../context/ThemeContext';
 const getLocalDateString = (d) => {
   if (!d) return null;
   const year = d.getFullYear();
@@ -55,6 +56,9 @@ const Home = () => {
   const { isMenuOpen, setIsMenuOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
 
   const [accountData, setAccountData] = useState(null);
   const firstName=accountData?.firstName;  
@@ -203,7 +207,7 @@ const Home = () => {
   ];
 
   return (
-    <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1 px-1 pt-12">
+    <LinearGradient colors={colors.backgroundGradient} className="flex-1 px-1 pt-12">
       {isMenuOpen && (
         <Animated.View
           style={{
@@ -212,7 +216,7 @@ const Home = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: colors.overlay,
             opacity: overlayOpacity,
             zIndex: 998,
           }}
@@ -232,7 +236,7 @@ const Home = () => {
           left: 0,
           bottom: 0,
           width: Dimensions.get('window').width * 0.7,
-          backgroundColor: '#ffffff',
+          backgroundColor: colors.card,
           zIndex: 999,
           transform: [{ translateX: slideAnim }],
           borderTopRightRadius: 20,
@@ -266,17 +270,18 @@ const Home = () => {
                   paddingHorizontal: 12,
                   borderRadius: 12,
                   marginBottom: 8,
-                  backgroundColor: item.active ? '#e7f0df' : 'transparent',
+                  backgroundColor: item.active ? colors.primarySurface : 'transparent',
                 }}
               >
                 <FontAwesomeIcon
                   icon={item.icon}
-                  color={item.active ? '#2f6f3f' : item.color}
+                  color={item.active ? colors.primary : colors.textMuted}
                   size={20}
                 />
                 <Text
+                  style={{ color: item.active ? colors.primary : colors.textSecondary }}
                   className={`ml-4 text-base ${
-                    item.active ? 'text-green-700 font-redditsans-bold' : 'text-gray-700 font-redditsans-regular'
+                    item.active ? 'font-redditsans-bold' : 'font-redditsans-regular'
                   }`}
                 >
                   {item.label}
@@ -291,8 +296,8 @@ const Home = () => {
             }}
             className="flex-row items-center py-4 px-3 rounded-xl mb-4"
           >
-            <FontAwesomeIcon icon={faRightFromBracket} color="#ef4444" size={20} />
-            <Text className="ml-4 text-base text-red-500 font-redditsans-medium">
+            <FontAwesomeIcon icon={faRightFromBracket} color={colors.danger} size={20} />
+            <Text style={{ color: colors.danger }} className="ml-4 text-base font-redditsans-medium">
               Logout
             </Text>
           </TouchableOpacity>
@@ -303,18 +308,19 @@ const Home = () => {
         <View className="flex-row justify-between items-center mb-4 px-4">
           <TouchableOpacity
             onPress={toggleMenu}
-            className="w-10 h-10 bg-white rounded-lg items-center justify-center"
+            style={{ backgroundColor: colors.card }}
+            className="w-10 h-10 rounded-lg items-center justify-center"
           >
-            <FontAwesomeIcon icon={faBars} color="#2f6f3f" size={20} />
+            <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
           </TouchableOpacity>
           
           <View className="flex-row items-center gap-3">
             <View className="relative">
-              <TouchableOpacity onPress={() => navigation.navigate('Notification')} className="w-10 h-10 bg-white rounded-full items-center justify-center">
-                <FontAwesomeIcon icon={faBell} color="#2f6f3f" size={18} />
+              <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
+                <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
               </TouchableOpacity>
               {unreadNotificationCount > 0 && (
-                <View className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full items-center justify-center border-2 border-white">
+                <View style={{ backgroundColor: colors.danger, borderColor: colors.card }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center border-2">
                   <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
                 </View>
               )}
@@ -329,14 +335,14 @@ const Home = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
-            <Text className="text-2xl font-redditsans-bold  text-black mb-1">
+            <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">
               Hi {firstName}!
             </Text>
-            <View className="w-10 h-10 bg-green-500 rounded-full items-center justify-center">
+            <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center">
                 <Text className="text-white text-lg">😇</Text>
             </View>
         </View>
-        <Text className="text-base text-black font-redditsans-regular px-4 mb-4">
+        <Text style={{ color: colors.text }} className="text-base font-redditsans-regular px-4 mb-4">
           Let's make habits together!
         </Text>
           <CalendarSelector 
@@ -346,8 +352,8 @@ const Home = () => {
         
         {isInitialLoading ? (
           <View className="px-4 py-12 items-center justify-center">
-            <ActivityIndicator size="large" color="#2f6f3f" />
-            <Text className="mt-4 text-base text-gray-600 font-redditsans-regular">
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={{ color: colors.textSecondary }} className="mt-4 text-base font-redditsans-regular">
               Loading...
             </Text>
           </View>
@@ -360,7 +366,7 @@ const Home = () => {
             <View className="px-4 mb-4 ">
               <View className="flex-row justify-between items-center mb-3">
                 <View>
-                  <Text className="text-xl font-redditsans-bold text-black">
+                  <Text style={{ color: colors.text }} className="text-xl font-redditsans-bold">
                     {(() => {
                       const today = new Date();
                       today.setHours(0, 0, 0, 0);
@@ -380,7 +386,7 @@ const Home = () => {
                     selected.setHours(0, 0, 0, 0);
                     if (selected.getTime() > today.getTime()) {
                       return (
-                        <Text className="text-xs text-gray-500 font-redditsans-regular italic">
+                        <Text style={{ color: colors.textMuted }} className="text-xs font-redditsans-regular italic">
                           Viewing upcoming habits
                         </Text>
                       );
@@ -392,10 +398,10 @@ const Home = () => {
                   onPress={() => navigation.navigate('UserHabits', { initialFilter: 'Today' })}
                   className="flex-row items-center gap-1"
                 >
-                  <Text className="text-base text-green-600 font-redditsans-medium">
+                  <Text style={{ color: colors.primary }} className="text-base font-redditsans-medium">
                     VIEW ALL
                   </Text>
-                  <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
+                  <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={14} />
                 </TouchableOpacity>
               </View>
 

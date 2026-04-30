@@ -13,10 +13,13 @@ import { loginfetch, getUserPreferencesFetch, googleLoginFetch } from "../../uti
 import Toast from "../../components/common/Toast";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
+import { useTheme } from "../../context/ThemeContext";
 
 const Login = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const { colors } = theme;
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -143,7 +146,7 @@ const Login = () => {
       />
 
       <LinearGradient
-        colors={["#E9E6D7", "rgba(32,137,58,1)"]}
+        colors={colors.backgroundGradient}
         className="flex-1"
       >
         <KeyboardAvoidingView 
@@ -166,23 +169,23 @@ const Login = () => {
             </View>
 
             {/* Title */}
-            <Text className="text-white text-center text-3xl font-redditsans-bold mb-8">
+            <Text className="text-center text-3xl font-redditsans-bold mb-8" style={{ color: colors.text }}>
               Welcome Back!
             </Text>
 
             {/* Google */}
             <TouchableOpacity 
-              className="flex-row justify-center bg-white rounded-full p-3 mb-6"
-              style={styles.googleButton}
+              className="flex-row justify-center rounded-full p-3 mb-6"
+              style={[styles.googleButton, { backgroundColor: colors.card }]}
               onPress={handleGoogleLogin}
             >
               <GoogleIcon width={22} height={22} />
-              <Text className="text-black font-redditsans-medium text-lg ml-4">
+              <Text className="font-redditsans-medium text-lg ml-4" style={{ color: colors.text }}>
                 CONTINUE WITH GOOGLE
               </Text>
             </TouchableOpacity>
 
-            <Text className="text-white text-center mb-6 font-redditsans-medium">
+            <Text className="text-center mb-6 font-redditsans-medium" style={{ color: colors.textSecondary }}>
               OR LOG IN WITH EMAIL
             </Text>
 
@@ -214,21 +217,21 @@ const Login = () => {
             {/* Email */}
             <TextInput
               placeholder="Email or Username"
-              placeholderTextColor="#aaa"
+              placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("UsernameOrEmail", text)}
-              className="bg-white rounded-xl p-4 mb-4 font-redditsans-medium text-black"
-              style={styles.modernInput}
+              className="rounded-xl p-4 mb-4 font-redditsans-medium"
+              style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
             />
 
             {/* Password */}
             <View className="relative">
               <TextInput
                 placeholder="Password"
-                placeholderTextColor="#aaa"
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 onChangeText={(text) => handleInputChange("password", text)}
-                className="bg-white rounded-xl p-4 mb-2 font-redditsans-medium text-black"
-                style={styles.modernInput}
+                className="rounded-xl p-4 mb-2 font-redditsans-medium"
+                style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />
               <TouchableOpacity 
                 className="absolute right-4 top-4"
@@ -238,7 +241,7 @@ const Login = () => {
                 <FontAwesomeIcon 
                   icon={showPassword ? faEye : faEyeSlash} 
                   size={20} 
-                  color="#999" 
+                  color={colors.textSecondary} 
                 />
               </TouchableOpacity>
             </View>
@@ -249,17 +252,17 @@ const Login = () => {
               className="mb-6 mt-2"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Text className="text-white text-right font-redditsans-medium">
+              <Text className="text-right font-redditsans-medium" style={{ color: colors.textSecondary }}>
                 Forgot Password?
               </Text>
             </TouchableOpacity>
 
             {/* Button */}
             <TouchableOpacity 
-              className="bg-[#78C67E] p-3 rounded-full"
+              className="p-3 rounded-full"
               onPress={handleLogin}
               disabled={loading}
-              style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+              style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
               activeOpacity={0.8}
             >
               <Text className="text-white text-center font-redditsans-bold text-lg">
@@ -269,11 +272,11 @@ const Login = () => {
 
             {/* Register */}
             <View className="flex-row justify-center mt-6">
-              <Text className="text-white font-redditsans-medium">
+              <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>
                 Don’t have an account? 
               </Text>
               <TouchableOpacity onPress={()=>navigation.navigate("Register")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="text-white font-redditsans-bold"> Sign Up</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}> Sign Up</Text>
               </TouchableOpacity>
             </View>
 
