@@ -13,7 +13,7 @@ import { storage } from '../../utils/MMKVStore';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getUserTotalXPFetch, getAccountDataFetch } from '../../utils/fetch';
+import { getUserTotalXPFetch, getAccountDataFetch, getUserPreferencesFetch } from '../../utils/fetch';
 import {
   faMedal,
   faMoon,
@@ -28,6 +28,8 @@ import {
   faPencil,
   faCircleExclamation,
   faArrowRightFromBracket,
+  faGear,
+  faClock
 } from '@fortawesome/free-solid-svg-icons';
 import SettingsItem from '../../components/SettingsItem';
 import { useTheme } from '../../context/ThemeContext';
@@ -216,6 +218,22 @@ const Profile = ({ navigation }) => {
             onPress={() => navigation.navigate('LanguageSettings')}
           />
           <SettingsItem
+            icon={faGear}
+            title="Habit Preferences"
+            onPress={async () => {
+              try {
+                const token = storage.getString('accessToken');
+                const res = await getUserPreferencesFetch(token);
+                navigation.navigate('UserPref0', { 
+                  isUpdate: true, 
+                  initialData: res.success ? res.data : null 
+                });
+              } catch (error) {
+                navigation.navigate('UserPref0', { isUpdate: true });
+              }
+            }}
+          />
+          <SettingsItem
             icon={faMobileAlt}
             title="App Version"
             type="text"
@@ -229,8 +247,8 @@ const Profile = ({ navigation }) => {
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <SettingsItem
             icon={faLock}
-            title="Change Password"
-            onPress={() => navigation.navigate('ChangePassword')}
+            title={accountData?.hasPassword === false ? "Set Password" : "Change Password"}
+            onPress={() => navigation.navigate('ChangePassword', { hasPassword: accountData?.hasPassword })}
           />
           <SettingsItem
             icon={faFileAlt}

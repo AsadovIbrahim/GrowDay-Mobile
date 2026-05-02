@@ -14,8 +14,37 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronLeft, faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { changePasswordFetch } from '../../utils/fetch';
+import { useMMKVString } from 'react-native-mmkv';
 
-const ChangePassword = ({ navigation }) => {
+const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, placeholder, colors }) => (
+  <View style={styles.fieldWrap}>
+    <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
+    <View style={[
+      styles.inputRow,
+      { backgroundColor: colors.inputBackground, borderColor: error ? colors.danger : colors.inputBorder },
+    ]}>
+      <FontAwesomeIcon icon={faLock} size={15} color={colors.textMuted} style={{ marginLeft: 14 }} />
+      <TextInput
+        style={[styles.input, { color: colors.inputText }]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.placeholder}
+        secureTextEntry={!show}
+        value={value}
+        onChangeText={onChangeText}
+        autoCapitalize="none"
+      />
+      <TouchableOpacity onPress={onToggleShow} style={styles.eyeBtn}>
+        <FontAwesomeIcon icon={show ? faEyeSlash : faEye} size={16} color={colors.textMuted} />
+      </TouchableOpacity>
+    </View>
+    {error && <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text>}
+  </View>
+);
+
+const ChangePassword = ({ navigation, route }) => {
+  const hasPassword = route.params?.hasPassword ?? true;
+  const [token] = useMMKVString('accessToken');
   const { theme } = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
@@ -31,7 +60,7 @@ const ChangePassword = ({ navigation }) => {
 
   const validate = () => {
     const e = {};
-    if (!currentPassword) e.currentPassword = 'Current password is required';
+    if (hasPassword && !currentPassword) e.currentPassword = 'Current password is required';
     if (newPassword.length < 8) e.newPassword = 'Password must be at least 8 characters';
     if (newPassword !== confirmPassword) e.confirmPassword = 'Passwords do not match';
     setErrors(e);
@@ -41,37 +70,27 @@ const ChangePassword = ({ navigation }) => {
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    // TODO: wire to real API
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    Alert.alert('Success', 'Password changed successfully!');
-    navigation.goBack();
+    
+    try {
+      const payload = {
+        currentPassword: hasPassword ? currentPassword : null,
+        newPassword,
+        confirmPassword,
+      };
+      const res = await changePasswordFetch(token, payload);
+      
+      if (res.success) {
+        Alert.alert('Success', 'Password saved successfully!');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', res.message || 'Failed to save password.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Network request failed.');
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, placeholder }) => (
-    <View style={styles.fieldWrap}>
-      <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
-      <View style={[
-        styles.inputRow,
-        { backgroundColor: colors.inputBackground, borderColor: error ? colors.danger : colors.inputBorder },
-      ]}>
-        <FontAwesomeIcon icon={faLock} size={15} color={colors.textMuted} style={{ marginLeft: 14 }} />
-        <TextInput
-          style={[styles.input, { color: colors.inputText }]}
-          placeholder={placeholder}
-          placeholderTextColor={colors.placeholder}
-          secureTextEntry={!show}
-          value={value}
-          onChangeText={onChangeText}
-          autoCapitalize="none"
-        />
-        <TouchableOpacity onPress={onToggleShow} style={styles.eyeBtn}>
-          <FontAwesomeIcon icon={show ? faEyeSlash : faEye} size={16} color={colors.textMuted} />
-        </TouchableOpacity>
-      </View>
-      {error && <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text>}
-    </View>
-  );
 
   return (
     <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
@@ -88,21 +107,28 @@ const ChangePassword = ({ navigation }) => {
           >
             <FontAwesomeIcon icon={faChevronLeft} size={16} color={colors.text} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Change Password</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {hasPassword ? 'Change Password' : 'Set Password'}
+          </Text>
           <View style={{ width: 40 }} />
         </View>
 
         <View style={[styles.card, { backgroundColor: colors.card }]}>
-          <PasswordField
-            label="Current Password"
-            placeholder="Enter current password"
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            show={showCurrent}
-            onToggleShow={() => setShowCurrent(p => !p)}
-            error={errors.currentPassword}
-          />
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          {hasPassword && (
+            <>
+              <PasswordField
+                label="Current Password"
+                placeholder="Enter current password"
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                show={showCurrent}
+                onToggleShow={() => setShowCurrent(p => !p)}
+                error={errors.currentPassword}
+                colors={colors}
+              />
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            </>
+          )}
           <PasswordField
             label="New Password"
             placeholder="Enter new password"
@@ -111,6 +137,7 @@ const ChangePassword = ({ navigation }) => {
             show={showNew}
             onToggleShow={() => setShowNew(p => !p)}
             error={errors.newPassword}
+            colors={colors}
           />
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <PasswordField
@@ -121,6 +148,7 @@ const ChangePassword = ({ navigation }) => {
             show={showConfirm}
             onToggleShow={() => setShowConfirm(p => !p)}
             error={errors.confirmPassword}
+            colors={colors}
           />
         </View>
 

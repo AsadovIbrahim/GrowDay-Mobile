@@ -1,10 +1,21 @@
 import { API_URL } from '@env';
+import { storage } from './MMKVStore';
 
 const VITE_API_URL = API_URL;
 
 const handleResponse = async (response) => {
-    const data = await response.json();
-    return data;
+    if (response.status === 401) {
+        storage.delete('accessToken');
+        // Optional: you could also reload the app or navigate to login here
+        // but since App.tsx reacts to accessToken change, it should work automatically.
+        return { success: false, message: "Session expired. Please login again.", isUnauthorized: true };
+    }
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        return data;
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const loginfetch = async (formData) => {
@@ -73,6 +84,51 @@ export const createUserPreferencesFetch = async (token,payload) => {
     const data=await response.json();
     return data;
 }
+
+export const updateUserPreferencesFetch = async (token,payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserPreferences/UpdateUserPreferences`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const data=await response.json();
+    return data;
+}
+
+
+export const updateUserPreferencesWithAIFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserPreferences/UpdateUserPreferencesWithAI`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
+
+
+export const createUserPreferencesWithAIFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserPreferences/CreateUserPreferencesWithAI`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    return data;
+};
 
 export const getAllHabitsFetch = async (token,pageIndex=0,pageSize=3) => {
     const response = await fetch(`${VITE_API_URL}/api/Habit/GetAllHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
@@ -290,31 +346,39 @@ export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10)
     return data;
 };
 
-export const addUserHabitFetch = async (token,payload) => {
+export const addUserHabitFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateSharedHabit`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
-        },  
+        },
         body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    return data;
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
-export const addCustomUserHabitFetch=async(token,payload)=>{
-    const response=await fetch(`${VITE_API_URL}/api/UserHabit/CreateMyOwnHabit`,{
-        method:"POST",
-        headers:{
+export const addCustomUserHabitFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateMyOwnHabit`, {
+        method: "POST",
+        headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
     });
-    const data=await response.json();
-    return data;
-}
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
 export const deleteUserHabitFetch = async (token,userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
         method: "DELETE",
@@ -409,38 +473,38 @@ export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => 
     return data;
 };
 
-export const completeUserHabitFetch = async (token, userHabitId, note = null, date = null) => {
-    let url = `${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`;
-    if (date) {
-        url += `?date=${date}`;
-    }
-    const response = await fetch(url, {
+export const completeUserHabitFetch = async (token, userHabitId, payload = {}) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
-        body: note ? JSON.stringify(note) : null,
+        body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    return data;
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
-export const incrementUserHabitFetch = async (token, userHabitId, note = null, date = null) => {
-    let url = `${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`;
-    if (date) {
-        url += `?date=${date}`;
-    }
-    const response = await fetch(url, {
+export const incrementUserHabitFetch = async (token, userHabitId, payload = {}) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
-        body: note ? JSON.stringify(note) : null,
+        body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    return data;
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const reportHabitProgressFetch = async (token, payload) => {
@@ -452,8 +516,12 @@ export const reportHabitProgressFetch = async (token, payload) => {
         },
         body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    return data;
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const getWeeklyProgressFetch = async (token, userHabitId) => {
@@ -563,6 +631,52 @@ export const getAccountDataFetch = async (token) => {
             "Authorization": `Bearer ${token}`,
         },
     });
-    const data=await response.json();
+    const data = await response.json();
+    return data;
+};
+
+export const changePasswordFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/Account/ChangePassword`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
+
+
+export const addSuggestedHabitFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/AddSuggestedHabitToUser`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
+
+export const getUserLearningContentFetch = async (token, pageIndex = 0, pageSize = 10) => {
+    const response = await fetch(`${VITE_API_URL}/api/Learning/GetSuggestedContent?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    const data = await response.json();
     return data;
 };

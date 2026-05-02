@@ -1,18 +1,22 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { View, Text, TouchableOpacity } from "react-native";
+import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
 
-const SuggestedHabitCard = ({ name, frequency }) => {
+const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
   const { theme } = useTheme();
   const { colors } = theme;
 
+  const displayIcon = ICONS[icon] || ICONS.default;
+
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
       className="mr-3 rounded-xl overflow-hidden"
       style={{
         width: 150,
-        height: 110,
+        height: 120, // Slightly increased height to accommodate everything
         backgroundColor: colors.card,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -33,15 +37,20 @@ const SuggestedHabitCard = ({ name, frequency }) => {
             elevation: 2,
           }}
         >
+          <Text style={{ fontSize: 20 }}>{displayIcon}</Text>
         </View>
-        <Text className="text-base font-redditsans-bold mb-1" style={{ color: colors.text }}>
+        <Text 
+          className="text-base font-redditsans-bold mb-1" 
+          style={{ color: colors.text }}
+          numberOfLines={2}
+        >
           {name}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {frequency}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

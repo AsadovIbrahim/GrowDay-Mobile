@@ -209,7 +209,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             return;
         }
 
-        const success = await handleReportProgress(delta, "device");
+        const success = await handleReportProgress(delta, "device", totalTime);
         if (success) cleanup();
         else console.log("Report failed, keeping data for retry.");
     };
@@ -222,7 +222,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         autoStopTriggered.current = false;
     };
 
-    const handleReportProgress = async (delta, source = "manual") => {
+    const handleReportProgress = async (delta, source = "manual", durationInSec = 0) => {
         try {
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
             const payload = { 
@@ -231,7 +231,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 source, 
                 note, 
                 timestamp: new Date().toISOString(),
-                date: date // Pass the intended date
+                date: date,
+                actualDuration: durationInSec > 0 ? Math.max(1, Math.floor(durationInSec / 60)) : null
             };
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
@@ -260,7 +261,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     if (isBoolean) return (
         <TouchableOpacity onPress={async () => {
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-            const res = await completeUserHabitFetch(token, hId, note, date);
+            const res = await completeUserHabitFetch(token, hId, { note, date });
             if (res.success) {
                 onActionComplete();
                 navigation.navigate("HabitCelebration", { habit });

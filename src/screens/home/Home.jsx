@@ -76,15 +76,25 @@ const Home = () => {
         console.error("Failed to fetch account data", error);
     }
 };
+  const fetchAllData = async () => {
+    if (!token) return;
+    setError(null);
+    try {
+      await Promise.all([
+        getUserHabitCount(),
+        fetchAccountData(),
+        getUnreadNotificationCount(),
+        getDailyStatistics(),
+        getTodaysUserHabit()
+      ]);
+    } catch (err) {
+      setError(err);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      if (token) {
-        getUserHabitCount();
-        fetchAccountData();
-        getUnreadNotificationCount();
-        getDailyStatistics();
-        getTodaysUserHabit();
-      }
+      fetchAllData();
     }, [token, selectedDateObject])
   );
 
@@ -336,7 +346,7 @@ const Home = () => {
       >
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
             <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">
-              Hi {firstName}!
+              Hi {firstName || 'User'}!
             </Text>
             <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center">
                 <Text className="text-white text-lg">😇</Text>
@@ -357,6 +367,19 @@ const Home = () => {
               Loading...
             </Text>
           </View>
+        ) : error ? (
+          <View className="px-4 py-12 items-center justify-center">
+             <Text style={{ color: colors.danger }} className="text-center font-redditsans-medium mb-6">
+               Failed to load data. Please check your connection.
+             </Text>
+             <TouchableOpacity 
+               onPress={fetchAllData} 
+               className="px-8 py-3 rounded-full" 
+               style={{ backgroundColor: colors.primary }}
+             >
+               <Text className="text-white font-redditsans-bold">Retry</Text>
+             </TouchableOpacity>
+           </View>
         ) : (userHabitCount === 0) ? (
           <HomeEmptyState />
         ) : (

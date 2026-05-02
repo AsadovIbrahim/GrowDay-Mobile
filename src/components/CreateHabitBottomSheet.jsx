@@ -205,7 +205,7 @@ const CreateHabitBottomSheet = () => {
                     closeModal();
                     navigation.navigate('Home', { 
                       screen: 'CreateCustomHabit',
-                      params: { habitData: habit, isCustom: false } 
+                      params: { habitData: habit, isCustom: false, isSuggested: false } 
                     });
                   }}
                 >

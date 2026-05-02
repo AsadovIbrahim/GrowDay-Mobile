@@ -5,12 +5,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck, faFire, faTrophy, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from '../../constants/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
 const HabitCelebration = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const insets = useSafeAreaInsets();
     const habit = route.params?.habit;
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -73,7 +75,10 @@ const HabitCelebration = () => {
     const highestStreak = Math.max(habit.longestStreak || 0, newStreak);
 
     return (
-        <LinearGradient colors={['#e6f2dc', '#2f6f3f']} style={styles.container}>
+        <LinearGradient 
+            colors={['#e6f2dc', '#2f6f3f']} 
+            style={[styles.container, { paddingTop: insets.top + 20 }]}
+        >
             {/* Confetti Background Layer */}
             <View style={StyleSheet.absoluteFillObject}>
                 {confettiAnims.map((anim, i) => {
@@ -178,7 +183,7 @@ const HabitCelebration = () => {
             <View style={{ flex: 1 }} />
 
             {/* Footer */}
-            <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
+            <Animated.View style={[styles.footer, { opacity: fadeAnim, paddingBottom: Math.max(insets.bottom + 20, 40) }]}>
                 <Text style={styles.quoteText}>
                     "Consistency is the key{'\n'}to getting better every day! 🔥"
                 </Text>
@@ -196,7 +201,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        paddingTop: 10,
     },
     // Icon
     checkCircleWrapper: {
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.3)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 40,
+        marginTop: width < 380 ? 20 : 30,
         zIndex: 10,
     },
     checkCircle: {
@@ -231,25 +235,25 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     title: {
-        fontSize: 34,
+        fontSize: width < 380 ? 28 : 34,
         fontWeight: '900',
         color: '#064e3b',
         textAlign: 'center',
-        lineHeight: 40,
+        lineHeight: width < 380 ? 34 : 40,
         marginBottom: 10,
     },
     subtitle: {
-        fontSize: 15,
+        fontSize: width < 380 ? 14 : 15,
         color: '#4b5563',
         fontWeight: '500',
-        marginBottom: 40,
+        marginBottom: width < 380 ? 20 : 30,
     },
     // Card
     card: {
         backgroundColor: '#fff',
         borderRadius: 24,
-        padding: 24,
-        width: '85%',
+        padding: width < 380 ? 18 : 24,
+        width: width < 380 ? '90%' : '85%',
         elevation: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 8 },
@@ -327,7 +331,6 @@ const styles = StyleSheet.create({
     footer: {
         width: '100%',
         paddingHorizontal: 30,
-        paddingBottom: 50,
         alignItems: 'center',
         zIndex: 10,
     },
@@ -348,7 +351,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 100,
         paddingVertical: 18,
-        marginBottom: 60,
         width: '100%',
         gap: 12,
     },

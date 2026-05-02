@@ -1,7 +1,9 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { MenuContext } from '../../context/MenuContext';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { useMMKVString } from 'react-native-mmkv';
+import { getAchievementStatsFetch } from '../../utils/fetch';
 import { useTheme } from '../../context/ThemeContext';
 import {
   faHome,
@@ -15,6 +17,25 @@ const TabBar = ({ state, navigation }) => {
     const { isMenuOpen, setIsCreateModalOpen } = useContext(MenuContext);
     const { theme } = useTheme();
     const { colors } = theme;
+    const [token] = useMMKVString('accessToken');
+    const [hasNewAchievements, setHasNewAchievements] = useState(false);
+
+    useEffect(() => {
+        const checkAchievements = async () => {
+            if (!token) return;
+            try {
+                const response = await getAchievementStatsFetch(token);
+                if (response?.success && response.data?.newAchievements > 0) {
+                    setHasNewAchievements(true);
+                } else {
+                    setHasNewAchievements(false);
+                }
+            } catch (error) {
+                console.log('Error checking achievements:', error);
+            }
+        };
+        checkAchievements();
+    }, [state.index, token]);
 
     if (isMenuOpen) return null;
 
@@ -83,7 +104,7 @@ const TabBar = ({ state, navigation }) => {
                         style={styles.tabBtn}
                         activeOpacity={0.7}
                     >
-                        {route.name === 'Achievements' && (
+                        {route.name === 'Achievements' && hasNewAchievements && !isFocused && (
                             <View style={styles.badge} />
                         )}
                         <FontAwesomeIcon

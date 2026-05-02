@@ -7,16 +7,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
 
-const AGE_RANGES = [
-  { id: "under18", label: "Under 18", value: 17 },
-  { id: "18-24", label: "18 - 24", value: 21 },
-  { id: "25-34", label: "25 - 34", value: 29 },
-  { id: "35-44", label: "35 - 44", value: 39 },
-  { id: "45-54", label: "45 - 54", value: 49 },
-  { id: "55plus", label: "55+", value: 60 },
-];
-
-const UserPref1 = () => {
+const UserPref0 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
   const route = useRoute();
@@ -24,12 +15,14 @@ const UserPref1 = () => {
 
   const initialData = route.params?.initialData;
   const isUpdate = route.params?.isUpdate;
-  const previousPreferences = route.params?.preferences || {};
 
-  // Find the initial range based on value or label
-  const [selectedRange, setSelectedRange] = useState(
-    AGE_RANGES.find(r => r.label === initialData?.age || r.value === initialData?.age) || AGE_RANGES[2]
-  );
+  const [gender, setGender] = useState(initialData?.gender || "Male");
+
+  const genders = [
+    { id: "Male", label: "Male", icon: "👨" },
+    { id: "Female", label: "Female", icon: "👩" },
+    { id: "Other", label: "Other", icon: "🌈" },
+  ];
 
   return (
     <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
@@ -39,31 +32,32 @@ const UserPref1 = () => {
             <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
           </TouchableOpacity>
           <View className="flex-1 h-2 bg-black/10 rounded-full mx-4">
-            <View className="w-[25%] h-full bg-green-500 rounded-full" />
+            <View className="w-[12.5%] h-full bg-green-500 rounded-full" />
           </View>
-          <Text style={{ color: colors.textSecondary }} className="font-semibold font-redditsans-bold">2/8</Text>
+          <Text style={{ color: colors.textSecondary }} className="font-semibold font-redditsans-bold">1/8</Text>
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           <View className="items-center mb-8">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-              How old
+              Tell us a bit
             </Text>
             <Text className="text-[26px] font-redditsans-bold text-green-500 text-center">
-              are you?
+              about yourself
             </Text>
             <Text style={{ color: colors.textSecondary }} className="text-[14px] font-redditsans-regular mt-2 text-center px-10">
-              Select your age range to help us personalize your experience.
+              Your gender helps us tailor your habit suggestions.
             </Text>
           </View>
 
           <View className="mb-8">
-            {AGE_RANGES.map((range) => {
-              const isSelected = selectedRange.id === range.id;
+            <Text style={{ color: colors.text }} className="text-[18px] font-redditsans-bold mb-4 px-1">What is your gender?</Text>
+            {genders.map((g) => {
+              const isSelected = gender === g.id;
               return (
                 <TouchableOpacity
-                  key={range.id}
-                  onPress={() => setSelectedRange(range)}
+                  key={g.id}
+                  onPress={() => setGender(g.id)}
                   className={`flex-row items-center p-5 mb-4 rounded-2xl ${
                     isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
                   }`}
@@ -81,13 +75,16 @@ const UserPref1 = () => {
                   }`}>
                     {isSelected && <View className="w-2.5 h-2.5 bg-white rounded-full" />}
                   </View>
-                  <Text style={{ 
-                    color: colors.text,
-                    fontSize: 18,
-                    fontWeight: isSelected ? "700" : "500"
-                  }} className="font-redditsans-bold">
-                    {range.label}
-                  </Text>
+                  <View className="flex-row items-center flex-1">
+                    <Text className="text-2xl mr-3">{g.icon}</Text>
+                    <Text style={{ 
+                      color: colors.text,
+                      fontSize: 18,
+                      fontWeight: isSelected ? "700" : "500"
+                    }} className="font-redditsans-bold">
+                      {g.label}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -98,13 +95,11 @@ const UserPref1 = () => {
           <View className="mt-4 mb-6">
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("UserPref2", {
+                navigation.navigate("UserPref1", {
                   isUpdate,
                   initialData,
                   preferences: {
-                    ...previousPreferences,
-                    age: selectedRange.value, // Sending representative value for backend compatibility
-                    ageLabel: selectedRange.label // Keeping label for UI if needed
+                    gender,
                   }
                 });
               }}
@@ -119,4 +114,4 @@ const UserPref1 = () => {
   );
 };
 
-export default UserPref1;
+export default UserPref0;

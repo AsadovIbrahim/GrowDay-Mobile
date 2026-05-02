@@ -1,4 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { useMMKVBoolean } from 'react-native-mmkv';
+import React, { useEffect } from 'react';
 import HomeStack from './HomeStack';
 import ExploreStack from './ExploreStack';
 import AchievementsStack from './AchievementsStack';
@@ -7,14 +10,37 @@ import TabBar from './components/TabBar';
 const Tab = createBottomTabNavigator();
 
 const TabStack = () => {
+    const [isFirstTimeExplore, setIsFirstTimeExplore] = useMMKVBoolean("isFirstTimeExplore");
+    
+    const initialRoute = isFirstTimeExplore ? "Explore" : "Home";
+
+    useEffect(() => {
+        if (isFirstTimeExplore) {
+            // Delay slightly or do it immediately
+            setIsFirstTimeExplore(false);
+        }
+    }, []);
+
     return (
       <Tab.Navigator
-        tabBar={({ state, navigation }) => (
-          <TabBar
-            state={state}
-            navigation={navigation}
-          />
-        )}
+        initialRouteName={initialRoute}
+        tabBar={({ state, navigation }) => {
+          const route = state.routes[state.index];
+          const routeName = getFocusedRouteNameFromRoute(route);
+          
+          const hideOnScreens = ["UserPref0", "UserPref1", "UserPref2", "UserPref3", "UserPref4", "UserPref5", "UserPref6", "UserPref7", "HabitCelebration"];
+          
+          if (hideOnScreens.includes(routeName)) {
+            return null;
+          }
+
+          return (
+            <TabBar
+              state={state}
+              navigation={navigation}
+            />
+          );
+        }}
         screenOptions={{ headerShown: false }}>
         <Tab.Screen name='Home' component={HomeStack} />
         <Tab.Screen name='Explore' component={ExploreStack} />

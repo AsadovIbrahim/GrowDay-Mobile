@@ -18,6 +18,10 @@ export const ICONS = {
   coffee: "☕",
   work: "💼",
 
+  female: "👩",
+  woman: "💃",
+  selfcare: "💅",
+
   lock: "🔒",
   default: "⭐"
 };

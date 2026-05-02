@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faFire, faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { faFire, faTrophy, faClock } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "./CircularProgress";
 import { useTheme } from "../../../context/ThemeContext";
 
@@ -201,6 +201,17 @@ const HabitProgressCard = ({
                                 </Text>
                             </Text>
                         </View>
+                        {habit.todayActualDuration > 0 && (
+                            <View style={styles.metaRow}>
+                                <FontAwesomeIcon icon={faClock} color={colors.primary} size={13} />
+                                <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                                    Time:{" "}
+                                    <Text style={[styles.metaValue, { color: colors.text }]}>
+                                        {habit.todayActualDuration} min spent
+                                    </Text>
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             </View>

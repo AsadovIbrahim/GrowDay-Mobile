@@ -17,7 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { useMMKVString } from "react-native-mmkv";
-import { addCustomUserHabitFetch, addUserHabitFetch } from "../../utils/fetch";
+import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch } from "../../utils/fetch";
 import { ICONS } from "../../constants/icons";
 import { useTheme as useThemeConstants } from "../../constants/theme";
 import { useTheme } from "../../context/ThemeContext";
@@ -60,7 +60,7 @@ const MINUTES = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart
 const CreateCustomHabit = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { habitData = null, isCustom = true } = route.params || {};
+  const { habitData = null, isCustom = true, isSuggested = false } = route.params || {};
   const [accessToken] = useMMKVString("accessToken");
   const { spacing, typography, radius } = useThemeConstants();
   const { theme, isDark } = useTheme();
@@ -140,18 +140,34 @@ const CreateCustomHabit = () => {
 
     try {
       if (!isCustom && habitData?.id) {
-        // Shared Habit
-        const payload = {
-          habitId: habitData.id,
-          category,
-          notificationTime: reminderEnabled ? reminderTime : null,
-          durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
-          startDate: new Date(startDate).toISOString(),
-          endDate: endDate ? new Date(endDate).toISOString() : null,
-        };
-        const response = await addUserHabitFetch(accessToken, payload);
-        if (response) {
-          navigation.navigate("HomeScreen");
+        if (isSuggested) {
+          // Suggested Habit (from Explore)
+          const payload = {
+            suggestedHabitId: habitData.id,
+            category,
+            notificationTime: reminderEnabled ? reminderTime : null,
+            durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
+            startDate: new Date(startDate).toISOString(),
+            endDate: endDate ? new Date(endDate).toISOString() : null,
+          };
+          const response = await addSuggestedHabitFetch(accessToken, payload);
+          if (response) {
+            navigation.navigate("Home", { screen: "HomeScreen" });
+          }
+        } else {
+          // Popular Habit (Shared Habit)
+          const payload = {
+            habitId: habitData.id,
+            category,
+            notificationTime: reminderEnabled ? reminderTime : null,
+            durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
+            startDate: new Date(startDate).toISOString(),
+            endDate: endDate ? new Date(endDate).toISOString() : null,
+          };
+          const response = await addUserHabitFetch(accessToken, payload);
+          if (response) {
+            navigation.navigate("Home", { screen: "HomeScreen" });
+          }
         }
       } else {
         // Custom Habit
@@ -172,7 +188,7 @@ const CreateCustomHabit = () => {
         };
         const response = await addCustomUserHabitFetch(accessToken, payload);
         if (response) {
-          navigation.navigate("HomeScreen");
+          navigation.navigate("Home", { screen: "HomeScreen" });
         }
       }
     } catch (error) {
@@ -246,13 +262,24 @@ const CreateCustomHabit = () => {
           <View style={styles.fieldSection}>
             <Text className="font-redditsans-medium" style={styles.label}>DESCRIPTION</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }, !isCustom && { color: colors.textSecondary }]}
+              style={[
+                styles.input, 
+                { 
+                  color: colors.text, 
+                  borderBottomColor: colors.textGray,
+                  minHeight: 40,
+                  paddingTop: 10
+                }, 
+                !isCustom && { color: colors.textSecondary }
+              ]}
               value={description}
               onChangeText={setDescription}
               placeholder="e.g. Daily morning walk"
               placeholderTextColor={colors.textSecondary}
               editable={isCustom}
               className="font-redditsans-medium"
+              multiline={true}
+              textAlignVertical="top"
             />
           </View>
 

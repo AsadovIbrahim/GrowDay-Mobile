@@ -3,8 +3,9 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTheme } from "../../context/ThemeContext";
 
 const ITEM_HEIGHT = 56;
 const VISIBLE_ITEMS = 5;
@@ -17,29 +18,54 @@ const HOURS = [...BASE_HOURS, ...BASE_HOURS, ...BASE_HOURS];
 const MINUTES = [...BASE_MINUTES, ...BASE_MINUTES, ...BASE_MINUTES];
 
 const UserPref2 = () => {
+  const { theme, isDark } = useTheme();
+  const { colors } = theme;
+  const route = useRoute();
+  const initialData = route.params?.initialData;
+  const isUpdate = route.params?.isUpdate;
+
   const hourRef = useRef(null);
   const minuteRef = useRef(null);
-  const route = useRoute();
+
+  const [hour, setHour] = useState(7);
+  const [minute, setMinute] = useState(0);
   const navigation = useNavigation();
 
-  const [hour, setHour] = useState(21); 
-  const [minute, setMinute] = useState(0);
-  
-  // Get preferences from previous screen
-  const previousPreferences = route.params?.preferences || {};
-
   useEffect(() => {
+    let startHour = 7;
+    let startMinute = 0;
+
+    if (initialData?.wakeUpTime) {
+      const parts = initialData.wakeUpTime.split(":");
+      startHour = parseInt(parts[0]);
+      startMinute = parseInt(parts[1]);
+      setHour(startHour);
+      setMinute(startMinute);
+    }
+
     setTimeout(() => {
-      const hourIndex = BASE_HOURS.indexOf(21);
-      hourRef.current?.scrollTo({ y: (hourIndex + BASE_HOURS.length) * ITEM_HEIGHT, animated: false });
-      minuteRef.current?.scrollTo({ y: BASE_MINUTES.length * ITEM_HEIGHT, animated: false });
+      const hourIndex = BASE_HOURS.indexOf(startHour);
+      const minuteIndex = BASE_MINUTES.indexOf(startMinute);
+  
+      hourRef.current?.scrollTo({
+        y: (hourIndex + BASE_HOURS.length) * ITEM_HEIGHT,
+        animated: false,
+      });
+  
+      minuteRef.current?.scrollTo({
+        y: (minuteIndex + BASE_MINUTES.length) * ITEM_HEIGHT,
+        animated: false,
+      });
     }, 50);
   }, []);
+  
 
   useEffect(() => {
     console.log("hour", hour);
     console.log("minute", minute);
   }, [hour, minute]);
+
+  const previousPreferences = route.params?.preferences || {};
 
   const handleScroll = (event, base, setter, ref) => {
     const y = event.nativeEvent.contentOffset.y;
@@ -62,7 +88,7 @@ const UserPref2 = () => {
         style={{
           fontSize: selected ? 30 : 18,
           fontWeight: selected ? "700" : "400",
-          color: selected ? "#1f2937" : "#ffffff",
+          color: selected ? (isDark ? "#ffffff" : "#1f2937") : (isDark ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.6)"),
         }}
         className={selected ? "font-redditsans-bold" : "font-redditsans-regular"}
       >
@@ -74,49 +100,46 @@ const UserPref2 = () => {
       )}
     </View>
   );
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
 
   return (
-      <LinearGradient colors={["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
+      <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
         <SafeAreaView className="flex-1">
 
         {/* HEADER */}
         <View className="flex-row items-center mt-4 mb-8">
-          <TouchableOpacity onPress={handleGoBack}>
-            <FontAwesomeIcon  icon={faArrowLeft} size={20} color="#1f2937"/>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FontAwesomeIcon  icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"}/>
           </TouchableOpacity>
 
           <View className="flex-1 h-2 bg-black/10 rounded-full mx-4">
-            <View className="w-2/5 h-full bg-green-500 rounded-full" />
+            <View className="w-[37.5%] h-full bg-green-500 rounded-full" />
           </View>
 
-          <Text className="text-gray-800 font-semibold font-redditsans-bold">2/5</Text>
+          <Text style={{ color: colors.textSecondary }} className="font-semibold font-redditsans-bold">3/8</Text>
         </View>
 
         {/* TITLE */}
         <View className="items-center mb-10">
 
-      <Text className="text-[26px] font-redditsans-bold text-gray-800 text-center">
+      <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
         What time do you usually
       </Text>
 
       <View className="flex-row items-center justify-center">
         <Text className="text-[26px] font-redditsans-bold text-green-500">
-          end your day?
+          wake up?
         </Text>
 
         <FontAwesomeIcon
-          icon={faMoon}
+          icon={faSun}
           size={20}
           color="#FFD43B"
           style={{ marginLeft: 6 , marginBottom: -6 }}
         />
       </View>
 
-      <Text className="text-[13px] font-redditsans-regular text-gray-500 mt-3 text-center px-6">
-      Let us know when you typically end your day to optimize your habit tracking.
+      <Text style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280" }} className="text-[13px] font-redditsans-regular mt-3 text-center px-6">
+        Setting your wake-up time helps us create your personalized habit schedule.
       </Text>
 
     </View>
@@ -170,10 +193,12 @@ const UserPref2 = () => {
         {/* BUTTON */}
         <TouchableOpacity onPress={() => {
           navigation.navigate("UserPref3", {
+            isUpdate,
+            initialData,
             preferences: {
               ...previousPreferences,
-              endOfDayHour: hour,
-              endOfDayMinute: minute,
+              wakeUpHour: hour,
+              wakeUpMinute: minute,
             }
           });
         }} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
