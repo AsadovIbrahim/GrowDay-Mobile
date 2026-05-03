@@ -6,6 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck, faFire, faTrophy, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from '../../constants/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Sound from 'react-native-sound';
+
+Sound.setCategory('Playback');
 
 const { width } = Dimensions.get('window');
 
@@ -46,6 +49,27 @@ const HabitCelebration = () => {
                 useNativeDriver: true,
             }).start();
         });
+
+        // Play applause sound
+        let applause = new Sound('applause.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('failed to load the applause sound', error);
+                return;
+            }
+            applause.play((success) => {
+                if (!success) {
+                    console.log('sound playback failed');
+                }
+                applause.release();
+            });
+        });
+
+        return () => {
+            if (applause) {
+                applause.stop();
+                applause.release();
+            }
+        };
     }, []);
 
     const handleContinue = () => {

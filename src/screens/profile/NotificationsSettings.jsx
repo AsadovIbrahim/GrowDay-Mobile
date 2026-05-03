@@ -17,23 +17,71 @@ import {
   faEnvelope,
   faMobileAlt,
 } from '@fortawesome/free-solid-svg-icons';
+import { useMMKVBoolean, useMMKVString } from 'react-native-mmkv';
 import { useTheme } from '../../context/ThemeContext';
+import { getAccountDataFetch, updateAccountFetch } from '../../utils/fetch';
+import { displayLocalNotification } from '../../utils/NotificationService';
 
 const NotificationsSettings = ({ navigation }) => {
   const { theme } = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const [token] = useMMKVString('accessToken');
 
-  const [pushEnabled, setPushEnabled] = React.useState(true);
-  const [soundEnabled, setSoundEnabled] = React.useState(true);
-  const [emailEnabled, setEmailEnabled] = React.useState(false);
-  const [remindersEnabled, setRemindersEnabled] = React.useState(true);
+  const [pushEnabled, setPushEnabled] = useMMKVBoolean('settings.pushEnabled');
+  const [soundEnabled, setSoundEnabled] = useMMKVBoolean('settings.soundEnabled');
+  const [emailEnabled, setEmailEnabled] = useMMKVBoolean('settings.emailEnabled');
+  const [remindersEnabled, setRemindersEnabled] = useMMKVBoolean('settings.remindersEnabled');
+
+  const [accountData, setAccountData] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchSettings = async () => {
+      const res = await getAccountDataFetch(token);
+      if (res.success && res.data) {
+        const d = res.data;
+        setAccountData(d);
+        setPushEnabled(d.pushNotificationsEnabled);
+        setSoundEnabled(d.soundAlertsEnabled);
+        setEmailEnabled(d.emailUpdatesEnabled);
+        setRemindersEnabled(d.dailyRemindersEnabled);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleToggle = async (key, value, setter) => {
+    setter(value); // Update local MMKV immediately
+    
+    // Prepare backend update payload
+    const payload = {
+      firstName: accountData?.firstName || '',
+      lastName: accountData?.lastName || '',
+      email: accountData?.email || '',
+      username: accountData?.username || '',
+      pushNotificationsEnabled: key === 'push' ? value : (pushEnabled ?? true),
+      soundAlertsEnabled: key === 'sound' ? value : (soundEnabled ?? true),
+      emailUpdatesEnabled: key === 'email' ? value : (emailEnabled ?? false),
+      dailyRemindersEnabled: key === 'reminders' ? value : (remindersEnabled ?? true),
+    };
+
+    try {
+      await updateAccountFetch(token, payload);
+    } catch (error) {
+      console.log('Failed to sync settings with backend', error);
+    }
+  };
+
+  const pushVal = pushEnabled ?? true;
+  const soundVal = soundEnabled ?? true;
+  const emailVal = emailEnabled ?? false;
+  const remindersVal = remindersEnabled ?? true;
 
   const rows = [
-    { icon: faBell, title: 'Push Notifications', value: pushEnabled, setter: setPushEnabled },
-    { icon: faVolumeHigh, title: 'Sound Alerts', value: soundEnabled, setter: setSoundEnabled },
-    { icon: faEnvelope, title: 'Email Updates', value: emailEnabled, setter: setEmailEnabled },
-    { icon: faMobileAlt, title: 'Daily Reminders', value: remindersEnabled, setter: setRemindersEnabled },
+    { icon: faBell, title: 'Push Notifications', value: pushVal, setter: (v) => handleToggle('push', v, setPushEnabled) },
+    { icon: faVolumeHigh, title: 'Sound Alerts', value: soundVal, setter: (v) => handleToggle('sound', v, setSoundEnabled) },
+    { icon: faEnvelope, title: 'Email Updates', value: emailVal, setter: (v) => handleToggle('email', v, setEmailEnabled) },
+    { icon: faMobileAlt, title: 'Daily Reminders', value: remindersVal, setter: (v) => handleToggle('reminders', v, setRemindersEnabled) },
   ];
 
   return (
@@ -69,13 +117,20 @@ const NotificationsSettings = ({ navigation }) => {
               <Text style={[styles.rowTitle, { color: colors.text }]}>{row.title}</Text>
               <Switch
                 value={row.value}
-                onValueChange={row.setter}
-                trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
+                onValueChange={(val) => {
+                   row.setter(val);
+                }}
+                trackColor={{ false: colors.switchTrackOff, true: colors.primary }}
                 thumbColor={colors.white}
+                ios_backgroundColor={colors.switchTrackOff}
               />
             </View>
           ))}
         </View>
+
+        <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+          Manage how you receive updates and reminders from GrowDay.
+        </Text>
       </ScrollView>
     </LinearGradient>
   );
@@ -104,6 +159,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', marginRight: 14,
   },
   rowTitle: { flex: 1, fontSize: 15, fontFamily: 'RedditSans-Medium', fontWeight: '500' },
+  footerText: {
+    fontSize: 13,
+    fontFamily: 'RedditSans-Regular',
+    textAlign: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+    lineHeight: 18,
+  },
 });
 
 export default NotificationsSettings;

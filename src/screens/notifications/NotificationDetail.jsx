@@ -35,7 +35,13 @@ const GREEN_BG = "#F0FAF2";
 /* ─── helper: format date ────────────────────────────────────── */
 const formatDate = (iso) => {
   if (!iso) return "N/A";
-  return new Date(iso).toLocaleString("en-US", {
+  
+  // Force 'Z' if missing to ensure UTC-to-local conversion
+  const isoStr = (iso.includes('T') || iso.includes(' ')) && !iso.endsWith('Z') && !iso.includes('+') 
+      ? iso.replace(' ', 'T') + 'Z' 
+      : iso;
+
+  return new Date(isoStr).toLocaleString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",

@@ -634,6 +634,31 @@ export const getAccountDataFetch = async (token) => {
     const data = await response.json();
     return data;
 };
+export const updateAccountFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/Account/UpdateAccount`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const updateFcmTokenFetch = async (token, fcmToken) => {
+    const response = await fetch(`${VITE_API_URL}/api/Account/UpdateFcmToken`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ fcmToken }),
+    });
+    const data = await response.json();
+    return data;
+};
 
 export const changePasswordFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/ChangePassword`, {
@@ -679,4 +704,36 @@ export const getUserLearningContentFetch = async (token, pageIndex = 0, pageSize
     });
     const data = await response.json();
     return data;
+};
+
+export const updateUserHabitFetch = async (token, userHabitId, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
+
+export const removeUserHabitFetch = async (token, userHabitId) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };

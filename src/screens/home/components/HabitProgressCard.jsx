@@ -146,7 +146,7 @@ const HabitProgressCard = ({
 
     const formatValue = (val) => {
         if (Number.isInteger(val)) return val.toString();
-        const withDec = ["km", "m", "hour", "hr", "hrs"];
+        const withDec = ["km", "m", "hour", "hr", "hrs", "min", "minutes"];
         return val.toFixed(withDec.includes(habit.unit?.toLowerCase()) ? 2 : 1);
     };
 

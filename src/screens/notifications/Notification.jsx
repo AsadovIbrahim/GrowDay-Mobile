@@ -275,15 +275,22 @@ const Notification = () => {
             )}
             <Text className="text-xs font-redditsans-regular" style={{ color: colors.textSecondary }}>
               {notification.createdAt
-                ? new Date(notification.createdAt).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false
-                }).replace(',', '')
-                : '2025-10-17 20:12:36'
+                ? (() => {
+                    const dateStr = notification.createdAt;
+                    // Force 'Z' if missing to ensure UTC-to-local conversion
+                    const isoStr = (dateStr.includes('T') || dateStr.includes(' ')) && !dateStr.endsWith('Z') && !dateStr.includes('+') 
+                        ? dateStr.replace(' ', 'T') + 'Z' 
+                        : dateStr;
+                    return new Date(isoStr).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    }).replace(',', '');
+                  })()
+                : 'N/A'
               }
             </Text>
           </View>

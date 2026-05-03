@@ -302,6 +302,42 @@ const UserHabits = ({ route }) => {
                     </View>
                 </View>
 
+                {/* Filter Chips Section — always visible */}
+                <View className="px-4 mb-3">
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: 4 }}
+                    >
+                        {frequencyOptions.map((option) => (
+                            <TouchableOpacity
+                                key={option}
+                                onPress={() => {
+                                    setSelectedFrequency(option);
+                                    setDisplayLimit(pageSize);
+                                    setSelectedHabits(new Set());
+                                    setIsSelectionMode(false);
+                                }}
+                                className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
+                                style={{
+                                    backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
+                                    borderColor: selectedFrequency === option ? colors.primary : colors.border
+                                }}
+                                activeOpacity={0.8}
+                            >
+                                <Text
+                                    className="text-sm font-redditsans-medium"
+                                    style={{
+                                        color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
+                                    }}
+                                >
+                                    {option}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
+
                 {/* Content */}
                 <ScrollView
                     className="flex-1 px-4"
@@ -331,45 +367,8 @@ const UserHabits = ({ route }) => {
                         </View>
                     ) : (
                         <>
-                            {/* Filter Chips Section */}
-                            <View className="mb-4">
-                                <ScrollView 
-                                    horizontal 
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={{ paddingBottom: 4 }}
-                                >
-                                    {frequencyOptions.map((option) => (
-                                        <TouchableOpacity
-                                            key={option}
-                                            onPress={() => {
-                                                setSelectedFrequency(option);
-                                                setDisplayLimit(pageSize);
-                                                setSelectedHabits(new Set());
-                                                setIsSelectionMode(false);
-                                            }}
-                                            className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
-                                            style={{
-                                                backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
-                                                borderColor: selectedFrequency === option ? colors.primary : colors.border
-                                            }}
-                                            activeOpacity={0.8}
-                                        >
-                                            <Text
-                                                className="text-sm font-redditsans-medium"
-                                                style={{
-                                                    color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
-                                                }}
-                                            >
-                                                {option}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </ScrollView>
-                            </View>
-
                             <View className="mb-3">
                                 <View className="flex-row items-center justify-end mb-2">
-
                                     {/* Load More */}
                                     {hasMore && !loading && !isSelectionMode && (
                                         <TouchableOpacity
@@ -383,10 +382,9 @@ const UserHabits = ({ route }) => {
                                     )}
                                 </View>
 
-                                {/* Selection Mode Actions - Under Filter */}
+                                {/* Selection Mode Actions */}
                                 {isSelectionMode && (
                                     <View className="mb-2">
-                                        {/* Select All Checkbox */}
                                         <View className="rounded-xl px-4 py-2 mb-2 flex-row items-center">
                                             <TouchableOpacity
                                                 onPress={handleToggleSelectAll}
@@ -405,7 +403,6 @@ const UserHabits = ({ route }) => {
                                             </Text>
                                         </View>
 
-                                        {/* Action Buttons */}
                                         <View className="flex-row gap-2">
                                             <TouchableOpacity
                                                 onPress={exitSelectionMode}

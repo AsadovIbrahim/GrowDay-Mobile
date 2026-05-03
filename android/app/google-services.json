@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "792340848380",
+    "project_id": "growday-17333",
+    "storage_bucket": "growday-17333.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792340848380:android:602f6d7054717b57ec4179",
+        "android_client_info": {
+          "package_name": "com.growday"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe_TnaA28u0rcus9qd4kk-RWOSwtr97xg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

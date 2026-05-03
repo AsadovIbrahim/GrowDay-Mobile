@@ -17,7 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { useMMKVString } from "react-native-mmkv";
-import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch } from "../../utils/fetch";
+import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch } from "../../utils/fetch";
 import { ICONS } from "../../constants/icons";
 import { useTheme as useThemeConstants } from "../../constants/theme";
 import { useTheme } from "../../context/ThemeContext";
@@ -55,12 +55,12 @@ const UNITS = [
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
-const MINUTES = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0")); // 5-min intervals
+const MINUTES = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 
 const CreateCustomHabit = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { habitData = null, isCustom = true, isSuggested = false } = route.params || {};
+  const { habitData = null, isCustom = true, isSuggested = false, isEditMode = false } = route.params || {};
   const [accessToken] = useMMKVString("accessToken");
   const { spacing, typography, radius } = useThemeConstants();
   const { theme, isDark } = useTheme();
@@ -75,25 +75,31 @@ const CreateCustomHabit = () => {
   const [tempCustomUnit, setTempCustomUnit] = useState("");
 
   // Goal & Tracking
-  const [targetValue, setTargetValue] = useState("1");
-  const [unit, setUnit] = useState("times");
-  const [frequency, setFrequency] = useState("Daily");
+  const [targetValue, setTargetValue] = useState(habitData?.targetValue?.toString() || "1");
+  const [unit, setUnit] = useState(habitData?.unit || "times");
+  const [frequency, setFrequency] = useState(habitData?.frequency || "Daily");
   const [selectedDays, setSelectedDays] = useState(["Mon"]);
-  const [trackDuration, setTrackDuration] = useState(false);
-  const [durationInMinutes, setDurationInMinutes] = useState("10");
+  const [trackDuration, setTrackDuration] = useState(habitData?.durationInMinutes > 0);
+  const [durationInMinutes, setDurationInMinutes] = useState(habitData?.durationInMinutes?.toString() || "10");
 
   // Schedule
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(habitData?.startDate ? habitData.startDate.split('T')[0] : new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(habitData?.endDate ? habitData.endDate.split('T')[0] : "");
 
   // Reminders
-  const [reminderEnabled, setReminderEnabled] = useState(true);
-  const [reminderTime, setReminderTime] = useState("09:30");
+  const [reminderEnabled, setReminderEnabled] = useState(!!habitData?.notificationTime);
+  const [reminderTime, setReminderTime] = useState(habitData?.notificationTime || "09:30");
 
   const [isLoading, setIsLoading] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showUnitModal, setShowUnitModal] = useState(false);
+  const [showStartDateModal, setShowStartDateModal] = useState(false);
+  const [showEndDateModal, setShowEndDateModal] = useState(false);
+
+  const [tempDay, setTempDay] = useState(new Date().getDate().toString().padStart(2, '0'));
+  const [tempMonth, setTempMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+  const [tempYear, setTempYear] = useState(new Date().getFullYear().toString());
 
   // Time Picker Temp State
   const [tempHours, setTempHours] = useState("09");
@@ -105,11 +111,33 @@ const CreateCustomHabit = () => {
       setDescription(habitData.description || habitData.title || "");
       setIcon(habitData.icon || "star");
       if (habitData.category) setCategory(habitData.category);
+      if (habitData.targetValue) setTargetValue(habitData.targetValue.toString());
+      if (habitData.unit) setUnit(habitData.unit);
+      if (habitData.frequency) setFrequency(habitData.frequency);
+      if (habitData.notificationTime) {
+        setReminderTime(habitData.notificationTime.substring(0, 5));
+        setReminderEnabled(true);
+      }
+      if (habitData.durationInMinutes) {
+        setDurationInMinutes(habitData.durationInMinutes.toString());
+        setTrackDuration(true);
+      }
+      if (habitData.frequency === "Weekly" && habitData.selectedDays) {
+        setSelectedDays(habitData.selectedDays.split(",").map(d => d.trim()));
+      }
+      if (habitData.frequency === "Custom" && habitData.selectedDays) {
+        setCustomInterval(habitData.selectedDays);
+      }
+      if (habitData.startDate) setStartDate(habitData.startDate.split('T')[0]);
+      if (habitData.endDate) setEndDate(habitData.endDate.split('T')[0]);
     }
   }, [habitData]);
 
+  const [customInterval, setCustomInterval] = useState("1");
+
   const handleConfirmTime = () => {
     setReminderTime(`${tempHours}:${tempMinutes}`);
+    setReminderEnabled(true);
     setShowTimeModal(false);
   };
 
@@ -137,18 +165,20 @@ const CreateCustomHabit = () => {
     }
 
     setIsLoading(true);
+    const resolvedId = habitData?.userHabitId || habitData?.id;
 
     try {
-      if (!isCustom && habitData?.id) {
+      if (!isEditMode && !isCustom && resolvedId) {
         if (isSuggested) {
           // Suggested Habit (from Explore)
           const payload = {
-            suggestedHabitId: habitData.id,
+            suggestedHabitId: resolvedId,
             category,
-            notificationTime: reminderEnabled ? reminderTime : null,
+            notificationTime: reminderEnabled ? reminderTime : "",
             durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
             startDate: new Date(startDate).toISOString(),
             endDate: endDate ? new Date(endDate).toISOString() : null,
+            selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
           };
           const response = await addSuggestedHabitFetch(accessToken, payload);
           if (response) {
@@ -157,12 +187,13 @@ const CreateCustomHabit = () => {
         } else {
           // Popular Habit (Shared Habit)
           const payload = {
-            habitId: habitData.id,
+            habitId: resolvedId,
             category,
-            notificationTime: reminderEnabled ? reminderTime : null,
+            notificationTime: reminderEnabled ? reminderTime : "",
             durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
             startDate: new Date(startDate).toISOString(),
             endDate: endDate ? new Date(endDate).toISOString() : null,
+            selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
           };
           const response = await addUserHabitFetch(accessToken, payload);
           if (response) {
@@ -170,7 +201,6 @@ const CreateCustomHabit = () => {
           }
         }
       } else {
-        // Custom Habit
         const payload = {
           title,
           description,
@@ -182,11 +212,18 @@ const CreateCustomHabit = () => {
           targetValue: parseFloat(targetValue) || 1,
           incrementValue: 1, // Default to 1 as requested
           unit,
-          notificationTime: reminderEnabled ? reminderTime : null,
+          notificationTime: reminderEnabled ? reminderTime : "",
           durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
-          // If needed, we could pass selectedDays to backend if the API supports it
+          selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
         };
-        const response = await addCustomUserHabitFetch(accessToken, payload);
+
+        let response;
+        if (isEditMode && resolvedId) {
+          response = await updateUserHabitFetch(accessToken, resolvedId, payload);
+        } else {
+          response = await addCustomUserHabitFetch(accessToken, payload);
+        }
+
         if (response) {
           navigation.navigate("Home", { screen: "HomeScreen" });
         }
@@ -230,7 +267,7 @@ const CreateCustomHabit = () => {
           <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
         </TouchableOpacity>
         <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text, ...typography.h1 }]}>
-          {isCustom ? "Create Custom Habit" : "Setup Popular Habit"}
+          {isEditMode ? "Edit Habit" : (isCustom ? "Create Custom Habit" : "Setup Popular Habit")}
         </Text>
       </View>
 
@@ -326,26 +363,27 @@ const CreateCustomHabit = () => {
             <Text style={[styles.label, { color: colors.textSecondary }]}>GOAL & TRACKING</Text>
             <View style={[styles.goalCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               
-              {isCustom && <Text style={[styles.introText, { color: colors.textSecondary }]}>I want to do this</Text>}
+              <Text style={[styles.introText, { color: colors.textSecondary }]}>I want to do this</Text>
               
-              {isCustom && (
-                <>
+              <>
                   <View style={styles.sentenceRow}>
                     <TextInput
-                      style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary }]}
+                      style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary }, !isCustom && { color: colors.textSecondary, borderBottomColor: colors.textGray }]}
                       value={targetValue}
                       onChangeText={setTargetValue}
                       keyboardType="numeric"
                       placeholder="1"
                       placeholderTextColor={colors.textSecondary}
+                      editable={isCustom}
                     />
                     
                     <TouchableOpacity 
-                      style={[styles.unitSelector, { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setShowUnitModal(true)}
+                      style={[styles.unitSelector, { backgroundColor: colors.primarySurface }, !isCustom && { backgroundColor: colors.cardSecondary }]}
+                      onPress={() => isCustom && setShowUnitModal(true)}
+                      disabled={!isCustom}
                     >
-                      <Text style={[styles.unitText, { color: colors.primary }]}>{unit}</Text>
-                      <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />
+                      <Text style={[styles.unitText, { color: colors.primary }, !isCustom && { color: colors.textSecondary }]}>{unit}</Text>
+                      {isCustom && <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />}
                     </TouchableOpacity>
 
                     <Text style={[styles.sentenceLabel, { color: colors.text }]}>every</Text>
@@ -353,7 +391,7 @@ const CreateCustomHabit = () => {
 
                   {/* Frequency Selection (Chips) */}
                   <View style={styles.frequencyRow}>
-                    {["Daily", "Weekly", "Custom"].map((freq) => (
+                    {["Daily", "Weekly", "Monthly", "Custom"].map((freq) => (
                       <TouchableOpacity
                         key={freq}
                         style={[
@@ -361,7 +399,8 @@ const CreateCustomHabit = () => {
                           { backgroundColor: colors.card, borderColor: colors.border },
                           frequency === freq && { backgroundColor: colors.primary, borderColor: colors.primary }
                         ]}
-                        onPress={() => setFrequency(freq)}
+                        onPress={() => isCustom && setFrequency(freq)}
+                        disabled={!isCustom}
                       >
                         <Text style={[
                           styles.freqChipText,
@@ -387,7 +426,8 @@ const CreateCustomHabit = () => {
                               { backgroundColor: colors.card, borderColor: colors.border },
                               selectedDays.includes(day) && { backgroundColor: colors.primarySurface, borderColor: colors.primary }
                             ]}
-                            onPress={() => toggleDay(day)}
+                            onPress={() => isCustom && toggleDay(day)}
+                            disabled={!isCustom}
                           >
                             <Text style={[
                               styles.dayChipText,
@@ -401,8 +441,31 @@ const CreateCustomHabit = () => {
                       </View>
                     </View>
                   )}
-                </>
-              )}
+
+                  {frequency === "Custom" && (
+                    <View style={styles.dayPickerContainer}>
+                      <Text style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>Repeat interval</Text>
+                      <View style={styles.sentenceRow}>
+                        <Text style={[styles.sentenceLabel, { color: colors.text, marginRight: 10 }]}>Every</Text>
+                        <TextInput
+                          style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary, minWidth: 40 }]}
+                          value={customInterval}
+                          onChangeText={setCustomInterval}
+                          keyboardType="numeric"
+                          placeholder="1"
+                        />
+                        <Text style={[styles.sentenceLabel, { color: colors.text }]}>days</Text>
+                      </View>
+                    </View>
+                  )}
+
+                  {frequency === "Monthly" && (
+                    <View style={styles.dayPickerContainer}>
+                      <Text style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>Repeat schedule</Text>
+                      <Text style={{ color: colors.textSecondary }}>This habit will repeat on the same day of each month (Day {(new Date(startDate)).getDate()}).</Text>
+                    </View>
+                  )}
+              </>
 
               {/* Duration Toggle */}
               <View style={styles.durationSection}>
@@ -446,7 +509,16 @@ const CreateCustomHabit = () => {
           <View style={styles.fieldSection}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>SCHEDULE</Text>
             <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <View style={styles.cardRow}>
+              <TouchableOpacity 
+                style={styles.cardRow}
+                onPress={() => {
+                  const d = new Date(startDate);
+                  setTempDay(d.getDate().toString().padStart(2, '0'));
+                  setTempMonth((d.getMonth() + 1).toString().padStart(2, '0'));
+                  setTempYear(d.getFullYear().toString());
+                  setShowStartDateModal(true);
+                }}
+              >
                 <View style={[styles.iconBox, { backgroundColor: colors.primarySurface }]}>
                    <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.primary} />
                 </View>
@@ -460,9 +532,18 @@ const CreateCustomHabit = () => {
                 >
                    <Text style={[styles.miniButtonText, { color: colors.textSecondary }]}>Today</Text>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
               
-              <View style={[styles.cardRow, { marginTop: 15, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 15 }]}>
+              <TouchableOpacity 
+                style={[styles.cardRow, { marginTop: 15, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 15 }]}
+                onPress={() => {
+                  const d = endDate ? new Date(endDate) : new Date();
+                  setTempDay(d.getDate().toString().padStart(2, '0'));
+                  setTempMonth((d.getMonth() + 1).toString().padStart(2, '0'));
+                  setTempYear(d.getFullYear().toString());
+                  setShowEndDateModal(true);
+                }}
+              >
                 <View style={[styles.iconBox, { backgroundColor: colors.dangerSurface }]}>
                    <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.danger} />
                 </View>
@@ -476,7 +557,7 @@ const CreateCustomHabit = () => {
                 >
                    <Text style={[styles.miniButtonText, { color: colors.textSecondary }]}>Clear</Text>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -495,14 +576,20 @@ const CreateCustomHabit = () => {
                 />
               </View>
               <TouchableOpacity
-                style={[styles.reminderTimeRow, { backgroundColor: colors.background }]}
-                onPress={() => setShowTimeModal(true)}
+                style={[
+                  styles.reminderTimeRow, 
+                  { backgroundColor: colors.background, opacity: reminderEnabled ? 1 : 0.5 }
+                ]}
+                onPress={() => reminderEnabled && setShowTimeModal(true)}
+                disabled={!reminderEnabled}
               >
                 <View style={[styles.badge, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   <Text style={[styles.badgeText, { color: colors.text }]}>🕒 {reminderTime}</Text>
                 </View>
                 <View style={[styles.badge, { marginLeft: 10, backgroundColor: colors.card, borderColor: colors.border }]}>
-                  <Text style={[styles.badgeText, { color: colors.text }]}>📋 Every day</Text>
+                  <Text style={[styles.badgeText, { color: colors.text }]}>
+                    📋 {frequency === "Daily" ? "Every day" : (frequency === "Weekly" ? "On scheduled days" : "Selected days")}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -519,7 +606,7 @@ const CreateCustomHabit = () => {
             activeOpacity={0.8}
           >
             <Text style={[styles.addButtonText, { color: colors.white }]}>
-              {isLoading ? "Saving..." : "Create Habit"}
+              {isLoading ? "Saving..." : (isEditMode ? "Update Habit" : "Create Habit")}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -723,6 +810,163 @@ const CreateCustomHabit = () => {
             <TouchableOpacity
               style={[styles.confirmButton, { backgroundColor: colors.primary }]}
               onPress={handleConfirmTime}
+            >
+              <Text style={styles.confirmButtonText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      {/* Start Date Picker Modal */}
+      <Modal
+        visible={showStartDateModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowStartDateModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowStartDateModal(false)}
+        >
+          <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
+            <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Start Date</Text>
+            
+            <View style={styles.timePickerContainer}>
+              {/* Day Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>DAY</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => (
+                    <TouchableOpacity 
+                      key={d} 
+                      style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempDay(d)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Month Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>MONTH</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => (
+                    <TouchableOpacity 
+                      key={m} 
+                      style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempMonth(m)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Year Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>YEAR</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {["2025", "2026", "2027", "2028", "2029", "2030"].map(y => (
+                    <TouchableOpacity 
+                      key={y} 
+                      style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempYear(y)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
+              onPress={() => {
+                setStartDate(`${tempYear}-${tempMonth}-${tempDay}`);
+                setShowStartDateModal(false);
+              }}
+            >
+              <Text style={styles.confirmButtonText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* End Date Picker Modal */}
+      <Modal
+        visible={showEndDateModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowEndDateModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowEndDateModal(false)}
+        >
+          <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
+            <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Select End Date</Text>
+            
+            <View style={styles.timePickerContainer}>
+              {/* Day Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>DAY</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => (
+                    <TouchableOpacity 
+                      key={d} 
+                      style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempDay(d)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Month Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>MONTH</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => (
+                    <TouchableOpacity 
+                      key={m} 
+                      style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempMonth(m)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Year Column */}
+              <View style={styles.timeColumn}>
+                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>YEAR</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {["2025", "2026", "2027", "2028", "2029", "2030"].map(y => (
+                    <TouchableOpacity 
+                      key={y} 
+                      style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setTempYear(y)}
+                    >
+                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
+              onPress={() => {
+                setEndDate(`${tempYear}-${tempMonth}-${tempDay}`);
+                setShowEndDateModal(false);
+              }}
             >
               <Text style={styles.confirmButtonText}>Confirm</Text>
             </TouchableOpacity>

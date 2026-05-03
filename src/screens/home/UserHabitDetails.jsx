@@ -1,12 +1,13 @@
-import { View, Text, Pressable, ScrollView, TextInput, StyleSheet } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faTrash, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
-import { getUserHabitByIdFetch, getWeeklyProgressFetch } from "../../utils/fetch";
+import { faArrowLeft, faEdit, faTrash, faNoteSticky, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { getUserHabitByIdFetch, getWeeklyProgressFetch, removeUserHabitFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
 import { useEffect, useState } from "react";
 import { ICONS } from "../../constants/icons";
+import { TouchableOpacity } from "react-native";
 import HabitProgressCard from "./components/HabitProgressCard";
 import HabitActionSection from "./components/HabitActionSection";
 import { useTheme } from '../../context/ThemeContext';
@@ -31,16 +32,23 @@ const UserHabitDetails = () => {
     const [liveDelta, setLiveDelta] = useState(0);
     const [token] = useMMKVString("accessToken");
     const [isFocused, setIsFocused] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const { theme } = useTheme();
     const { colors } = theme;
     const isFutureDate = route.params?.isFuture || (() => {
         const dateParam = route.params?.date;
         if (!dateParam) return false;
+        
+        // Use local date strings for comparison to avoid timezone issues
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const target = new Date(dateParam);
-        target.setHours(0, 0, 0, 0);
-        return target > today;
+        const todayStr = today.getFullYear() + '-' + 
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(today.getDate()).padStart(2, '0');
+        
+        const targetStr = dateParam.includes('T') ? dateParam.split('T')[0] : dateParam;
+        
+        return targetStr > todayStr;
     })();
 
     const isAlreadyDone = userHabit?.lastCompletedDate && 
@@ -63,9 +71,34 @@ const UserHabitDetails = () => {
         try {
             if (!token) return;
             const response = await getUserHabitByIdFetch(token, habitId, date);
-            if (response?.data) setUserHabit(response.data);
+            if (response?.data) {
+                setUserHabit(response.data);
+                setLiveDelta(0); // Reset live delta ONLY after we have the new baseline from server
+            }
         } catch (e) {
             console.log("Habit fetch error:", e);
+        }
+    };
+
+    const handleDelete = () => {
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            setIsDeleting(true);
+            const habitId = route.params?.habitId;
+            if (!habitId || !token) return;
+            const response = await removeUserHabitFetch(token, habitId);
+            if (response) {
+                setShowDeleteModal(false);
+                navigation.navigate("Home", { screen: "HomeScreen" });
+            }
+        } catch (error) {
+            console.log("Delete error:", error);
+            Alert.alert("Error", "Failed to delete habit.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -111,12 +144,24 @@ const UserHabitDetails = () => {
                 <View style={styles.headerActions}>
                     {!isFutureDate && (
                         <>
-                            <Pressable style={[styles.iconCircle, { backgroundColor: colors.card }]} hitSlop={10}>
+                            <Pressable 
+                                onPress={() => navigation.navigate("CreateCustomHabit", { 
+                                    habitData: userHabit, 
+                                    isEditMode: true,
+                                    isCustom: !userHabit?.habitId && !userHabit?.suggestedHabitId
+                                })}
+                                style={[styles.iconCircle, { backgroundColor: colors.card }]} 
+                                hitSlop={10}
+                            >
                                 <FontAwesomeIcon icon={faEdit} color={colors.textSecondary} size={16} />
                             </Pressable>
-                            <Pressable style={[styles.iconCircle, { backgroundColor: colors.dangerSurface }]} hitSlop={10}>
-                                <FontAwesomeIcon icon={faTrash} color={colors.danger} size={16} />
-                            </Pressable>
+                             <Pressable 
+                                onPress={handleDelete}
+                                style={[styles.iconCircle, { backgroundColor: colors.dangerSurface }]} 
+                                hitSlop={10}
+                             >
+                                 <FontAwesomeIcon icon={faTrash} color={colors.danger} size={16} />
+                             </Pressable>
                         </>
                     )}
                 </View>
@@ -174,8 +219,8 @@ const UserHabitDetails = () => {
                         token={token}
                         note={note}
                         date={route.params?.date}
+                        isFuture={isFutureDate}
                         onActionComplete={() => {
-                            setLiveDelta(0);
                             if (route.params?.habitId) {
                                 getUserHabitById(route.params.habitId, route.params?.date);
                                 getWeeklyProgress(route.params.habitId);
@@ -205,11 +250,96 @@ const UserHabitDetails = () => {
                 )}
                 
             </ScrollView>
+
+            {/* Modern Delete Confirmation Modal */}
+            <Modal
+                visible={showDeleteModal}
+                transparent
+                animationType="fade"
+                onRequestClose={() => !isDeleting && setShowDeleteModal(false)}
+            >
+                <Pressable 
+                    style={styles.modalOverlay}
+                    onPress={() => !isDeleting && setShowDeleteModal(false)}
+                >
+                    <Pressable 
+                        style={[styles.modalContent, { backgroundColor: colors.card }]}
+                        onPress={(e) => e.stopPropagation()}
+                    >
+                        <View style={[styles.warningIconContainer, { backgroundColor: colors.dangerSurface }]}>
+                            <FontAwesomeIcon icon={faTrash} color={colors.danger} size={28} />
+                        </View>
+                        
+                        <Text style={[styles.modalTitle, { color: colors.text }]}>
+                            {`Delete "${userHabit?.title}"?`}
+                        </Text>
+                        
+                        <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                            <Text>
+                                This will <Text style={{ fontWeight: "700", color: colors.text }}>permanently</Text> remove your progress, streaks, and history. This action <Text style={{ fontWeight: "700", color: colors.text }}>cannot be undone</Text>.
+                            </Text>
+                        </Text>
+
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity 
+                                onPress={() => setShowDeleteModal(false)}
+                                disabled={isDeleting}
+                                style={[styles.modalButton, styles.ghostButton]}
+                            >
+                                <Text style={[styles.buttonText, { color: colors.textSecondary }]}>
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity 
+                                onPress={confirmDelete}
+                                disabled={isDeleting}
+                                style={[styles.modalButton, styles.deleteButton, { backgroundColor: colors.danger }]}
+                            >
+                                <Text style={[styles.buttonText, { color: "#fff" }]}>
+                                    {isDeleting ? "Deleting..." : "Delete Habit"}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
         </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
+    modalOverlay: {
+        flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", alignItems: "center", padding: 20
+    },
+    modalContent: {
+        width: "100%", maxWidth: 340, borderRadius: 24, padding: 24, alignItems: "center",
+        elevation: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8
+    },
+    warningIconContainer: {
+        width: 64, height: 64, borderRadius: 32, justifyContent: "center", alignItems: "center", marginBottom: 16
+    },
+    modalTitle: {
+        fontSize: 22, fontWeight: "700", marginBottom: 12, textAlign: "center"
+    },
+    modalMessage: {
+        fontSize: 15, textAlign: "center", lineHeight: 22, marginBottom: 28, paddingHorizontal: 10
+    },
+    modalActions: {
+        flexDirection: "row", gap: 12, width: "100%"
+    },
+    modalButton: {
+        flex: 1, height: 52, borderRadius: 16, justifyContent: "center", alignItems: "center"
+    },
+    ghostButton: {
+        backgroundColor: "transparent"
+    },
+    deleteButton: {
+        elevation: 2, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4
+    },
+    buttonText: {
+        fontSize: 16, fontWeight: "600"
+    },
     header: {
         flexDirection: "row", alignItems: "center", justifyContent: "space-between",
         paddingHorizontal: 20, paddingTop: 56, paddingBottom: 14,

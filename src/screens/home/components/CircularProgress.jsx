@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
@@ -12,24 +12,30 @@ const CircularProgress = ({
 }) => {
     // Faiz rəqəmini 100-də məhdudlaşdırırıq (məsələn 101% olanda UI-da 100% göstərsin)
     const boundedPercent = Math.min(100, Math.max(0, percent));
-    const [animatedValue, setAnimatedValue] = useState(0);
+    const [animatedValue, setAnimatedValue] = useState(boundedPercent);
+    const prevPercentRef = useRef(boundedPercent);
 
-    // Animasiya (requestAnimationFrame ilə daha stabil)
     useEffect(() => {
         let startTime = null;
         let animationFrame;
-        const duration = 1200; // ms
+        const duration = 800; // Bir az daha sürətli animasiya (0.8s)
+        const startValue = prevPercentRef.current;
+        const diff = boundedPercent - startValue;
 
         const animate = (time) => {
             if (!startTime) startTime = time;
             const progress = Math.min(1, (time - startTime) / duration);
 
-            // Ease out cubic effekti (yavaşca dayanır)
+            // Ease out cubic effekti
             const easeOut = 1 - Math.pow(1 - progress, 3);
-            setAnimatedValue(easeOut * boundedPercent);
+            const nextValue = startValue + (diff * easeOut);
+            
+            setAnimatedValue(nextValue);
 
             if (progress < 1) {
                 animationFrame = requestAnimationFrame(animate);
+            } else {
+                prevPercentRef.current = boundedPercent;
             }
         };
 

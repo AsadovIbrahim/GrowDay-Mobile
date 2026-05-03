@@ -53,7 +53,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
           if (!isNaN(hours) && !isNaN(minutes)) {
             const date = new Date();
             date.setHours(hours, minutes, 0);
-            return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            return date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
           }
         }
       }
