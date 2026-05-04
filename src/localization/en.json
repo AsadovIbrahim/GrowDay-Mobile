@@ -1,0 +1,476 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "retry": "Retry",
+    "failed_load": "Failed to load data. Please check your connection.",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "logout_confirm": "Are you sure you want to logout?",
+    "premium_member": "Premium Member",
+    "pending": "Pending",
+    "completed": "Completed",
+    "upcoming": "Upcoming",
+    "missed": "Missed",
+    "success": "Success",
+    "error": "Error",
+    "save": "Save",
+    "saving": "Saving...",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "custom": "Custom"
+  },
+  "menu": {
+    "home": "Home",
+    "explore": "Explore",
+    "habits": "Your Habits",
+    "achievements": "Achievements",
+    "support": "Support",
+    "settings": "Settings",
+    "legal": "Privacy & Legal"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "view_all": "View All",
+    "unread": "Unread",
+    "mark_all_read": "Mark all read",
+    "delete_count": "Delete ({{count}})",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "none_found": "No notifications found",
+    "delete_title": "Delete Notifications",
+    "delete_confirm": "Are you sure you want to delete {{count}} notification(s)?",
+    "delete_btn": "Delete",
+    "detail_title": "Notification Details",
+    "label_habit": "HABIT",
+    "label_message": "MESSAGE",
+    "label_datetime": "DATE & TIME",
+    "label_status": "STATUS",
+    "status_read": "Read",
+    "status_unread": "Unread",
+    "not_found_title": "Notification Not Found",
+    "not_found_desc": "This notification may have been deleted or is unavailable.",
+    "push_tracking_title": "Tracking: {{habit}}",
+    "push_tracking_paused": "(Paused) {{body}}",
+    "push_reminder_title": "Keep going with {{habit}}! 🔥",
+    "push_reminder_body": "You left your habit incomplete. Tap to finish it now and keep your streak alive! 🔥",
+    "push_winback_title": "Is everything okay? 👀",
+    "push_winback_body": "We haven't seen you around lately. Your habits miss you! 🚀",
+    "push_time_label": "Time",
+    "push_action_pause": "Pause",
+    "push_action_resume": "Resume",
+    "push_action_stop": "Stop",
+    "channel_sound": "Sound Notifications",
+    "channel_silent": "Silent Notifications",
+    "channel_tracking": "Habit Tracking",
+    "channel_reminders": "Habit Reminders"
+  },
+  "backend_notifications": {
+    "Welcome to GrowDay!": "Welcome to GrowDay!",
+    "We're excited to have you on board. Start your journey towards better habits today!": "We're excited to have you on board. Start your journey towards better habits today!",
+    "Habit Completed ✅": "Habit Completed ✅",
+    "You successfully reached your goal for this habit! Great job!": "You successfully reached your goal for this habit! Great job!",
+    "Time to complete your habit \u23f0": "Time to complete your habit \u23f0"
+  },
+  "home": {
+    "greeting": "Hi {{name}}!",
+    "subtitle": "Let's make habits together!",
+    "todays_habits": "Today's Habits",
+    "upcoming_habits": "Viewing upcoming habits",
+    "view_all": "VIEW ALL",
+    "habit_stats": "Habit Stats",
+    "delete_habits": "Delete Habits",
+    "delete_confirm": "Are you sure you want to delete {{count}} habit(s)? This action cannot be undone.",
+    "yes": "Yes",
+    "calendar_inactive": "Calendar will be active after you add habits",
+    "empty_title": "You haven't added any habits yet",
+    "empty_subtitle": "Start small, stay consistent",
+    "add_first_habit": "Add your first habit",
+    "empty_hint": "You can track habits daily\nand see your progress grow",
+    "progress_today": "Progress Today",
+    "add_habits_tracking": "Add habits to start tracking",
+    "days_habits": "{{day}}'s Habits",
+    "day_names": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "day_short": {
+      "sun": "SUN",
+      "mon": "MON",
+      "tue": "TUE",
+      "wed": "WED",
+      "thu": "THU",
+      "fri": "FRI",
+      "sat": "SAT"
+    }
+  },
+  "my_habits": {
+    "header": "Your Habits",
+    "search_habits": "Search habits...",
+    "no_habits_found": "No habits found",
+    "no_habits_search": "No habits found matching your search",
+    "add_habits_track": "Start by adding some habits to track",
+    "load_more": "Load More",
+    "deselect_all": "Deselect All",
+    "select_all": "Select All",
+    "delete_count": "Delete ({{count}})",
+    "delete_habits": "Delete Habits",
+    "delete_confirm": "Are you sure you want to delete {{count}} habit(s)? This action cannot be undone.",
+    "yes": "Yes",
+    "filters": {
+      "today": "Today",
+      "all": "All",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "custom": "Custom"
+    }
+  },
+  "habit_details": {
+    "header": "Habit Details",
+    "sub_header": "Track your daily progress",
+    "todays_performance": "TODAY'S PERFORMANCE",
+    "weekly_performance": "WEEKLY PERFORMANCE",
+    "streak": "Streak",
+    "best": "Best",
+    "days": "days",
+    "minutes": "minutes",
+    "time": "Time",
+    "min_spent": "min spent",
+    "completed_count": "{{completed}} of {{total}} days completed this week",
+    "this_week": "this week",
+    "days_short": {
+      "mon": "MON",
+      "tue": "TUE",
+      "wed": "WED",
+      "thu": "THU",
+      "fri": "FRI",
+      "sat": "SAT",
+      "sun": "SUN"
+    },
+    "note_saved": "Note saved successfully.",
+    "notes_label": "Today's Notes",
+    "action": {
+      "mark_done": "Mark as done",
+      "upcoming_title": "Upcoming Habit",
+      "upcoming_sub": "You cannot complete this habit until the scheduled day.",
+      "not_scheduled_title": "Not scheduled for this day",
+      "not_scheduled_sub": "The selected day is {{day}}. {{scheduleText}}",
+      "today_session": "TODAY SESSION",
+      "live_steps": "LIVE STEPS",
+      "live_distance": "LIVE DISTANCE",
+      "session_started": "Session started. You can close the app.",
+      "location_active": "Location tracking active.",
+      "step_sensor_active": "Step sensor active.",
+      "tap_to_add": "Tap to add {{unit}}",
+      "runs_on": "This habit runs on: {{days}}.",
+      "runs_monthly": "This habit runs on the {{day}}th of every month.",
+      "runs_custom": "This habit runs every {{interval}} days.",
+      "starts_on": "This habit starts on {{date}}."
+    }
+  },
+  "explore": {
+    "header": "Explore",
+    "suggested_habits": "Suggested Habits",
+    "no_suggestions": "No suggestions available right now.",
+    "tasks": "Tasks",
+    "view_all": "VIEW ALL",
+    "learning": "Learning",
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending"
+    }
+  },
+  "tasks": {
+    "header": "My Tasks",
+    "stats": {
+      "total": "Total",
+      "completed": "Completed",
+      "pending": "Pending",
+      "rate": "Completion Rate",
+      "streak": "Day Streak"
+    },
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed"
+    }
+  },
+  "create_habit": {
+    "header": "Create Custom Habit",
+    "new_good_habit": "NEW GOOD HABIT",
+    "popular_habits": "POPULAR HABITS",
+    "create_custom": "Create Custom Habit",
+    "name_label": "NAME",
+    "name_placeholder": "e.g. Walk",
+    "desc_label": "DESCRIPTION",
+    "desc_placeholder": "e.g. Daily morning walk",
+    "category_label": "CATEGORY",
+    "icon_label": "ICON",
+    "goal_label": "GOAL & TRACKING",
+    "goal_sub": "I want to do this",
+    "times": "times",
+    "every": "every",
+    "save_habit": "Create Habit",
+    "update_habit": "Update Habit",
+    "schedule_label": "SCHEDULE",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "no_end_date": "No end date",
+    "today_btn": "Today",
+    "clear_btn": "Clear",
+    "reminders_label": "REMINDERS",
+    "reminders_sub": "Send me a notification to stay on track.",
+    "every_day": "Every day",
+    "on_scheduled_days": "On scheduled days",
+    "selected_days": "Selected days",
+    "preview": "✨ You will {{title}} {{targetValue}} {{unit}} every {{frequency}}"
+  },
+  "units": {
+    "header": "Select Unit",
+    "custom_header": "Custom Unit",
+    "confirm": "Confirm Unit",
+    "times": "times",
+    "reps": "reps",
+    "steps": "steps",
+    "minutes": "minutes",
+    "hours": "hours",
+    "km": "km",
+    "m": "m",
+    "miles": "miles",
+    "ml": "ml",
+    "liters": "liters",
+    "cups": "cups",
+    "glasses": "glasses",
+    "pages": "pages",
+    "chapters": "chapters",
+    "kcal": "kcal",
+    "tasks": "tasks",
+    "other": "Other"
+  },
+  "categories": {
+    "general": "General",
+    "health": "Health",
+    "fitness": "Fitness",
+    "mindset": "Mindset",
+    "productivity": "Productivity",
+    "finance": "Finance",
+    "social": "Social",
+    "other": "Other"
+  },
+  "achievements": {
+    "header": "Achievements",
+    "stats": {
+      "unlocked": "Unlocked",
+      "new": "New",
+      "remaining": "Remaining",
+      "new_count": "{{count}} new"
+    },
+    "filters": {
+      "all": "All",
+      "unlocked": "Unlocked",
+      "locked": "Locked"
+    },
+    "empty": {
+      "unlocked": "No achievements unlocked yet",
+      "locked": "All achievements unlocked!",
+      "none": "No achievements found"
+    },
+    "earned_on": "Earned on",
+    "unlocked_badge": "Unlocked"
+  },
+  "profile": {
+    "header": "Your Profile",
+    "edit_profile": "Edit Profile",
+    "points": "Points",
+    "error_load": "Failed to load profile",
+    "logout": "Logout",
+    "sections": {
+      "general": "General",
+      "privacy": "Privacy",
+      "support": "Support"
+    },
+    "menu": {
+      "dark_mode": "Dark Mode",
+      "notifications": "Notifications",
+      "languages": "Languages",
+      "habit_preferences": "Habit Preferences",
+      "app_version": "App Version",
+      "change_password": "Change Password",
+      "set_password": "Set Password",
+      "privacy_policy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "contact_support": "Contact Support",
+      "rate_app": "Rate The App"
+    }
+  },
+  "preferences": {
+    "continue": "Continue",
+    "complete": "Complete",
+    "alerts": {
+      "no_changes_title": "No Changes",
+      "no_changes_desc": "Your preferences are already up to date.",
+      "error_title": "Error",
+      "error_save": "Failed to save preferences. Please try again.",
+      "auth_error": "Authentication token not found. Please login again.",
+      "general_error": "An error occurred while saving your preferences. Please try again."
+    },
+    "step0": {
+      "title1": "Tell us a bit",
+      "title2": "about yourself",
+      "subtitle": "Your gender helps us tailor your habit suggestions.",
+      "question": "What is your gender?",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "step1": {
+      "title1": "How old",
+      "title2": "are you?",
+      "subtitle": "Select your age range to help us personalize your experience.",
+      "ranges": {
+        "under18": "Under 18"
+      }
+    },
+    "step2": {
+      "title1": "What time do you usually",
+      "title2": "wake up?",
+      "subtitle": "Setting your wake-up time helps us create your personalized habit schedule."
+    },
+    "step3": {
+      "title1": "What time do you usually",
+      "title2": "end your day?",
+      "subtitle": "Let us know when you typically end your day to optimize your habit tracking."
+    },
+    "step4": {
+      "title1": "Do you often",
+      "title2": "procrastinate?",
+      "subtitle": "Understanding your procrastination tendencies helps us tailor strategies to overcome them.",
+      "options": {
+        "always": "Always",
+        "sometimes": "Sometimes",
+        "rarely": "Rarely",
+        "never": "Never"
+      }
+    },
+    "step5": {
+      "title1": "Do you often find it hard to",
+      "title2": "focus?",
+      "subtitle": "Understanding your motivations helps us align GrowDay with your goals. Select all that apply.",
+      "options": {
+        "constantly": "Constantly",
+        "occasionally": "Occasionally",
+        "rarely": "Rarely",
+        "never": "Never"
+      }
+    },
+    "step6": {
+      "title1": "What influenced you to",
+      "title2": "become organized?",
+      "subtitle": "Let us know if focus is a struggle for you so we can provide targeted support.",
+      "options": {
+        "lack_motivation": "Lack of Motivation",
+        "work_overload": "Work Overload",
+        "cluttered_env": "Cluttered Environment",
+        "digital_distractions": "Digital Distractions",
+        "stress": "Stress"
+      }
+    },
+    "step7": {
+      "title1": "What are your",
+      "title2": "main goals right now?",
+      "subtitle": "Select all that apply to you",
+      "options": {
+        "productivity": "Productivity",
+        "fitness": "Fitness & Health",
+        "learning": "Learning",
+        "mental_health": "Mental Health",
+        "self_improvement": "Self Improvement"
+      }
+    },
+    "ai_loading": {
+      "message1": "Syncing with your energy levels...",
+      "message2": "Analyzing focus patterns...",
+      "message3": "Brainstorming perfect routines...",
+      "message4": "Finalizing your AI blueprint...",
+      "message5": "Almost there, magic is happening...",
+      "optimizing": "Optimizing your routine"
+    },
+    "success": {
+      "updated_title": "Routine Updated!",
+      "ready_title": "Routine is Ready!",
+      "updated_desc": "Your preferences have been updated and AI has re-optimized your routine.",
+      "ready_desc": "Genesis AI has successfully crafted a personalized routine tailored to your goals and lifestyle.",
+      "explore": "Explore My Routine"
+    }
+  },
+  "auth": {
+    "welcome_back": "Welcome Back!",
+    "lets_start": "Let's get started!",
+    "google_continue": "CONTINUE WITH GOOGLE",
+    "or_login_email": "OR LOG IN WITH EMAIL",
+    "email_username": "Email or Username",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "username": "Username",
+    "forgot_password_link": "Forgot Password?",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "forgot_password_title": "Forgot Password?",
+    "forgot_password_desc": "Enter your email address below and we'll send you a link to reset your password.",
+    "send_reset": "Send Reset Link",
+    "back_to_login": "Back to Sign In",
+    "enter_email": "Enter your email",
+    "verify_email": "Verify Email",
+    "otp_sent_desc": "We've sent a 6-digit verification code to",
+    "verify_confirm": "Verify & Confirm",
+    "didnt_receive": "Didn't receive code?",
+    "resend": "Resend",
+    "signing_in": "Signing In...",
+    "signing_up": "Signing Up...",
+    "creating_account": "Creating Account...",
+    "sending": "Sending...",
+    "messages": {
+      "welcome_back_toast": "Welcome back! 🌱",
+      "login_failed": "Login failed. Please try again.",
+      "registration_failed": "Registration failed. Please try again.",
+      "network_error": "Network error. Please check your connection.",
+      "google_success": "Google login successful! 🌱",
+      "google_signup_success": "Google signup successful! 🌱",
+      "google_failed": "Google Sign-In failed.",
+      "google_signup_failed": "Google signup failed on server",
+      "google_token_not_found": "Google token not found.",
+      "fix_following": "Please fix the following:",
+      "reset_link_sent": "Reset link sent!",
+      "check_inbox": "Check your inbox and follow the instructions.",
+      "otp_complete_error": "Please enter the complete 6-digit code.",
+      "invalid_otp": "Invalid verification code.",
+      "something_wrong": "Something went wrong. Please try again."
+    }
+  },
+  "onboarding": {
+    "slide1_title": "create\ngood habits",
+    "slide1_desc": "Build powerful daily routines that transform your lifestyle one small step at a time.",
+    "slide2_title": "track\nyour progress",
+    "slide2_desc": "Visualize your journey with smart insights and streaks that keep you motivated every day.",
+    "slide3_title": "achieve\nyour goals",
+    "slide3_desc": "Reach your full potential with AI-powered habit plans designed just for you.",
+    "get_started": "Get Started"
+  }
+}

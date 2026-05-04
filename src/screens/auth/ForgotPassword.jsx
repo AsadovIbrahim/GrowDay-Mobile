@@ -9,6 +9,7 @@ import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-
 import { forgotPasswordfetch } from "../../utils/fetch";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const ForgotPassword = () => {
 
@@ -16,6 +17,7 @@ const ForgotPassword = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState([]);
@@ -45,7 +47,7 @@ const ForgotPassword = () => {
         }
       }
     } catch (error) {
-      showToast("Network error. Please check your connection.", "error");
+      showToast(t("auth.messages.network_error"), "error");
     } finally {
       setLoading(false);
     }
@@ -94,11 +96,11 @@ const ForgotPassword = () => {
 
             {/* Title */}
             <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
-              Forgot Password?
+              {t("auth.forgot_password_title")}
             </Text>
 
             <Text className="text-lg text-center font-redditsans-medium mb-6" style={{ color: colors.textSecondary }}>
-              Enter your email address below and we'll send you a link to reset your password.
+              {t("auth.forgot_password_desc")}
             </Text>
 
             {/* Success banner */}
@@ -114,10 +116,10 @@ const ForgotPassword = () => {
               }}>
                 <FontAwesomeIcon icon={faEnvelope} size={28} color="#22c55e" />
                 <Text style={{ color: "#22c55e", fontFamily: "RedditSans-Bold", fontSize: 15, marginTop: 10, textAlign: "center" }}>
-                  Reset link sent!
+                  {t("auth.messages.reset_link_sent")}
                 </Text>
                 <Text style={{ color: "rgba(255,255,255,0.85)", fontFamily: "RedditSans-Medium", fontSize: 13, marginTop: 6, textAlign: "center" }}>
-                  Check your inbox and follow the instructions.
+                  {t("auth.messages.check_inbox")}
                 </Text>
               </View>
             )}
@@ -135,7 +137,7 @@ const ForgotPassword = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: serverErrors.length > 1 ? 8 : 0 }}>
                   <FontAwesomeIcon icon={faCircleExclamation} size={15} color="#ff6b6b" />
                   <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Bold", fontSize: 14, marginLeft: 8 }}>
-                    {serverErrors.length === 1 ? serverErrors[0] : "Please fix the following:"}
+                    {serverErrors.length === 1 ? serverErrors[0] : t("auth.messages.fix_following")}
                   </Text>
                 </View>
                 {serverErrors.length > 1 && serverErrors.map((err, i) => (
@@ -151,7 +153,7 @@ const ForgotPassword = () => {
             {!success && (
               <>
                 <TextInput
-                  placeholder="Enter your email"
+                  placeholder={t("auth.enter_email")}
                   placeholderTextColor={colors.textSecondary}
                   value={email}
                   onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
@@ -170,7 +172,7 @@ const ForgotPassword = () => {
                   activeOpacity={0.8}
                 >
                   <Text className="text-white text-center font-redditsans-bold text-lg">
-                    {loading ? "Sending..." : "Send Reset Link"}
+                    {loading ? t("auth.sending") : t("auth.send_reset")}
                   </Text>
                 </TouchableOpacity>
               </>
@@ -178,9 +180,9 @@ const ForgotPassword = () => {
 
             {/* Back to Sign In */}
             <View className="flex-row justify-center mt-6">
-              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>Back to </Text>
+              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>{t("auth.back_to_login")} </Text>
               <TouchableOpacity onPress={() => navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>Sign In</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("auth.sign_in")}</Text>
               </TouchableOpacity>
             </View>
 

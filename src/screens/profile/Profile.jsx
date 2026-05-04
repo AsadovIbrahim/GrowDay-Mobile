@@ -33,6 +33,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import SettingsItem from '../../components/SettingsItem';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 // App version – read from constants ideally
 const APP_VERSION = '1.0.0';
@@ -47,15 +48,17 @@ const SectionLabel = ({ label, colors }) => (
 /* ------------------------------------------------------------------ */
 /*  Profile Card                                                         */
 /* ------------------------------------------------------------------ */
-const ProfileCard = ({ firstName, lastName, points, loading, error, colors, onEditPress }) => (
-  <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
+const ProfileCard = ({ firstName, lastName, points, loading, error, colors, onEditPress }) => {
+  const { t } = useTranslation();
+  return (
+    <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
     <View style={{ flex: 1 }}>
       {loading ? (
         <ActivityIndicator color={colors.primary} style={{ alignSelf: 'flex-start', marginBottom: 8 }} />
       ) : error ? (
         <View style={styles.errorRow}>
           <FontAwesomeIcon icon={faCircleExclamation} size={16} color={colors.danger} />
-          <Text style={[styles.errorText, { color: colors.danger }]}>Failed to load profile</Text>
+          <Text style={[styles.errorText, { color: colors.danger }]}>{t("profile.error_load")}</Text>
         </View>
       ) : (
         <>
@@ -64,7 +67,7 @@ const ProfileCard = ({ firstName, lastName, points, loading, error, colors, onEd
           </Text>
           <View style={[styles.pointsBadge, { backgroundColor: colors.pointsBadge }]}>
             <FontAwesomeIcon icon={faMedal} size={15} color={colors.pointsText} />
-            <Text style={[styles.pointsText, { color: colors.pointsText }]}>{points} Points</Text>
+            <Text style={[styles.pointsText, { color: colors.pointsText }]}>{points} {t("profile.points")}</Text>
           </View>
         </>
       )}
@@ -75,15 +78,17 @@ const ProfileCard = ({ firstName, lastName, points, loading, error, colors, onEd
       activeOpacity={0.8}
     >
       <FontAwesomeIcon icon={faPencil} size={13} color={colors.textSecondary} />
-      <Text style={[styles.editText, { color: colors.text }]}>Edit Profile</Text>
+      <Text style={[styles.editText, { color: colors.text }]}>{t("profile.edit_profile")}</Text>
     </TouchableOpacity>
   </View>
-);
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /*  Dark Mode animated toggle button                                    */
 /* ------------------------------------------------------------------ */
 const DarkModeToggleRow = ({ isDark, onToggle, colors }) => {
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(isDark ? 1 : 0)).current;
 
   useEffect(() => {
@@ -116,7 +121,7 @@ const DarkModeToggleRow = ({ isDark, onToggle, colors }) => {
       <View style={styles.iconWrap}>
         <FontAwesomeIcon icon={faMoon} size={19} color={colors.icon} />
       </View>
-      <Text style={[styles.rowTitle, { color: colors.text }]}>Dark Mode</Text>
+      <Text style={[styles.rowTitle, { color: colors.text }]}>{t("profile.menu.dark_mode")}</Text>
       {/* Custom animated toggle */}
       <Animated.View style={[styles.track, { backgroundColor: trackBg }]}>
         <Animated.View style={[styles.thumb, { left: thumbLeft }]} />
@@ -131,6 +136,7 @@ const DarkModeToggleRow = ({ isDark, onToggle, colors }) => {
 const Profile = ({ navigation }) => {
   const { theme, isDark, toggleTheme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [points, setPoints] = useState(0);
@@ -190,7 +196,7 @@ const Profile = ({ navigation }) => {
         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 20 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text className='font-redditsans-bold' style={[styles.pageTitle, { color: colors.text }]}>Your Profile</Text>
+        <Text className='font-redditsans-bold' style={[styles.pageTitle, { color: colors.text }]}>{t("profile.header")}</Text>
 
         {/* Profile Card */}
         <ProfileCard
@@ -204,22 +210,22 @@ const Profile = ({ navigation }) => {
         />
 
         {/* ── General ── */}
-        <SectionLabel label="General" colors={colors} />
+        <SectionLabel label={t("profile.sections.general")} colors={colors} />
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <DarkModeToggleRow isDark={isDark} onToggle={toggleTheme} colors={colors} />
           <SettingsItem
             icon={faBell}
-            title="Notifications"
+            title={t("profile.menu.notifications")}
             onPress={() => navigation.navigate('NotificationsSettings')}
           />
           <SettingsItem
             icon={faGlobe}
-            title="Languages"
+            title={t("profile.menu.languages")}
             onPress={() => navigation.navigate('LanguageSettings')}
           />
           <SettingsItem
             icon={faGear}
-            title="Habit Preferences"
+            title={t("profile.menu.habit_preferences")}
             onPress={async () => {
               try {
                 const token = storage.getString('accessToken');
@@ -235,7 +241,7 @@ const Profile = ({ navigation }) => {
           />
           <SettingsItem
             icon={faMobileAlt}
-            title="App Version"
+            title={t("profile.menu.app_version")}
             type="text"
             rightText={`v${APP_VERSION}`}
             hideBorder
@@ -243,37 +249,37 @@ const Profile = ({ navigation }) => {
         </View>
 
         {/* ── Privacy ── */}
-        <SectionLabel label="Privacy" colors={colors} />
+        <SectionLabel label={t("profile.sections.privacy")} colors={colors} />
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <SettingsItem
             icon={faLock}
-            title={accountData?.hasPassword === false ? "Set Password" : "Change Password"}
+            title={accountData?.hasPassword === false ? t("profile.menu.set_password") : t("profile.menu.change_password")}
             onPress={() => navigation.navigate('ChangePassword', { hasPassword: accountData?.hasPassword })}
           />
           <SettingsItem
             icon={faFileAlt}
-            title="Privacy Policy"
+            title={t("profile.menu.privacy_policy")}
             onPress={() => {}}
           />
           <SettingsItem
             icon={faScaleBalanced}
-            title="Terms of Service"
+            title={t("profile.menu.terms")}
             onPress={() => {}}
             hideBorder
           />
         </View>
 
         {/* ── Support ── */}
-        <SectionLabel label="Support" colors={colors} />
+        <SectionLabel label={t("profile.sections.support")} colors={colors} />
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <SettingsItem
             icon={faComment}
-            title="Contact Support"
+            title={t("profile.menu.contact_support")}
             onPress={() => navigation.navigate('ContactSupport')}
           />
           <SettingsItem
             icon={faStar}
-            title="Rate The App"
+            title={t("profile.menu.rate_app")}
             onPress={() => {}}
             hideBorder
           />
@@ -286,7 +292,7 @@ const Profile = ({ navigation }) => {
           activeOpacity={0.85}
         >
           <FontAwesomeIcon icon={faArrowRightFromBracket} size={18} color={colors.danger} />
-          <Text style={[styles.logoutText, { color: colors.danger }]}>Logout</Text>
+          <Text style={[styles.logoutText, { color: colors.danger }]}>{t("profile.logout")}</Text>
         </TouchableOpacity>
       </ScrollView>
     </LinearGradient>

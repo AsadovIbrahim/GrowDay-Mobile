@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const ITEM_HEIGHT = 56;
 const VISIBLE_ITEMS = 5;
@@ -20,6 +21,7 @@ const MINUTES = [...BASE_MINUTES, ...BASE_MINUTES, ...BASE_MINUTES];
 const UserPref2 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const initialData = route.params?.initialData;
   const isUpdate = route.params?.isUpdate;
@@ -118,31 +120,25 @@ const UserPref2 = () => {
           <Text style={{ color: colors.textSecondary }} className="font-semibold font-redditsans-bold">3/8</Text>
         </View>
 
-        {/* TITLE */}
         <View className="items-center mb-10">
-
-      <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-        What time do you usually
-      </Text>
-
-      <View className="flex-row items-center justify-center">
-        <Text className="text-[26px] font-redditsans-bold text-green-500">
-          wake up?
-        </Text>
-
-        <FontAwesomeIcon
-          icon={faSun}
-          size={20}
-          color="#FFD43B"
-          style={{ marginLeft: 6 , marginBottom: -6 }}
-        />
-      </View>
-
-      <Text style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280" }} className="text-[13px] font-redditsans-regular mt-3 text-center px-6">
-        Setting your wake-up time helps us create your personalized habit schedule.
-      </Text>
-
-    </View>
+          <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
+            {t("preferences.step2.title1")}
+          </Text>
+          <View className="flex-row items-center justify-center">
+            <Text className="text-[26px] font-redditsans-bold text-green-500">
+              {t("preferences.step2.title2")}
+            </Text>
+            <FontAwesomeIcon
+              icon={faSun}
+              size={20}
+              color="#FFD43B"
+              style={{ marginLeft: 6 , marginBottom: -6 }}
+            />
+          </View>
+          <Text style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280" }} className="text-[13px] font-redditsans-regular mt-3 text-center px-6">
+            {t("preferences.step2.subtitle")}
+          </Text>
+        </View>
 
 
         {/* PICKER */}
@@ -203,7 +199,7 @@ const UserPref2 = () => {
           });
         }} className="mt-36 bg-[#8bc37a] py-5 rounded-full">
           <Text className="text-white text-center font-redditsans-bold text-[16px]">
-            Continue
+            {t("preferences.continue")}
           </Text>
         </TouchableOpacity>
 

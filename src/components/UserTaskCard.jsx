@@ -25,10 +25,12 @@ const STATUS_CONFIG = {
 };
 
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const UserTaskCard = ({ task, onComplete, onDelete }) => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const isCompleted = task.status === "Completed";
   const isOverdue = task.isOverdue;
 
@@ -113,7 +115,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
             className="ml-1 text-[11px] font-redditsans-bold"
             style={{ color: priority.color }}
           >
-            {priority.label}
+            {t(`explore.priority.${task.priority.toLowerCase()}`)}
           </Text>
         </View>
 
@@ -126,7 +128,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
             className="text-[11px] font-redditsans-bold"
             style={{ color: status.color }}
           >
-            {status.label}
+            {t(`explore.status.${task.status.toLowerCase()}`)}
           </Text>
         </View>
 
@@ -155,7 +157,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
               className="ml-1 text-[11px] font-redditsans-bold"
               style={{ color: isOverdue ? "#ef4444" : colors.textSecondary }}
             >
-              {isOverdue ? "Overdue · " : ""}{dueDateStr}
+              {isOverdue ? `${t("common.missed")} · ` : ""}{dueDateStr}
             </Text>
           </View>
         )}

@@ -1,29 +1,31 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { useTheme } from '../../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const CalendarSelector = ({ selectedDate, onDateSelect }) => {
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const today = new Date();
-  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  
-  // Generate dates for the next 7 days
-  const dates = [];
-for (let i = -3; i <= 3; i++) {
-  const date = new Date(today);
-  date.setDate(today.getDate() + i);
-  dates.push({
-    day: date.getDate(),
-    dayName: dayNames[date.getDay()],
-    fullDate: date,
-  });
-}
 
+  const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+  // Generate dates: 3 past, today, 3 future
+  const dates = [];
+  for (let i = -3; i <= 3; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    dates.push({
+      day: date.getDate(),
+      dayKey: dayKeys[date.getDay()],
+      fullDate: date,
+    });
+  }
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       className="px-4 py-4"
       contentContainerStyle={{ gap: 12 }}
@@ -44,23 +46,23 @@ for (let i = -3; i <= 3; i++) {
           }}
           className="px-4 py-3 rounded-2xl"
         >
-          <Text 
-            style={{ 
+          <Text
+            style={{
               color: date.day === selectedDate ? colors.primary : colors.text,
-              fontFamily: 'redditsans-bold' 
+              fontFamily: 'RedditSans-Bold',
             }}
             className="text-lg font-bold"
           >
             {date.day}
           </Text>
-          <Text 
-            style={{ 
+          <Text
+            style={{
               color: date.day === selectedDate ? colors.text : colors.textSecondary,
-              fontFamily: 'redditsans-regular' 
+              fontFamily: 'RedditSans-Regular',
             }}
             className="text-xs"
           >
-            {date.dayName}
+            {t(`home.day_short.${date.dayKey}`)}
           </Text>
         </TouchableOpacity>
       ))}
@@ -69,4 +71,3 @@ for (let i = -3; i <= 3; i++) {
 };
 
 export default CalendarSelector;
-

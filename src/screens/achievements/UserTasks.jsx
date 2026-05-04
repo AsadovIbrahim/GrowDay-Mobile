@@ -29,6 +29,7 @@ import {
 } from "../../utils/fetch";
 import UserTaskCard from "../../components/UserTaskCard";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const STATUS_FILTERS = ["All", "Pending", "InProgress", "Completed"];
 
@@ -52,6 +53,7 @@ const UserTasks = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState(null);
@@ -197,14 +199,14 @@ const UserTasks = () => {
               <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
             </TouchableOpacity>
             <Text className="text-[26px] font-redditsans-bold tracking-tight" style={{ color: colors.text }}>
-              My Tasks
+              {t("tasks.header")}
             </Text>
           </View>
           {stats?.overdueTasks > 0 && (
             <View className="bg-red-500 rounded-full px-3 py-1 flex-row items-center">
               <FontAwesomeIcon icon={faBolt} size={12} color="#fff" />
               <Text className="text-white text-[12px] font-redditsans-bold ml-1">
-                {stats.overdueTasks} overdue
+                {stats.overdueTasks} {t("common.missed")}
               </Text>
             </View>
           )}
@@ -214,7 +216,7 @@ const UserTasks = () => {
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={colors.primary} />
             <Text className="mt-3 font-redditsans-regular text-base" style={{ color: colors.text }}>
-              Loading…
+                {t("common.loading")}
             </Text>
           </View>
         ) : (
@@ -236,19 +238,19 @@ const UserTasks = () => {
                 <View className="flex-row mb-3">
                   <StatBox
                     value={stats.totalTasks}
-                    label="Total"
+                    label={t("tasks.stats.total")}
                     color={colors.text}
                     colors={colors}
                   />
                   <StatBox
                     value={stats.completedTasks}
-                    label="Completed"
+                    label={t("tasks.stats.completed")}
                     color="#16a34a"
                     colors={colors}
                   />
                   <StatBox
                     value={stats.pendingTasks}
-                    label="Pending"
+                    label={t("tasks.stats.pending")}
                     color="#f59e0b"
                     colors={colors}
                   />
@@ -261,7 +263,7 @@ const UserTasks = () => {
                       {Math.round(stats.completionRate)}%
                     </Text>
                     <Text className="text-[11px] font-redditsans-regular mt-1" style={{ color: colors.textSecondary }}>
-                      Completion Rate
+                      {t("tasks.stats.rate")}
                     </Text>
                   </View>
                   <View className="flex-1 rounded-2xl p-4 ml-1 items-center" style={{ backgroundColor: colors.card }}>
@@ -269,7 +271,7 @@ const UserTasks = () => {
                       🔥 {stats.currentTaskStreak}
                     </Text>
                     <Text className="text-[11px] font-redditsans-regular mt-1" style={{ color: colors.textSecondary }}>
-                      Day Streak
+                      {t("tasks.stats.streak")}
                     </Text>
                   </View>
                 </View>
@@ -296,7 +298,7 @@ const UserTasks = () => {
                     className="font-redditsans-bold text-[13px]"
                     style={{ color: filter === f ? colors.primary : colors.textSecondary }}
                   >
-                    {filterLabel(f)}
+                    {t(`tasks.filters.${f === "InProgress" ? "in_progress" : f.toLowerCase()}`)}
                     {f !== "All" && stats
                       ? ` (${
                           f === "Pending"
@@ -328,10 +330,10 @@ const UserTasks = () => {
                 <FontAwesomeIcon icon={faTasks} size={40} color={colors.textSecondary} />
                 <Text className="font-redditsans-bold text-base mt-4 text-center" style={{ color: colors.textSecondary }}>
                   {filter === "Completed"
-                    ? "No completed tasks yet"
+                    ? t("explore.status.completed")
                     : filter === "Pending"
-                    ? "No pending tasks"
-                    : "No tasks found"}
+                    ? t("explore.status.pending")
+                    : t("home.no_habits_found")}
                 </Text>
                 <Text className="font-redditsans-regular text-sm mt-1 text-center" style={{ color: colors.textSecondary }}>
                   Tasks are assigned by admins

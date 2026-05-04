@@ -11,14 +11,16 @@ import UserTasksList from "../../components/UserTasksList";
 import LearningCard from "../../components/LearningCard";
 import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
-import HabitAddModal from "../../components/HabitAddModal";
+
 
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const Explore = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
   const [suggestedHabits, setSuggestedHabits] = useState([]);
@@ -28,8 +30,8 @@ const Explore = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [hasMore, setHasMore] = useState(true);
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState(null);
+
   
   useEffect(() => {
     getUserSuggestedHabits();
@@ -103,20 +105,7 @@ const Explore = () => {
     }
   };
 
-  const handleOpenAddModal = (habit) => {
-    setSelectedHabit(habit);
-    setIsAddModalVisible(true);
-  };
 
-  const handleCloseAddModal = () => {
-    setIsAddModalVisible(false);
-    setSelectedHabit(null);
-  };
-
-  const handleSubmitHabit = (payload) => {
-    console.log("Add habit payload", payload);
-    handleCloseAddModal();
-  };
 
   
   const handleSuggestedHabitPress = (habit) => {
@@ -148,7 +137,7 @@ const Explore = () => {
         >
           {/* Header Section */}
           <View className="flex-row items-center justify-between px-4 pt-4 mb-6">
-              <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>Explore</Text>
+              <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.header")}</Text>
             <TouchableOpacity 
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: colors.cardSecondary }}
@@ -160,7 +149,7 @@ const Explore = () => {
           {/* Suggested Habits Section */}
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Suggested Habits</Text>
+              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
              
             </View>
             
@@ -171,7 +160,7 @@ const Explore = () => {
         ) : suggestedHabits.length === 0 ? (
           <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
              <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
-               No suggestions available right now.
+               {t("explore.no_suggestions")}
              </Text>
           </View>
         ) : (
@@ -189,11 +178,9 @@ const Explore = () => {
                 name={habit.title}
                 frequency={habit.frequency || "Daily"}
                 icon={habit.icon || "🎯"}
-                onPress={() => {
-                  setSelectedHabit(habit);
-                  setIsAddModalVisible(true);
-                }}
+                onPress={() => handleSuggestedHabitPress(habit)}
               />
+
             ))}
             {loading && pageIndex !== 0 && (
               <View className="justify-center items-center px-4">
@@ -208,14 +195,14 @@ const Explore = () => {
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center gap-2">
-                <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Tasks</Text>
+                <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.tasks")}</Text>
                 <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
               </View>
               <TouchableOpacity 
                 onPress={() => navigation.navigate('UserTasks')}
                 className="flex-row items-center gap-1"
               >
-                <Text className="text-base text-green-600 font-redditsans-medium">VIEW ALL</Text>
+                <Text className="text-base text-green-600 font-redditsans-medium">{t("explore.view_all")}</Text>
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
               </TouchableOpacity>
             </View>
@@ -227,7 +214,7 @@ const Explore = () => {
           {/* Learning Section */}
           <View className="mb-6">
             <View className="px-4 mb-4">
-              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>Learning</Text>
+              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.learning")}</Text>
             </View>
             
             <ScrollView 
@@ -253,12 +240,7 @@ const Explore = () => {
               )}
             </ScrollView>
         </View>
-        <HabitAddModal
-          visible={isAddModalVisible}
-          habit={selectedHabit}
-          onClose={handleCloseAddModal}
-          onSubmit={handleSubmitHabit}
-        />
+
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

@@ -19,6 +19,7 @@ import { MenuContext } from '../context/MenuContext';
 import { getAllHabitsFetch } from '../utils/fetch';
 import { ICONS } from '../constants/icons';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -36,6 +37,7 @@ const CreateHabitBottomSheet = () => {
    const [pageSize, setPageSize] = useState(3);
    const { theme } = useTheme();
    const { colors } = theme;
+   const { t } = useTranslation();
 
   const fetchPopularHabits = async (isLoadMore = false) => {
     if (!accessToken || (!hasMore && isLoadMore) || (isLoading || isLoadingMore)) return;
@@ -156,7 +158,7 @@ const CreateHabitBottomSheet = () => {
           </View>
 
           <View style={styles.content}>
-            <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>NEW GOOD HABIT</Text>
+            <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>{t("create_habit.new_good_habit")}</Text>
             
             <View style={styles.inputContainer}>
               <TouchableOpacity 
@@ -171,7 +173,7 @@ const CreateHabitBottomSheet = () => {
                 style={[styles.inputShadowContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
               >
                 <Text className="flex-1 font-redditsans-black" style={{ color: colors.textGray }}>
-                  Create Custom Habit
+                  {t("create_habit.create_custom")}
                 </Text>
                 <View style={[styles.addIconContainer, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
                    <FontAwesomeIcon icon={faPlus} size={14} color={colors.text} />
@@ -179,7 +181,7 @@ const CreateHabitBottomSheet = () => {
               </TouchableOpacity>
             </View>
 
-            <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>POPULAR HABITS</Text>
+            <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>{t("create_habit.popular_habits")}</Text>
             
             <FlatList
               horizontal
@@ -214,7 +216,7 @@ const CreateHabitBottomSheet = () => {
                   </View>
                   <View>
                     <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]}>{habit.title}</Text>
-                    <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]}>{habit.frequency}</Text>
+                    <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]}>{t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}</Text>
                   </View>
                 </TouchableOpacity>
               )}

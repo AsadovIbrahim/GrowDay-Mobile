@@ -12,8 +12,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft, faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faEye, faEyeSlash, faLock, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../context/ThemeContext';
+
 import { changePasswordFetch } from '../../utils/fetch';
 import { useMMKVString } from 'react-native-mmkv';
 
@@ -35,12 +36,34 @@ const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, 
         autoCapitalize="none"
       />
       <TouchableOpacity onPress={onToggleShow} style={styles.eyeBtn}>
-        <FontAwesomeIcon icon={show ? faEyeSlash : faEye} size={16} color={colors.textMuted} />
+        <FontAwesomeIcon icon={show ? faEye : faEyeSlash} size={16} color={colors.textMuted} />
       </TouchableOpacity>
+
     </View>
     {error && <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text>}
   </View>
 );
+
+const RequirementItem = ({ label, met, colors }) => (
+  <View style={[
+    styles.requirementChip, 
+    { backgroundColor: met ? (colors.success + '15' || '#4ade8015') : colors.background + '50' }
+  ]}>
+    <FontAwesomeIcon 
+      icon={met ? faCheckCircle : faCircle} 
+      size={12} 
+      color={met ? colors.success || '#4ade80' : colors.textMuted} 
+    />
+    <Text style={[
+      styles.requirementText, 
+      { color: met ? colors.text : colors.textMuted, fontWeight: met ? '600' : '400' }
+    ]}>
+      {label}
+    </Text>
+  </View>
+);
+
+
 
 const ChangePassword = ({ navigation, route }) => {
   const hasPassword = route.params?.hasPassword ?? true;
@@ -58,14 +81,27 @@ const ChangePassword = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const requirements = [
+    { label: '8+ chars', met: newPassword.length >= 8 },
+    { label: 'Uppercase', met: /[A-Z]/.test(newPassword) },
+    { label: 'Lowercase', met: /[a-z]/.test(newPassword) },
+    { label: 'Number', met: /[0-9]/.test(newPassword) },
+    { label: 'Special', met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) },
+  ];
+
+
+  const allMet = requirements.every(r => r.met);
+
+
   const validate = () => {
     const e = {};
     if (hasPassword && !currentPassword) e.currentPassword = 'Current password is required';
-    if (newPassword.length < 8) e.newPassword = 'Password must be at least 8 characters';
+    if (!allMet) e.newPassword = 'Password does not meet requirements';
     if (newPassword !== confirmPassword) e.confirmPassword = 'Passwords do not match';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
+
 
   const handleSubmit = async () => {
     if (!validate()) return;
@@ -139,7 +175,15 @@ const ChangePassword = ({ navigation, route }) => {
             error={errors.newPassword}
             colors={colors}
           />
+          
+          <View style={styles.requirementsWrap}>
+            {requirements.map((req, i) => (
+              <RequirementItem key={i} label={req.label} met={req.met} colors={colors} />
+            ))}
+          </View>
+
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
           <PasswordField
             label="Confirm New Password"
             placeholder="Re-enter new password"
@@ -205,6 +249,28 @@ const styles = StyleSheet.create({
     color: '#fff', fontSize: 16,
     fontFamily: 'RedditSans-Bold', fontWeight: '700',
   },
+  requirementsWrap: {
+    marginTop: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  requirementChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  requirementText: {
+    fontSize: 11,
+    fontFamily: 'RedditSans-Medium',
+  },
 });
+
+
 
 export default ChangePassword;

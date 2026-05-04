@@ -27,6 +27,7 @@ import {
 } from "../../utils/fetch";
 import AchievementCard from "../../components/AchievementCard";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const StatBox = ({ value, label, color = "#16a34a", colors }) => (
   <View className="flex-1 rounded-2xl p-4 items-center mx-1" style={{ backgroundColor: colors.card }}>
@@ -44,12 +45,13 @@ const Achievements = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const [achievements, setAchievements] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState("All"); // "All" | "Unlocked" | "Locked"
+  const [filter, setFilter] = useState("all"); // "all" | "unlocked" | "locked"
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -74,7 +76,7 @@ const Achievements = () => {
         }
       }
     } catch (err) {
-      setError("Failed to load achievements.");
+      setError(t("common.failed_load"));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -96,12 +98,12 @@ const Achievements = () => {
   };
 
   const filteredAchievements = achievements.filter((a) => {
-    if (filter === "Unlocked") return !!a.earnedAt;
-    if (filter === "Locked") return !a.earnedAt;
+    if (filter === "unlocked") return !!a.earnedAt;
+    if (filter === "locked") return !a.earnedAt;
     return true;
   });
 
-  const FILTERS = ["All", "Unlocked", "Locked"];
+  const FILTERS = ["all", "unlocked", "locked"];
 
   return (
     <LinearGradient colors={colors.backgroundGradient} className="flex-1">
@@ -117,14 +119,14 @@ const Achievements = () => {
               <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
             </TouchableOpacity>
             <Text className="text-[26px] font-redditsans-bold tracking-tight" style={{ color: colors.text }}>
-              Achievements
+              {t("achievements.header")}
             </Text>
           </View>
           {stats?.newAchievements > 0 && (
             <View className="bg-green-500 rounded-full px-3 py-1 flex-row items-center">
               <FontAwesomeIcon icon={faBolt} size={12} color="#fff" />
               <Text className="text-white text-[12px] font-redditsans-bold ml-1">
-                {stats.newAchievements} new
+                {t("achievements.stats.new_count", { count: stats.newAchievements })}
               </Text>
             </View>
           )}
@@ -134,7 +136,7 @@ const Achievements = () => {
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={colors.primary} />
             <Text className="mt-3 font-redditsans-regular text-base" style={{ color: colors.text }}>
-              Loading…
+              {t("common.loading")}
             </Text>
           </View>
         ) : (
@@ -155,13 +157,13 @@ const Achievements = () => {
               <View className="flex-row mb-5">
                 <StatBox
                   value={stats.totalAchievements}
-                  label="Unlocked"
+                  label={t("achievements.stats.unlocked")}
                   color={colors.primary}
                   colors={colors}
                 />
                 <StatBox
                   value={stats.newAchievements}
-                  label="New"
+                  label={t("achievements.stats.new")}
                   color="#f59e0b"
                   colors={colors}
                 />
@@ -169,7 +171,7 @@ const Achievements = () => {
                   value={achievements.length - stats.totalAchievements > 0
                     ? achievements.length - stats.totalAchievements
                     : 0}
-                  label="Remaining"
+                  label={t("achievements.stats.remaining")}
                   color={colors.textSecondary}
                   colors={colors}
                 />
@@ -191,7 +193,7 @@ const Achievements = () => {
                     className="font-redditsans-bold text-[13px]"
                     style={{ color: filter === f ? colors.primary : colors.textSecondary }}
                   >
-                    {f}
+                    {t(`achievements.filters.${f}`)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -211,11 +213,11 @@ const Achievements = () => {
               <View className="rounded-3xl p-10 items-center mt-4" style={{ backgroundColor: colors.card }}>
                 <FontAwesomeIcon icon={faTrophy} size={40} color={colors.textSecondary} />
                 <Text className="font-redditsans-bold text-base mt-4" style={{ color: colors.textSecondary }}>
-                  {filter === "Unlocked"
-                    ? "No achievements unlocked yet"
-                    : filter === "Locked"
-                    ? "All achievements unlocked!"
-                    : "No achievements found"}
+                  {filter === "unlocked"
+                    ? t("achievements.empty.unlocked")
+                    : filter === "locked"
+                    ? t("achievements.empty.locked")
+                    : t("achievements.empty.none")}
                 </Text>
               </View>
             ) : (

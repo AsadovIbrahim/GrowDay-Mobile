@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import CryEmoji from "../../../assets/icons/cry-emoji.svg";
 import SadEmoji from "../../../assets/icons/sad-emoji.svg";
 import CoolEmoji from "../../../assets/icons/cool-emoji.svg";
@@ -14,6 +15,7 @@ import LaughEmoji from "../../../assets/icons/laughing-emoji.svg";
 const UserPref4 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -30,10 +32,10 @@ const UserPref4 = () => {
   };
 
   const options = [
-    { id: "Always", SvgIcon: CryEmoji, label: "Always" },
-    { id: "Sometimes", SvgIcon: SadEmoji, label: "Sometimes" },
-    { id: "Rarely", SvgIcon: LaughEmoji, label: "Rarely" },
-    { id: "Never", SvgIcon: CoolEmoji, label: "Never" },
+    { id: "Always", SvgIcon: CryEmoji, label: t("preferences.step4.options.always") },
+    { id: "Sometimes", SvgIcon: SadEmoji, label: t("preferences.step4.options.sometimes") },
+    { id: "Rarely", SvgIcon: LaughEmoji, label: t("preferences.step4.options.rarely") },
+    { id: "Never", SvgIcon: CoolEmoji, label: t("preferences.step4.options.never") },
   ];  
 
   return (
@@ -58,22 +60,20 @@ const UserPref4 = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
-          {/* TITLE */}
           <View className="items-center mb-6">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-              Do you often
+              {t("preferences.step4.title1")}
             </Text>
 
             <View className="flex-row items-center justify-center mt-1">
               <Text className="text-[26px] font-redditsans-bold text-green-500">
-                procrastinate?
+                {t("preferences.step4.title2")}
               </Text>
               <Text className="text-[26px] ml-2">👀</Text>
             </View>
 
             <Text style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280" }} className="text-[13px] font-redditsans-regular mt-3 text-center px-10">
-              Understanding your procrastination tendencies helps us tailor
-              strategies to overcome them.
+              {t("preferences.step4.subtitle")}
             </Text>
           </View>
 
@@ -126,7 +126,7 @@ const UserPref4 = () => {
             className="bg-[#8bc37a] py-5 rounded-full"
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
-              Continue
+              {t("preferences.continue")}
             </Text>
           </TouchableOpacity>
         </ScrollView>

@@ -6,10 +6,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const UserPref0 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -19,9 +21,9 @@ const UserPref0 = () => {
   const [gender, setGender] = useState(initialData?.gender || "Male");
 
   const genders = [
-    { id: "Male", label: "Male", icon: "👨" },
-    { id: "Female", label: "Female", icon: "👩" },
-    { id: "Other", label: "Other", icon: "🌈" },
+    { id: "Male", label: t("preferences.step0.male"), icon: "👨" },
+    { id: "Female", label: t("preferences.step0.female"), icon: "👩" },
+    { id: "Other", label: t("preferences.step0.other"), icon: "🌈" },
   ];
 
   return (
@@ -40,18 +42,18 @@ const UserPref0 = () => {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           <View className="items-center mb-8">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-              Tell us a bit
+              {t("preferences.step0.title1")}
             </Text>
             <Text className="text-[26px] font-redditsans-bold text-green-500 text-center">
-              about yourself
+              {t("preferences.step0.title2")}
             </Text>
             <Text style={{ color: colors.textSecondary }} className="text-[14px] font-redditsans-regular mt-2 text-center px-10">
-              Your gender helps us tailor your habit suggestions.
+              {t("preferences.step0.subtitle")}
             </Text>
           </View>
 
           <View className="mb-8">
-            <Text style={{ color: colors.text }} className="text-[18px] font-redditsans-bold mb-4 px-1">What is your gender?</Text>
+            <Text style={{ color: colors.text }} className="text-[18px] font-redditsans-bold mb-4 px-1">{t("preferences.step0.question")}</Text>
             {genders.map((g) => {
               const isSelected = gender === g.id;
               return (
@@ -105,7 +107,7 @@ const UserPref0 = () => {
               }}
               className="bg-[#8bc37a] py-5 rounded-full shadow-lg"
             >
-              <Text className="text-white text-center font-redditsans-bold text-[16px]">Continue</Text>
+              <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

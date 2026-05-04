@@ -6,10 +6,12 @@ import { useMMKVString } from "react-native-mmkv";
 import { getUserNotificationsFetch, getUserUnreadNotificationsFetch, markAsAllReadNotificationFetch, getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const Notification = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const navigation = useNavigation();
   const [token] = useMMKVString('accessToken');
@@ -136,24 +138,18 @@ const Notification = () => {
     if (selectedNotifications.size === 0) return;
 
     Alert.alert(
-      "Delete Notifications",
-      `Are you sure you want to delete ${selectedNotifications.size} notification(s)?`,
+      t('notifications.delete_title'),
+      t('notifications.delete_confirm', { count: selectedNotifications.size }),
       [
+        { text: t('notifications.cancel'), style: "cancel" },
         {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Delete",
+          text: t('notifications.delete_btn'),
           style: "destructive",
           onPress: async () => {
-            // Delete all selected notifications
             const deletePromises = Array.from(selectedNotifications).map(id =>
               deleteNotification(id)
             );
             await Promise.all(deletePromises);
-
-            // Clear selection and exit selection mode
             setSelectedNotifications(new Set());
             setIsSelectionMode(false);
           }
@@ -254,7 +250,7 @@ const Notification = () => {
                   }`}
                   style={{ color: colors.text }}
                 >
-                  {notification.habitTitle}
+                  {t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle })}
                 </Text>
               </View>
               <Text className={`text-sm ${!notification.isRead
@@ -263,7 +259,7 @@ const Notification = () => {
                 }`}
                 style={{ color: colors.textSecondary }}
               >
-                {notification.message}
+                {t(`backend_notifications.${notification.message}`, { defaultValue: notification.message })}
               </Text>
             </View>
           </View>
@@ -315,7 +311,7 @@ const Notification = () => {
             <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
           </TouchableOpacity>
           <Text className="text-3xl mt-3 font-redditsans-bold mb-4" style={{ color: colors.text }}>
-            Notifications
+            {t('notifications.title')}
           </Text>
         </View>
 
@@ -331,7 +327,7 @@ const Notification = () => {
                 className="text-base font-redditsans-medium"
                 style={{ color: selectedTab === 'all' ? colors.text : colors.textSecondary }}
               >
-                View All
+                {t('notifications.view_all')}
               </Text>
               {selectedTab === 'all' && (
                 <View className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-500" />
@@ -347,7 +343,7 @@ const Notification = () => {
                 className="text-base font-redditsans-medium"
                 style={{ color: selectedTab === 'unread' ? colors.text : colors.textSecondary }}
               >
-                Unread
+                {t('notifications.unread')}
               </Text>
               {unreadCount > 0 && (
                 <View className="ml-2 rounded-full px-2 py-0.5" style={{ backgroundColor: colors.cardSecondary }}>
@@ -372,7 +368,7 @@ const Notification = () => {
                   disabled={selectedNotifications.size === 0}
                 >
                   <Text className="text-white text-sm font-redditsans-medium">
-                    Delete ({selectedNotifications.size})
+                    {t('notifications.delete_count', { count: selectedNotifications.size })}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -383,7 +379,7 @@ const Notification = () => {
                   }}
                 >
                   <Text className="text-white text-sm font-redditsans-medium">
-                    Cancel
+                    {t('notifications.cancel')}
                   </Text>
                 </TouchableOpacity>
               </>
@@ -394,7 +390,7 @@ const Notification = () => {
                   onPress={markAsAllReadNotification}
                 >
                   <Text className="text-white text-sm font-redditsans-medium">
-                    Mark all read
+                    {t('notifications.mark_all_read')}
                   </Text>
                 </TouchableOpacity>
               )
@@ -424,7 +420,7 @@ const Notification = () => {
         ListEmptyComponent={() => (
           <View className="flex-1 items-center justify-center py-20">
             <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>
-              {loading ? "Loading..." : "No notifications found"}
+            {loading ? t('notifications.loading') : t('notifications.none_found')}
             </Text>
           </View>
         )}

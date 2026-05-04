@@ -6,18 +6,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
-
-const AGE_RANGES = [
-  { id: "under18", label: "Under 18", value: 17 },
-  { id: "18-24", label: "18 - 24", value: 21 },
-  { id: "25-34", label: "25 - 34", value: 29 },
-  { id: "35-44", label: "35 - 44", value: 39 },
-  { id: "45-54", label: "45 - 54", value: 49 },
-  { id: "55plus", label: "55+", value: 60 },
-];
+import { useTranslation } from "react-i18next";
 
 const UserPref1 = () => {
+  const { t } = useTranslation();
   const { theme, isDark } = useTheme();
+  
+  const AGE_RANGES = [
+    { id: "under18", label: t("preferences.step1.ranges.under18"), value: 17 },
+    { id: "18-24", label: "18 - 24", value: 21 },
+    { id: "25-34", label: "25 - 34", value: 29 },
+    { id: "35-44", label: "35 - 44", value: 39 },
+    { id: "45-54", label: "45 - 54", value: 49 },
+    { id: "55plus", label: "55+", value: 60 },
+  ];
   const { colors } = theme;
   const route = useRoute();
   const navigation = useNavigation();
@@ -47,13 +49,13 @@ const UserPref1 = () => {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           <View className="items-center mb-8">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-              How old
+              {t("preferences.step1.title1")}
             </Text>
             <Text className="text-[26px] font-redditsans-bold text-green-500 text-center">
-              are you?
+              {t("preferences.step1.title2")}
             </Text>
             <Text style={{ color: colors.textSecondary }} className="text-[14px] font-redditsans-regular mt-2 text-center px-10">
-              Select your age range to help us personalize your experience.
+              {t("preferences.step1.subtitle")}
             </Text>
           </View>
 
@@ -110,7 +112,7 @@ const UserPref1 = () => {
               }}
               className="bg-[#8bc37a] py-5 rounded-full shadow-lg"
             >
-              <Text className="text-white text-center font-redditsans-bold text-[16px]">Continue</Text>
+              <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

@@ -2,10 +2,12 @@ import React from 'react';
 import { View, Text } from "react-native";
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const ProgressSummary = ({ dailyStatistics }) => {
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   return (
     <View className="px-4 mb-8">
       <View className="flex-row gap-3">
@@ -58,13 +60,13 @@ const ProgressSummary = ({ dailyStatistics }) => {
               style={{ color: colors.text }}
               className="text-base font-redditsans-medium mb-1"
             >
-              Completed
+              {t('common.completed')}
             </Text>
             <Text 
               style={{ color: colors.textSecondary }}
               className="text-xs font-redditsans-regular"
             >
-              {dailyStatistics?.completedCount || 0} Completed
+              {dailyStatistics?.completedCount || 0} {t('common.completed')}
             </Text>
           </View>
         </View>
@@ -118,13 +120,13 @@ const ProgressSummary = ({ dailyStatistics }) => {
               style={{ color: colors.text, fontFamily: 'redditsans-medium' }}
               className="text-base font-semibold mb-1"
             >
-              Missed
+              {t('common.missed')}
             </Text>
             <Text 
               style={{ color: colors.textSecondary, fontFamily: 'redditsans-regular' }}
               className="text-xs"
             >
-              {dailyStatistics?.missedCount || 0} Missed
+              {dailyStatistics?.missedCount || 0} {t('common.missed')}
             </Text>
           </View>
         </View>

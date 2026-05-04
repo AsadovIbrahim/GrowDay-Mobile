@@ -1,0 +1,476 @@
+{
+  "common": {
+    "loading": "Yüklənir...",
+    "retry": "Təkrar yoxla",
+    "failed_load": "Məlumat yüklənmədi. İnternet bağlantınızı yoxlayın.",
+    "logout": "Çıxış",
+    "cancel": "Ləğv et",
+    "logout_confirm": "Çıxış etmək istədiyinizə əminsiniz?",
+    "premium_member": "Premium Üzv",
+    "pending": "Gözləyir",
+    "completed": "Tamamlandı",
+    "upcoming": "Gələcək",
+    "missed": "Buraxıldı",
+    "success": "Uğurlu",
+    "error": "Xəta",
+    "save": "Yadda saxla",
+    "saving": "Yadda saxlanılır...",
+    "day": "gün",
+    "week": "həftə",
+    "month": "ay",
+    "custom": "xüsusi"
+  },
+  "menu": {
+    "home": "Ana Səhifə",
+    "explore": "Kəşf et",
+    "habits": "Vərdişləriniz",
+    "achievements": "Nailiyyətlər",
+    "support": "Dəstək",
+    "settings": "Ayarlar",
+    "legal": "Məxfilik və Hüquqi"
+  },
+  "notifications": {
+    "title": "Bildirişlər",
+    "view_all": "Hamısına bax",
+    "unread": "Oxunmamış",
+    "mark_all_read": "Hamısını oxunmuş et",
+    "delete_count": "Sil ({{count}})",
+    "cancel": "Ləğv et",
+    "loading": "Yüklənir...",
+    "none_found": "Bildiriş tapılmadı",
+    "delete_title": "Bildirişləri sil",
+    "delete_confirm": "{{count}} bildirişi silmək istədiyinizə əminsiniz?",
+    "delete_btn": "Sil",
+    "detail_title": "Bildiriş Detalları",
+    "label_habit": "VƏRDİŞ",
+    "label_message": "MESAJ",
+    "label_datetime": "TARİX VƏ SAAT",
+    "label_status": "STATUS",
+    "status_read": "Oxunub",
+    "status_unread": "Oxunmayıb",
+    "not_found_title": "Bildiriş tapılmadı",
+    "not_found_desc": "Bu bildiriş silinib və ya artıq mövcud deyil.",
+    "push_tracking_title": "İzlənilir: {{habit}}",
+    "push_tracking_paused": "(Fasilə) {{body}}",
+    "push_reminder_title": "{{habit}} vərdişinə davam! 🔥",
+    "push_reminder_body": "Vərdişinizi tamamlamamısınız. Zənciri qırmamaq üçün indi tamamlayın! 🔥",
+    "push_winback_title": "Hər şey qaydasındadır? 👀",
+    "push_winback_body": "Bir müddətdir sizi görmürük. Vərdişləriniz üçün darıxmışıq! 🚀",
+    "push_time_label": "Vaxt",
+    "push_action_pause": "Dayandır",
+    "push_action_resume": "Davam et",
+    "push_action_stop": "Bitir",
+    "channel_sound": "Səsli Bildirişlər",
+    "channel_silent": "Səssiz Bildirişlər",
+    "channel_tracking": "Vərdiş İzləməsi",
+    "channel_reminders": "Vərdiş Xətirləticişləri"
+  },
+  "backend_notifications": {
+    "Welcome to GrowDay!": "GrowDay-ə xoş gəlmisiniz!",
+    "We're excited to have you on board. Start your journey towards better habits today!": "Sizi aramızda görməkdən məmnunuq. Daha yaxşı vərdişlərə doğru səyahətinizə bu gün başlayın!",
+    "Habit Completed ✅": "Vərdiş Tamamlandı ✅",
+    "You successfully reached your goal for this habit! Great job!": "Bu vərdiş üçün hədəfinizə uğurla çatdınız! Əla iş!",
+    "Time to complete your habit \u23f0": "Vərdişinizi tamamlamaq vaxtıdır \u23f0"
+  },
+  "home": {
+    "greeting": "Salam {{name}}!",
+    "subtitle": "Gəlin birlikdə vərdişlər quraq!",
+    "todays_habits": "Bugünkü Vərdişlər",
+    "upcoming_habits": "Gələcək vərdişlərə baxış",
+    "view_all": "HAMISINA BAX",
+    "habit_stats": "Vərdiş Statistikası",
+    "delete_habits": "Vərdişləri sil",
+    "delete_confirm": "{{count}} vərdişi silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz.",
+    "yes": "Bəli",
+    "calendar_inactive": "Vərdişlər əlavə etdikdən sonra təqvim fəal olacaq",
+    "empty_title": "Hələ hec bir vərdiş əlavə etməmisiniz",
+    "empty_subtitle": "Kiçikdən başlayın, ardicıl olun",
+    "add_first_habit": "İlk vərdişinizi əlavə edin",
+    "empty_hint": "Vərdişlərinizi gündəlik izləyə\nvə irəliləmənizi görə bilərsiniz",
+    "progress_today": "Bugünkü tərəqqi",
+    "add_habits_tracking": "İzləməyə başlamaq üçün vərdiş əlavə edin",
+    "days_habits": "{{day}} gününün vərdişləri",
+    "day_names": {
+      "sunday": "Bazar",
+      "monday": "Bazar ertəsi",
+      "tuesday": "Çərşənbə axşamı",
+      "wednesday": "Çərşənbə",
+      "thursday": "Cümə axşamı",
+      "friday": "Cümə",
+      "saturday": "Şənbə"
+    },
+    "day_short": {
+      "sun": "BAZ",
+      "mon": "B.E",
+      "tue": "Ç.A",
+      "wed": "ÇƏR",
+      "thu": "C.A",
+      "fri": "CÜM",
+      "sat": "ŞƏN"
+    }
+  },
+  "my_habits": {
+    "header": "Vərdişləriniz",
+    "search_habits": "Vərdişləri axtar...",
+    "no_habits_found": "Vərdiş tapılmadı",
+    "no_habits_search": "Axtarışınıza uyğun vərdiş tapılmadı",
+    "add_habits_track": "İzləmək üçün vərdişlər əlavə etməklə başlayın",
+    "load_more": "Daha çox",
+    "deselect_all": "Hamısını ləğv et",
+    "select_all": "Hamısını seç",
+    "delete_count": "Sil ({{count}})",
+    "delete_habits": "Vərdişləri sil",
+    "delete_confirm": "{{count}} vərdişi silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz.",
+    "yes": "Bəli",
+    "filters": {
+      "today": "Bugün",
+      "all": "Hamısı",
+      "daily": "Gündəlik",
+      "weekly": "Həftəlik",
+      "monthly": "Aylıq",
+      "custom": "Xüsusi"
+    }
+  },
+  "habit_details": {
+    "header": "Vərdiş Detalı",
+    "sub_header": "Gündəlik tərəqqinizi izləyin",
+    "todays_performance": "BUGÜNKÜ PERFORMANS",
+    "weekly_performance": "HƏFTƏLİK PERFORMANS",
+    "streak": "Seriya",
+    "best": "Ən yaxşı",
+    "days": "gün",
+    "minutes": "dəqiqə",
+    "time": "Vaxt",
+    "min_spent": "dəq sərf olundu",
+    "completed_count": "Bu həftə 7 gündən {{completed}}-i tamamlandı",
+    "this_week": "bu həftə",
+    "days_short": {
+      "mon": "B.E",
+      "tue": "Ç.A",
+      "wed": "ÇƏR",
+      "thu": "C.A",
+      "fri": "CÜM",
+      "sat": "ŞƏN",
+      "sun": "BAZ"
+    },
+    "note_saved": "Qeyd uğurla yadda saxlanıldı.",
+    "notes_label": "Bugünkü Qeydlər",
+    "action": {
+      "mark_done": "Tamamlandı olaraq qeyd et",
+      "upcoming_title": "Gələcək Vərdiş",
+      "upcoming_sub": "Bu vərdişi planlaşdırılan günə qədər tamamlaya bilməzsiniz.",
+      "not_scheduled_title": "Bu gün üçün planlaşdırılmayıb",
+      "not_scheduled_sub": "Seçilmiş gün {{day}}-dır. {{scheduleText}}",
+      "today_session": "BUGÜNKÜ SESSİYA",
+      "live_steps": "CANLI ADIMLAR",
+      "live_distance": "CANLI MƏSAFƏ",
+      "session_started": "Sessiya başladı. Tətbiqi bağlaya bilərsiniz.",
+      "location_active": "Məkan izləmə aktivdir.",
+      "step_sensor_active": "Adım sensoru aktivdir.",
+      "tap_to_add": "{{unit}} əlavə etmək üçün toxunun",
+      "runs_on": "Bu vərdiş bu günlərdə işləyir: {{days}}.",
+      "runs_monthly": "Bu vərdiş hər ayın {{day}}-i işləyir.",
+      "runs_custom": "Bu vərdiş hər {{interval}} gündən bir işləyir.",
+      "starts_on": "Bu vərdiş {{date}} tarixində başlayır."
+    }
+  },
+  "explore": {
+    "header": "Kəşf et",
+    "suggested_habits": "Təklif olunan vərdişlər",
+    "no_suggestions": "Hal-hazırda heç bir təklif yoxdur.",
+    "tasks": "Tapşırıqlar",
+    "view_all": "HAMISINA BAX",
+    "learning": "Öyrənmə",
+    "priority": {
+      "low": "Aşağı",
+      "medium": "Orta",
+      "high": "Yüksək"
+    },
+    "status": {
+      "completed": "Tamamlandı",
+      "pending": "Gözləyir"
+    }
+  },
+  "tasks": {
+    "header": "Tapşırıqlarım",
+    "stats": {
+      "total": "Cəmi",
+      "completed": "Tamamlanıb",
+      "pending": "Gözləyir",
+      "rate": "Tamamlama Faizi",
+      "streak": "Gün Seriyası"
+    },
+    "filters": {
+      "all": "Hamısı",
+      "pending": "Gözləyir",
+      "in_progress": "Davam edir",
+      "completed": "Tamamlanıb"
+    }
+  },
+  "create_habit": {
+    "header": "Xüsusi Vərdiş Yarat",
+    "new_good_habit": "YENİ YAXŞI VƏRDİŞ",
+    "popular_habits": "POPULYAR VƏRDİŞLƏR",
+    "create_custom": "Xüsusi Vərdiş Yarat",
+    "name_label": "AD",
+    "name_placeholder": "məs: Gəzinti",
+    "desc_label": "TƏSVİR",
+    "desc_placeholder": "məs: Hər səhər 30 dəqiqə gəzinti",
+    "category_label": "KATEQORİYA",
+    "icon_label": "İKON",
+    "goal_label": "MƏQSƏD VƏ İZLƏMƏ",
+    "goal_sub": "Bunu etmək istəyirəm",
+    "times": "dəfə",
+    "every": "hər",
+    "save_habit": "Vərdiş Yarat",
+    "update_habit": "Vərdişi Yenilə",
+    "schedule_label": "CƏDVƏL",
+    "start_date": "Başlanğıc Tarixi",
+    "end_date": "Bitmə Tarixi",
+    "no_end_date": "Bitmə tarixi yoxdur",
+    "today_btn": "Bugün",
+    "clear_btn": "Təmizlə",
+    "reminders_label": "XATIRLATMALAR",
+    "reminders_sub": "Yolda qalmaq üçün mənə bildiriş göndər.",
+    "every_day": "Hər gün",
+    "on_scheduled_days": "Təyin olunmuş günlərdə",
+    "selected_days": "Seçilmiş günlərdə",
+    "preview": "✨ Siz {{frequency}} {{targetValue}} {{unit}} {{title}} edəcəksiniz"
+  },
+  "units": {
+    "header": "Vahidi seçin",
+    "custom_header": "Xüsusi vahid",
+    "confirm": "Vahidi təsdiqlə",
+    "times": "dəfə",
+    "reps": "təkrar",
+    "steps": "addım",
+    "minutes": "dəqiqə",
+    "hours": "saat",
+    "km": "km",
+    "m": "m",
+    "miles": "mil",
+    "ml": "ml",
+    "liters": "litr",
+    "cups": "fincan",
+    "glasses": "stəkan",
+    "pages": "səhifə",
+    "chapters": "fəsil",
+    "kcal": "kkal",
+    "tasks": "tapşırıq",
+    "other": "Digər"
+  },
+  "categories": {
+    "general": "Ümumi",
+    "health": "Sağlamlıq",
+    "fitness": "Fitnes",
+    "mindset": "Düşüncə tərzi",
+    "productivity": "Məhsuldarlıq",
+    "finance": "Maliyyə",
+    "social": "Sosial",
+    "other": "Digər"
+  },
+  "achievements": {
+    "header": "Nailiyyətlər",
+    "stats": {
+      "unlocked": "Qazanılıb",
+      "new": "Yeni",
+      "remaining": "Qalıb",
+      "new_count": "{{count}} yeni"
+    },
+    "filters": {
+      "all": "Hamısı",
+      "unlocked": "Qazanılanlar",
+      "locked": "Kilidli"
+    },
+    "empty": {
+      "unlocked": "Hələ heç bir nailiyyət qazanılmayıb",
+      "locked": "Bütün nailiyyətlər qazanılıb!",
+      "none": "Nailiyyət tapılmadı"
+    },
+    "earned_on": "Qazanılma tarixi",
+    "unlocked_badge": "Qazanılıb"
+  },
+  "profile": {
+    "header": "Profiliniz",
+    "edit_profile": "Profili Redaktə Et",
+    "points": "Xal",
+    "error_load": "Profil yüklənmədi",
+    "logout": "Çıxış",
+    "sections": {
+      "general": "ÜMUMİ",
+      "privacy": "MƏXFİLİK",
+      "support": "DƏSTƏK"
+    },
+    "menu": {
+      "dark_mode": "Qaranlıq Rejim",
+      "notifications": "Bildirişlər",
+      "languages": "Dillər",
+      "habit_preferences": "Vərdiş Üstünlükləri",
+      "app_version": "Tətbiq Versiyası",
+      "change_password": "Parolu Dəyiş",
+      "set_password": "Parol Təyin Et",
+      "privacy_policy": "Məxfilik Siyasəti",
+      "terms": "İstifadə Şərtləri",
+      "contact_support": "Dəstəklə Əlaqə",
+      "rate_app": "Tətbiqi Qiymətləndirin"
+    }
+  },
+  "preferences": {
+    "continue": "Davam et",
+    "complete": "Tamamla",
+    "alerts": {
+      "no_changes_title": "Dəyişiklik yoxdur",
+      "no_changes_desc": "Üstünlükləriniz artıq yenilənib.",
+      "error_title": "Xəta",
+      "error_save": "Üstünlükləri yadda saxlamaq mümkün olmadı. Yenidən cəhd edin.",
+      "auth_error": "Kimlik doğrulaması tapılmadı. Yenidən daxil olun.",
+      "general_error": "Üstünlükləri yadda saxlayarkən xəta baş verdi. Yenidən cəhd edin."
+    },
+    "step0": {
+      "title1": "Özünüz haqqında",
+      "title2": "bizə bir az danışın",
+      "subtitle": "Cinsiyyətiniz bizə sizin üçün daha uyğun vərdişlər təklif etməyə kömək edir.",
+      "question": "Cinsiyyətiniz nədir?",
+      "male": "Kişi",
+      "female": "Qadın",
+      "other": "Digər"
+    },
+    "step1": {
+      "title1": "Sizin neçə",
+      "title2": "yaşınız var?",
+      "subtitle": "Təcrübənizi fərdiləşdirmək üçün yaş diapazonunuzu seçin.",
+      "ranges": {
+        "under18": "18 yaşdan kiçik"
+      }
+    },
+    "step2": {
+      "title1": "Adətən saat",
+      "title2": "neçədə oyanırsınız?",
+      "subtitle": "Oyanma vaxtınızı təyin etmək bizə fərdi vərdiş cədvəlinizi yaratmağa kömək edir."
+    },
+    "step3": {
+      "title1": "Adətən gününüzü",
+      "title2": "neçədə bitirirsiniz?",
+      "subtitle": "Vərdişlərinizi optimallaşdırmaq üçün gününüzü nə vaxt bitirdiyinizi bizə bildirin."
+    },
+    "step4": {
+      "title1": "Tez-tez işləri",
+      "title2": "təxirə salırsınız?",
+      "subtitle": "Təxirəsalma meyllərinizi anlamaq bizə onlara qalib gəlmək üçün strategiyalar hazırlamağa kömək edir.",
+      "options": {
+        "always": "Həmişə",
+        "sometimes": "Bəzən",
+        "rarely": "Nadir hallarda",
+        "never": "Heç vaxt"
+      }
+    },
+    "step5": {
+      "title1": "Fokuslanmaq sizin üçün",
+      "title2": "çətindirmi?",
+      "subtitle": "Motivasiyalarınızı anlamaq bizə GrowDay-i məqsədlərinizlə uyğunlaşdırmağa kömək edir.",
+      "options": {
+        "constantly": "Daimi",
+        "occasionally": "Hərdənbir",
+        "rarely": "Nadir hallarda",
+        "never": "Heç vaxt"
+      }
+    },
+    "step6": {
+      "title1": "Sizi nizamlı olmağa",
+      "title2": "nə sövq etdi?",
+      "subtitle": "Sizə hədəflənmiş dəstək göstərməyimiz üçün fokuslanmağın sizin üçün çətin olub-olmadığını bizə bildirin.",
+      "options": {
+        "lack_motivation": "Motivasiya çatışmazlığı",
+        "work_overload": "İş yükü",
+        "cluttered_env": "Qarışıq mühit",
+        "digital_distractions": "Rəqəmsal yayındırıcılar",
+        "stress": "Stress"
+      }
+    },
+    "step7": {
+      "title1": "Hazırda əsas",
+      "title2": "məqsədləriniz nədir?",
+      "subtitle": "Sizə uyğun olanların hamısını seçin",
+      "options": {
+        "productivity": "Məhsuldarlıq",
+        "fitness": "Fitnes və Sağlamlıq",
+        "learning": "Öyrənmə",
+        "mental_health": "Mental Sağlamlıq",
+        "self_improvement": "Özünü İnkişaf"
+      }
+    },
+    "ai_loading": {
+      "message1": "Enerji səviyyələrinizlə sinxronlaşdırılır...",
+      "message2": "Fokus nümunələri təhlil edilir...",
+      "message3": "Mükəmməl rutinlər hazırlanır...",
+      "message4": "Sizin AI planınız tamamlanır...",
+      "message5": "Az qaldı, möcüzə baş verir...",
+      "optimizing": "Rutininiz optimallaşdırılır"
+    },
+    "success": {
+      "updated_title": "Rutin Yeniləndi!",
+      "ready_title": "Rutin Hazırdır!",
+      "updated_desc": "Üstünlükləriniz yeniləndi və AI rutininizi yenidən optimallaşdırdı.",
+      "ready_desc": "Genesis AI məqsədlərinizə və həyat tərzinizə uyğun fərdiləşdirilmiş rutin hazırladı.",
+      "explore": "Rutinimi Kəşf Et"
+    }
+  },
+  "auth": {
+    "welcome_back": "Yenidən xoş gəldiniz!",
+    "lets_start": "Gəlin başlayaq!",
+    "google_continue": "GOOGLE İLƏ DAVAM ET",
+    "or_login_email": "VƏ YA E-POÇT İLƏ DAXİL OLUN",
+    "email_username": "E-poçt və ya İstifadəçi adı",
+    "email": "E-poçt",
+    "password": "Şifrə",
+    "confirm_password": "Şifrəni təsdiqləyin",
+    "first_name": "Ad",
+    "last_name": "Soyad",
+    "username": "İstifadəçi adı",
+    "forgot_password_link": "Şifrəni unutmusunuz?",
+    "sign_in": "Daxil ol",
+    "sign_up": "Qeydiyyatdan keç",
+    "no_account": "Hesabınız yoxdur?",
+    "have_account": "Artıq hesabınız var?",
+    "forgot_password_title": "Şifrəni unutmusunuz?",
+    "forgot_password_desc": "Aşağıda e-poçt ünvanınızı daxil edin və biz sizə şifrənizi sıfırlamaq üçün link göndərəcəyik.",
+    "send_reset": "Sıfırlama linkini göndər",
+    "back_to_login": "Girişə qayıt",
+    "enter_email": "E-poçtunuzu daxil edin",
+    "verify_email": "E-poçtu təsdiqləyin",
+    "otp_sent_desc": "6 rəqəmli təsdiqləmə kodunu bu ünvana göndərdik:",
+    "verify_confirm": "Təsdiqlə və Davam et",
+    "didnt_receive": "Kod gəlmədi?",
+    "resend": "Yenidən göndər",
+    "signing_in": "Daxil olunur...",
+    "signing_up": "Qeydiyyatdan keçilir...",
+    "creating_account": "Hesab yaradılır...",
+    "sending": "Göndərilir...",
+    "messages": {
+      "welcome_back_toast": "Yenidən xoş gəldiniz! 🌱",
+      "login_failed": "Giriş uğursuz oldu. Yenidən cəhd edin.",
+      "registration_failed": "Qeydiyyat uğursuz oldu. Yenidən cəhd edin.",
+      "network_error": "Şəbəkə xətası. Bağlantınızı yoxlayın.",
+      "google_success": "Google ilə giriş uğurlu oldu! 🌱",
+      "google_signup_success": "Google ilə qeydiyyat uğurlu oldu! 🌱",
+      "google_failed": "Google ilə giriş uğursuz oldu.",
+      "google_signup_failed": "Google ilə qeydiyyat serverdə uğursuz oldu.",
+      "google_token_not_found": "Google tokeni tapılmadı.",
+      "fix_following": "Zəhmət olmasa bunları düzəldin:",
+      "reset_link_sent": "Sıfırlama linki göndərildi!",
+      "check_inbox": "Gələnlər qutusunu yoxlayın və təlimatlara əməl edin.",
+      "otp_complete_error": "Zəhmət olmasa 6 rəqəmli kodun hamısını daxil edin.",
+      "invalid_otp": "Yanlış təsdiqləmə kodu.",
+      "something_wrong": "Xəta baş verdi. Yenidən cəhd edin."
+    }
+  },
+  "onboarding": {
+    "slide1_title": "Yaxşı vərdişlər\nyaradın",
+    "slide1_desc": "Gündəlik rutinləri addım-addım qurарaq həyat tərzinizi dəyişdirin.",
+    "slide2_title": "Tərəqqinizi\nizləyin",
+    "slide2_desc": "Ağıllı statistika və ardıcıllıq zəncirləri ilə motivasiyanızı hər gün yüksək saxlayın.",
+    "slide3_title": "Məqsədlərinizə\nçatın",
+    "slide3_desc": "Süni intellekt tərəfindən sizin üçün xüsusi hazırlanmış rutin planlarıyla potensialınızı açın.",
+    "get_started": "Başlayın"
+  }
+}

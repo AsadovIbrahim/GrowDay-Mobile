@@ -2,8 +2,9 @@ import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal 
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faTrash, faNoteSticky, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { getUserHabitByIdFetch, getWeeklyProgressFetch, removeUserHabitFetch } from "../../utils/fetch";
+import { faArrowLeft, faEdit, faTrash, faNoteSticky, faExclamationTriangle, faHistory, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { getUserHabitByIdFetch, getWeeklyProgressFetch, removeUserHabitFetch, reportHabitProgressFetch } from "../../utils/fetch";
+
 import { useMMKVString } from "react-native-mmkv";
 import { useEffect, useState } from "react";
 import { ICONS } from "../../constants/icons";
@@ -11,6 +12,7 @@ import { TouchableOpacity } from "react-native";
 import HabitProgressCard from "./components/HabitProgressCard";
 import HabitActionSection from "./components/HabitActionSection";
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from "react-i18next";
 
 const weeklyDataPlaceholder = [
     { value: 0, active: false },
@@ -26,6 +28,7 @@ const UserHabitDetails = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const [userHabit, setUserHabit] = useState(null);
+    const { t } = useTranslation();
     const [weeklyProgress, setWeeklyProgress] = useState(null);
     const [weeklyStats, setWeeklyStats] = useState(null);
     const [note, setNote] = useState("");
@@ -62,19 +65,32 @@ const UserHabitDetails = () => {
         const habitId = route.params?.habitId;
         const date = route.params?.date;
         if (habitId) {
+            setLiveDelta(0); // Clear any leftovers from previous habit views
             getUserHabitById(habitId, date);
             getWeeklyProgress(habitId);
         }
-    }, []);
+    }, [route.params?.habitId, route.params?.date]);
+
 
     const getUserHabitById = async (habitId, date = null) => {
         try {
             if (!token) return;
             const response = await getUserHabitByIdFetch(token, habitId, date);
             if (response?.data) {
-                setUserHabit(response.data);
-                setLiveDelta(0); // Reset live delta ONLY after we have the new baseline from server
+                const newData = response.data;
+                
+                // Calculate how much the server has actually advanced since our last baseline
+                const confirmedAmount = Math.max(0, (newData.currentValue ?? 0) - (userHabit?.currentValue ?? 0));
+                
+                // Subtract that confirmed amount from our "live" (unconfirmed) delta
+                setLiveDelta(prev => Math.max(0, prev - confirmedAmount));
+                
+                setUserHabit(newData);
+                setNote(newData.note || "");
             }
+
+
+
         } catch (e) {
             console.log("Habit fetch error:", e);
         }
@@ -96,7 +112,7 @@ const UserHabitDetails = () => {
             }
         } catch (error) {
             console.log("Delete error:", error);
-            Alert.alert("Error", "Failed to delete habit.");
+            Alert.alert(t("common.error"), t("common.failed_load"));
         } finally {
             setIsDeleting(false);
         }
@@ -129,6 +145,32 @@ const UserHabitDetails = () => {
         }
     };
 
+    const handleSaveNote = async () => {
+        try {
+            const hId = userHabit?.userHabitId || userHabit?.UserHabitId || userHabit?.id;
+            if (!hId || !token) return;
+
+            const payload = { 
+                userHabitId: hId, 
+                deltaValue: 0, 
+                source: 'manual', 
+                note: note, 
+                timestamp: new Date().toISOString(),
+                date: route.params?.date
+            };
+            
+            const result = await reportHabitProgressFetch(token, payload);
+            if (result.success) {
+                Alert.alert(t("common.success"), t("habit_details.note_saved"));
+                getUserHabitById(route.params.habitId, route.params?.date);
+            }
+        } catch (error) {
+            console.error("Save note error:", error);
+            Alert.alert(t("common.error"), t("common.failed_load"));
+        }
+    };
+
+
 
     return (
         <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
@@ -138,13 +180,24 @@ const UserHabitDetails = () => {
                     <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
                 </Pressable>
                 <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={[styles.headerTitle, { color: colors.text }]}>Habit Details</Text>
-                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Track your daily progress</Text>
+                    <Text style={[styles.headerTitle, { color: colors.text }]}>{t("habit_details.header")}</Text>
+                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t("habit_details.sub_header")}</Text>
                 </View>
                 <View style={styles.headerActions}>
                     {!isFutureDate && (
                         <>
-                            <Pressable 
+                             <Pressable 
+                                onPress={() => navigation.navigate("HabitHistory", { 
+                                    habitId: userHabit?.userHabitId,
+                                    habitTitle: userHabit?.title,
+                                    habitIcon: userHabit?.icon
+                                })}
+                                style={[styles.iconCircle, { backgroundColor: colors.card }]} 
+                                hitSlop={10}
+                            >
+                                <FontAwesomeIcon icon={faHistory} color={colors.primary} size={16} />
+                            </Pressable>
+                             <Pressable 
                                 onPress={() => navigation.navigate("CreateCustomHabit", { 
                                     habitData: userHabit, 
                                     isEditMode: true,
@@ -193,24 +246,28 @@ const UserHabitDetails = () => {
                     habit={userHabit} 
                     weeklyData={weeklyDataPlaceholder} 
                     liveDelta={liveDelta}
-                    title={isFutureDate ? "Upcoming Performance" : "Today's Performance"}
+                    title={isFutureDate ? t("home.upcoming_habits") : t("habit_details.todays_performance")}
                 />
 
                 {weeklyProgress && (
-                    <HabitProgressCard 
-                        habit={userHabit} 
-                        weeklyData={weeklyProgress} 
-                        title="Weekly Performance"
-                        weeklyStats={weeklyStats}
-                    />
+                    <>
+                        <HabitProgressCard 
+                            habit={userHabit} 
+                            weeklyData={weeklyProgress} 
+                            title={t("habit_details.weekly_performance")}
+                            weeklyStats={weeklyStats}
+                        />
+                       
+                    </>
                 )}
+
 
 
 
                 {isFutureDate ? (
                     <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
                         <Text style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
-                            You can start tracking this habit on the selected day.
+                            {t("home.upcoming_habits")}
                         </Text>
                     </View>
                 ) : userHabit && !isFullyCompleted && (
@@ -234,8 +291,14 @@ const UserHabitDetails = () => {
                     <View style={[styles.notesCard, { backgroundColor: colors.card }, isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }]}>
                         <View style={styles.notesHeader}>
                             <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
-                            <Text style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>Today's Notes</Text>
+                            <Text style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
+                            {(note !== (userHabit?.note || "")) && (
+                                <TouchableOpacity onPress={handleSaveNote} style={styles.saveNoteBtn}>
+                                    <Text style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
+
                         <TextInput
                             value={note}
                             onChangeText={setNote}
@@ -287,7 +350,7 @@ const UserHabitDetails = () => {
                                 style={[styles.modalButton, styles.ghostButton]}
                             >
                                 <Text style={[styles.buttonText, { color: colors.textSecondary }]}>
-                                    Cancel
+                                    {t("common.cancel")}
                                 </Text>
                             </TouchableOpacity>
                             
@@ -297,7 +360,7 @@ const UserHabitDetails = () => {
                                 style={[styles.modalButton, styles.deleteButton, { backgroundColor: colors.danger }]}
                             >
                                 <Text style={[styles.buttonText, { color: "#fff" }]}>
-                                    {isDeleting ? "Deleting..." : "Delete Habit"}
+                                    {isDeleting ? t("common.loading") : t("home.delete_habits")}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -345,7 +408,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20, paddingTop: 56, paddingBottom: 14,
     },
     headerTitle: {
-        fontSize: 22, fontWeight: "700", color: "#111827", letterSpacing: 0.1
+        fontSize: 20, fontWeight: "700", color: "#111827", letterSpacing: 0.1
     },
     headerSubtitle: {
         fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: "500"
@@ -403,10 +466,38 @@ const styles = StyleSheet.create({
         marginBottom: 20, alignItems: "center", borderStyle: 'dashed',
         borderWidth: 1, borderColor: '#9ca3af'
     },
+    noNoteText: {
+        fontSize: 14, fontStyle: 'italic', textAlign: 'center', marginTop: 8
+    },
+    saveNoteBtn: {
+        marginLeft: 'auto',
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+    },
+    saveNoteText: {
+        fontSize: 14,
+        fontWeight: '700',
+    },
     futureNoticeText: {
         fontSize: 14, color: "#4b5563", textAlign: "center", fontStyle: 'italic',
         lineHeight: 20
+    },
+    historyButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        paddingVertical: 12,
+        borderRadius: 16,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderStyle: 'dashed'
+    },
+    historyButtonText: {
+        fontSize: 14,
+        fontWeight: '600'
     }
 });
+
 
 export default UserHabitDetails;

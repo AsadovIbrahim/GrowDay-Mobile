@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft,faBullseye } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import CryEmoji from "../../../assets/icons/cry-emoji.svg";
 import SadEmoji from "../../../assets/icons/sad-emoji.svg";
 import CoolEmoji from "../../../assets/icons/cool-emoji.svg";
@@ -14,6 +15,7 @@ import LaughEmoji from "../../../assets/icons/laughing-emoji.svg";
 const UserPref5 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -30,10 +32,10 @@ const UserPref5 = () => {
   };
 
   const options = [
-    { id: "Constantly", SvgIcon: CryEmoji, label: "Constantly" },
-    { id: "Occasionally", SvgIcon: SadEmoji, label: "Occasionally" },
-    { id: "Rarely", SvgIcon: LaughEmoji, label: "Rarely" },
-    { id: "Never", SvgIcon: CoolEmoji, label: "Never" },
+    { id: "Constantly", SvgIcon: CryEmoji, label: t("preferences.step5.options.constantly") },
+    { id: "Occasionally", SvgIcon: SadEmoji, label: t("preferences.step5.options.occasionally") },
+    { id: "Rarely", SvgIcon: LaughEmoji, label: t("preferences.step5.options.rarely") },
+    { id: "Never", SvgIcon: CoolEmoji, label: t("preferences.step5.options.never") },
   ];  
 
   return (
@@ -58,21 +60,20 @@ const UserPref5 = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
-          {/* TITLE */}
           <View className="items-center mb-6">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-            Do you often find it hard to
+              {t("preferences.step5.title1")}
             </Text>
 
             <View className="flex-row items-center justify-center gap-2 mt-1">
               <Text className="text-[26px] font-redditsans-bold text-green-500">
-                focus?
+                {t("preferences.step5.title2")}
               </Text>
               <FontAwesomeIcon icon={faBullseye} size={20} color="#ef4444" />
             </View>
 
             <Text style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280" }} className="text-[13px] font-redditsans-regular mt-3 text-center px-10">
-            Understanding your motivations helps us align GrowDay with your goals. Select all that apply.
+              {t("preferences.step5.subtitle")}
             </Text>
           </View>
 
@@ -125,7 +126,7 @@ const UserPref5 = () => {
             className="bg-[#8bc37a] py-5 rounded-full"
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
-              Continue
+              {t("preferences.continue")}
             </Text>
           </TouchableOpacity>
         </ScrollView>

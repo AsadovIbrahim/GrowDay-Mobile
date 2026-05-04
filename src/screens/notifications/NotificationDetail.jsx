@@ -26,6 +26,7 @@ import { useMMKVString } from "react-native-mmkv";
 import { useState, useEffect, useRef } from "react";
 import { Animated } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 /* ─── constants ──────────────────────────────────────────────── */
 const GREEN = "#20893A";
@@ -74,6 +75,7 @@ const InfoRow = ({ icon, label, value, isLast = false, bold = false }) => {
 
 const StatusBadge = ({ isRead }) => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={[styles.badge, isRead ? (isDark ? { backgroundColor: 'rgba(32, 137, 58, 0.15)', borderColor: '#20893A', borderWidth: 1 } : styles.badgeRead) : (isDark ? { backgroundColor: 'rgba(229, 62, 62, 0.15)', borderColor: '#E53E3E', borderWidth: 1 } : styles.badgeUnread)]}>
       <FontAwesomeIcon
@@ -82,13 +84,8 @@ const StatusBadge = ({ isRead }) => {
         color={isRead ? GREEN : "#E53E3E"}
         style={{ marginRight: 6 }}
       />
-      <Text
-        style={[
-          styles.badgeText,
-          { color: isRead ? GREEN : "#E53E3E" },
-        ]}
-      >
-        {isRead ? "Read" : "Unread"}
+      <Text style={[styles.badgeText, { color: isRead ? GREEN : "#E53E3E" }]}>
+        {isRead ? t('notifications.status_read') : t('notifications.status_unread')}
       </Text>
     </View>
   );
@@ -114,6 +111,7 @@ const SkeletonBlock = ({ height = 16, width = "100%", mb = 12 }) => {
 const Header = ({ onBack }) => {
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   return (
     <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       <TouchableOpacity
@@ -124,7 +122,7 @@ const Header = ({ onBack }) => {
       >
         <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
       </TouchableOpacity>
-      <Text style={[styles.headerTitle, { color: colors.text }]}>Notification Details</Text>
+      <Text style={[styles.headerTitle, { color: colors.text }]}>{t('notifications.detail_title')}</Text>
     </View>
   );
 };
@@ -142,6 +140,7 @@ const NotificationDetail = () => {
   const [loading, setLoading] = useState(false);
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(24)).current;
@@ -237,9 +236,9 @@ const NotificationDetail = () => {
             size={48}
             color={colors.textSecondary}
           />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Notification Not Found</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('notifications.not_found_title')}</Text>
           <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-            This notification may have been deleted or is unavailable.
+            {t('notifications.not_found_desc')}
           </Text>
         </View>
       </SafeAreaView>
@@ -274,7 +273,7 @@ const NotificationDetail = () => {
                 <FontAwesomeIcon icon={faTag} size={14} color={GREEN} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>Habit</Text>
+                <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>{t('notifications.label_habit')}</Text>
                 <Text
                   style={[
                     styles.habitTitle,
@@ -282,7 +281,7 @@ const NotificationDetail = () => {
                     !notification.isRead && { fontFamily: "RedditSans-Bold" },
                   ]}
                 >
-                  {notification.habitTitle || "N/A"}
+                  {notification.habitTitle ? t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle }) : "N/A"}
                 </Text>
               </View>
             </View>
@@ -292,14 +291,14 @@ const NotificationDetail = () => {
             {/* Info rows */}
             <InfoRow
               icon={faEnvelopeOpen}
-              label="Message"
-              value={notification.message || "No message"}
+              label={t('notifications.label_message')}
+              value={notification.message ? t(`backend_notifications.${notification.message}`, { defaultValue: notification.message }) : "No message"}
               bold={!notification.isRead}
             />
 
             <InfoRow
               icon={faCalendarAlt}
-              label="Date & Time"
+              label={t('notifications.label_datetime')}
               value={formatDate(notification.createdAt)}
             />
 
@@ -313,7 +312,7 @@ const NotificationDetail = () => {
                 />
               </View>
               <View style={styles.infoContent}>
-                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Status</Text>
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>{t('notifications.label_status')}</Text>
                 <StatusBadge isRead={notification.isRead} />
               </View>
             </View>

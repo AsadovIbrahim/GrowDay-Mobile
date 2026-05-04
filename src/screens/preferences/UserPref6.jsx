@@ -16,10 +16,12 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { storage } from "../../utils/MMKVStore";
 import { createUserPreferencesWithAIFetch, updateUserPreferencesWithAIFetch } from "../../utils/fetch";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const UserPref6 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -101,31 +103,31 @@ const UserPref6 = () => {
       id: "Lack of Motivation",
       icon: faBullseye,
       iconColor: "#ef4444",
-      label: "Lack of Motivation",
+      label: t("preferences.step6.options.lack_motivation"),
     },
     {
       id: "Work Overload",
       icon: faInfinity,
       iconColor: "#3b82f6",
-      label: "Work Overload",
+      label: t("preferences.step6.options.work_overload"),
     },
     {
       id: "Cluttered Environment",
       icon: faTheaterMasks,
       iconColor: "#f97316",
-      label: "Cluttered Environment",
+      label: t("preferences.step6.options.cluttered_env"),
     },
     {
       id: "Digital Distractions",
       icon: faGamepad,
       iconColor: "#a855f7",
-      label: "Digital Distractions",
+      label: t("preferences.step6.options.digital_distractions"),
     },
     {
       id: "Stress",
       icon: faBomb,
       iconColor: "#ef4444",
-      label: "Stress",
+      label: t("preferences.step6.options.stress"),
     },
   ];
 
@@ -188,25 +190,20 @@ const UserPref6 = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
-          {/* TITLE */}
           <View className="items-center mb-8">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center leading-tight">
-              What influenced you to
+              {t("preferences.step6.title1")}
             </Text>
 
             <View className="flex-row items-center justify-center mt-1">
               <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold">
-                become{" "}
-              </Text>
-              <Text className="text-[26px] font-redditsans-bold text-green-500">
-                organized?
+                {t("preferences.step6.title2")}
               </Text>
               <Text className="text-2xl ml-2">🧘</Text>
               </View>
 
             <Text style={{ color: colors.textSecondary }} className="text-[13px] font-redditsans-regular mt-4 text-center px-8 leading-5">
-              Let us know if focus is a struggle for you so we can provide
-              targeted support.
+              {t("preferences.step6.subtitle")}
             </Text>
           </View>
 
@@ -273,7 +270,7 @@ const UserPref6 = () => {
             }}
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
-              Continue
+              {t("preferences.continue")}
             </Text>
           </TouchableOpacity>
         </ScrollView>

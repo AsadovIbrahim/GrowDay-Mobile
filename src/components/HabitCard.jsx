@@ -4,10 +4,12 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from "@react-navigation/native";
 import { ICONS } from "../constants/icons";
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const isFuture = (() => {
     if (!selectedDate) return false;
     const today = new Date();
@@ -95,7 +97,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
             style={{ color: colors.textSecondary }}
             className="text-sm font-redditsans-regular"
           >
-            {isFuture ? 'Upcoming' : (habit.status || (isCompleted ? 'Completed' : 'Pending'))}
+            {isFuture ? t('common.upcoming') : (isCompleted ? t('common.completed') : t('common.pending'))}
           </Text>
           {formattedTime && (
             <>

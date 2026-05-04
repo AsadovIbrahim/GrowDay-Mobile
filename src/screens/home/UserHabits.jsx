@@ -5,12 +5,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, deleteUserHabitFetch, getTodaysUserHabitFetch } from '../../utils/fetch';
+import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch } from '../../utils/fetch';
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 
 const UserHabits = ({ route }) => {
@@ -36,6 +38,7 @@ const UserHabits = ({ route }) => {
     const navigation = useNavigation();
     const { theme } = useTheme();
     const { colors } = theme;
+    const { t } = useTranslation();
 
     const getUserHabitsByFrequency = async () => {
         if (!token) return;
@@ -198,16 +201,18 @@ const UserHabits = ({ route }) => {
             setLoading(true);
             const habitIds = Array.from(selectedHabits);
             const deletePromises = habitIds.map(userHabitId =>
-                deleteUserHabitFetch(token, userHabitId)
+                removeUserHabitFetch(token, userHabitId)
             );
+
 
             const responses = await Promise.all(deletePromises);
             console.log('Delete responses:', responses);
 
             // Check if all deletions were successful
             const allSuccessful = responses.every(response =>
-                response && (response.ok || response.status === 200 || response.status === 204) && !response.error
+                response && (response.success || response.ok || response.status === 200 || response.status === 204)
             );
+
 
             if (allSuccessful) {
                 // Clear selections, exit selection mode and refresh the habits list
@@ -280,7 +285,7 @@ const UserHabits = ({ route }) => {
                             <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
                         </TouchableOpacity>
                         <Text className="text-2xl font-redditsans-bold" style={{ color: colors.text }}>
-                            My Habits
+                            {t('my_habits.header')}
                         </Text>
                     </View>
 
@@ -292,7 +297,7 @@ const UserHabits = ({ route }) => {
                     <View className="rounded-xl px-4 py-3 flex-row items-center" style={{ backgroundColor: colors.card }}>
                         <FontAwesomeIcon icon={faSearch} color={colors.textSecondary} size={16} />
                         <TextInput
-                            placeholder="Search habits..."
+                            placeholder={t('my_habits.search_habits')}
                             placeholderTextColor={colors.textSecondary}
                             value={searchQuery}
                             onChangeText={setSearchQuery}
@@ -331,7 +336,7 @@ const UserHabits = ({ route }) => {
                                         color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
                                     }}
                                 >
-                                    {option}
+                                    {t(`my_habits.filters.${option.toLowerCase()}`)}
                                 </Text>
                             </TouchableOpacity>
                         ))}
@@ -348,20 +353,20 @@ const UserHabits = ({ route }) => {
                         <View className="flex-1 items-center justify-center py-20">
                             <ActivityIndicator size="large" color={colors.primary} />
                             <Text className="mt-4 font-redditsans-regular" style={{ color: colors.textSecondary }}>
-                                Loading habits...
+                                {t('common.loading')}
                             </Text>
                         </View>
                     ) : filteredHabits.length === 0 ? (
                         <View className="flex-1 items-center justify-center py-20">
                             <Text className="text-gray-600 text-lg font-redditsans-medium text-center">
                                 {searchQuery.trim()
-                                    ? 'No habits found matching your search'
-                                    : 'No habits found'
+                                    ? t('my_habits.no_habits_search')
+                                    : t('my_habits.no_habits_found')
                                 }
                             </Text>
                             {!searchQuery.trim() && (
                                 <Text className="text-gray-500 text-sm mt-2 font-redditsans-regular text-center">
-                                    Start by adding some habits to track
+                                    {t('my_habits.add_habits_track')}
                                 </Text>
                             )}
                         </View>
@@ -376,7 +381,7 @@ const UserHabits = ({ route }) => {
                                             activeOpacity={0.7}
                                         >
                                             <Text className="text-base font-redditsans-medium" style={{ color: colors.primary }}>
-                                                Load More
+                                                {t('my_habits.load_more')}
                                             </Text>
                                         </TouchableOpacity>
                                     )}
@@ -399,7 +404,7 @@ const UserHabits = ({ route }) => {
                                                 />
                                             </TouchableOpacity>
                                             <Text className="text-sm font-redditsans-medium ml-2" style={{ color: colors.text }}>
-                                                {isAllSelected ? 'Deselect All' : 'Select All'}
+                                                {isAllSelected ? t('my_habits.deselect_all') : t('my_habits.select_all')}
                                             </Text>
                                         </View>
 
@@ -411,7 +416,7 @@ const UserHabits = ({ route }) => {
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-sm font-redditsans-medium" style={{ color: colors.text }}>
-                                                    Cancel
+                                                    {t('common.cancel')}
                                                 </Text>
                                             </TouchableOpacity>
                                             {selectedHabits.size > 0 && (
@@ -423,7 +428,7 @@ const UserHabits = ({ route }) => {
                                                 >
                                                     <FontAwesomeIcon icon={faTrash} color="#ffffff" size={14} />
                                                     <Text className="text-white text-sm font-redditsans-medium ml-1.5">
-                                                        Delete ({selectedHabits.size})
+                                                        {t('my_habits.delete_count', { count: selectedHabits.size })}
                                                     </Text>
                                                 </TouchableOpacity>
                                             )}
@@ -459,10 +464,10 @@ const UserHabits = ({ route }) => {
                                 <View className="flex-1 bg-black/50 justify-center items-center px-6">
                                     <View className="rounded-2xl px-6 py-5 w-full max-w-sm" style={{ backgroundColor: colors.card }}>
                                         <Text className="text-xl font-redditsans-bold mb-2" style={{ color: colors.text }}>
-                                            Delete Habits
+                                            {t('my_habits.delete_habits')}
                                         </Text>
                                         <Text className="text-base font-redditsans-regular mb-6" style={{ color: colors.textSecondary }}>
-                                            Are you sure you want to delete {selectedHabits.size} habit{selectedHabits.size > 1 ? 's' : ''}? This action cannot be undone.
+                                            {t('my_habits.delete_confirm', { count: selectedHabits.size })}
                                         </Text>
                                         <View className="flex-row gap-3">
                                             <TouchableOpacity
@@ -472,7 +477,7 @@ const UserHabits = ({ route }) => {
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-base font-redditsans-medium" style={{ color: colors.text }}>
-                                                    Cancel
+                                                    {t('common.cancel')}
                                                 </Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
@@ -482,7 +487,7 @@ const UserHabits = ({ route }) => {
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-white text-base font-redditsans-medium">
-                                                    Yes
+                                                    {t('my_habits.yes')}
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>

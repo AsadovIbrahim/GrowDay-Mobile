@@ -3,14 +3,16 @@ import { View, Text } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLock, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t, i18n } = useTranslation();
   const earned = !!earnedAt;
 
   const formattedDate = earned
-    ? new Date(earnedAt).toLocaleDateString("en-US", {
+    ? new Date(earnedAt).toLocaleDateString(i18n.language === 'az' ? 'az-AZ' : 'en-US', {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -57,7 +59,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
             </Text>
             {isNew && (
               <View className="ml-2 bg-green-500 rounded-full px-2 py-[2px]">
-                <Text className="text-white text-[10px] font-redditsans-bold">NEW</Text>
+                <Text className="text-white text-[10px] font-redditsans-bold">{t("achievements.stats.new").toUpperCase()}</Text>
               </View>
             )}
           </View>
@@ -74,7 +76,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
       {/* Footer */}
       <View className="flex-row items-center justify-between mt-1 ml-1">
         <Text className="text-[12px] font-redditsans-regular" style={{ color: colors.textSecondary }}>
-          {earned ? `Earned on ${formattedDate}` : "Not yet unlocked"}
+          {earned ? `${t("achievements.earned_on")} ${formattedDate}` : t("achievements.empty.unlocked")}
         </Text>
         <View
           className="px-3 py-1 rounded-full"
@@ -84,7 +86,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
             className="text-[12px] font-redditsans-bold"
             style={{ color: earned ? colors.primary : colors.textSecondary }}
           >
-            {earned ? "✓ Unlocked" : "Locked"}
+            {earned ? `✓ ${t("achievements.unlocked_badge")}` : t("achievements.filters.locked")}
           </Text>
         </View>
       </View>

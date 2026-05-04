@@ -16,7 +16,12 @@ import {
   faMedal,
   faGear,
   faRightFromBracket,
-  faChevronRight
+  faChevronRight,
+  faUserCircle,
+  faQuestionCircle,
+  faShieldAlt,
+  faShareAlt,
+  faStar as faStarSolid
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuContext } from '../../context/MenuContext';
 import HomeEmptyState from './HomeEmptyState';
@@ -25,6 +30,7 @@ import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 const getLocalDateString = (d) => {
   if (!d) return null;
   const year = d.getFullYear();
@@ -59,6 +65,7 @@ const Home = () => {
 
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const [accountData, setAccountData] = useState(null);
   const firstName=accountData?.firstName;  
@@ -209,12 +216,43 @@ const Home = () => {
 
 
   const menuItems = [
-    { id: 'home', label: 'Home', icon: faHome, active: true, color: '#2f6f3f' },
-    { id: 'explore', label: 'Explore', icon: faCompass, active: false, color: '#9ca3af' },
-    { id: 'habits', label: 'Your Habits', icon: faWalking, active: false, color: '#9ca3af' },
-    { id: 'achievements', label: 'Achievements', icon: faMedal, active: false, color: '#9ca3af' },
-    { id: 'settings', label: 'Settings', icon: faGear, active: false, color: '#9ca3af' },
+    { id: 'home', label: t('menu.home'), icon: faHome, active: true, route: 'Home' },
+    { id: 'explore', label: t('menu.explore'), icon: faCompass, active: false, route: 'Explore' },
+    { id: 'habits', label: t('menu.habits'), icon: faWalking, active: false, route: 'UserHabits' },
+    { id: 'achievements', label: t('menu.achievements'), icon: faMedal, active: false, route: 'Achievements' },
+    { id: 'support', label: t('menu.support'), icon: faQuestionCircle, active: false, route: 'Profile', screen: 'ContactSupport' },
+    { id: 'settings', label: t('menu.settings'), icon: faGear, active: false, route: 'Profile' },
   ];
+
+  const handleMenuPress = (item) => {
+    closeMenu();
+    if (item.route) {
+        if (item.screen) {
+            navigation.navigate(item.route, { screen: item.screen });
+        } else {
+            navigation.navigate(item.route);
+        }
+    }
+  };
+
+  const handleLogout = () => {
+    closeMenu();
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Logout", 
+          style: "destructive",
+          onPress: () => {
+            storage.delete('accessToken');
+            // Navigation will automatically switch to AuthStack via Navigation.tsx
+          } 
+        }
+      ]
+    );
+  };
 
   return (
     <LinearGradient colors={colors.backgroundGradient} className="flex-1 px-1 pt-12">
@@ -258,59 +296,90 @@ const Home = () => {
           elevation: 10,
         }}
       >
-        <View className="flex-1 pt-12 px-4">
-          <TouchableOpacity
-            onPress={toggleMenu}
-            className="w-10 h-10 items-center justify-center mb-6"
-          >
-            <FontAwesomeIcon icon={faBars} color="#2f6f3f" size={20} />
-          </TouchableOpacity>
+        <View className="flex-1 pt-14 px-4">
+          {/* Profile Header */}
+          <View className="flex-row items-center px-2 mb-8 mt-2">
+            <View 
+                style={{ backgroundColor: colors.primary + '20' }} 
+                className="w-14 h-14 rounded-2xl items-center justify-center border border-white/10"
+            >
+                <FontAwesomeIcon icon={faUserCircle} color={colors.primary} size={32} />
+            </View>
+            <View className="ml-4 flex-1">
+                <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
+                    {firstName || 'User'}
+                </Text>
+                <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular">
+                    {t('common.premium_member')}
+                </Text>
+            </View>
+          </View>
 
           <View className="flex-1">
             {menuItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                onPress={() => {
-                  closeMenu();
-                }}
+                onPress={() => handleMenuPress(item)}
+                activeOpacity={0.7}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingVertical: 16,
-                  paddingHorizontal: 12,
-                  borderRadius: 12,
-                  marginBottom: 8,
-                  backgroundColor: item.active ? colors.primarySurface : 'transparent',
+                  paddingVertical: 14,
+                  paddingHorizontal: 16,
+                  borderRadius: 16,
+                  marginBottom: 6,
+                  backgroundColor: item.active ? colors.primary + '15' : 'transparent',
                 }}
               >
-                <FontAwesomeIcon
-                  icon={item.icon}
-                  color={item.active ? colors.primary : colors.textMuted}
-                  size={20}
-                />
+                <View className={`w-8 h-8 items-center justify-center rounded-lg ${item.active ? '' : ''}`}>
+                    <FontAwesomeIcon
+                      icon={item.icon}
+                      color={item.active ? colors.primary : colors.textSecondary}
+                      size={18}
+                    />
+                </View>
                 <Text
                   style={{ color: item.active ? colors.primary : colors.textSecondary }}
-                  className={`ml-4 text-base ${
-                    item.active ? 'font-redditsans-bold' : 'font-redditsans-regular'
+                  className={`ml-3 text-base ${
+                    item.active ? 'font-redditsans-bold' : 'font-redditsans-medium'
                   }`}
                 >
                   {item.label}
                 </Text>
               </TouchableOpacity>
             ))}
+
+            <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 15, opacity: 0.3 }} />
+            
+            <TouchableOpacity
+                onPress={() => {
+                    closeMenu();
+                    // Link to Privacy Policy
+                }}
+                className="flex-row items-center py-3 px-4"
+            >
+                <FontAwesomeIcon icon={faShieldAlt} color={colors.textMuted} size={16} />
+                <Text style={{ color: colors.textSecondary }} className="ml-4 text-sm font-redditsans-regular">
+                    {t('menu.legal')}
+                </Text>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              closeMenu();
-            }}
-            className="flex-row items-center py-4 px-3 rounded-xl mb-4"
-          >
-            <FontAwesomeIcon icon={faRightFromBracket} color={colors.danger} size={20} />
-            <Text style={{ color: colors.danger }} className="ml-4 text-base font-redditsans-medium">
-              Logout
+          <View className="mt-auto pb-6">
+            <TouchableOpacity
+                onPress={handleLogout}
+                className="flex-row items-center py-4 px-4 rounded-2xl mb-4 bg-red-500/10"
+            >
+                <FontAwesomeIcon icon={faRightFromBracket} color={colors.danger} size={18} />
+                <Text style={{ color: colors.danger }} className="ml-4 text-base font-redditsans-bold">
+                    {t('common.logout')}
+                </Text>
+            </TouchableOpacity>
+            
+            <Text style={{ color: colors.textMuted }} className="text-center text-xs font-redditsans-light opacity-50">
+                GrowDay v1.0.0
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
 
@@ -346,14 +415,14 @@ const Home = () => {
       >
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
             <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">
-              Hi {firstName || 'User'}!
+              {t('home.greeting', { name: firstName || 'User' })}
             </Text>
             <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center">
                 <Text className="text-white text-lg">😇</Text>
             </View>
         </View>
         <Text style={{ color: colors.text }} className="text-base font-redditsans-regular px-4 mb-4">
-          Let's make habits together!
+          {t('home.subtitle')}
         </Text>
           <CalendarSelector 
             selectedDate={selectedDate} 
@@ -364,20 +433,20 @@ const Home = () => {
           <View className="px-4 py-12 items-center justify-center">
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={{ color: colors.textSecondary }} className="mt-4 text-base font-redditsans-regular">
-              Loading...
+              {t('common.loading')}
             </Text>
           </View>
         ) : error ? (
           <View className="px-4 py-12 items-center justify-center">
              <Text style={{ color: colors.danger }} className="text-center font-redditsans-medium mb-6">
-               Failed to load data. Please check your connection.
+                {t('common.failed_load')}
              </Text>
              <TouchableOpacity 
                onPress={fetchAllData} 
                className="px-8 py-3 rounded-full" 
                style={{ backgroundColor: colors.primary }}
              >
-               <Text className="text-white font-redditsans-bold">Retry</Text>
+               <Text className="text-white font-redditsans-bold">{t('common.retry')}</Text>
              </TouchableOpacity>
            </View>
         ) : (userHabitCount === 0) ? (
@@ -397,9 +466,9 @@ const Home = () => {
                       selected.setHours(0, 0, 0, 0);
                       const isToday = selected.getTime() === today.getTime();
                       
-                      if (isToday) return "Today's Habits";
-                      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                      return `${dayNames[selected.getDay()]}'s Habits`;
+                      if (isToday) return t('home.todays_habits');
+                      const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                      return t('home.days_habits', { day: t(`home.day_names.${dayKeys[selected.getDay()]}`) });
                     })()}
                   </Text>
                   {(() => {
@@ -410,7 +479,7 @@ const Home = () => {
                     if (selected.getTime() > today.getTime()) {
                       return (
                         <Text style={{ color: colors.textMuted }} className="text-xs font-redditsans-regular italic">
-                          Viewing upcoming habits
+                          {t('home.upcoming_habits')}
                         </Text>
                       );
                     }
@@ -422,7 +491,7 @@ const Home = () => {
                   className="flex-row items-center gap-1"
                 >
                   <Text style={{ color: colors.primary }} className="text-base font-redditsans-medium">
-                    VIEW ALL
+                    {t('home.view_all')}
                   </Text>
                   <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={14} />
                 </TouchableOpacity>

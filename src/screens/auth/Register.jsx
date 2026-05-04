@@ -13,12 +13,14 @@ import { registerfetch, googleLoginFetch, getUserPreferencesFetch } from "../../
 import { storage } from "../../utils/MMKVStore";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const { theme } = useTheme();
     const { colors } = theme;
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({});
@@ -49,11 +51,11 @@ const Register = () => {
         } else {
           const msgs = data.errors?.length > 0
             ? data.errors
-            : [data.message || "Registration failed. Please try again."];
+            : [data.message || t("auth.messages.registration_failed")];
           setServerErrors(msgs);
         }
       } catch (error) {
-        setServerErrors(["Network error. Please check your connection."]);
+        setServerErrors([t("auth.messages.network_error")]);
       } finally {
         setLoading(false);
       }
@@ -76,7 +78,7 @@ const Register = () => {
         if (!idToken) {
            setLoading(false);
            if (userInfo?.type === 'cancelled') return;
-           showToast("Google token not found.", "error");
+           showToast(t("auth.messages.google_token_not_found"), "error");
            return;
         }
         
@@ -95,19 +97,19 @@ const Register = () => {
             console.log("Error checking user preferences:", prefError);
           }
   
-          showToast("Google signup successful! 🌱", "success");
+          showToast(t("auth.messages.google_signup_success"), "success");
   
           setTimeout(() => {
             storage.set("hasCompletedPreferences", hasPrefs);
             storage.set("accessToken", token);
           }, 1100);
         } else {
-          const errorMsg = data?.message || data?.title || "Google signup failed on server";
+          const errorMsg = data?.message || data?.title || t("auth.messages.google_signup_failed");
           showToast(errorMsg, "error");
         }
       } catch (error) {
         console.error("Google Sign-In Error:", error);
-        showToast(error.message || "Google Sign-In failed.", "error");
+        showToast(error.message || t("auth.messages.google_failed"), "error");
       } finally {
         setLoading(false);
       }
@@ -155,7 +157,7 @@ const Register = () => {
 
             {/* Title */}
             <Text className="text-center text-3xl font-redditsans-bold mb-4 mt-2" style={{ color: colors.text }}>
-              Let’s get started!
+              {t("auth.lets_start")}
             </Text>
 
             {/* GOOGLE */}
@@ -167,7 +169,7 @@ const Register = () => {
             >
               <GoogleIcon width={22} height={22} />
               <Text className="font-redditsans-medium text-lg ml-4" style={{ color: colors.text }}>
-                CONTINUE WITH GOOGLE
+                {t("auth.google_continue")}
               </Text>
             </TouchableOpacity>
 
@@ -184,7 +186,7 @@ const Register = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: serverErrors.length > 1 ? 8 : 0 }}>
                   <FontAwesomeIcon icon={faCircleExclamation} size={15} color="#ff6b6b" />
                   <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Bold", fontSize: 14, marginLeft: 8 }}>
-                    {serverErrors.length === 1 ? serverErrors[0] : "Please fix the following:"}
+                    {serverErrors.length === 1 ? serverErrors[0] : t("auth.messages.fix_following")}
                   </Text>
                 </View>
                 {serverErrors.length > 1 && serverErrors.map((err, i) => (
@@ -199,14 +201,14 @@ const Register = () => {
             {/* First + Last */}
             <View className="flex-row gap-3">
               <TextInput
-                placeholder="First Name"
+                placeholder={t("auth.first_name")}
                 placeholderTextColor={colors.textSecondary}
                 onChangeText={(text) => handleInputChange("firstname", text)}
                 className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
                 style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />
               <TextInput
-                placeholder="Last Name"
+                placeholder={t("auth.last_name")}
                 placeholderTextColor={colors.textSecondary}
                 onChangeText={(text) => handleInputChange("lastname", text)}
                 className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
@@ -216,7 +218,7 @@ const Register = () => {
 
             {/* Username */}
             <TextInput
-              placeholder="Username"
+              placeholder={t("auth.username")}
               placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("username", text)}
               className="font-redditsans-medium rounded-xl p-4 mb-4"
@@ -225,7 +227,7 @@ const Register = () => {
 
             {/* Email */}
             <TextInput
-              placeholder="Email"
+              placeholder={t("auth.email")}
               placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("email", text)}
               className="font-redditsans-medium rounded-xl p-4 mb-4"
@@ -235,7 +237,7 @@ const Register = () => {
             {/* Password */}
             <View className="relative">
               <TextInput
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 onChangeText={(text) => handleInputChange("password", text)}
@@ -254,7 +256,7 @@ const Register = () => {
             {/* Confirm Password */}
             <View className="relative">
               <TextInput
-                placeholder="Confirm Password"
+                placeholder={t("auth.confirm_password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showConfirmPassword}
                 onChangeText={(text) => handleInputChange("confirmPassword", text)}
@@ -279,15 +281,15 @@ const Register = () => {
               activeOpacity={0.8}
             >
               <Text className="text-white text-center font-redditsans-bold text-lg">
-                {loading ? "Creating Account..." : "Sign Up"}
+                {loading ? t("auth.creating_account") : t("auth.sign_up")}
               </Text>
             </TouchableOpacity>
 
             {/* LOGIN */}
             <View className="flex-row justify-center mt-6">
-              <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>Already have an account? </Text>
+              <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>{t("auth.have_account")} </Text>
               <TouchableOpacity onPress={()=>navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>Sign In</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("auth.sign_in")}</Text>
               </TouchableOpacity>
             </View>
 

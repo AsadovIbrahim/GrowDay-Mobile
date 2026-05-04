@@ -2,9 +2,11 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const { colors } = theme;
 
   const displayIcon = ICONS[icon] || ICONS.default;
@@ -47,7 +49,7 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
           {name}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
-          {frequency}
+          {t(`my_habits.filters.${frequency.toLowerCase()}`)}
         </Text>
       </View>
     </TouchableOpacity>

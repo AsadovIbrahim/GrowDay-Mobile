@@ -2,25 +2,27 @@ import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import { updateFcmTokenFetch } from './fetch';
 import { storage } from './MMKVStore';
+import i18n from '../localization/i18n'; // i18next instance birbaşa
+
+// Helper: t() hook olmadan — utils içindən
+const t = (key, opts) => i18n.t(key, opts);
 
 export const requestUserPermission = async () => {
-  // FCM Permission
   const authStatus = await messaging().requestPermission();
   const fcmEnabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  // Notifee Permission (Required for Android 13+)
   const settings = await notifee.requestPermission();
-  
+
   if (fcmEnabled && settings.authorizationStatus >= 1) {
     console.log('Notification permissions granted.');
-    storage.set('settings.pushEnabled', true); // Sync local UI state
+    storage.set('settings.pushEnabled', true);
     return true;
   }
-  
+
   if (authStatus === messaging.AuthorizationStatus.DENIED) {
-    storage.set('settings.pushEnabled', false); // Sync local UI state
+    storage.set('settings.pushEnabled', false);
   }
 
   console.log('Notification permissions denied.');
@@ -32,7 +34,6 @@ export const getFcmToken = async (token) => {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
       console.log('FCM Token:', fcmToken);
-      // Sync with backend
       await updateFcmTokenFetch(token, fcmToken);
       return fcmToken;
     }
@@ -42,13 +43,11 @@ export const getFcmToken = async (token) => {
 };
 
 export const notificationListener = async () => {
-  // Foreground messages
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     console.log('Foreground Message:', remoteMessage);
     await displayLocalNotification(remoteMessage);
   });
 
-  // Background/Quit state messages
   messaging().setBackgroundMessageHandler(async remoteMessage => {
     console.log('Background Message:', remoteMessage);
   });
@@ -57,31 +56,26 @@ export const notificationListener = async () => {
 };
 
 export const displayLocalNotification = async (remoteMessage) => {
-  // Check if sound alerts are enabled
   const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
   const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
 
   if (!pushEnabled) return;
 
-  // Create/Update channel
   const channelId = soundEnabled ? 'growday_sound_channel' : 'growday_silent_channel';
-  
+
   await notifee.createChannel({
     id: channelId,
-    name: soundEnabled ? 'Sound Notifications' : 'Silent Notifications',
+    name: soundEnabled ? t('notifications.channel_sound') : t('notifications.channel_silent'),
     importance: AndroidImportance.HIGH,
     sound: soundEnabled ? 'default' : undefined,
   });
 
-  // Display a notification
   await notifee.displayNotification({
     title: remoteMessage.notification?.title || remoteMessage.data?.title || 'GrowDay',
     body: remoteMessage.notification?.body || remoteMessage.data?.body || '',
     android: {
       channelId: channelId,
-      pressAction: {
-        id: 'default',
-      },
+      pressAction: { id: 'default' },
     },
   });
 };
@@ -89,53 +83,53 @@ export const displayLocalNotification = async (remoteMessage) => {
 export const displayOngoingHabitNotification = async (habit, seconds, distance = null, isPaused = false) => {
   const hId = habit.userHabitId || habit.UserHabitId || habit.id;
   const channelId = 'ongoing_habit_channel';
-  
+
   await notifee.createChannel({
     id: channelId,
-    name: 'Habit Tracking',
-    importance: AndroidImportance.LOW, 
+    name: t('notifications.channel_tracking'),
+    importance: AndroidImportance.LOW,
   });
 
-  const hh = Math.floor(seconds / 3600), mm = Math.floor((seconds % 3600) / 60), ss = seconds % 60;
+  const hh = Math.floor(seconds / 3600);
+  const mm = Math.floor((seconds % 3600) / 60);
+  const ss = seconds % 60;
   const timeStr = `${hh > 0 ? hh + ':' : ''}${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}`;
-  
-  let body = `Time: ${timeStr}`;
+
+  let body = `${t('notifications.push_time_label')}: ${timeStr}`;
   if (distance !== null) {
-      const distStr = typeof distance === 'number' ? `${distance.toFixed(2)} km` : distance;
-      body = `${distStr} | ${timeStr}`;
+    const distStr = typeof distance === 'number' ? `${distance.toFixed(2)} km` : distance;
+    body = `${distStr} | ${timeStr}`;
   }
 
   if (isPaused) {
-    body = `(Paused) ${body}`;
+    body = t('notifications.push_tracking_paused', { body });
   }
 
   await notifee.displayNotification({
     id: `ongoing_${hId}`,
-    title: `Tracking: ${habit.title}`,
+    title: t('notifications.push_tracking_title', { habit: habit.title }),
     body: body,
     data: {
       habitId: hId.toString(),
-      type: 'ongoing_habit'
+      type: 'ongoing_habit',
     },
     android: {
       channelId: channelId,
-      ongoing: true, 
+      ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
       asForegroundService: true,
       actions: [
         {
-          title: isPaused ? 'Resume' : 'Pause',
+          title: isPaused ? t('notifications.push_action_resume') : t('notifications.push_action_pause'),
           pressAction: { id: isPaused ? 'resume' : 'pause' },
         },
         {
-          title: 'Stop',
+          title: t('notifications.push_action_stop'),
           pressAction: { id: 'stop' },
         },
       ],
-      pressAction: {
-        id: 'default',
-      },
+      pressAction: { id: 'default' },
     },
   });
 };
@@ -145,7 +139,6 @@ export const cancelOngoingHabitNotification = async (hId) => {
   await notifee.cancelNotification(`ongoing_${id}`);
 };
 
-// Local Trigger Notification for Incomplete Habits
 export const scheduleIncompleteReminder = async (habit) => {
   const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
   if (!pushEnabled) return;
@@ -153,10 +146,8 @@ export const scheduleIncompleteReminder = async (habit) => {
   const hId = habit.userHabitId || habit.UserHabitId || habit.id;
   const triggerId = `reminder_${hId}`;
 
-  // Cancel any existing reminder for this habit to reset the 2-hour timer
   await cancelIncompleteReminder(hId);
 
-  // Set trigger for 2 hours from now
   const trigger = {
     type: TriggerType.TIMESTAMP,
     timestamp: Date.now() + 1000 * 60 * 60 * 2, // 2 hours
@@ -165,18 +156,18 @@ export const scheduleIncompleteReminder = async (habit) => {
   const channelId = 'growday_reminder_channel';
   await notifee.createChannel({
     id: channelId,
-    name: 'Habit Reminders',
+    name: t('notifications.channel_reminders'),
     importance: AndroidImportance.DEFAULT,
   });
 
   await notifee.createTriggerNotification(
     {
       id: triggerId,
-      title: `Keep going with ${habit.title}!`,
-      body: `You left your habit incomplete. Tap to finish it now and keep your streak alive! 🔥`,
+      title: t('notifications.push_reminder_title', { habit: habit.title }),
+      body: t('notifications.push_reminder_body'),
       data: {
         habitId: hId.toString(),
-        type: 'reminder'
+        type: 'reminder',
       },
       android: {
         channelId: channelId,
@@ -193,35 +184,31 @@ export const cancelIncompleteReminder = async (hId) => {
   await notifee.cancelTriggerNotification(`reminder_${id}`);
 };
 
-// --- WIN-BACK RETENTION CAMPAIGN ---
 export const scheduleWinBackReminder = async () => {
   const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
   if (!pushEnabled) return;
 
   const triggerId = 'winback_7days';
-  
-  // Always clear the old one first
+
   await notifee.cancelTriggerNotification(triggerId);
 
-  // Set trigger for 7 days from now
   const trigger = {
     type: TriggerType.TIMESTAMP,
-    timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 Days
+    timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
   };
 
   const channelId = 'growday_reminder_channel';
-  // (channel already created above, but safe to call createChannel again)
   await notifee.createChannel({
     id: channelId,
-    name: 'Habit Reminders',
+    name: t('notifications.channel_reminders'),
     importance: AndroidImportance.DEFAULT,
   });
 
   await notifee.createTriggerNotification(
     {
       id: triggerId,
-      title: `Is everything okay? 👀`,
-      body: `We haven't seen you around lately. Your habits miss you! 🚀`,
+      title: t('notifications.push_winback_title'),
+      body: t('notifications.push_winback_body'),
       data: { type: 'winback' },
       android: {
         channelId: channelId,

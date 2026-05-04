@@ -3,9 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faClock, faChevronRight, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress, showStatus }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const { colors } = theme;
   const formatTime = (timeValue) => {
     if (!timeValue) return '';
@@ -117,7 +119,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
           {habit.title}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
-          {isCompleted ? 'Completed' : displayType}
+          {isCompleted ? t('common.completed') : t(`my_habits.filters.${habitType.toLowerCase()}`)}
         </Text>
       </View>
 

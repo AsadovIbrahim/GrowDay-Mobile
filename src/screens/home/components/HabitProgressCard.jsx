@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faFire, faTrophy, faClock } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "./CircularProgress";
 import { useTheme } from "../../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -28,6 +29,7 @@ const BAR_W       = 12;
 const AnimatedBar = ({ d, isPast, colors, isDark }) => {
     const fillAnim  = useRef(new Animated.Value(0)).current;
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const { t } = useTranslation();
 
     const isDone            = d.value >= 100;
     const isTodayComplete   = d.isToday && isDone;
@@ -99,7 +101,7 @@ const AnimatedBar = ({ d, isPast, colors, isDark }) => {
                 d.isToday && [styles.dayLabelToday, { color: colors.primary }],
                 isFuture  && !d.isToday && styles.dayLabelFuture,
             ]}>
-                {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"][d._index ?? 0]}
+                {t(`habit_details.days_short.${["mon", "tue", "wed", "thu", "fri", "sat", "sun"][d._index ?? 0]}`)}
             </Text>
         </View>
     );
@@ -133,6 +135,7 @@ const HabitProgressCard = ({
 }) => {
     const { theme, isDark } = useTheme();
     const { colors } = theme;
+    const { t } = useTranslation();
 
     if (!habit) return <View />;
 
@@ -167,16 +170,12 @@ const HabitProgressCard = ({
                 <View style={styles.statsCol}>
                     {isWeekly ? (
                         <Text style={[styles.primaryText, { color: colors.text }]}>
-                            {weeklyStats.completedDays}
-                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}>
-                                {" "}of {weeklyStats.totalDays} days completed{" "}
-                            </Text>
-                            <Text style={[styles.contextLabel, { color: colors.primary }]}>this week</Text>
+                            {t("habit_details.completed_count", { completed: weeklyStats.completedDays, total: weeklyStats.totalDays })}
                         </Text>
                     ) : (
                         <Text style={[styles.primaryText, { color: colors.text }]}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
-                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}> {habit.unit}</Text>
+                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                         </Text>
                     )}
 
@@ -184,20 +183,20 @@ const HabitProgressCard = ({
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faFire}   color="#f59e0b" size={13} />
                             <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
-                                Streak:{" "}
+                                {t("habit_details.streak")}:{" "}
                                 <Text style={[styles.metaValue, { color: colors.text }]}>
                                     {habit.currentStreak ?? 0}{" "}
-                                    {habit.currentStreak === 1 ? "day" : "days"}
+                                    {t("habit_details.days")}
                                 </Text>
                             </Text>
                         </View>
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={13} />
                             <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
-                                Best:{" "}
+                                {t("habit_details.best")}:{" "}
                                 <Text style={[styles.metaValue, { color: colors.text }]}>
                                     {habit.longestStreak ?? 0}{" "}
-                                    {habit.longestStreak === 1 ? "day" : "days"}
+                                    {t("habit_details.days")}
                                 </Text>
                             </Text>
                         </View>
@@ -205,9 +204,9 @@ const HabitProgressCard = ({
                             <View style={styles.metaRow}>
                                 <FontAwesomeIcon icon={faClock} color={colors.primary} size={13} />
                                 <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
-                                    Time:{" "}
+                                    {t("habit_details.time")}:{" "}
                                     <Text style={[styles.metaValue, { color: colors.text }]}>
-                                        {habit.todayActualDuration} min spent
+                                        {habit.todayActualDuration} {t("habit_details.min_spent")}
                                     </Text>
                                 </Text>
                             </View>

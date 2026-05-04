@@ -5,21 +5,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { MenuContext } from '../../context/MenuContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const HomeEmptyState = () => {
- 
   const { setIsCreateModalOpen } = useContext(MenuContext);
   const { theme, isDark } = useTheme();
   const { colors } = theme;
- 
+  const { t } = useTranslation();
 
   return (
     <>
-      {/* ... previous code ... */}
+      {/* Calendar inactive banner */}
       <View className="px-4 mb-4">
         <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
           <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular text-sm">
-            Calendar will be active after you add habits
+            {t('home.calendar_inactive')}
           </Text>
         </View>
       </View>
@@ -42,43 +42,43 @@ const HomeEmptyState = () => {
           </View>
 
           <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-1 text-center">
-            You haven't added any habits yet
+            {t('home.empty_title')}
           </Text>
           <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular mb-5 text-center">
-            Start small, stay consistent
+            {t('home.empty_subtitle')}
           </Text>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{ backgroundColor: colors.primary }}
             className="w-full rounded-full py-3 flex-row items-center justify-center mb-4"
             onPress={() => setIsCreateModalOpen(true)}
           >
             <FontAwesomeIcon icon={faPlus} color="#ffffff" size={18} />
             <Text className="ml-2 text-white text-base font-redditsans-medium">
-              Add your first habit
+              {t('home.add_first_habit')}
             </Text>
           </TouchableOpacity>
 
           <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular text-center">
-            You can track habits daily{"\n"}and see your progress grow
+            {t('home.empty_hint')}
           </Text>
         </View>
       </View>
 
       {/* Progress Today placeholder */}
-      <View className="px-4 mb-20 ">
-        <View 
+      <View className="px-4 mb-20">
+        <View
           className="rounded-3xl px-4 py-4"
           style={{
             backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.3)',
           }}
         >
           <Text style={{ color: colors.text }} className="text-base font-redditsans-bold mb-3">
-            Progress Today
+            {t('home.progress_today')}
           </Text>
           <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
             <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular">
-              Add habits to start tracking
+              {t('home.add_habits_tracking')}
             </Text>
           </View>
         </View>
@@ -88,4 +88,3 @@ const HomeEmptyState = () => {
 };
 
 export default HomeEmptyState;
-

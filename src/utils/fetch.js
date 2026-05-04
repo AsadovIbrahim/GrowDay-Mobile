@@ -3,6 +3,19 @@ import { storage } from './MMKVStore';
 
 const VITE_API_URL = API_URL;
 
+const getHeaders = (token = null, contentType = "application/json") => {
+    const headers = {
+        "Accept-Language": storage.getString('userLanguage') || 'en',
+    };
+    if (contentType) {
+        headers["Content-Type"] = contentType;
+    }
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+    return headers;
+};
+
 const handleResponse = async (response) => {
     if (response.status === 401) {
         storage.delete('accessToken');
@@ -21,9 +34,7 @@ const handleResponse = async (response) => {
 export const loginfetch = async (formData) => {
     const response = await fetch(`${VITE_API_URL}/api/auth/login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
         body: JSON.stringify(formData),
     });
     const data=await response.json();
@@ -33,9 +44,7 @@ export const loginfetch = async (formData) => {
 export const googleLoginFetch = async (idToken) => {
     const response = await fetch(`${VITE_API_URL}/api/auth/google-login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ idToken }),
     });
     const text = await response.text();
@@ -51,9 +60,7 @@ export const googleLoginFetch = async (idToken) => {
 export const registerfetch = async (formData) => {
     const response = await fetch(`${VITE_API_URL}/api/auth/register`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
         body: JSON.stringify(formData),
     });
     const data=await response.json();
@@ -75,10 +82,7 @@ export const forgotPasswordfetch = async (formData) => {
 export const createUserPreferencesFetch = async (token,payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserPreferences/CreateUserPreferences`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     const data=await response.json();
@@ -133,10 +137,7 @@ export const createUserPreferencesWithAIFetch = async (token, payload) => {
 export const getAllHabitsFetch = async (token,pageIndex=0,pageSize=3) => {
     const response = await fetch(`${VITE_API_URL}/api/Habit/GetAllHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
 
@@ -168,10 +169,7 @@ export const getTodaysUserHabitFetch = async (token, date = null,pageIndex=0,pag
     }
     const response = await fetch(url, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -337,9 +335,7 @@ export const getDailyStatisticsFetch = async (token, date = null) => {
 export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10) => {
     const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/GetUserSuggestedHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -535,6 +531,19 @@ export const getWeeklyProgressFetch = async (token, userHabitId) => {
     const data = await response.json();
     return data;
 };
+
+export const getMonthlyProgressFetch = async (token, userHabitId, year, month) => {
+    const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetMonthlyProgress/${userHabitId}?year=${year}&month=${month}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        cache: "no-store",
+    });
+    const data = await response.json();
+    return data;
+};
+
 
 export const verifyOtpFetch=async (email,otpCode)=>{
     const response=await fetch(`${VITE_API_URL}/api/auth/verify-otp`,{

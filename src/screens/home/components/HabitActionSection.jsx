@@ -9,6 +9,7 @@ import { completeUserHabitFetch, reportHabitProgressFetch } from '../../../utils
 import { useTheme } from '../../../context/ThemeContext';
 import { displayOngoingHabitNotification, cancelOngoingHabitNotification, scheduleIncompleteReminder, cancelIncompleteReminder } from '../../../utils/NotificationService';
 import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
+import { useTranslation } from "react-i18next";
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -24,6 +25,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLiveUpdate, isFuture }) => {
     const navigation = useNavigation();
     const { theme } = useTheme();
+    const { t } = useTranslation();
     const { colors } = theme;
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
     const startKey = `timer_start_${hId}`;
@@ -41,7 +43,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const [timerActive, setTimerActive] = useState(!!storedStart);
     const [seconds, setSeconds] = useState(0);
     const [distance, setDistance] = useState(0);
-    const [localLiveDelta, setLocalLiveDelta] = useState(0);
+
     const [isReporting, setIsReporting] = useState(false);
     const [stepCount, setStepCount] = useState(0);
 
@@ -176,7 +178,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     // Sync Ongoing Notification
     useEffect(() => {
         if (timerActive || (seconds > 0 || distance > 0 || stepCount > 0)) {
-            const displayVal = isSteps ? `${stepCount} steps` : (isDistance ? distance : null);
+            const displayVal = isSteps ? `${stepCount} ${t("habit_details.action.steps")}` : (isDistance ? distance : null);
             displayOngoingHabitNotification(habit, seconds, displayVal, !timerActive);
         } else {
             cancelOngoingHabitNotification(hId);
@@ -338,6 +340,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         autoStopTriggered.current = false;
     };
 
+
+
     const handleReportProgress = async (delta, source = "manual", durationInSec = 0) => {
         try {
             setIsReporting(true);
@@ -354,6 +358,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
                 onActionComplete();
+
+
                 const totalProgress = (habit.currentValue ?? 0) + delta;
                 if (totalProgress >= (habit.targetValue ?? 1) && (habit.currentValue ?? 0) < (habit.targetValue ?? 1)) {
                     cancelIncompleteReminder(habit);
@@ -387,10 +393,10 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             <View style={[styles.lockedBanner, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <Text style={[styles.lockedEmoji]}>⏳</Text>
                 <Text style={[styles.lockedTitle, { color: colors.text }]}>
-                    Upcoming Habit
+                    {t("habit_details.action.upcoming_title")}
                 </Text>
                 <Text style={[styles.lockedSub, { color: colors.textSecondary }]}>
-                    You cannot complete this habit until the scheduled day.
+                    {t("habit_details.action.upcoming_sub")}
                 </Text>
             </View>
         );
@@ -407,28 +413,28 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         
         if (freq === 'weekly') {
             const scheduledDays = habit.selectedDays ? habit.selectedDays.split(',').map(d => d.trim()).join(', ') : '';
-            scheduleText = `This habit runs on: ${scheduledDays}.`;
+            scheduleText = t("habit_details.action.runs_on", { days: scheduledDays });
         } else if (freq === 'monthly') {
             const start = new Date(habit.startDate || habit.createdAt);
-            scheduleText = `This habit runs on the ${start.getDate()}th of every month.`;
+            scheduleText = t("habit_details.action.runs_monthly", { day: start.getDate() });
         } else if (freq === 'custom') {
-            scheduleText = `This habit runs every ${habit.selectedDays} days.`;
+            scheduleText = t("habit_details.action.runs_custom", { interval: habit.selectedDays });
         }
 
         const startDate = new Date(habit.startDate || habit.createdAt);
         startDate.setHours(0,0,0,0);
         if (targetDate < startDate) {
-            scheduleText = `This habit starts on ${startDate.toLocaleDateString()}.`;
+            scheduleText = t("habit_details.action.starts_on", { date: startDate.toLocaleDateString() });
         }
 
         return (
             <View style={[styles.lockedBanner, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <Text style={[styles.lockedEmoji]}>🔒</Text>
                 <Text style={[styles.lockedTitle, { color: colors.text }]}>
-                    Not scheduled for this day
+                    {t("habit_details.action.not_scheduled_title")}
                 </Text>
                 <Text style={[styles.lockedSub, { color: colors.textSecondary }]}>
-                    {`The selected day is ${dayAbbrev}. ${scheduleText}`}
+                    {t("habit_details.action.not_scheduled_sub", { day: t(`habit_details.days_short.${dayAbbrev.toLowerCase()}`), scheduleText })}
                 </Text>
             </View>
         );
@@ -445,7 +451,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 Alert.alert("Error", res.message || "Failed to complete habit.");
             }
         }} style={[styles.mainBtn, { backgroundColor: colors.primary }]}>
-            <Text style={styles.btnText}>Mark as done</Text>
+            <Text style={styles.btnText}>{t("habit_details.action.mark_done")}</Text>
         </TouchableOpacity>
     );
 
@@ -464,9 +470,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         <TouchableOpacity 
                             key={inc} 
                             onPress={() => {
-                                const nextDelta = localLiveDelta + inc;
-                                setLocalLiveDelta(nextDelta);
-                                onLiveUpdate?.(nextDelta);
+                                onLiveUpdate?.(prev => prev + inc);
                                 handleReportProgress(inc);
                             }} 
                             disabled={isReporting}
@@ -476,7 +480,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         </TouchableOpacity>
                     ))}
                 </View>
-                <Text style={[styles.helperText, { color: colors.textSecondary }]}>Tap to add {habit.unit}</Text>
+                <Text style={[styles.helperText, { color: colors.textSecondary }]}>{t("habit_details.action.tap_to_add", { unit: habit.unit })}</Text>
             </View>
         );
     }
@@ -496,12 +500,12 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     (isDistance || isSteps) && styles.workoutDisplay,
                     { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
                 ]}>
-                    <Text style={[styles.sessionLabel, { color: colors.textSecondary }]}>TODAY SESSION</Text>
+                    <Text style={[styles.sessionLabel, { color: colors.textSecondary }]}>{t("habit_details.action.today_session")}</Text>
                     <Text style={[styles.timerValue, { color: colors.text }]}>
-                        {isSteps ? `${stepCount} steps` : (isDistance ? formatDistance(distance) : formatTime(seconds))}
+                        {isSteps ? `${stepCount} ${t("units.steps")}` : (isDistance ? formatDistance(distance) : formatTime(seconds))}
                     </Text>
                     <Text style={[styles.timerLabel, { color: colors.textSecondary }]}>
-                        {isSteps ? "LIVE STEPS" : (isDistance ? "LIVE DISTANCE" : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC"))}
+                        {isSteps ? t("habit_details.action.live_steps") : (isDistance ? t("habit_details.action.live_distance") : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC"))}
                     </Text>
                     {(isDistance || isSteps) && <Text style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(seconds)}</Text>}
                 </Animated.View>
@@ -521,7 +525,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 </View>
                 {timerActive && (
                     <Text style={[styles.activeHint, { color: colors.primary }]}>
-                        {isDistance ? "Location tracking active." : (isSteps ? "Step sensor active." : "Session started.")} You can close the app.
+                        {isDistance ? t("habit_details.action.location_active") : (isSteps ? t("habit_details.action.step_sensor_active") : t("habit_details.action.session_started"))}
                     </Text>
                 )}
             </View>

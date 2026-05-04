@@ -14,12 +14,14 @@ import Toast from "../../components/common/Toast";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ const Login = () => {
           console.log("Error checking user preferences:", prefError);
         }
 
-        showToast("Welcome back! 🌱", "success");
+        showToast(t("auth.messages.welcome_back_toast"), "success");
 
         setTimeout(() => {
           storage.set("UsernameOrEmail", formData.UsernameOrEmail);
@@ -65,7 +67,7 @@ const Login = () => {
         } else {
           const msgs = data.errors?.length > 0
             ? data.errors
-            : [data.message || "Login failed. Please try again."];
+            : [data.message || t("auth.messages.login_failed")];
 
           if (msgs.length === 1) {
             showToast(msgs[0], "error");
@@ -75,7 +77,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      showToast("Network error. Please check your connection.", "error");
+      showToast(t("auth.messages.network_error"), "error");
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ const Login = () => {
          setLoading(false);
          // If it's cancelled, we can just return silently or show a message.
          if (userInfo?.type === 'cancelled') return;
-         showToast("Google token not found.", "error");
+         showToast(t("auth.messages.google_token_not_found"), "error");
          return;
       }
       
@@ -116,7 +118,7 @@ const Login = () => {
           console.log("Error checking user preferences:", prefError);
         }
 
-        showToast("Google login successful! 🌱", "success");
+        showToast(t("auth.messages.google_success"), "success");
 
         setTimeout(() => {
           // For google login, we might not have a UsernameOrEmail in formData,
@@ -130,7 +132,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      showToast(error.message || "Google Sign-In failed.", "error");
+      showToast(error.message || t("auth.messages.google_failed"), "error");
     } finally {
       setLoading(false);
     }
@@ -170,7 +172,7 @@ const Login = () => {
 
             {/* Title */}
             <Text className="text-center text-3xl font-redditsans-bold mb-8" style={{ color: colors.text }}>
-              Welcome Back!
+              {t("auth.welcome_back")}
             </Text>
 
             {/* Google */}
@@ -181,12 +183,12 @@ const Login = () => {
             >
               <GoogleIcon width={22} height={22} />
               <Text className="font-redditsans-medium text-lg ml-4" style={{ color: colors.text }}>
-                CONTINUE WITH GOOGLE
+                {t("auth.google_continue")}
               </Text>
             </TouchableOpacity>
 
             <Text className="text-center mb-6 font-redditsans-medium" style={{ color: colors.textSecondary }}>
-              OR LOG IN WITH EMAIL
+              {t("auth.or_login_email")}
             </Text>
 
             {/* Server Errors */}
@@ -202,7 +204,7 @@ const Login = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: serverErrors.length > 1 ? 8 : 0 }}>
                   <FontAwesomeIcon icon={faCircleExclamation} size={15} color="#ff6b6b" />
                   <Text style={{ color: "#ff6b6b", fontFamily: "RedditSans-Bold", fontSize: 14, marginLeft: 8 }}>
-                    {serverErrors.length === 1 ? serverErrors[0] : "Please fix the following:"}
+                    {serverErrors.length === 1 ? serverErrors[0] : t("auth.messages.fix_following")}
                   </Text>
                 </View>
                 {serverErrors.length > 1 && serverErrors.map((err, i) => (
@@ -216,7 +218,7 @@ const Login = () => {
 
             {/* Email */}
             <TextInput
-              placeholder="Email or Username"
+              placeholder={t("auth.email_username")}
               placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("UsernameOrEmail", text)}
               className="rounded-xl p-4 mb-4 font-redditsans-medium"
@@ -226,7 +228,7 @@ const Login = () => {
             {/* Password */}
             <View className="relative">
               <TextInput
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 onChangeText={(text) => handleInputChange("password", text)}
@@ -253,7 +255,7 @@ const Login = () => {
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Text className="text-right font-redditsans-medium" style={{ color: colors.textSecondary }}>
-                Forgot Password?
+                {t("auth.forgot_password_link")}
               </Text>
             </TouchableOpacity>
 
@@ -266,17 +268,17 @@ const Login = () => {
               activeOpacity={0.8}
             >
               <Text className="text-white text-center font-redditsans-bold text-lg">
-                {loading ? "Signing In..." : "Sign In"}
+                {loading ? t("auth.signing_in") : t("auth.sign_in")}
               </Text>
             </TouchableOpacity>
 
             {/* Register */}
             <View className="flex-row justify-center mt-6">
               <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>
-                Don’t have an account? 
+                {t("auth.no_account")} 
               </Text>
               <TouchableOpacity onPress={()=>navigation.navigate("Register")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="font-redditsans-bold" style={{ color: colors.primary }}> Sign Up</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}> {t("auth.sign_up")}</Text>
               </TouchableOpacity>
             </View>
 

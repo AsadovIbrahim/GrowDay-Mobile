@@ -8,6 +8,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import { verifyOtpFetch } from "../../utils/fetch";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const OtpVerification = () => {
   const navigation = useNavigation();
@@ -16,6 +17,7 @@ const OtpVerification = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ const OtpVerification = () => {
   const handleVerify = async () => {
     const otpCode = otp.join("");
     if (otpCode.length < 6) {
-      setError("Please enter the complete 6-digit code.");
+      setError(t("auth.messages.otp_complete_error"));
       return;
     }
 
@@ -54,10 +56,10 @@ const OtpVerification = () => {
       if (result.success) {
         navigation.navigate("Login");
       } else {
-        setError(result.message || "Invalid verification code.");
+        setError(result.message || t("auth.messages.invalid_otp"));
       }
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(t("auth.messages.something_wrong"));
     } finally {
       setLoading(false);
     }
@@ -95,11 +97,11 @@ const OtpVerification = () => {
             </View>
 
             <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
-              Verify Email
+              {t("auth.verify_email")}
             </Text>
             
             <Text className="text-center text-lg font-redditsans-regular mb-10 opacity-90" style={{ color: colors.textSecondary }}>
-              We've sent a 6-digit verification code to{"\n"}
+              {t("auth.otp_sent_desc")}{"\n"}
               <Text className="font-redditsans-bold" style={{ color: colors.text }}>{email}</Text>
             </Text>
 
@@ -136,15 +138,15 @@ const OtpVerification = () => {
                 <ActivityIndicator color="white" style={{ paddingVertical: 2 }} />
               ) : (
                 <Text className="text-white text-center font-redditsans-bold text-lg">
-                  Verify & Confirm
+                  {t("auth.verify_confirm")}
                 </Text>
               )}
             </TouchableOpacity>
 
             <View className="flex-row justify-center mt-8">
-              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>Didn't receive code? </Text>
+              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>{t("auth.didnt_receive")} </Text>
               <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>Resend</Text>
+                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("auth.resend")}</Text>
               </TouchableOpacity>
             </View>
 

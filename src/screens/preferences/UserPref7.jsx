@@ -8,10 +8,12 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { storage } from "../../utils/MMKVStore";
 import { createUserPreferencesWithAIFetch, updateUserPreferencesWithAIFetch } from "../../utils/fetch";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const UserPref7 = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -21,11 +23,11 @@ const UserPref7 = () => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   const loadingMessages = [
-    "Syncing with your energy levels...",
-    "Analyzing focus patterns...",
-    "Brainstorming perfect routines...",
-    "Finalizing your AI blueprint...",
-    "Almost there, magic is happening..."
+    t("preferences.ai_loading.message1"),
+    t("preferences.ai_loading.message2"),
+    t("preferences.ai_loading.message3"),
+    t("preferences.ai_loading.message4"),
+    t("preferences.ai_loading.message5")
   ];
 
   React.useEffect(() => {
@@ -61,11 +63,11 @@ const UserPref7 = () => {
   });
 
   const goals = [
-    { id: "Productivity", label: "Productivity", icon: "🚀" },
-    { id: "Fitness", label: "Fitness & Health", icon: "💪" },
-    { id: "Learning", label: "Learning", icon: "📚" },
-    { id: "MentalHealth", label: "Mental Health", icon: "🧘" },
-    { id: "SelfImprovement", label: "Self Improvement", icon: "🌟" },
+    { id: "Productivity", label: t("preferences.step7.options.productivity"), icon: "🚀" },
+    { id: "Fitness", label: t("preferences.step7.options.fitness"), icon: "💪" },
+    { id: "Learning", label: t("preferences.step7.options.learning"), icon: "📚" },
+    { id: "MentalHealth", label: t("preferences.step7.options.mental_health"), icon: "🧘" },
+    { id: "SelfImprovement", label: t("preferences.step7.options.self_improvement"), icon: "🌟" },
   ];
 
   const toggleGoal = (goalId) => {
@@ -123,7 +125,7 @@ const UserPref7 = () => {
         console.log("FINAL HAS CHANGED:", hasChanged);
 
         if (!hasChanged) {
-          Alert.alert("No Changes", "Your preferences are already up to date.");
+          Alert.alert(t("preferences.alerts.no_changes_title"), t("preferences.alerts.no_changes_desc"));
           navigation.navigate("Profile"); 
           return;
         }
@@ -132,7 +134,7 @@ const UserPref7 = () => {
       setIsLoading(true);
       const accessToken = storage.getString("accessToken");
       if (!accessToken) {
-        Alert.alert("Error", "Authentication token not found. Please login again.");
+        Alert.alert(t("preferences.alerts.error_title"), t("preferences.alerts.auth_error"));
         setIsLoading(false);
         return;
       }
@@ -157,11 +159,11 @@ const UserPref7 = () => {
         setTimeout(() => setShowSuccessModal(true), 500);
       } else {
         setIsLoading(false);
-        Alert.alert("Error", response?.message || "Failed to save preferences. Please try again.");
+        Alert.alert(t("preferences.alerts.error_title"), response?.message || t("preferences.alerts.error_save"));
       }
     } catch (error) {
       setIsLoading(false);
-      Alert.alert("Error", "An error occurred while saving your preferences. Please try again.");
+      Alert.alert(t("preferences.alerts.error_title"), t("preferences.alerts.general_error"));
     }
   };
 
@@ -181,13 +183,13 @@ const UserPref7 = () => {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
           <View className="items-center mb-6">
             <Text style={{ color: colors.text }} className="text-[26px] font-redditsans-bold text-center">
-              What are your
+              {t("preferences.step7.title1")}
             </Text>
             <Text className="text-[26px] font-redditsans-bold text-green-500 text-center">
-              main goals right now?
+              {t("preferences.step7.title2")}
             </Text>
             <Text style={{ color: colors.textSecondary }} className="text-[13px] font-redditsans-regular mt-2">
-              Select all that apply to you
+              {t("preferences.step7.subtitle")}
             </Text>
           </View>
 
@@ -231,7 +233,7 @@ const UserPref7 = () => {
           <View className="flex-1" />
 
           <TouchableOpacity onPress={handleSubmit} disabled={isLoading} className="bg-[#8bc37a] py-5 rounded-full mb-6">
-            {isLoading ? <ActivityIndicator color="#ffffff" /> : <Text className="text-white text-center font-redditsans-bold text-[16px]">Complete</Text>}
+            {isLoading ? <ActivityIndicator color="#ffffff" /> : <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.complete")}</Text>}
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -266,7 +268,7 @@ const UserPref7 = () => {
                />
             </View>
             <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 25, textAlign: 'center', letterSpacing: 3, textTransform: 'uppercase' }}>
-              Optimizing your routine
+              {t("preferences.ai_loading.optimizing")}
             </Text>
           </View>
         </View>
@@ -280,13 +282,13 @@ const UserPref7 = () => {
                <FontAwesomeIcon icon={faCheck} size={30} color="white" />
             </View>
             <Text style={{ fontSize: 26, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 15 }}>
-              {isUpdate ? "Routine Updated!" : "Routine is Ready!"}
+              {isUpdate ? t("preferences.success.updated_title") : t("preferences.success.ready_title")}
             </Text>
             <Text style={{ fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: 30 }}>
-              {isUpdate ? "Your preferences have been updated and AI has re-optimized your routine." : "Genesis AI has successfully crafted a personalized routine tailored to your goals and lifestyle."}
+              {isUpdate ? t("preferences.success.updated_desc") : t("preferences.success.ready_desc")}
             </Text>
             <TouchableOpacity onPress={() => { if (isUpdate) { setShowSuccessModal(false); navigation.navigate("Profile"); } else { storage.set("isFirstTimeExplore", true); storage.set("hasCompletedPreferences", true); } }} className="bg-[#2f6f3f] w-full py-4 rounded-2xl">
-              <Text className="text-white text-center font-redditsans-bold text-[18px]">Explore My Routine</Text>
+              <Text className="text-white text-center font-redditsans-bold text-[18px]">{t("preferences.success.explore")}</Text>
             </TouchableOpacity>
           </View>
         </View>
