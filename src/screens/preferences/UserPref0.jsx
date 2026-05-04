@@ -18,7 +18,7 @@ const UserPref0 = () => {
   const initialData = route.params?.initialData;
   const isUpdate = route.params?.isUpdate;
 
-  const [gender, setGender] = useState(initialData?.gender || "Male");
+  const [gender, setGender] = useState(initialData?.gender || null);
 
   const genders = [
     { id: "Male", label: t("preferences.step0.male"), icon: "👨" },
@@ -96,6 +96,7 @@ const UserPref0 = () => {
 
           <View className="mt-4 mb-6">
             <TouchableOpacity
+              disabled={!gender}
               onPress={() => {
                 navigation.navigate("UserPref1", {
                   isUpdate,
@@ -105,7 +106,7 @@ const UserPref0 = () => {
                   }
                 });
               }}
-              className="bg-[#8bc37a] py-5 rounded-full shadow-lg"
+              className={`${!gender ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full shadow-lg`}
             >
               <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>

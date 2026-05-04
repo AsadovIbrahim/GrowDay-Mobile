@@ -259,8 +259,9 @@ const UserPref6 = () => {
 
           {/* BUTTON */}
           <TouchableOpacity
+            disabled={selectedOptions.length === 0}
             onPress={handleSubmit}
-            className="bg-[#8bc37a] py-4 rounded-full mb-6"
+            className={`${selectedOptions.length === 0 ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-4 rounded-full mb-6`}
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },

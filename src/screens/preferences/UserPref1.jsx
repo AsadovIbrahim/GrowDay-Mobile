@@ -30,7 +30,7 @@ const UserPref1 = () => {
 
   // Find the initial range based on value or label
   const [selectedRange, setSelectedRange] = useState(
-    AGE_RANGES.find(r => r.label === initialData?.age || r.value === initialData?.age) || AGE_RANGES[2]
+    AGE_RANGES.find(r => r.label === initialData?.age || r.value === initialData?.age) || null
   );
 
   return (
@@ -61,7 +61,7 @@ const UserPref1 = () => {
 
           <View className="mb-8">
             {AGE_RANGES.map((range) => {
-              const isSelected = selectedRange.id === range.id;
+              const isSelected = selectedRange?.id === range.id;
               return (
                 <TouchableOpacity
                   key={range.id}
@@ -99,6 +99,7 @@ const UserPref1 = () => {
 
           <View className="mt-4 mb-6">
             <TouchableOpacity
+              disabled={!selectedRange}
               onPress={() => {
                 navigation.navigate("UserPref2", {
                   isUpdate,
@@ -110,7 +111,7 @@ const UserPref1 = () => {
                   }
                 });
               }}
-              className="bg-[#8bc37a] py-5 rounded-full shadow-lg"
+              className={`${!selectedRange ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full shadow-lg`}
             >
               <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>

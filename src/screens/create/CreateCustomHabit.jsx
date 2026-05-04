@@ -176,6 +176,12 @@ const CreateCustomHabit = () => {
           const payload = {
             suggestedHabitId: resolvedId,
             category,
+            title,
+            description,
+            targetValue: parseFloat(targetValue) || 1,
+            unit,
+            incrementValue: 1,
+            frequency,
             notificationTime: reminderEnabled ? reminderTime : "",
             durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
             startDate: new Date(startDate).toISOString(),
@@ -191,6 +197,12 @@ const CreateCustomHabit = () => {
           const payload = {
             habitId: resolvedId,
             category,
+            title,
+            description,
+            targetValue: parseFloat(targetValue) || 1,
+            unit,
+            incrementValue: 1,
+            frequency,
             notificationTime: reminderEnabled ? reminderTime : "",
             durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
             startDate: new Date(startDate).toISOString(),
@@ -287,14 +299,12 @@ const CreateCustomHabit = () => {
           <View style={styles.fieldSection}>
             <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.name_label")}</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }, !isCustom && { color: colors.textSecondary }]}
+              style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }]}
               value={title}
               onChangeText={setTitle}
               placeholder={t("create_habit.name_placeholder")}
               className="font-redditsans-medium"
               placeholderTextColor={colors.textSecondary}
-              
-              editable={isCustom}
             />
           </View>
 
@@ -309,14 +319,12 @@ const CreateCustomHabit = () => {
                   borderBottomColor: colors.textGray,
                   minHeight: 40,
                   paddingTop: 10
-                }, 
-                !isCustom && { color: colors.textSecondary }
+                }
               ]}
               value={description}
               onChangeText={setDescription}
               placeholder={t("create_habit.desc_placeholder")}
               placeholderTextColor={colors.textSecondary}
-              editable={isCustom}
               className="font-redditsans-medium"
               multiline={true}
               textAlignVertical="top"
@@ -339,27 +347,25 @@ const CreateCustomHabit = () => {
           </View>
 
           {/* Icon and Color Section - UPDATED: Removed Color, kept Icon */}
-          {isCustom && (
-            <View style={styles.row}>
-              <View style={[styles.fieldSection, { flex: 1, marginRight: 10 }]}>
-                <Text style={styles.label}>{t("create_habit.icon_label")}</Text>
-                <TouchableOpacity
-                  style={[styles.selectionBox, { backgroundColor: colors.card, borderColor: colors.border }]}
-                  onPress={() => setShowIconModal(true)}
-                >
-                  <View style={[styles.iconCircle, { backgroundColor: colors.cardSecondary }]}>
-                    <Text style={{ fontSize: 20 }}>{ICONS[icon] || ICONS.default}</Text>
-                  </View>
-                  <View>
-                    <Text style={[styles.selectionTitle, { color: colors.text }]}>
-                      {icon.charAt(0).toUpperCase() + icon.slice(1)}
-                    </Text>
-                    <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>Icon</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+          <View style={styles.row}>
+            <View style={[styles.fieldSection, { flex: 1, marginRight: 10 }]}>
+              <Text style={styles.label}>{t("create_habit.icon_label")}</Text>
+              <TouchableOpacity
+                style={[styles.selectionBox, { backgroundColor: colors.card, borderColor: colors.border }]}
+                onPress={() => setShowIconModal(true)}
+              >
+                <View style={[styles.iconCircle, { backgroundColor: colors.cardSecondary }]}>
+                  <Text style={{ fontSize: 20 }}>{ICONS[icon] || ICONS.default}</Text>
+                </View>
+                <View>
+                  <Text style={[styles.selectionTitle, { color: colors.text }]}>
+                    {icon.charAt(0).toUpperCase() + icon.slice(1)}
+                  </Text>
+                  <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>Icon</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          )}
+          </View>
 
           {/* Goal & Tracking Section - PRODUCTION REFACTOR */}
           <View style={styles.fieldSection}>
@@ -371,22 +377,20 @@ const CreateCustomHabit = () => {
               <>
                   <View style={styles.sentenceRow}>
                     <TextInput
-                      style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary }, !isCustom && { color: colors.textSecondary, borderBottomColor: colors.textGray }]}
+                      style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary }]}
                       value={targetValue}
                       onChangeText={setTargetValue}
                       keyboardType="numeric"
                       placeholder="1"
                       placeholderTextColor={colors.textSecondary}
-                      editable={isCustom}
                     />
                     
                     <TouchableOpacity 
-                      style={[styles.unitSelector, { backgroundColor: colors.primarySurface }, !isCustom && { backgroundColor: colors.cardSecondary }]}
-                      onPress={() => isCustom && setShowUnitModal(true)}
-                      disabled={!isCustom}
+                      style={[styles.unitSelector, { backgroundColor: colors.primarySurface }]}
+                      onPress={() => setShowUnitModal(true)}
                     >
-                      <Text style={[styles.unitText, { color: colors.primary }, !isCustom && { color: colors.textSecondary }]}>{t(`units.${unit.toLowerCase()}`, { defaultValue: unit })}</Text>
-                      {isCustom && <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />}
+                      <Text style={[styles.unitText, { color: colors.primary }]}>{t(`units.${unit.toLowerCase()}`, { defaultValue: unit })}</Text>
+                      <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />
                     </TouchableOpacity>
 
                     <Text style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.every")}</Text>
@@ -402,8 +406,7 @@ const CreateCustomHabit = () => {
                           { backgroundColor: colors.card, borderColor: colors.border },
                           frequency === freq && { backgroundColor: colors.primary, borderColor: colors.primary }
                         ]}
-                        onPress={() => isCustom && setFrequency(freq)}
-                        disabled={!isCustom}
+                        onPress={() => setFrequency(freq)}
                       >
                         <Text style={[
                           styles.freqChipText,
@@ -429,8 +432,7 @@ const CreateCustomHabit = () => {
                               { backgroundColor: colors.card, borderColor: colors.border },
                               selectedDays.includes(day) && { backgroundColor: colors.primarySurface, borderColor: colors.primary }
                             ]}
-                            onPress={() => isCustom && toggleDay(day)}
-                            disabled={!isCustom}
+                            onPress={() => toggleDay(day)}
                           >
                             <Text style={[
                               styles.dayChipText,
@@ -497,20 +499,19 @@ const CreateCustomHabit = () => {
             </View>
 
             {/* Natural Language Preview */}
-            {isCustom && (
-              <View style={styles.previewContainer}>
-                <View style={[styles.previewBadge, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}>
-                  <Text style={[styles.previewText, { color: colors.primary }]}>
-                    {t("create_habit.preview", {
-                      title: title || t("create_habit.name_placeholder").toLowerCase(),
-                      targetValue: targetValue,
-                      unit: t(`units.${unit.toLowerCase()}`, { defaultValue: unit }),
-                      frequency: frequency === 'Daily' ? t('common.day').toLowerCase() : (frequency === 'Weekly' ? t('common.week').toLowerCase() : (frequency === 'Monthly' ? t('common.month').toLowerCase() : t('common.custom').toLowerCase()))
-                    })}
-                  </Text>
-                </View>
+            {/* Natural Language Preview */}
+            <View style={styles.previewContainer}>
+              <View style={[styles.previewBadge, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}>
+                <Text style={[styles.previewText, { color: colors.primary }]}>
+                  {t("create_habit.preview", {
+                    title: title || t("create_habit.name_placeholder").toLowerCase(),
+                    targetValue: targetValue,
+                    unit: t(`units.${unit.toLowerCase()}`, { defaultValue: unit }),
+                    frequency: frequency === 'Daily' ? t('common.day').toLowerCase() : (frequency === 'Weekly' ? t('common.week').toLowerCase() : (frequency === 'Monthly' ? t('common.month').toLowerCase() : t('common.custom').toLowerCase()))
+                  })}
+                </Text>
               </View>
-            )}
+            </View>
           </View>
 
           {/* Schedule Section */}

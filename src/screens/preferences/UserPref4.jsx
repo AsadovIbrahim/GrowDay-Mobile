@@ -22,7 +22,7 @@ const UserPref4 = () => {
   const initialData = route.params?.initialData;
   const isUpdate = route.params?.isUpdate;
 
-  const [selectedOption, setSelectedOption] = useState(initialData?.procrestinateFrequency || "Sometimes");
+  const [selectedOption, setSelectedOption] = useState(initialData?.procrestinateFrequency || null);
   
   // Get preferences from previous screen
   const previousPreferences = route.params?.preferences || {};
@@ -113,6 +113,7 @@ const UserPref4 = () => {
 
           {/* BUTTON */}
           <TouchableOpacity
+            disabled={!selectedOption}
             onPress={() => {
               navigation.navigate("UserPref5", {
                 isUpdate,
@@ -123,7 +124,7 @@ const UserPref4 = () => {
                 }
               });
             }}
-            className="bg-[#8bc37a] py-5 rounded-full"
+            className={`${!selectedOption ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full`}
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
               {t("preferences.continue")}

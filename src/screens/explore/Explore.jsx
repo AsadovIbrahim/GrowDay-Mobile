@@ -28,7 +28,7 @@ const Explore = () => {
   const [learningLoading, setLearningLoading] = useState(false);
   const [token] = useMMKVString('accessToken');
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState(null);
 
@@ -119,7 +119,11 @@ const Explore = () => {
         description: habit.description || habit.title,
         icon: habit.icon || "star",
         category: habit.category || "General",
-        frequency: habit.frequency || "Daily"
+        frequency: habit.frequency || "Daily",
+        targetValue: habit.targetValue || 1,
+        unit: habit.unit || "times",
+        incrementValue: habit.incrementValue || 1,
+        durationInMinutes: habit.durationInMinutes
       },
       isCustom: false,
       isSuggested: true

@@ -59,7 +59,7 @@ const UserPref7 = () => {
       }
       return [initialData.mainGoal];
     }
-    return ["Productivity"];
+    return [];
   });
 
   const goals = [
@@ -73,7 +73,6 @@ const UserPref7 = () => {
   const toggleGoal = (goalId) => {
     setSelectedGoals(prev => {
       if (prev.includes(goalId)) {
-        if (prev.length === 1) return prev; // Keep at least one
         return prev.filter(id => id !== goalId);
       }
       return [...prev, goalId];
@@ -232,7 +231,11 @@ const UserPref7 = () => {
 
           <View className="flex-1" />
 
-          <TouchableOpacity onPress={handleSubmit} disabled={isLoading} className="bg-[#8bc37a] py-5 rounded-full mb-6">
+          <TouchableOpacity 
+            onPress={handleSubmit} 
+            disabled={isLoading || selectedGoals.length === 0} 
+            className={`${isLoading || selectedGoals.length === 0 ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full mb-6`}
+          >
             {isLoading ? <ActivityIndicator color="#ffffff" /> : <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.complete")}</Text>}
           </TouchableOpacity>
         </ScrollView>
