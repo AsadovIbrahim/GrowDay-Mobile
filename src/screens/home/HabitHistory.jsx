@@ -5,17 +5,20 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronLeft, faChevronRight, faFire, faTrophy, faCheckCircle, faTimesCircle, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
 
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+
 import { useTheme } from '../../context/ThemeContext';
 import { useMMKVString } from "react-native-mmkv";
 import { getMonthlyProgressFetch } from "../../utils/fetch";
 import { ICONS } from "../../constants/icons";
+import { useTranslation } from "react-i18next";
 
 const HabitHistory = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { theme, isDark } = useTheme();
     const { colors } = theme;
+    const { t, i18n } = useTranslation();
     const [token] = useMMKVString("accessToken");
     
     const { habitId, habitTitle, habitIcon } = route.params;
@@ -28,8 +31,17 @@ const HabitHistory = () => {
 
 
     useEffect(() => {
+        const lang = i18n.language;
+        LocaleConfig.locales[lang] = {
+            monthNames: t('calendar.monthNames', { returnObjects: true }),
+            monthNamesShort: t('calendar.monthNamesShort', { returnObjects: true }),
+            dayNames: t('calendar.dayNames', { returnObjects: true }),
+            dayNamesShort: t('calendar.dayNamesShort', { returnObjects: true }),
+            today: t('calendar.today')
+        };
+        LocaleConfig.defaultLocale = lang;
         fetchHistory(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
-    }, [currentMonth]);
+    }, [currentMonth, i18n.language]);
 
     const fetchHistory = async (year, month) => {
         try {
@@ -122,7 +134,7 @@ const HabitHistory = () => {
                     <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
                 </Pressable>
                 <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={[styles.headerTitle, { color: colors.text }]}>Habit History</Text>
+                    <Text style={[styles.headerTitle, { color: colors.text }]}>{t("habit_history.header")}</Text>
                     <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
                         {habitTitle} {ICONS[habitIcon]}
                     </Text>
@@ -132,6 +144,7 @@ const HabitHistory = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                     <Calendar
+                        key={i18n.language}
                         current={currentMonth.toISOString().split('T')[0]}
                         onMonthChange={onMonthChange}
                         onDayPress={onDayPress}
@@ -168,7 +181,7 @@ const HabitHistory = () => {
                     <View style={[styles.detailCard, { backgroundColor: colors.card }]}>
                         <View style={styles.detailHeader}>
                             <Text style={[styles.detailDate, { color: colors.text }]}>
-                                {new Date(selectedDayData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                {new Date(selectedDayData.date).toLocaleDateString(i18n.language === 'az' ? 'az-AZ' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                             </Text>
                             <View style={[styles.statusBadge, { backgroundColor: selectedDayData.isCompleted ? `${colors.primary}20` : `${colors.danger}20` }]}>
                                 <FontAwesomeIcon 
@@ -177,7 +190,7 @@ const HabitHistory = () => {
                                     size={14} 
                                 />
                                 <Text style={[styles.statusText, { color: selectedDayData.isCompleted ? colors.primary : colors.danger }]}>
-                                    {selectedDayData.isCompleted ? "Completed" : "Not Completed"}
+                                    {selectedDayData.isCompleted ? t("habit_history.status_completed") : t("habit_history.status_not_completed")}
                                 </Text>
                             </View>
                         </View>
@@ -187,7 +200,7 @@ const HabitHistory = () => {
 
                                 <View style={styles.noteHeader}>
                                     <FontAwesomeIcon icon={faNoteSticky} color={colors.primary} size={14} />
-                                    <Text style={[styles.noteTitle, { color: colors.textSecondary }]}>Notes</Text>
+                                    <Text style={[styles.noteTitle, { color: colors.textSecondary }]}>{t("habit_history.notes_title")}</Text>
                                 </View>
                                 <Text style={[styles.noteText, { color: colors.text }]}>
                                     {selectedDayData.note}
@@ -195,7 +208,7 @@ const HabitHistory = () => {
                             </View>
                         ) : (
                             <Text style={[styles.noNoteText, { color: colors.textMuted }]}>
-                                No notes recorded for this day.
+                                {t("habit_history.no_notes")}
                             </Text>
                         )}
                     </View>
@@ -208,13 +221,13 @@ const HabitHistory = () => {
                     <>
                         <View style={styles.statsRow}>
                             <View style={[styles.statBox, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Completion</Text>
+                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.completion")}</Text>
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {Math.round(monthlyData?.completionPercentage || 0)}%
                                 </Text>
                             </View>
                             <View style={[styles.statBox, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Days Done</Text>
+                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.days_done")}</Text>
                                 <Text style={[styles.statValue, { color: colors.text }]}>
                                     {monthlyData?.completedDays || 0}
                                 </Text>
@@ -227,9 +240,9 @@ const HabitHistory = () => {
                                     <FontAwesomeIcon icon={faFire} color="#f59e0b" size={20} />
                                 </View>
                                 <View>
-                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Current Streak</Text>
+                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.current_streak")}</Text>
                                     <Text style={[styles.statValue, { color: colors.text }]}>
-                                        {monthlyData?.currentStreak || 0} days
+                                        {monthlyData?.currentStreak || 0} {t("habit_history.days")}
                                     </Text>
                                 </View>
                             </View>
@@ -239,23 +252,23 @@ const HabitHistory = () => {
                                     <FontAwesomeIcon icon={faTrophy} color="#10b981" size={20} />
                                 </View>
                                 <View>
-                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Best Streak</Text>
+                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.best_streak")}</Text>
                                     <Text style={[styles.statValue, { color: colors.text }]}>
-                                        {monthlyData?.longestStreak || 0} days
+                                        {monthlyData?.longestStreak || 0} {t("habit_history.days")}
                                     </Text>
                                 </View>
                             </View>
                         </View>
 
                         <View style={[styles.legendCard, { backgroundColor: colors.card }]}>
-                            <Text style={[styles.legendTitle, { color: colors.text }]}>Legend</Text>
+                            <Text style={[styles.legendTitle, { color: colors.text }]}>{t("habit_history.legend")}</Text>
                             <View style={styles.legendItem}>
                                 <View style={[styles.legendDot, { backgroundColor: colors.primary }]} />
-                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Completed</Text>
+                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>{t("habit_history.legend_completed")}</Text>
                             </View>
                             <View style={styles.legendItem}>
                                 <View style={[styles.legendDot, { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border }]} />
-                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Missed / Pending</Text>
+                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>{t("habit_history.legend_missed")}</Text>
                             </View>
                         </View>
                     </>
@@ -283,7 +296,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15, shadowRadius: 2
     },
     scrollContent: {
-        paddingHorizontal: 20, paddingBottom: 40
+        paddingHorizontal: 20, paddingBottom: 120
     },
     card: {
         borderRadius: 24, padding: 12, marginBottom: 20,

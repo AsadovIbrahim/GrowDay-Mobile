@@ -215,7 +215,9 @@ const CreateHabitBottomSheet = () => {
                     <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
                   </View>
                   <View>
-                    <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]}>{habit.title}</Text>
+                    <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]}>
+                      {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
+                    </Text>
                     <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]}>{t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}</Text>
                   </View>
                 </TouchableOpacity>

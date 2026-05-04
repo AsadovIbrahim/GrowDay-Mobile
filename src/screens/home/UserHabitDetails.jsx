@@ -226,11 +226,11 @@ const UserHabitDetails = () => {
             >
                 <View style={styles.titleSection}>
                     <Text className="text-4xl font-redditsans-bold" style={[styles.mainTitle, { color: colors.text }]}>
-                        {userHabit?.title ?? "Loading..."}{" "}
+                        {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: userHabit?.title ?? "Loading..." })}{" "}
                         {ICONS[userHabit?.icon]}
                     </Text>
                     <Text className="font-redditsans-regular" style={[styles.descriptionText, { color: colors.textSecondary }]}>
-                        {userHabit?.description}
+                        {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}_desc`, { defaultValue: userHabit?.description })}
                     </Text>
 
                     <View style={styles.tagRow}>

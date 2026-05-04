@@ -7,6 +7,7 @@ import { faCheck, faFire, faTrophy, faArrowRight } from '@fortawesome/free-solid
 import { ICONS } from '../../constants/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sound from 'react-native-sound';
+import { useTranslation } from 'react-i18next';
 
 Sound.setCategory('Playback');
 
@@ -16,6 +17,7 @@ const HabitCelebration = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const insets = useSafeAreaInsets();
+    const { t } = useTranslation();
     const habit = route.params?.habit;
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -87,10 +89,15 @@ const HabitCelebration = () => {
 
     const targetValue = habit.targetValue ?? 1;
     const isBoolean = !habit.unit || !habit.targetValue || habit.targetValue <= 0;
-    const unit = isBoolean ? "Completed" : (habit.unit || "Completed");
-    const descText = isBoolean ? "Completed today" : `${formatValue(targetValue)} ${unit} completed`;
+    
+    // Translate unit if available, otherwise use default
+    const unitKey = habit.unit?.toLowerCase().replace(/s$/, ''); // try to singularize for lookup if needed, but units in en.json are like 'glasses', 'pages'
+    const translatedUnit = isBoolean ? t("habit_celebration.default_unit") : t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit || t("habit_celebration.default_unit") });
+    
+    const descText = isBoolean ? t("habit_celebration.completed_today") : t("habit_celebration.value_completed", { value: formatValue(targetValue), unit: translatedUnit });
 
-    const titleUpper = (habit.title || "HABIT").toUpperCase();
+    const displayTitle = habit.title ? t(`habits.${habit.title.toLowerCase().replace(/ /g, '_')}`, { defaultValue: habit.title }) : "HABIT";
+    const titleUpper = displayTitle.toUpperCase();
 
     // Optimistically calculate new streak
     const isAlreadyDone = habit.lastCompletedDate && new Date(habit.lastCompletedDate).toDateString() === new Date().toDateString();
@@ -166,9 +173,9 @@ const HabitCelebration = () => {
             </Animated.View>
 
             <Animated.View style={{ opacity: fadeAnim, alignItems: 'center', marginTop: 24, zIndex: 10 }}>
-                <Text style={styles.completedLabel}>{titleUpper} COMPLETED!</Text>
-                <Text style={styles.title}>You completed{'\n'}your habit!</Text>
-                <Text style={styles.subtitle}>Great job staying consistent 🚀</Text>
+                <Text style={styles.completedLabel}>{displayTitle.toUpperCase()} {t("habit_celebration.completed_label")}</Text>
+                <Text style={styles.title}>{t("habit_celebration.title")}</Text>
+                <Text style={styles.subtitle}>{t("habit_celebration.subtitle")}</Text>
             </Animated.View>
 
             {/* Stats Card */}
@@ -178,7 +185,7 @@ const HabitCelebration = () => {
                         <Text style={styles.iconText}>{ICONS[habit.icon] || '🎯'}</Text>
                     </View>
                     <View style={styles.cardHeaderText}>
-                        <Text style={styles.habitName}>{habit.title}</Text>
+                        <Text style={styles.habitName}>{displayTitle}</Text>
                         <Text style={styles.habitDesc}>{descText}</Text>
                     </View>
                 </View>
@@ -189,16 +196,16 @@ const HabitCelebration = () => {
                     <View style={styles.statBox}>
                         <FontAwesomeIcon icon={faFire} color="#f59e0b" size={26} />
                         <View style={styles.statTextCol}>
-                            <Text style={styles.statLabel}>Streak</Text>
-                            <Text style={styles.statValue}>{newStreak} days</Text>
+                            <Text style={styles.statLabel}>{t("habit_celebration.streak")}</Text>
+                            <Text style={styles.statValue}>{newStreak} {t("habit_celebration.days")}</Text>
                         </View>
                     </View>
                     <View style={styles.statDivider} />
                     <View style={styles.statBox}>
                         <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={26} />
                         <View style={styles.statTextCol}>
-                            <Text style={styles.statLabel}>Best</Text>
-                            <Text style={styles.statValue}>{highestStreak} days</Text>
+                            <Text style={styles.statLabel}>{t("habit_celebration.best")}</Text>
+                            <Text style={styles.statValue}>{highestStreak} {t("habit_celebration.days")}</Text>
                         </View>
                     </View>
                 </View>
@@ -209,11 +216,11 @@ const HabitCelebration = () => {
             {/* Footer */}
             <Animated.View style={[styles.footer, { opacity: fadeAnim, paddingBottom: Math.max(insets.bottom + 20, 40) }]}>
                 <Text style={styles.quoteText}>
-                    "Consistency is the key{'\n'}to getting better every day! 🔥"
+                    {t("habit_celebration.quote")}
                 </Text>
 
                 <Pressable style={styles.continueBtn} onPress={handleContinue}>
-                    <Text style={styles.continueText}>Continue</Text>
+                    <Text style={styles.continueText}>{t("habit_celebration.continue")}</Text>
                     <FontAwesomeIcon icon={faArrowRight} color="#fff" size={16} />
                 </Pressable>
             </Animated.View>

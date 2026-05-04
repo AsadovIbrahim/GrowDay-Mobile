@@ -109,8 +109,12 @@ const CreateCustomHabit = () => {
 
   useEffect(() => {
     if (habitData) {
-      setTitle(habitData.title || "");
-      setDescription(habitData.description || habitData.title || "");
+      const habitKey = habitData.title?.toLowerCase().replace(/\s+/g, '_');
+      const translatedTitle = t(`habits.${habitKey}`, { defaultValue: habitData.title || "" });
+      const translatedDesc = t(`habits.${habitKey}_desc`, { defaultValue: habitData.description || translatedTitle });
+
+      setTitle(translatedTitle);
+      setDescription(translatedDesc);
       setIcon(habitData.icon || "star");
       if (habitData.category) setCategory(habitData.category);
       if (habitData.targetValue) setTargetValue(habitData.targetValue.toString());
@@ -176,8 +180,8 @@ const CreateCustomHabit = () => {
           const payload = {
             suggestedHabitId: resolvedId,
             category,
-            title,
-            description,
+            title: habitData.title, // Use original title for translation keys
+            description: habitData.description,
             targetValue: parseFloat(targetValue) || 1,
             unit,
             incrementValue: 1,
@@ -197,8 +201,8 @@ const CreateCustomHabit = () => {
           const payload = {
             habitId: resolvedId,
             category,
-            title,
-            description,
+            title: habitData.title, // Use original title for translation keys
+            description: habitData.description,
             targetValue: parseFloat(targetValue) || 1,
             unit,
             incrementValue: 1,
@@ -281,7 +285,7 @@ const CreateCustomHabit = () => {
           <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
         </TouchableOpacity>
         <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text, ...typography.h1 }]}>
-          {isEditMode ? t("create_habit.update_habit") : (isCustom ? t("create_habit.header") : (isSuggested ? "Setup Suggested Habit" : "Setup Popular Habit"))}
+          {isEditMode ? t("create_habit.update_habit") : (isCustom ? t("create_habit.header") : (isSuggested ? t("create_habit.setup_suggested_habit") : t("create_habit.setup_popular_habit")))}
         </Text>
 
       </View>

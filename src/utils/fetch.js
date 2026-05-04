@@ -92,10 +92,7 @@ export const createUserPreferencesFetch = async (token,payload) => {
 export const updateUserPreferencesFetch = async (token,payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserPreferences/UpdateUserPreferences`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     const data=await response.json();
@@ -106,10 +103,7 @@ export const updateUserPreferencesFetch = async (token,payload) => {
 export const updateUserPreferencesWithAIFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserPreferences/UpdateUserPreferencesWithAI`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
 
@@ -124,10 +118,7 @@ export const updateUserPreferencesWithAIFetch = async (token, payload) => {
 export const createUserPreferencesWithAIFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserPreferences/CreateUserPreferencesWithAI`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     const data = await response.json();
@@ -149,10 +140,7 @@ export const getAllHabitsFetch = async (token,pageIndex=0,pageSize=3) => {
 export const getUserHabitFetch = async (token,pageIndex=0,pageSize=3) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetMyHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -179,10 +167,7 @@ export const getTodaysUserHabitFetch = async (token, date = null,pageIndex=0,pag
 export const getUnreadNotificationCountFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/unreadcount?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -192,10 +177,7 @@ export const getUnreadNotificationCountFetch = async (token) => {
 export const getUserHabitCountFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/getuserhabitcount?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -706,13 +688,24 @@ export const addSuggestedHabitFetch = async (token, payload) => {
 export const getUserLearningContentFetch = async (token, pageIndex = 0, pageSize = 10) => {
     const response = await fetch(`${VITE_API_URL}/api/Learning/GetSuggestedContent?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
     return data;
+};
+
+export const markLearningContentAsReadFetch = async (token, contentId) => {
+    const response = await fetch(`${VITE_API_URL}/api/Learning/MarkAsRead/${contentId}`, {
+        method: "PATCH",
+        headers: getHeaders(token),
+    });
+    
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
 };
 
 export const updateUserHabitFetch = async (token, userHabitId, payload) => {

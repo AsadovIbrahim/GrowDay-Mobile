@@ -19,6 +19,20 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
       })
     : null;
 
+  const getTranslatedAchievement = () => {
+    if (!title) return { displayTitle: title, displayDesc: description };
+    
+    // Transform "First Step!" to "first_step", "Same Day Slayer" to "same_day_slayer", etc.
+    const keyTitle = title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_$/, '');
+    
+    const displayTitle = t(`achievements.list.${keyTitle}.title`, { defaultValue: title });
+    const displayDesc = t(`achievements.list.${keyTitle}.desc`, { defaultValue: description });
+    
+    return { displayTitle, displayDesc };
+  };
+
+  const { displayTitle, displayDesc } = getTranslatedAchievement();
+
   return (
     <View
       className="rounded-[24px] p-5 mb-4"
@@ -55,7 +69,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
               className="text-[17px] font-redditsans-bold flex-1"
               style={{ color: colors.text }}
             >
-              {title}
+              {displayTitle}
             </Text>
             {isNew && (
               <View className="ml-2 bg-green-500 rounded-full px-2 py-[2px]">
@@ -68,7 +82,7 @@ const AchievementCard = ({ title, description, icon, earnedAt, isNew = false }) 
             className="text-[13px] font-redditsans-regular leading-[18px]"
             style={{ color: colors.textSecondary }}
           >
-            {description}
+            {displayDesc}
           </Text>
         </View>
       </View>

@@ -119,18 +119,19 @@ const UserHabits = ({ route }) => {
     };
 
     const handleHabitPress = (habit) => {
-        // Navigate to habit detail or handle press
         if (!isSelectionMode) {
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
             navigation.navigate("UserHabitDetails", {
                 habitId: habit.userHabitId || habit.id || habit.habitId,
-                date: new Date().toISOString(),
+                date: dateStr,
                 isFuture: false
             });
         }
     };
 
     const handleLongPress = (habit) => {
-        // Enter selection mode and select the pressed habit
         if (!isSelectionMode) {
             setIsSelectionMode(true);
         }

@@ -86,11 +86,8 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
       </View>
       
       <View className="flex-1">
-        <Text 
-          style={{ color: colors.text }}
-          className="text-base font-redditsans-medium mb-1"
-        >
-          {habit.title}
+        <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
+          {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
         </Text>
         <View className="flex-row items-center">
           <Text 

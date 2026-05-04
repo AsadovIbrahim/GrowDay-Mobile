@@ -116,7 +116,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
       {/* Title and Type */}
       <View className="flex-1">
         <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
-          {habit.title}
+          {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {isCompleted ? t('common.completed') : t(`my_habits.filters.${habitType.toLowerCase()}`)}

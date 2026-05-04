@@ -250,7 +250,7 @@ const Notification = () => {
                   }`}
                   style={{ color: colors.text }}
                 >
-                  {t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle })}
+                  {notification.habitTitle ? t(`habits.${notification.habitTitle.toLowerCase().replace(/ /g, '_')}`, { defaultValue: t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle }) }) : ''}
                 </Text>
               </View>
               <Text className={`text-sm ${!notification.isRead

@@ -223,7 +223,7 @@ const UserTasks = () => {
           <ScrollView
             className="flex-1 px-5"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 32 }}
+            contentContainerStyle={{ paddingBottom: 100 }}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}

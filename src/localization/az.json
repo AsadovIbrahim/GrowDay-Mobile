@@ -184,12 +184,18 @@
     "priority": {
       "low": "Aşağı",
       "medium": "Orta",
-      "high": "Yüksək"
+      "high": "Yüksək",
+      "critical": "Kritik"
     },
     "status": {
       "completed": "Tamamlandı",
       "pending": "Gözləyir"
-    }
+    },
+    "article_header": "Məqalə",
+    "read_time": "{{count}} dəq oxuma",
+    "unread": "Oxunmayıb",
+    "read": "Oxunub",
+    "ai_disclaimer": "✨ Bu fərdiləşdirilmiş öyrənmə məzmunu inkişafınıza kömək etmək üçün məqsəd və üstünlüklərinizə əsasən süni intellekt tərəfindən yaradılmışdır."
   },
   "tasks": {
     "header": "Tapşırıqlarım",
@@ -212,6 +218,8 @@
     "new_good_habit": "YENİ YAXŞI VƏRDİŞ",
     "popular_habits": "POPULYAR VƏRDİŞLƏR",
     "create_custom": "Xüsusi Vərdiş Yarat",
+    "setup_suggested_habit": "Təklif Olunan Vərdişi Qur",
+    "setup_popular_habit": "Populyar Vərdişi Qur",
     "name_label": "AD",
     "name_placeholder": "məs: Gəzinti",
     "desc_label": "TƏSVİR",
@@ -288,7 +296,64 @@
       "none": "Nailiyyət tapılmadı"
     },
     "earned_on": "Qazanılma tarixi",
-    "unlocked_badge": "Qazanılıb"
+    "unlocked_badge": "Qazanılıb",
+    "list": {
+      "first_step": { "title": "İlk Addım!", "desc": "İlk tapşırığınızı tamamladınız!" },
+      "getting_started": { "title": "Başlanğıc", "desc": "5 tapşırıq tamamladınız. Davam edin!" },
+      "on_a_roll": { "title": "Formadasınız", "desc": "10 tapşırıq bitdi. Əla gedirsiniz!" },
+      "quarter_century": { "title": "Çeyrək Əsr", "desc": "25 tapşırıq tamamlandı. Möhtəşəm!" },
+      "half_century": { "title": "Yarım Əsr", "desc": "50 tapşırıq bitdi. Əfsanə olmağa az qalıb!" },
+      "centurion": { "title": "Yüzbaşı", "desc": "100 tapşırıq tamamlandı. Siz bir əfsanəsiniz!" },
+      "fire_fighter": { "title": "Yanğınsöndürən", "desc": "İlk kritik tapşırığınızın öhdəsindən gəldiniz!" },
+      "critical_mass": { "title": "Kritik Kütlə", "desc": "5 kritik tapşırıq tamamladınız. Qorxusuz!" },
+      "high_achiever": { "title": "Yüksək Nailiyyətli", "desc": "10 yüksək prioritetli tapşırıq tamamladınız!" },
+      "speed_runner": { "title": "Sürətli", "desc": "Tapşırığı yaradıldıqdan sonra 1 saat içində bitirdiniz!" },
+      "same_day_slayer": { "title": "Eyni Günün Qəhrəmanı", "desc": "Tapşırığı eyni gündə yaradıb tamamladınız!" },
+      "3_day_streak": { "title": "3 Günlük Seriya", "desc": "3 gün ard-arda tapşırıq tamamladınız!" },
+      "week_warrior": { "title": "Həftə Döyüşçüsü", "desc": "7 günlük tapşırıq seriyası. Dayandırılamaz!" },
+      "fortnight_force": { "title": "İki Həftəlik Güc", "desc": "Ard-arda 14 gün tapşırıq tamamladınız!" },
+      "monthly_master": { "title": "Aylıq Usta", "desc": "30 günlük tapşırıq seriyası. Fövqəladə!" },
+      "early_bird": { "title": "Erkən Quş", "desc": "Səhər 8-dən əvvəl tapşırıq tamamladınız!" },
+      "night_owl": { "title": "Gecə Quşu", "desc": "Axşam 10-dan sonra tapşırıq tamamladınız!" },
+      "weekend_warrior": { "title": "Həftəsonu Döyüşçüsü", "desc": "Həftəsonu ərzində 3 tapşırıq tamamladınız!" },
+      "all_rounder": { "title": "Hərtərəfli", "desc": "Bütün 4 prioritet səviyyəsində tapşırıq tamamladınız!" },
+      "productive_duo": { "title": "Məhsuldar İkili", "desc": "Eyni gündə həm vərdiş, həm də tapşırıq tamamladınız!" }
+    }
+  },
+  "habit_history": {
+    "header": "Vərdiş Tarixçəsi",
+    "status_completed": "Tamamlandı",
+    "status_not_completed": "Tamamlanmadı",
+    "notes_title": "Qeydlər",
+    "no_notes": "Bu gün üçün qeyd yoxdur.",
+    "completion": "Tamamlama",
+    "days_done": "Tamamlanmış Günlər",
+    "current_streak": "Cari Seriya",
+    "best_streak": "Ən Yaxşı Seriya",
+    "days": "gün",
+    "legend": "Məlumat",
+    "legend_completed": "Tamamlandı",
+    "legend_missed": "Buraxıldı / Gözləyir"
+  },
+  "habit_celebration": {
+    "completed_label": "TAMAMLANDI!",
+    "title": "Siz vərdişinizi\ntamamladınız!",
+    "subtitle": "Davamlılığınızı qoruduğunuz üçün əla iş! 🚀",
+    "completed_today": "Bu gün tamamlandı",
+    "value_completed": "{{value}} {{unit}} tamamlandı",
+    "default_unit": "Tamamlandı",
+    "streak": "Seriya",
+    "days": "gün",
+    "best": "Ən yaxşı",
+    "quote": "\"Davamlılıq hər gün daha\nyaxşı olmağın açarıdır! 🔥\"",
+    "continue": "Davam et"
+  },
+  "calendar": {
+    "monthNames": ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"],
+    "monthNamesShort": ["Yan", "Fev", "Mar", "Apr", "May", "İyn", "İyl", "Avq", "Sen", "Okt", "Noy", "Dek"],
+    "dayNames": ["Bazar", "Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə"],
+    "dayNamesShort": ["Baz", "B.E", "Ç.A", "Çər", "C.A", "Cüm", "Şən"],
+    "today": "Bugün"
   },
   "profile": {
     "header": "Profiliniz",
@@ -472,5 +537,37 @@
     "slide3_title": "Məqsədlərinizə\nçatın",
     "slide3_desc": "Süni intellekt tərəfindən sizin üçün xüsusi hazırlanmış rutin planlarıyla potensialınızı açın.",
     "get_started": "Başlayın"
+  },
+  "habits": {
+    "daily_coding": "Gündəlik Kodlama",
+    "daily_coding_desc": "Hər gün kod yazaraq bacarıqlarınızı itiləyin.",
+    "mindful_meditation": "Meditasiya",
+    "mindful_meditation_desc": "Sürətli nəfəs hərəkətləri ilə stress səviyyənizi azaldın.",
+    "stay_hydrated": "Su İçmək",
+    "stay_hydrated_desc": "Gün ərzində fokuslanmış qalmaq üçün kifayət qədər su için.",
+    "read_a_book": "Kitab Oxumaq",
+    "read_a_book_desc": "Yatmazdan əvvəl bir neçə səhifə oxuyaraq biliyinizi artırın.",
+    "deep_work_session": "Dərin İş",
+    "deep_work_session_desc": "Diqqətinizi yayındırmadan ən vacib tapşırığınıza fokuslanın.",
+    "morning_run": "Səhər Qaçışı",
+    "morning_run_desc": "Gününüzə enerjili 30 dəqiqəlik qaçışla başlayın.",
+    "meditation": "Meditasiya",
+    "drink_water": "Su İçmək",
+    "deep_work": "Dərin İş",
+    "evening_reflection": "Günün Analizi"
+  },
+  "user_tasks": {
+    "early_bird_title": "Erkən Quş",
+    "early_bird_desc": "Səhər 09:00-dan əvvəl ən azı bir vərdişi tamamlayın.",
+    "welcome_to_growday_title": "GrowDay-ə Xoş Gəlmisiniz!",
+    "welcome_to_growday_desc": "Bu gün ilk vərdişinizi tamamlayaraq səyahətinizə başlayın!",
+    "habit_warrior": "Vərdiş Döyüşçüsü (Tələb: {{count}} Vərdiş)",
+    "habit_warrior_desc": "Bir gün ərzində ən azı {{count}} vərdişi tamamlayın.",
+    "habit_explorer_title": "Vərdiş Kəşfiyyatçısı",
+    "habit_explorer_desc": "Kəşf et bölməsinə daxil olun və məqsədlərinizə uyğun yeni vərdişlər tapın.",
+    "consistency_king": "Davamlılıq Kralı (Tələb: {{count}} Vərdiş)",
+    "consistency_king_desc": "Sərhədlərinizi aşın! Böyük XP artımı üçün bir gün ərzində ən azı {{count}} vərdişi tamamlayın.",
+    "complete_your_profile_title": "Profilinizi Tamamlayın",
+    "complete_your_profile_desc": "Təcrübənizi fərdiləşdirmək üçün adınızı, bioqrafiyanızı və profil şəklinizi əlavə edin."
   }
 }
