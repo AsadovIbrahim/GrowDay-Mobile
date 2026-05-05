@@ -136,7 +136,7 @@ const HabitHistory = () => {
                 <View style={{ flex: 1, marginLeft: 16 }}>
                     <Text style={[styles.headerTitle, { color: colors.text }]}>{t("habit_history.header")}</Text>
                     <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-                        {habitTitle} {ICONS[habitIcon]}
+                        {t(`habits.${habitTitle?.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habitTitle })} {ICONS[habitIcon]}
                     </Text>
                 </View>
             </View>

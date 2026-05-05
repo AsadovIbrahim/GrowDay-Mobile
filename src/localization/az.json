@@ -498,8 +498,13 @@
     "no_account": "Hesabınız yoxdur?",
     "have_account": "Artıq hesabınız var?",
     "forgot_password_title": "Şifrəni unutmusunuz?",
-    "forgot_password_desc": "Aşağıda e-poçt ünvanınızı daxil edin və biz sizə şifrənizi sıfırlamaq üçün link göndərəcəyik.",
-    "send_reset": "Sıfırlama linkini göndər",
+    "forgot_password_desc": "Aşağıda e-poçt ünvanınızı daxil edin və biz sizə şifrənizi sıfırlamaq üçün təsdiq kodu göndərəcəyik.",
+    "send_reset": "Təsdiq kodunu göndər",
+    "reset_password_title": "Şifrəni sıfırla",
+    "reset_password_desc": "Hesabınıza girişi bərpa etmək üçün yeni şifrənizi daxil edin.",
+    "new_password": "Yeni Şifrə",
+    "confirm_new_password": "Yeni Şifrəni Təsdiqləyin",
+    "reset_password_btn": "Şifrəni Sıfırla",
     "back_to_login": "Girişə qayıt",
     "enter_email": "E-poçtunuzu daxil edin",
     "verify_email": "E-poçtu təsdiqləyin",
@@ -526,7 +531,11 @@
       "check_inbox": "Gələnlər qutusunu yoxlayın və təlimatlara əməl edin.",
       "otp_complete_error": "Zəhmət olmasa 6 rəqəmli kodun hamısını daxil edin.",
       "invalid_otp": "Yanlış təsdiqləmə kodu.",
-      "something_wrong": "Xəta baş verdi. Yenidən cəhd edin."
+      "something_wrong": "Xəta baş verdi. Yenidən cəhd edin.",
+      "password_required": "Şifrə mütləqdir.",
+      "passwords_dont_match": "Şifrələr uyğun gəlmir.",
+      "password_reset_success": "Şifrə uğurla sıfırlandı! Giriş səhifəsinə yönləndirilirsiniz...",
+      "reset_failed": "Şifrəni sıfırlamaq mümkün olmadı. Kodun vaxtı bitmiş ola bilər."
     }
   },
   "onboarding": {

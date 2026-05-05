@@ -256,8 +256,9 @@ const UserHabits = ({ route }) => {
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             habits = habits.filter(habit => {
-                const title = (habit.title || '').toLowerCase();
-                const description = (habit.description || '').toLowerCase();
+                const titleKey = habit.title ? habit.title.toLowerCase().replace(/\s+/g, '_') : '';
+                const title = t(`habits.${titleKey}`, { defaultValue: habit.title || '' }).toLowerCase();
+                const description = t(`habits.${titleKey}_desc`, { defaultValue: habit.description || '' }).toLowerCase();
                 return title.includes(query) || description.includes(query);
             });
         }

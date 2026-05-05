@@ -537,6 +537,28 @@ export const verifyOtpFetch=async (email,otpCode)=>{
     });
     return handleResponse(response);
 };
+  
+export const verifyForgotPasswordOtpFetch = async (email, otpCode) => {
+    const response = await fetch(`${VITE_API_URL}/api/auth/verify-forgot-password-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otpCode }),
+    });
+    return handleResponse(response);
+};
+
+export const resetPasswordFetch = async (token, password, confirmPassword) => {
+    const response = await fetch(`${VITE_API_URL}/api/auth/reset-password`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, password, confirmPassword }),
+    });
+    return handleResponse(response);
+};
 
 export const getUserTasksFetch = async (token, pageIndex = 0, pageSize = 10) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {

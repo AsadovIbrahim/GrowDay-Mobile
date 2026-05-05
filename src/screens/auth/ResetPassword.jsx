@@ -1,50 +1,61 @@
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { forgotPasswordfetch } from "../../utils/fetch";
+import { faArrowLeft, faCircleExclamation, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { resetPasswordFetch } from "../../utils/fetch";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
-const ForgotPassword = () => {
-
+const ResetPassword = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { token, email } = route.params || {};
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { colors } = theme;
   const { t } = useTranslation();
-  const [email, setEmail] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState([]);
-  const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
 
   const showToast = (message, type = "success") => {
     setToast({ visible: true, message, type });
   };
 
-  const handleForgotPassword = async () => {
-    setLoading(true);
+  const handleResetPassword = async () => {
     setServerErrors([]);
+    if (!password) {
+        setServerErrors([t("auth.messages.password_required")]);
+        return;
+    }
+    if (password !== confirmPassword) {
+        setServerErrors([t("auth.messages.passwords_dont_match")]);
+        return;
+    }
+
+    setLoading(true);
     try {
-      const data = await forgotPasswordfetch({ email });
+      const data = await resetPasswordFetch(token, password, confirmPassword);
       if (data.success) {
-        navigation.navigate("OtpVerification", { email, type: "forgot_password" });
+        showToast(t("auth.messages.password_reset_success"), "success");
+        setTimeout(() => {
+          navigation.navigate("Login");
+        }, 2000);
       } else {
         const msgs = data.errors?.length > 0
           ? data.errors
-          : [data.message || "Something went wrong. Please try again."];
-
-        if (msgs.length === 1) {
-          showToast(msgs[0], "error");
-        } else {
-          setServerErrors(msgs);
-        }
+          : [data.message || t("auth.messages.reset_failed")];
+        setServerErrors(msgs);
       }
     } catch (error) {
       showToast(t("auth.messages.network_error"), "error");
@@ -91,38 +102,17 @@ const ForgotPassword = () => {
 
             {/* Logo */}
             <View className="items-center mt-2 mb-6">
-              <GrowDayLogo width={120} height={120} />
+              <GrowDayLogo width={100} height={100} />
             </View>
 
             {/* Title */}
             <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
-              {t("auth.forgot_password_title")}
+              {t("auth.reset_password_title")}
             </Text>
 
             <Text className="text-lg text-center font-redditsans-medium mb-6" style={{ color: colors.textSecondary }}>
-              {t("auth.forgot_password_desc")}
+              {t("auth.reset_password_desc")}
             </Text>
-
-            {/* Success banner */}
-            {success && (
-              <View style={{
-                backgroundColor: "rgba(34,197,94,0.15)",
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 20,
-                borderWidth: 1,
-                borderColor: "rgba(34,197,94,0.4)",
-                alignItems: "center",
-              }}>
-                <FontAwesomeIcon icon={faEnvelope} size={28} color="#22c55e" />
-                <Text style={{ color: "#22c55e", fontFamily: "RedditSans-Bold", fontSize: 15, marginTop: 10, textAlign: "center" }}>
-                  {t("auth.messages.reset_link_sent")}
-                </Text>
-                <Text style={{ color: "rgba(255,255,255,0.85)", fontFamily: "RedditSans-Medium", fontSize: 13, marginTop: 6, textAlign: "center" }}>
-                  {t("auth.messages.check_inbox")}
-                </Text>
-              </View>
-            )}
 
             {/* Server Errors */}
             {serverErrors.length > 0 && (
@@ -149,42 +139,60 @@ const ForgotPassword = () => {
               </View>
             )}
 
-            {/* Email input */}
-            {!success && (
-              <>
-                <TextInput
-                  placeholder={t("auth.enter_email")}
+            {/* Password input */}
+            <View className="relative mb-4">
+              <TextInput
+                  placeholder={t("auth.new_password")}
                   placeholderTextColor={colors.textSecondary}
-                  value={email}
-                  onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  className="font-redditsans-medium rounded-xl p-4 mb-6"
+                  value={password}
+                  onChangeText={(t) => { setPassword(t); setServerErrors([]); }}
+                  secureTextEntry={!showPassword}
+                  className="font-redditsans-medium rounded-xl p-4 pr-12"
                   style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
-                />
-
-                {/* Button */}
-                <TouchableOpacity
-                  className="p-3 rounded-full"
-                  onPress={handleForgotPassword}
-                  disabled={loading}
-                  style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
-                  activeOpacity={0.8}
-                >
-                  <Text className="text-white text-center font-redditsans-bold text-lg">
-                    {loading ? t("auth.sending") : t("auth.send_reset")}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
-
-            {/* Back to Sign In */}
-            <View className="flex-row justify-center mt-6">
-              <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>{t("auth.back_to_login")} </Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("auth.sign_in")}</Text>
+              />
+              <TouchableOpacity 
+                onPress={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: 16, top: 16 }}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
+
+            {/* Confirm Password input */}
+            <View className="relative mb-8">
+              <TextInput
+                  placeholder={t("auth.confirm_new_password")}
+                  placeholderTextColor={colors.textSecondary}
+                  value={confirmPassword}
+                  onChangeText={(t) => { setConfirmPassword(t); setServerErrors([]); }}
+                  secureTextEntry={!showConfirmPassword}
+                  className="font-redditsans-medium rounded-xl p-4 pr-12"
+                  style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
+              />
+              <TouchableOpacity 
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ position: 'absolute', right: 16, top: 16 }}
+              >
+                <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Button */}
+            <TouchableOpacity
+                className="p-3 rounded-full"
+                onPress={handleResetPassword}
+                disabled={loading}
+                style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
+                activeOpacity={0.8}
+            >
+                {loading ? (
+                    <ActivityIndicator color="white" />
+                ) : (
+                    <Text className="text-white text-center font-redditsans-bold text-lg">
+                        {t("auth.reset_password_btn")}
+                    </Text>
+                )}
+            </TouchableOpacity>
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -210,4 +218,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ForgotPassword;
+export default ResetPassword;

@@ -6,14 +6,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
-import { verifyOtpFetch } from "../../utils/fetch";
+import { verifyOtpFetch, verifyForgotPasswordOtpFetch } from "../../utils/fetch";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const OtpVerification = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { email } = route.params || {};
+  const { email, type } = route.params || {};
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { colors } = theme;
@@ -52,9 +52,17 @@ const OtpVerification = () => {
     setError("");
 
     try {
-      const result = await verifyOtpFetch(email, otpCode);
+      const isForgotPassword = type === "forgot_password";
+      const result = isForgotPassword 
+        ? await verifyForgotPasswordOtpFetch(email, otpCode)
+        : await verifyOtpFetch(email, otpCode);
+
       if (result.success) {
-        navigation.navigate("Login");
+        if (isForgotPassword) {
+          navigation.navigate("ResetPassword", { email, token: result.data });
+        } else {
+          navigation.navigate("Login");
+        }
       } else {
         setError(result.message || t("auth.messages.invalid_otp"));
       }

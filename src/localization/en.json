@@ -498,8 +498,13 @@
     "no_account": "Don't have an account?",
     "have_account": "Already have an account?",
     "forgot_password_title": "Forgot Password?",
-    "forgot_password_desc": "Enter your email address below and we'll send you a link to reset your password.",
-    "send_reset": "Send Reset Link",
+    "forgot_password_desc": "Enter your email address below and we'll send you a verification code to reset your password.",
+    "send_reset": "Send Reset Code",
+    "reset_password_title": "Reset Password",
+    "reset_password_desc": "Enter your new password below to regain access to your account.",
+    "new_password": "New Password",
+    "confirm_new_password": "Confirm New Password",
+    "reset_password_btn": "Reset Password",
     "back_to_login": "Back to Sign In",
     "enter_email": "Enter your email",
     "verify_email": "Verify Email",
@@ -526,7 +531,11 @@
       "check_inbox": "Check your inbox and follow the instructions.",
       "otp_complete_error": "Please enter the complete 6-digit code.",
       "invalid_otp": "Invalid verification code.",
-      "something_wrong": "Something went wrong. Please try again."
+      "something_wrong": "Something went wrong. Please try again.",
+      "password_required": "Password is required.",
+      "passwords_dont_match": "Passwords do not match.",
+      "password_reset_success": "Password reset successfully! Redirecting to login...",
+      "reset_failed": "Failed to reset password. Token may be expired."
     }
   },
   "onboarding": {

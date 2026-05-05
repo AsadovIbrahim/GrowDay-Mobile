@@ -1,0 +1,67 @@
+{
+  "az": {
+    "Sağlamlıq": "Health",
+    "Məhsuldarlıq": "Productivity",
+    "Mindfulness": "Mindfulness",
+    "Fitness": "Fitness",
+    "Yuxu": "Sleep"
+  },
+  "tr": {
+    "Sağlık": "Health",
+    "Verimlilik": "Productivity",
+    "Farkındalık": "Mindfulness",
+    "Uyku": "Sleep"
+  },
+  "ru": {
+    "Здоровье": "Health",
+    "Продуктивность": "Productivity",
+    "Осознанность": "Mindfulness",
+    "Фитнес": "Fitness",
+    "Сон": "Sleep"
+  },
+  "de": {
+    "Gesundheit": "Health",
+    "Produktivität": "Productivity",
+    "Achtsamkeit": "Mindfulness",
+    "Schlaf": "Sleep"
+  },
+  "fr": {
+    "Santé": "Health",
+    "Productivité": "Productivity",
+    "Pleine conscience": "Mindfulness",
+    "Sommeil": "Sleep"
+  },
+  "es": {
+    "Salud": "Health",
+    "Productividad": "Productivity",
+    "Atención plena": "Mindfulness",
+    "Sueño": "Sleep"
+  },
+  "it": {
+    "Salute": "Health",
+    "Produttività": "Productivity",
+    "Consapevolezza": "Mindfulness",
+    "Sonno": "Sleep"
+  },
+  "ar": {
+    "الصحة": "Health",
+    "الإنتاجية": "Productivity",
+    "اليقظة الذهنية": "Mindfulness",
+    "اللياقة البدنية": "Fitness",
+    "النوم": "Sleep"
+  },
+  "zh": {
+    "健康": "Health",
+    "生产力": "Productivity",
+    "正念": "Mindfulness",
+    "健身": "Fitness",
+    "睡眠": "Sleep"
+  },
+  "en": {
+    "Health": "Health",
+    "Productivity": "Productivity",
+    "Mindfulness": "Mindfulness",
+    "Fitness": "Fitness",
+    "Sleep": "Sleep"
+  }
+}

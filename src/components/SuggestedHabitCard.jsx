@@ -10,6 +10,7 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
   const { colors } = theme;
 
   const displayIcon = ICONS[icon] || ICONS.default;
+  const translationKey = name ? name.toLowerCase().replace(/\s+/g, '_') : '';
 
   return (
     <TouchableOpacity
@@ -46,7 +47,7 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
           style={{ color: colors.text }}
           numberOfLines={2}
         >
-          {name}
+          {t(`habits.${translationKey}`, { defaultValue: name })}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {t(`my_habits.filters.${frequency.toLowerCase()}`)}

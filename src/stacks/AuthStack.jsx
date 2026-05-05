@@ -3,6 +3,7 @@ import Login from "../screens/auth/Login";
 import Register from '../screens/auth/Register';
 import ForgotPassword from '../screens/auth/ForgotPassword';
 import OtpVerification from '../screens/auth/OtpVerification';
+import ResetPassword from '../screens/auth/ResetPassword';
 import Onboarding from '../screens/onboarding/Onboarding';
 const Stack = createNativeStackNavigator()
 
@@ -16,6 +17,7 @@ const AuthStack=({initialRoute})=>{
             <Stack.Screen name="Register" component={Register}></Stack.Screen>
             <Stack.Screen name="ForgotPassword" component={ForgotPassword}></Stack.Screen>
             <Stack.Screen name="OtpVerification" component={OtpVerification}></Stack.Screen>
+            <Stack.Screen name="ResetPassword" component={ResetPassword}></Stack.Screen>
         </Stack.Navigator>
     )
 }

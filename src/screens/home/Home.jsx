@@ -69,6 +69,7 @@ const Home = () => {
 
   const [accountData, setAccountData] = useState(null);
   const firstName=accountData?.firstName;  
+  const email=accountData?.email;  
   const handleDateSelect = (day, fullDate) => {
     setSelectedDate(day);
     setSelectedDateObject(fullDate);
@@ -310,7 +311,7 @@ const Home = () => {
                     {firstName || 'User'}
                 </Text>
                 <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular">
-                    {t('common.premium_member')}
+                    {email || ''}
                 </Text>
             </View>
           </View>
