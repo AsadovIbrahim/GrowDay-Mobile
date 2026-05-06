@@ -378,6 +378,48 @@
       "terms": "Conditions d'utilisation",
       "contact_support": "Contacter l'assistance",
       "rate_app": "Noter l'application"
+    },
+    "edit_profile_screen": {
+      "title": "Modifier le profil",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "username": "Nom d'utilisateur",
+      "email": "E-mail",
+      "save_success": "Profil mis à jour avec succès !",
+      "save_error": "Échec de la mise à jour du profil",
+      "validation": {
+        "first_name_required": "Le prénom est requis",
+        "last_name_required": "Le nom est requis",
+        "username_required": "Le nom d'utilisateur est requis",
+        "email_required": "L'e-mail est requis",
+        "email_invalid": "Format d'e-mail invalide"
+      }
+    },
+    "change_password_screen": {
+      "title": "Changer le mot de passe",
+      "set_title": "Définir le mot de passe",
+      "current_password": "Mot de passe actuel",
+      "current_password_placeholder": "Entrez le mot de passe actuel",
+      "new_password": "Nouveau mot de passe",
+      "new_password_placeholder": "Entrez le nouveau mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "confirm_password_placeholder": "Entrez à nouveau le nouveau mot de passe",
+      "save_changes": "Enregistrer les modifications",
+      "save_success": "Mot de passe enregistré avec succès !",
+      "save_error": "Échec de l'enregistrement du mot de passe.",
+      "validation": {
+        "current_required": "Le mot de passe actuel est requis",
+        "requirements": "Le mot de passe ne respecte pas les exigences",
+        "mismatch": "Les mots de passe ne correspondent pas",
+        "same_as_current": "Le nouveau mot de passe ne peut pas être le même que l'actuel"
+      },
+      "requirements": {
+        "min_chars": "8+ caract.",
+        "uppercase": "Majuscules",
+        "lowercase": "Minuscules",
+        "number": "Chiffres",
+        "special": "Spéciaux"
+      }
     }
   },
   "preferences": {

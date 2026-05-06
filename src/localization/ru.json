@@ -378,6 +378,48 @@
       "terms": "Условия использования",
       "contact_support": "Связаться с поддержкой",
       "rate_app": "Оценить приложение"
+    },
+    "edit_profile_screen": {
+      "title": "Редактировать профиль",
+      "first_name": "Имя",
+      "last_name": "Фамилия",
+      "username": "Имя пользователя",
+      "email": "Электронная почта",
+      "save_success": "Профиль успешно обновлен!",
+      "save_error": "Не удалось обновить профиль",
+      "validation": {
+        "first_name_required": "Имя обязательно",
+        "last_name_required": "Фамилия обязательна",
+        "username_required": "Имя пользователя обязательно",
+        "email_required": "Электронная почта обязательна",
+        "email_invalid": "Неверный формат электронной почты"
+      }
+    },
+    "change_password_screen": {
+      "title": "Изменить пароль",
+      "set_title": "Установить пароль",
+      "current_password": "Текущий пароль",
+      "current_password_placeholder": "Введите текущий пароль",
+      "new_password": "Новый пароль",
+      "new_password_placeholder": "Введите новый пароль",
+      "confirm_password": "Подтвердите новый пароль",
+      "confirm_password_placeholder": "Введите новый пароль еще раз",
+      "save_changes": "Сохранить изменения",
+      "save_success": "Пароль успешно сохранен!",
+      "save_error": "Не удалось сохранить пароль.",
+      "validation": {
+        "current_required": "Текущий пароль обязателен",
+        "requirements": "Пароль не соответствует требованиям",
+        "mismatch": "Пароли не совпадают",
+        "same_as_current": "Новый пароль не может быть таким же, как текущий"
+      },
+      "requirements": {
+        "min_chars": "8+ симв.",
+        "uppercase": "Заглавные",
+        "lowercase": "Строчные",
+        "number": "Цифры",
+        "special": "Спец. симв."
+      }
     }
   },
   "preferences": {

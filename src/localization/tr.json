@@ -378,6 +378,48 @@
       "terms": "Kullanım Koşulları",
       "contact_support": "Destekle İletişime Geç",
       "rate_app": "Uygulamayı Değerlendirin"
+    },
+    "edit_profile_screen": {
+      "title": "Profili Düzenle",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "username": "Kullanıcı adı",
+      "email": "E-posta",
+      "save_success": "Profil başarıyla güncellendi!",
+      "save_error": "Profil güncellenemedi",
+      "validation": {
+        "first_name_required": "Ad gereklidir",
+        "last_name_required": "Soyad gereklidir",
+        "username_required": "Kullanıcı adı gereklidir",
+        "email_required": "E-posta gereklidir",
+        "email_invalid": "Geçersiz e-posta formatı"
+      }
+    },
+    "change_password_screen": {
+      "title": "Şifreyi Değiştir",
+      "set_title": "Şifre Belirle",
+      "current_password": "Mevcut Şifre",
+      "current_password_placeholder": "Mevcut şifreyi girin",
+      "new_password": "Yeni Şifre",
+      "new_password_placeholder": "Yeni şifreyi girin",
+      "confirm_password": "Yeni Şifreyi Onayla",
+      "confirm_password_placeholder": "Yeni şifreyi tekrar girin",
+      "save_changes": "Değişiklikleri Kaydet",
+      "save_success": "Şifre başarıyla kaydedildi!",
+      "save_error": "Şifre kaydedilemedi.",
+      "validation": {
+        "current_required": "Mevcut şifre gereklidir",
+        "requirements": "Şifre gereksinimleri karşılamıyor",
+        "mismatch": "Şifreler uyuşmuyor",
+        "same_as_current": "Yeni şifre mevcut şifre ile aynı olamaz"
+      },
+      "requirements": {
+        "min_chars": "8+ karakter",
+        "uppercase": "Büyük harf",
+        "lowercase": "Küçük harf",
+        "number": "Rakam",
+        "special": "Özel krkt."
+      }
     }
   },
   "preferences": {

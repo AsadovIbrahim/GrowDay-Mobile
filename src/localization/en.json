@@ -378,6 +378,48 @@
       "terms": "Terms of Service",
       "contact_support": "Contact Support",
       "rate_app": "Rate The App"
+    },
+    "edit_profile_screen": {
+      "title": "Edit Profile",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "username": "Username",
+      "email": "Email",
+      "save_success": "Profile updated successfully!",
+      "save_error": "Failed to update profile",
+      "validation": {
+        "first_name_required": "First name is required",
+        "last_name_required": "Last name is required",
+        "username_required": "Username is required",
+        "email_required": "Email is required",
+        "email_invalid": "Invalid email format"
+      }
+    },
+    "change_password_screen": {
+      "title": "Change Password",
+      "set_title": "Set Password",
+      "current_password": "Current Password",
+      "current_password_placeholder": "Enter current password",
+      "new_password": "New Password",
+      "new_password_placeholder": "Enter new password",
+      "confirm_password": "Confirm New Password",
+      "confirm_password_placeholder": "Re-enter new password",
+      "save_changes": "Save Changes",
+      "save_success": "Password saved successfully!",
+      "save_error": "Failed to save password.",
+      "validation": {
+        "current_required": "Current password is required",
+        "requirements": "Password does not meet requirements",
+        "mismatch": "Passwords do not match",
+        "same_as_current": "New password cannot be the same as current password"
+      },
+      "requirements": {
+        "min_chars": "8+ chars",
+        "uppercase": "Uppercase",
+        "lowercase": "Lowercase",
+        "number": "Number",
+        "special": "Special"
+      }
     }
   },
   "preferences": {

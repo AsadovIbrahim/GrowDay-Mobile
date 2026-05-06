@@ -378,6 +378,48 @@
       "terms": "İstifadə Şərtləri",
       "contact_support": "Dəstəklə Əlaqə",
       "rate_app": "Tətbiqi Qiymətləndirin"
+    },
+    "edit_profile_screen": {
+      "title": "Profili Redaktə Et",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "username": "İstifadəçi adı",
+      "email": "E-poçt",
+      "save_success": "Profil uğurla yeniləndi!",
+      "save_error": "Profil yenilənərkən xəta baş verdi",
+      "validation": {
+        "first_name_required": "Ad mütləqdir",
+        "last_name_required": "Soyad mütləqdir",
+        "username_required": "İstifadəçi adı mütləqdir",
+        "email_required": "E-poçt mütləqdir",
+        "email_invalid": "Yanlış e-poçt formatı"
+      }
+    },
+    "change_password_screen": {
+      "title": "Şifrəni Dəyiş",
+      "set_title": "Şifrə Təyin Et",
+      "current_password": "Hazırkı Şifrə",
+      "current_password_placeholder": "Hazırkı şifrəni daxil edin",
+      "new_password": "Yeni Şifrə",
+      "new_password_placeholder": "Yeni şifrəni daxil edin",
+      "confirm_password": "Yeni Şifrəni Təsdiqləyin",
+      "confirm_password_placeholder": "Yeni şifrəni yenidən daxil edin",
+      "save_changes": "Dəyişiklikləri Yadda Saxla",
+      "save_success": "Şifrə uğurla yadda saxlanıldı!",
+      "save_error": "Şifrəni yadda saxlamaq mümkün olmadı.",
+      "validation": {
+        "current_required": "Hazırkı şifrə mütləqdir",
+        "requirements": "Şifrə tələblərə cavab vermir",
+        "mismatch": "Şifrələr uyğun gəlmir",
+        "same_as_current": "Yeni şifrə hazırkı şifrə ilə eyni ola bilməz"
+      },
+      "requirements": {
+        "min_chars": "8+ simvol",
+        "uppercase": "Böyük hərf",
+        "lowercase": "Kiçik hərf",
+        "number": "Rəqəm",
+        "special": "Simvol"
+      }
     }
   },
   "preferences": {

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -70,6 +71,7 @@ const ChangePassword = ({ navigation, route }) => {
   const [token] = useMMKVString('accessToken');
   const { theme } = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -82,11 +84,11 @@ const ChangePassword = ({ navigation, route }) => {
   const [errors, setErrors] = useState({});
 
   const requirements = [
-    { label: '8+ chars', met: newPassword.length >= 8 },
-    { label: 'Uppercase', met: /[A-Z]/.test(newPassword) },
-    { label: 'Lowercase', met: /[a-z]/.test(newPassword) },
-    { label: 'Number', met: /[0-9]/.test(newPassword) },
-    { label: 'Special', met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) },
+    { label: t('profile.change_password_screen.requirements.min_chars'), met: newPassword.length >= 8 },
+    { label: t('profile.change_password_screen.requirements.uppercase'), met: /[A-Z]/.test(newPassword) },
+    { label: t('profile.change_password_screen.requirements.lowercase'), met: /[a-z]/.test(newPassword) },
+    { label: t('profile.change_password_screen.requirements.number'), met: /[0-9]/.test(newPassword) },
+    { label: t('profile.change_password_screen.requirements.special'), met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) },
   ];
 
 
@@ -95,9 +97,14 @@ const ChangePassword = ({ navigation, route }) => {
 
   const validate = () => {
     const e = {};
-    if (hasPassword && !currentPassword) e.currentPassword = 'Current password is required';
-    if (!allMet) e.newPassword = 'Password does not meet requirements';
-    if (newPassword !== confirmPassword) e.confirmPassword = 'Passwords do not match';
+    if (hasPassword && !currentPassword) e.currentPassword = t("profile.change_password_screen.validation.current_required");
+    if (!allMet) e.newPassword = t("profile.change_password_screen.validation.requirements");
+    if (newPassword !== confirmPassword) e.confirmPassword = t("profile.change_password_screen.validation.mismatch");
+    
+    if (hasPassword && currentPassword === newPassword) {
+      e.newPassword = t("profile.change_password_screen.validation.same_as_current");
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -116,13 +123,13 @@ const ChangePassword = ({ navigation, route }) => {
       const res = await changePasswordFetch(token, payload);
       
       if (res.success) {
-        Alert.alert('Success', 'Password saved successfully!');
+        Alert.alert(t("common.success"), t("profile.change_password_screen.save_success"));
         navigation.goBack();
       } else {
-        Alert.alert('Error', res.message || 'Failed to save password.');
+        Alert.alert(t("common.error"), res.message || t("profile.change_password_screen.save_error"));
       }
     } catch (error) {
-      Alert.alert('Error', 'Network request failed.');
+      Alert.alert(t("common.error"), t("common.something_wrong"));
     } finally {
       setLoading(false);
     }
@@ -144,7 +151,7 @@ const ChangePassword = ({ navigation, route }) => {
             <FontAwesomeIcon icon={faChevronLeft} size={16} color={colors.text} />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {hasPassword ? 'Change Password' : 'Set Password'}
+            {hasPassword ? t("profile.change_password_screen.title") : t("profile.change_password_screen.set_title")}
           </Text>
           <View style={{ width: 40 }} />
         </View>
@@ -153,8 +160,8 @@ const ChangePassword = ({ navigation, route }) => {
           {hasPassword && (
             <>
               <PasswordField
-                label="Current Password"
-                placeholder="Enter current password"
+                label={t("profile.change_password_screen.current_password")}
+                placeholder={t("profile.change_password_screen.current_password_placeholder")}
                 value={currentPassword}
                 onChangeText={setCurrentPassword}
                 show={showCurrent}
@@ -166,8 +173,8 @@ const ChangePassword = ({ navigation, route }) => {
             </>
           )}
           <PasswordField
-            label="New Password"
-            placeholder="Enter new password"
+            label={t("profile.change_password_screen.new_password")}
+            placeholder={t("profile.change_password_screen.new_password_placeholder")}
             value={newPassword}
             onChangeText={setNewPassword}
             show={showNew}
@@ -185,8 +192,8 @@ const ChangePassword = ({ navigation, route }) => {
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <PasswordField
-            label="Confirm New Password"
-            placeholder="Re-enter new password"
+            label={t("profile.change_password_screen.confirm_password")}
+            placeholder={t("profile.change_password_screen.confirm_password_placeholder")}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             show={showConfirm}
@@ -205,7 +212,7 @@ const ChangePassword = ({ navigation, route }) => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitText}>Save Changes</Text>
+            <Text style={styles.submitText}>{t("profile.change_password_screen.save_changes")}</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

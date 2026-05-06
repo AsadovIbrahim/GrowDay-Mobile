@@ -175,7 +175,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
           </View>
         )}
 
-        {/* Due date */}
+      {/* Due date */}
         {dueDateStr && (
           <View
             className="flex-row items-center px-2.5 py-1 rounded-full"
@@ -195,6 +195,30 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
           </View>
         )}
       </View>
+
+      {/* Progress Bar for HabitCount tasks */}
+      {task.triggerType === 1 && !isCompleted && task.triggerValue > 0 && (
+        <View className="mt-4 ml-9">
+          <View className="flex-row justify-between mb-1.5">
+            <Text className="text-[11px] font-redditsans-medium" style={{ color: colors.textSecondary }}>
+              {t("common.progress", { defaultValue: "Progress" })}: {task.currentValue} / {task.triggerValue}
+            </Text>
+            <Text className="text-[11px] font-redditsans-bold" style={{ color: colors.primary }}>
+              {Math.round((task.currentValue / task.triggerValue) * 100)}%
+            </Text>
+          </View>
+          <View className="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden" style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}>
+            <View 
+              className="h-full rounded-full" 
+              style={{ 
+                width: `${Math.min(100, (task.currentValue / task.triggerValue) * 100)}%`,
+                backgroundColor: (task.currentValue / task.triggerValue) >= 1 ? '#22c55e' : colors.primary 
+              }} 
+            />
+          </View>
+          
+        </View>
+      )}
     </View>
   );
 };

@@ -184,7 +184,11 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <LinearGradient
@@ -206,7 +210,7 @@ const Profile = ({ navigation }) => {
           loading={profileLoading}
           error={profileError}
           colors={colors}
-          onEditPress={() => {}}
+          onEditPress={() => navigation.navigate('EditProfile', { initialData: accountData })}
         />
 
         {/* ── General ── */}

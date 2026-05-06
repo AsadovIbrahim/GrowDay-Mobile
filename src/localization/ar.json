@@ -378,6 +378,48 @@
       "terms": "شروط الخدمة",
       "contact_support": "التواصل مع الدعم",
       "rate_app": "تقييم التطبيق"
+    },
+    "edit_profile_screen": {
+      "title": "تعديل الملف الشخصي",
+      "first_name": "الاسم الأول",
+      "last_name": "اسم العائلة",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "save_success": "تم تحديث الملف الشخصي بنجاح!",
+      "save_error": "فشل تحديث الملف الشخصي",
+      "validation": {
+        "first_name_required": "الاسم الأول مطلوب",
+        "last_name_required": "اسم العائلة مطلوب",
+        "username_required": "اسم المستخدم مطلوب",
+        "email_required": "البريد الإلكتروني مطلوب",
+        "email_invalid": "صيغة البريد الإلكتروني غير صحيحة"
+      }
+    },
+    "change_password_screen": {
+      "title": "تغيير كلمة المرور",
+      "set_title": "تعيين كلمة المرور",
+      "current_password": "كلمة المرور الحالية",
+      "current_password_placeholder": "أدخل كلمة المرور الحالية",
+      "new_password": "كلمة المرور الجديدة",
+      "new_password_placeholder": "أدخل كلمة المرور الجديدة",
+      "confirm_password": "تأكيد كلمة المرور الجديدة",
+      "confirm_password_placeholder": "أدخل كلمة المرور الجديدة مرة أخرى",
+      "save_changes": "حفظ التغييرات",
+      "save_success": "تم حفظ كلمة المرور بنجاح!",
+      "save_error": "فشل حفظ كلمة المرور.",
+      "validation": {
+        "current_required": "كلمة المرور الحالية مطلوبة",
+        "requirements": "كلمة المرور لا تستوفي المتطلبات",
+        "mismatch": "كلمات المرور غير متطابقة",
+        "same_as_current": "لا يمكن أن تكون كلمة المرور الجديدة هي نفسها الحالية"
+      },
+      "requirements": {
+        "min_chars": "8+ حروف",
+        "uppercase": "حروف كبيرة",
+        "lowercase": "حروف صغيرة",
+        "number": "أرقام",
+        "special": "رموز خاصة"
+      }
     }
   },
   "preferences": {

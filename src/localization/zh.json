@@ -378,6 +378,48 @@
       "terms": "服务条款",
       "contact_support": "联系支持",
       "rate_app": "给应用评分"
+    },
+    "edit_profile_screen": {
+      "title": "编辑个人资料",
+      "first_name": "名字",
+      "last_name": "姓氏",
+      "username": "用户名",
+      "email": "电子邮件",
+      "save_success": "个人资料更新成功！",
+      "save_error": "更新个人资料失败",
+      "validation": {
+        "first_name_required": "名字是必填项",
+        "last_name_required": "姓氏是必填项",
+        "username_required": "用户名是必填项",
+        "email_required": "电子邮件是必填项",
+        "email_invalid": "电子邮件格式无效"
+      }
+    },
+    "change_password_screen": {
+      "title": "修改密码",
+      "set_title": "设置密码",
+      "current_password": "当前密码",
+      "current_password_placeholder": "请输入当前密码",
+      "new_password": "新密码",
+      "new_password_placeholder": "请输入新密码",
+      "confirm_password": "确认新密码",
+      "confirm_password_placeholder": "请再次输入新密码",
+      "save_changes": "保存更改",
+      "save_success": "密码保存成功！",
+      "save_error": "保存密码失败。",
+      "validation": {
+        "current_required": "当前密码是必填项",
+        "requirements": "密码不符合要求",
+        "mismatch": "密码不匹配",
+        "same_as_current": "新密码不能与当前密码相同"
+      },
+      "requirements": {
+        "min_chars": "8+ 字符",
+        "uppercase": "大写字母",
+        "lowercase": "小写字母",
+        "number": "数字",
+        "special": "特殊字符"
+      }
     }
   },
   "preferences": {

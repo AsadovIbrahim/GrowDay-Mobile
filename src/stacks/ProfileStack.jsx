@@ -4,6 +4,7 @@ import NotificationsSettings from '../screens/profile/NotificationsSettings';
 import LanguageSettings from '../screens/profile/LanguageSettings';
 import ChangePassword from '../screens/profile/ChangePassword';
 import ContactSupport from '../screens/profile/ContactSupport';
+import EditProfile from '../screens/profile/EditProfile';
 import UserPref0 from '../screens/preferences/UserPref0';
 import UserPref1 from '../screens/preferences/UserPref1';
 import UserPref2 from '../screens/preferences/UserPref2';
@@ -37,6 +38,11 @@ const ProfileStack = () => {
             <Stack.Screen
                 name="ContactSupport"
                 component={ContactSupport}
+                options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="EditProfile"
+                component={EditProfile}
                 options={{ animation: 'slide_from_right' }}
             />
             <Stack.Screen name="UserPref0" component={UserPref0} />

@@ -432,8 +432,7 @@ export const getUserTotalXPFetch=async(token)=>{
         },
         cache: "no-store",
     });
-    const data=await response.json();
-    return data;
+    return handleResponse(response);
 }
 
 export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => {
@@ -644,9 +643,9 @@ export const getAccountDataFetch = async (token) => {
             "Authorization": `Bearer ${token}`,
         },
     });
-    const data = await response.json();
-    return data;
+    return handleResponse(response);
 };
+
 export const updateAccountFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/UpdateAccount`, {
         method: "PUT",
@@ -656,8 +655,7 @@ export const updateAccountFetch = async (token, payload) => {
         },
         body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    return data;
+    return handleResponse(response);
 };
 
 export const updateFcmTokenFetch = async (token, fcmToken) => {

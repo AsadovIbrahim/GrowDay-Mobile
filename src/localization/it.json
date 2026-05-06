@@ -378,6 +378,48 @@
       "terms": "Termini di servizio",
       "contact_support": "Contatta il supporto",
       "rate_app": "Valuta l'app"
+    },
+    "edit_profile_screen": {
+      "title": "Modifica profilo",
+      "first_name": "Nome",
+      "last_name": "Cognome",
+      "username": "Nome utente",
+      "email": "Email",
+      "save_success": "Profilo aggiornato con successo!",
+      "save_error": "Impossibile aggiornare il profilo",
+      "validation": {
+        "first_name_required": "Il nome è obbligatorio",
+        "last_name_required": "Il cognome è obbligatorio",
+        "username_required": "Il nome utente è obbligatorio",
+        "email_required": "L'email è obbligatoria",
+        "email_invalid": "Formato email non valido"
+      }
+    },
+    "change_password_screen": {
+      "title": "Cambia password",
+      "set_title": "Imposta password",
+      "current_password": "Password attuale",
+      "current_password_placeholder": "Inserisci la password attuale",
+      "new_password": "Nuova password",
+      "new_password_placeholder": "Inserisci la nuova password",
+      "confirm_password": "Conferma nuova password",
+      "confirm_password_placeholder": "Inserisci di nuovo la nuova password",
+      "save_changes": "Salva modifiche",
+      "save_success": "Password salvata con successo!",
+      "save_error": "Impossibile salvare la password.",
+      "validation": {
+        "current_required": "La password attuale è obbligatoria",
+        "requirements": "La password non soddisfa i requisiti",
+        "mismatch": "Le password non corrispondono",
+        "same_as_current": "La nuova password non può essere uguale a quella attuale"
+      },
+      "requirements": {
+        "min_chars": "8+ caratt.",
+        "uppercase": "Maiuscole",
+        "lowercase": "Minuscole",
+        "number": "Numeri",
+        "special": "Speciali"
+      }
     }
   },
   "preferences": {
