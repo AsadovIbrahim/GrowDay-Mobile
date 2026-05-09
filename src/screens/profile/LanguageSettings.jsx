@@ -39,6 +39,15 @@ const LanguageSettings = ({ navigation }) => {
     setSelected(code);
     i18n.changeLanguage(code);
     storage.set('userLanguage', code);
+
+    const token = storage.getString('accessToken');
+    if (token) {
+      import('../../utils/NotificationService')
+        .then(({ getFcmToken }) => {
+          getFcmToken(token);
+        })
+        .catch(err => console.log('Error updating FCM token after language change:', err));
+    }
   };
 
   const selectedLang = LANGUAGES.find(l => l.code === selected);

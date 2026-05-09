@@ -154,7 +154,8 @@
       "sun": "日"
     },
     "note_saved": "笔记保存成功。",
-    "notes_label": "今日笔记",
+    "notes_label": "今日备注",
+    "notes_placeholder": "添加备注...",
     "action": {
       "mark_done": "标记为完成",
       "upcoming_title": "即将到来的习惯",
@@ -175,7 +176,8 @@
     }
   },
   "explore": {
-    "header": "探索",
+    "header": "发现",
+    "search_placeholder": "搜索习惯、任务...",
     "suggested_habits": "推荐习惯",
     "no_suggestions": "暂无推荐内容。",
     "tasks": "任务",
@@ -390,9 +392,11 @@
       "validation": {
         "first_name_required": "名字是必填项",
         "last_name_required": "姓氏是必填项",
-        "username_required": "用户名是必填项",
-        "email_required": "电子邮件是必填项",
-        "email_invalid": "电子邮件格式无效"
+        "username_required": "用户名必填",
+        "username_taken": "用户名已被占用。",
+        "email_required": "电子邮件必填",
+        "email_invalid": "电子邮件格式无效",
+        "email_taken": "电子邮件已被占用。"
       }
     },
     "change_password_screen": {
@@ -420,6 +424,14 @@
         "number": "数字",
         "special": "特殊字符"
       }
+    },
+    "notification_settings": {
+      "title": "通知",
+      "push_notifications": "推送通知",
+      "sound_alerts": "声音警报",
+      "email_updates": "电子邮件更新",
+      "daily_reminders": "每日提醒",
+      "footer": "管理您如何接收来自 GrowDay 的更新和提醒。"
     }
   },
   "preferences": {
@@ -518,7 +530,7 @@
       "updated_title": "日常计划已更新！",
       "ready_title": "日常计划已就绪！",
       "updated_desc": "您的偏好已更新，AI 已重新优化您的日常计划。",
-      "ready_desc": "Genesis AI 已成功根据您的目标和生活方式制定了个性化计划。",
+      "ready_desc": "GrowDay AI 已成功根据您的目标和生活方式制定了个性化计划。",
       "explore": "探索我的计划"
     }
   },
@@ -577,7 +589,9 @@
       "password_required": "必须填写密码。",
       "passwords_dont_match": "密码不匹配。",
       "password_reset_success": "密码重置成功！正在重定向到登录...",
-      "reset_failed": "重置密码失败。验证码可能已过期。"
+      "reset_failed": "重置密码失败。验证码可能已过期。",
+      "username_taken": "用户名已被占用。",
+      "email_taken": "电子邮件已被占用。"
     }
   },
   "onboarding": {
@@ -621,6 +635,61 @@
     "consistency_king": "一致性之王（要求：{{count}} 个习惯）",
     "consistency_king_desc": "挑战极限！在一天内完成 {{count}} 个习惯，获得大量 XP 加成。",
     "complete_your_profile_title": "完善您的个人资料",
-    "complete_your_profile_desc": "添加您的姓名、个人简介和头像，个性化您的体验。"
+    "complete_your_profile_desc": "添加您的姓名、个人简介和个人资料图片，以个性化您的体验。"
+  },
+  "support": {
+    "title": "联系支持",
+    "email_us": "给我们发邮件",
+    "live_chat": "在线聊天",
+    "coming_soon": "即将推出",
+    "send_message": "发送消息",
+    "subject": "主题",
+    "message": "消息",
+    "subject_placeholder": "我们能为您提供什么帮助？",
+    "message_placeholder": "详细描述您的问题...",
+    "subject_error": "主题是必填项",
+    "message_error": "请提供更多细节（最少 10 个字符）",
+    "send_btn": "发送消息",
+    "sending_btn": "正在发送...",
+    "success_title": "消息已发送",
+    "success_message": "我们的团队将在 24 小时内回复您。",
+    "footer": "有疑问或反馈吗？给我们发送消息，我们会尽快回复您。"
+  },
+  "privacy_policy": {
+    "last_updated": "最后更新：2026年5月",
+    "intro_title": "1. 简介",
+    "intro_text": "欢迎来到 GrowDay。我们致力于保护您的个人信息和您的隐私权。如果您对我们的政策或我们关于您的个人信息的做法有任何疑问或担忧，请联系我们。",
+    "info_collect_title": "2. 我们收集的信息",
+    "info_collect_text": "我们收集您在注册应用程序、表示有兴趣获取有关我们或我们的产品和服务的信息、参与应用程序上的活动或以其他方式联系我们时自愿向我们提供的个人信息。",
+    "info_use_title": "3. 我们如何使用您的信息",
+    "info_use_text": "我们将通过我们的应用程序收集的个人信息用于下述各种业务目的。我们出于这些目的处理您的个人信息是基于我们的合法业务利益，为了与您签订或履行合同，在征得您同意的情况下，和/或为了遵守我们的法律义务。",
+    "info_share_title": "4. 您的信息会被分享吗？",
+    "info_share_text": "我们仅在征得您同意、为了遵守法律、为您提供服务、保护您的权利或履行业务义务的情况下分享信息。我们可能会基于以下法律依据处理或分享数据：同意、合法利益、履行合同或法律义务。",
+    "info_keep_title": "5. 我们将您的信息保留多长时间？",
+    "info_keep_text": "除非法律另有规定，否则我们将按照实现本隐私政策所述目的所需的时间保留您的信息。本政策中的任何目的都不会要求我们将您的个人信息保留超过用户在我们这里拥有账户的时间段。",
+    "info_safe_title": "6. 我们如何保证您的信息安全？",
+    "info_safe_text": "我们已经实施了适当的技术和组织安全措施，旨在保护我们处理的任何个人信息的安全。但是，也请记住，我们无法保证互联网本身是 100% 安全的。",
+    "privacy_rights_title": "7. 您的隐私权是什么？",
+    "privacy_rights_text": "在某些地区，您拥有的权利允许您更好地访问和控制您的个人信息。您可以随时查看、更改或终止您的账户。",
+    "contact_us_title": "8. 联系我们",
+    "contact_us_text": "如果您对本政策有任何疑问或意见，您可以发送电子邮件至 support@growday.com。",
+    "agreement_text": "使用 GrowDay 即表示您同意按照本政策收集和使用信息。"
+  },
+  "terms_of_service": {
+    "intro_title": "1. 同意条款",
+    "intro_text": "访问 GrowDay 即表示您同意受这些服务条款的约束。如果您不同意，请不要使用该应用程序。",
+    "accounts_title": "2. 用户账户",
+    "accounts_text": "您负责维护您的账户和密码的机密性。您同意对在您的账户下发生的所有活动承担责任。",
+    "prohibited_title": "3. 禁止活动",
+    "prohibited_text": "您不得将该应用程序用于任何非法目的，或违反您所在司法管辖区的任何法律。您同意未经我们允许不得复制、修改或分发应用程序的任何部分。",
+    "property_title": "4. 知识产权",
+    "property_text": "GrowDay 的所有内容、特征和功能均为本公司的独家财产，并受国际版权法和商标法保护。",
+    "liability_title": "5. 责任限制",
+    "liability_text": "对于因您使用或无法使用该应用程序而导致的任何间接、偶然、特殊、后果性或惩罚性损害，GrowDay 不承担任何责任。",
+    "termination_title": "6. 终止",
+    "termination_text": "我们可能会因任何原因立即终止或暂停您的账户和对服务的访问，无需事先通知或承担责任。",
+    "changes_title": "7. 条款变更",
+    "changes_text": "我们保留随时修改这些条款的权利。我们将通过在应用程序上发布新条款来通知用户任何重大变更。",
+    "agreement_text": "继续使用 GrowDay 即表示您同意这些条款和条件。"
   }
 }

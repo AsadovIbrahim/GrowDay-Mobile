@@ -191,10 +191,7 @@ export const getUserHabitByFrequencyFetch = async (token, frequency) => {
   
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
+      headers: getHeaders(token),
       cache: "no-store",
     });
   
@@ -205,10 +202,7 @@ export const getUserHabitByFrequencyFetch = async (token, frequency) => {
 export const getUserNotificationsFetch = async (token,pageIndex=0,pageSize=10) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/getnotification?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -218,10 +212,7 @@ export const getUserNotificationsFetch = async (token,pageIndex=0,pageSize=10) =
 export const getUserUnreadNotificationsFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/unreadnotifications?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data=await response.json();
@@ -231,9 +222,7 @@ export const getUserUnreadNotificationsFetch = async (token) => {
 export const deleteNotificationFetch = async (token,notificationId) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/${notificationId}`, {
         method: "DELETE",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
@@ -245,9 +234,7 @@ export const deleteNotificationFetch = async (token,notificationId) => {
 export const markAsAllReadNotificationFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/readall`, {
         method: "PUT",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
@@ -259,10 +246,7 @@ export const markAsAllReadNotificationFetch = async (token) => {
 export const getUserPreferencesFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/UserPreferences/GetUserPreferences?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -272,10 +256,7 @@ export const getUserPreferencesFetch = async (token) => {
 export const getNotificationDetailFetch = async (token,notificationId) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/${notificationId}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const contentType = response.headers.get("content-type");
@@ -288,9 +269,7 @@ export const getNotificationDetailFetch = async (token,notificationId) => {
 export const readNotificationFetch = async (token,notificationId) => {
     const response = await fetch(`${VITE_API_URL}/api/Notification/read/${notificationId}`, {
         method: "PUT",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
@@ -305,9 +284,7 @@ export const getDailyStatisticsFetch = async (token, date = null) => {
         : `${VITE_API_URL}/api/Statistic/daily?_t=${Date.now()}`;
     const response = await fetch(url, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -327,10 +304,7 @@ export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10)
 export const addUserHabitFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateSharedHabit`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -344,10 +318,7 @@ export const addUserHabitFetch = async (token, payload) => {
 export const addCustomUserHabitFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateMyOwnHabit`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -360,10 +331,7 @@ export const addCustomUserHabitFetch = async (token, payload) => {
 export const deleteUserHabitFetch = async (token,userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
         method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     
     
@@ -380,9 +348,7 @@ export const deleteUserHabitFetch = async (token,userHabitId) => {
 export const getUserAchievementsFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Achievement?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -392,9 +358,7 @@ export const getUserAchievementsFetch = async (token) => {
 export const getNewAchievementsFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Achievement/new?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -404,9 +368,7 @@ export const getNewAchievementsFetch = async (token) => {
 export const getAchievementStatsFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Achievement/stats?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -416,9 +378,7 @@ export const getAchievementStatsFetch = async (token) => {
 export const markAchievementsAsSeenFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Achievement/mark-seen`, {
         method: "PATCH",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     const data = await response.json();
     return data;
@@ -427,9 +387,7 @@ export const markAchievementsAsSeenFetch = async (token) => {
 export const getUserTotalXPFetch=async(token)=>{
     const response=await fetch(`${VITE_API_URL}/api/User/GetUserTotalXPCount`,{
         method:"GET",
-        headers:{
-            "Authorization":`Bearer ${token}`,
-        },
+        headers:getHeaders(token),
         cache: "no-store",
     });
     return handleResponse(response);
@@ -441,9 +399,7 @@ export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => 
         : `${VITE_API_URL}/api/UserHabit/${userHabitId}?_t=${Date.now()}`;
     const response = await fetch(url, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -453,10 +409,7 @@ export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => 
 export const completeUserHabitFetch = async (token, userHabitId, payload = {}) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/Complete/${userHabitId}`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -470,10 +423,7 @@ export const completeUserHabitFetch = async (token, userHabitId, payload = {}) =
 export const incrementUserHabitFetch = async (token, userHabitId, payload = {}) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/Increment/${userHabitId}`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -487,10 +437,7 @@ export const incrementUserHabitFetch = async (token, userHabitId, payload = {}) 
 export const reportHabitProgressFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/report-progress`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -504,9 +451,7 @@ export const reportHabitProgressFetch = async (token, payload) => {
 export const getWeeklyProgressFetch = async (token, userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetWeeklyProgress/${userHabitId}?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -516,9 +461,7 @@ export const getWeeklyProgressFetch = async (token, userHabitId) => {
 export const getMonthlyProgressFetch = async (token, userHabitId, year, month) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/GetMonthlyProgress/${userHabitId}?year=${year}&month=${month}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     const data = await response.json();
@@ -562,10 +505,7 @@ export const resetPasswordFetch = async (token, password, confirmPassword) => {
 export const getUserTasksFetch = async (token, pageIndex = 0, pageSize = 10) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     return handleResponse(response);
@@ -574,9 +514,7 @@ export const getUserTasksFetch = async (token, pageIndex = 0, pageSize = 10) => 
 export const getUserTaskByIdFetch = async (token, id) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     return handleResponse(response);
@@ -585,9 +523,7 @@ export const getUserTaskByIdFetch = async (token, id) => {
 export const getUserTaskStatsFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask/stats?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     return handleResponse(response);
@@ -596,9 +532,7 @@ export const getUserTaskStatsFetch = async (token) => {
 export const getUserTasksByStatusFetch = async (token, status) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask/status/${status}?_t=${Date.now()}`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         cache: "no-store",
     });
     return handleResponse(response);
@@ -607,9 +541,7 @@ export const getUserTasksByStatusFetch = async (token, status) => {
 export const completeUserTaskFetch = async (token, id) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}/complete`, {
         method: "PATCH",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     return handleResponse(response);
 };
@@ -617,10 +549,7 @@ export const completeUserTaskFetch = async (token, id) => {
 export const updateUserTaskFetch = async (token, id, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserTask/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     return handleResponse(response);
@@ -639,9 +568,7 @@ export const deleteUserTaskFetch = async (token, id) => {
 export const getAccountDataFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/GetAccountData`, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     return handleResponse(response);
 };
@@ -649,10 +576,7 @@ export const getAccountDataFetch = async (token) => {
 export const updateAccountFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/UpdateAccount`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     return handleResponse(response);
@@ -661,10 +585,7 @@ export const updateAccountFetch = async (token, payload) => {
 export const updateFcmTokenFetch = async (token, fcmToken) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/UpdateFcmToken`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify({ fcmToken }),
     });
     const data = await response.json();
@@ -674,10 +595,7 @@ export const updateFcmTokenFetch = async (token, fcmToken) => {
 export const changePasswordFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/ChangePassword`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     const contentType = response.headers.get("content-type");
@@ -691,10 +609,7 @@ export const changePasswordFetch = async (token, payload) => {
 export const addSuggestedHabitFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/AddSuggestedHabitToUser`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -731,10 +646,7 @@ export const markLearningContentAsReadFetch = async (token, contentId) => {
 export const updateUserHabitFetch = async (token, userHabitId, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
         body: JSON.stringify(payload),
     });
     
@@ -748,9 +660,7 @@ export const updateUserHabitFetch = async (token, userHabitId, payload) => {
 export const removeUserHabitFetch = async (token, userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
         method: "DELETE",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
+        headers: getHeaders(token),
     });
     
     const contentType = response.headers.get("content-type");
@@ -758,4 +668,13 @@ export const removeUserHabitFetch = async (token, userHabitId) => {
         return await response.json();
     }
     return { success: response.ok, status: response.status };
+};
+
+export const sendSupportMessageFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/Support/SendMessage`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
 };

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMinus, faChevronRight, faStar, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faChevronRight, faStar, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { getUserSuggestedHabitsFetch, getUserLearningContentFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
 import UserTasksList from "../../components/UserTasksList";
@@ -31,6 +31,8 @@ const Explore = () => {
   const [pageSize, setPageSize] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   
   useEffect(() => {
@@ -141,13 +143,45 @@ const Explore = () => {
         >
           {/* Header Section */}
           <View className="flex-row items-center justify-between px-4 pt-4 mb-6">
-              <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.header")}</Text>
-            <TouchableOpacity 
-              className="w-10 h-10 rounded-full items-center justify-center"
-              style={{ backgroundColor: colors.cardSecondary }}
-            >
-              <FontAwesomeIcon icon={faSearch} size={18} color={colors.textSecondary} />
-            </TouchableOpacity>
+            {isSearching ? (
+              <View 
+                className="flex-1 flex-row items-center rounded-2xl px-4 h-12 mr-2" 
+                style={{ backgroundColor: colors.cardSecondary }}
+              >
+                <FontAwesomeIcon icon={faSearch} size={16} color={colors.textSecondary} />
+                <TextInput 
+                  className="flex-1 ml-3 font-redditsans-medium text-base"
+                  style={{ color: colors.text }}
+                  placeholder={t("explore.search_placeholder")}
+                  placeholderTextColor={colors.textSecondary + '80'}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  autoFocus
+                />
+                {searchQuery.length > 0 && (
+                  <TouchableOpacity onPress={() => setSearchQuery("")}>
+                    <FontAwesomeIcon icon={faTimes} size={16} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity 
+                  onPress={() => { setIsSearching(false); setSearchQuery(""); }}
+                  className="ml-4"
+                >
+                  <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("common.cancel")}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.header")}</Text>
+                <TouchableOpacity 
+                  onPress={() => setIsSearching(true)}
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: colors.cardSecondary }}
+                >
+                  <FontAwesomeIcon icon={faSearch} size={18} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </>
+            )}
           </View>
 
           {/* Suggested Habits Section */}
@@ -161,10 +195,10 @@ const Explore = () => {
           <View className="py-10 items-center justify-center">
             <ActivityIndicator size="small" color={colors.primary} />
           </View>
-        ) : suggestedHabits.length === 0 ? (
+        ) : (suggestedHabits.filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
           <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
              <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
-               {t("explore.no_suggestions")}
+               {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
              </Text>
           </View>
         ) : (
@@ -176,7 +210,9 @@ const Explore = () => {
             onScroll={handleHorizontalScroll}
             scrollEventThrottle={16}
           >
-            {suggestedHabits.map((habit, index) => (
+            {suggestedHabits
+              .filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map((habit, index) => (
               <SuggestedHabitCard
                 key={habit.id || `suggested-${index}`}
                 name={habit.title}
@@ -184,7 +220,6 @@ const Explore = () => {
                 icon={habit.icon || "🎯"}
                 onPress={() => handleSuggestedHabitPress(habit)}
               />
-
             ))}
             {loading && pageIndex !== 0 && (
               <View className="justify-center items-center px-4">
@@ -210,7 +245,7 @@ const Explore = () => {
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
               </TouchableOpacity>
             </View>
-            <UserTasksList />
+            <UserTasksList searchQuery={searchQuery} />
             
             
           </View>
@@ -231,16 +266,18 @@ const Explore = () => {
                   <ActivityIndicator color={colors.primary} />
                 </View>
               ) : (
-                learningContent.map((item) => (
-                  <View key={item.id} style={{ width: 220 }}>
-                    <LearningCard
-                      title={item.title}
-                      image={item.imageUrl || item.image}
-                      category={item.category}
-                      onPress={() => navigation.navigate("ArticleDetail", { article: item })}
-                    />
-                  </View>
-                ))
+                learningContent
+                  .filter(l => l.title?.toLowerCase().includes(searchQuery.toLowerCase()) || l.category?.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((item) => (
+                    <View key={item.id} style={{ width: 220 }}>
+                      <LearningCard
+                        title={item.title}
+                        image={item.imageUrl || item.image}
+                        category={item.category}
+                        onPress={() => navigation.navigate("ArticleDetail", { article: item })}
+                      />
+                    </View>
+                  ))
               )}
             </ScrollView>
         </View>

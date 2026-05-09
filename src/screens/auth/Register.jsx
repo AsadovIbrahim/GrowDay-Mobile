@@ -50,8 +50,12 @@ const Register = () => {
           navigation.navigate("OtpVerification", { email: formData.email });
         } else {
           const msgs = data.errors?.length > 0
-            ? data.errors
-            : [data.message || t("auth.messages.registration_failed")];
+            ? data.errors.map(err => {
+                if (err === "Username is already in use.") return t("auth.messages.username_taken");
+                if (err === "Email is already in use.") return t("auth.messages.email_taken");
+                return err;
+              })
+            : [data.message === "Username is already in use." ? t("auth.messages.username_taken") : data.message === "Email is already in use." ? t("auth.messages.email_taken") : data.message || t("auth.messages.registration_failed")];
           setServerErrors(msgs);
         }
       } catch (error) {

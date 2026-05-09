@@ -263,12 +263,12 @@ const Profile = ({ navigation }) => {
           <SettingsItem
             icon={faFileAlt}
             title={t("profile.menu.privacy_policy")}
-            onPress={() => {}}
+            onPress={() => navigation.navigate('PrivacyPolicy')}
           />
           <SettingsItem
             icon={faScaleBalanced}
             title={t("profile.menu.terms")}
-            onPress={() => {}}
+            onPress={() => navigation.navigate('TermsOfService')}
             hideBorder
           />
         </View>

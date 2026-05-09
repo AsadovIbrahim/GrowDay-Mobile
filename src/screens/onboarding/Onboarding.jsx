@@ -11,7 +11,7 @@ import { storage } from "../../utils/MMKVStore";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const LANGUAGES = [
   { code: "az", flag: "🇦🇿", label: "AZ", native: "Azərbaycan" },
@@ -160,25 +160,41 @@ export default function Onboarding() {
           onViewableItemsChanged={onViewableItemsChanged}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ width, paddingTop: insets.top + 40 }} className="px-10">
-              <View className="w-full items-center mb-6">
-                {item.image && <item.image height={300} />}
-              </View>
-              <View className="w-full pl-5 gap-5">
-                <Text className="text-5xl font-redditsans-bold text-white capitalize">
-                  {item.title}
-                </Text>
-                <Text className="text-lg font-redditsans-regular text-white mt-3">
-                  {item.description}
-                </Text>
-              </View>
+            <View style={{ width, height: "100%" }}>
+              <ScrollView
+                contentContainerStyle={{
+                  paddingTop: insets.top + 60,
+                  paddingBottom: insets.bottom + 200,
+                  paddingHorizontal: 30,
+                  flexGrow: 1,
+                  justifyContent: "center",
+                }}
+                showsVerticalScrollIndicator={false}
+              >
+                <View className="w-full items-center mb-10">
+                  {item.image && (
+                    <item.image
+                      height={height * 0.25}
+                      width={width * 0.8}
+                    />
+                  )}
+                </View>
+                <View className="w-full px-4 gap-4">
+                  <Text className="text-4xl font-redditsans-bold text-white capitalize leading-tight">
+                    {item.title}
+                  </Text>
+                  <Text className="text-lg font-redditsans-regular text-white opacity-90">
+                    {item.description}
+                  </Text>
+                </View>
+              </ScrollView>
             </View>
           )}
         />
 
         <View
           className="gap-5"
-          style={[styles.dotContainer, { marginBottom: insets.bottom + 100 }]}
+          style={[styles.dotContainer, { bottom: insets.bottom + 110 }]}
         >
           {data.map((_, i) => (
             <View
@@ -213,7 +229,13 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  dotContainer: { flexDirection: "row", justifyContent: "center" },
+  dotContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    position: "absolute",
+    width: "100%",
+    zIndex: 5,
+  },
   dot: { width: 10, height: 10, borderRadius: 6, marginHorizontal: 5 },
 
   /* Modal */

@@ -90,7 +90,13 @@ const EditProfile = ({ navigation, route }) => {
         Alert.alert(t("common.success"), t("profile.edit_profile_screen.save_success"));
         navigation.goBack();
       } else {
-        Alert.alert(t("common.error"), response.message || t("profile.edit_profile_screen.save_error"));
+        let errorMsg = response.message || t("profile.edit_profile_screen.save_error");
+        if (response.message === "Username is already in use.") {
+          errorMsg = t("profile.edit_profile_screen.validation.username_taken");
+        } else if (response.message === "Email is already in use.") {
+          errorMsg = t("profile.edit_profile_screen.validation.email_taken");
+        }
+        Alert.alert(t("common.error"), errorMsg);
       }
     } catch (error) {
       console.error('Update profile error:', error);

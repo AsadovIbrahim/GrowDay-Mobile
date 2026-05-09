@@ -249,7 +249,6 @@ const UserPref7 = () => {
           </Animated.View>
           <View style={{ width: '80%', alignItems: 'center' }}>
             <ActivityIndicator size="large" color="#8bc37a" style={{ marginBottom: 40, transform: [{ scale: 1.8 }] }} />
-            <Text style={{ color: 'white', fontSize: 26, fontWeight: '800', textAlign: 'center', marginBottom: 10, letterSpacing: 2 }}>GENESIS AI</Text>
             <View style={{ height: 50, justifyContent: 'center' }}>
               <Animated.Text style={{ color: '#8bc37a', fontSize: 17, textAlign: 'center', fontWeight: '600', opacity: fadeAnim }}>
                 {loadingMessages[loadingStep]}

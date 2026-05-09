@@ -6,7 +6,7 @@ import { faArrowLeft, faEdit, faTrash, faNoteSticky, faExclamationTriangle, faHi
 import { getUserHabitByIdFetch, getWeeklyProgressFetch, removeUserHabitFetch, reportHabitProgressFetch } from "../../utils/fetch";
 
 import { useMMKVString } from "react-native-mmkv";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ICONS } from "../../constants/icons";
 import { TouchableOpacity } from "react-native";
 import HabitProgressCard from "./components/HabitProgressCard";
@@ -33,6 +33,7 @@ const UserHabitDetails = () => {
     const [weeklyStats, setWeeklyStats] = useState(null);
     const [note, setNote] = useState("");
     const [liveDelta, setLiveDelta] = useState(0);
+    const noteInputRef = useRef(null);
     const [token] = useMMKVString("accessToken");
     const [isFocused, setIsFocused] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -287,29 +288,40 @@ const UserHabitDetails = () => {
                     />
                 )}
 
-                {!isFutureDate && !isFullyCompleted && (
-                    <View style={[styles.notesCard, { backgroundColor: colors.card }, isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }]}>
+                {!isFutureDate && (
+                    <Pressable 
+                        onPress={() => noteInputRef.current?.focus()}
+                        style={[
+                            styles.notesCard, 
+                            { backgroundColor: colors.card }, 
+                            isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }
+                        ]}
+                    >
                         <View style={styles.notesHeader}>
                             <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
                             <Text style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
                             {(note !== (userHabit?.note || "")) && (
-                                <TouchableOpacity onPress={handleSaveNote} style={styles.saveNoteBtn}>
+                                <TouchableOpacity 
+                                    onPress={handleSaveNote} 
+                                    style={[styles.saveNoteBtn, { backgroundColor: colors.primary + '15', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 }]}
+                                >
                                     <Text style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
 
                         <TextInput
+                            ref={noteInputRef}
                             value={note}
                             onChangeText={setNote}
-                            placeholder="Add a note..."
+                            placeholder={t("habit_details.notes_placeholder")}
                             placeholderTextColor={colors.textMuted}
                             multiline
                             style={[styles.notesInput, { color: colors.text }]}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
                         />
-                    </View>
+                    </Pressable>
                 )}
                 
             </ScrollView>

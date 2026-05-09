@@ -9,12 +9,6 @@ import { useTranslation } from "react-i18next";
 
 
 // ── Design tokens ─────────────────────────────────────────────
-const GREEN       = "#2f6f3f";
-const GREEN_MID   = "#10b981";
-const GREEN_GLOW  = "rgba(47,111,63,0.18)";
-const GRAY_BAR    = "#e8eaed";
-const GRAY_TEXT   = "#6b7280";
-const DARK_TEXT   = "#111827";
 const STROKE      = 11;          // unified circle stroke
 const BAR_H       = 48;
 const BAR_W       = 12;
@@ -169,9 +163,18 @@ const HabitProgressCard = ({
 
                 <View style={styles.statsCol}>
                     {isWeekly ? (
-                        <Text style={[styles.primaryText, { color: colors.text }]}>
-                            {t("habit_details.completed_count", { completed: weeklyStats.completedDays, total: weeklyStats.totalDays })}
-                        </Text>
+                        <View>
+                            <Text style={[styles.primaryText, { color: colors.text }]}>
+                                {t("habit_details.completed_count", { 
+                                    completed: weeklyStats.completedDays, 
+                                    total: weeklyStats.totalDays,
+                                    unit: t("habit_details.days")
+                                })}
+                            </Text>
+                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}>
+                                {t("habit_details.completed_this_week")}
+                            </Text>
+                        </View>
                     ) : (
                         <Text style={[styles.primaryText, { color: colors.text }]}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
@@ -224,7 +227,6 @@ HabitProgressCard.displayName = "HabitProgressCard";
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#fff",
         borderRadius: 16,
         padding: 20,
         marginBottom: 20,
@@ -237,7 +239,6 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 13,
         fontWeight: "800",
-        color: GRAY_TEXT,
         textTransform: "uppercase",
         letterSpacing: 1.2,
         marginBottom: 16,
@@ -256,18 +257,15 @@ const styles = StyleSheet.create({
     primaryText: {
         fontSize: 19,
         fontWeight: "800",
-        color: DARK_TEXT,
         lineHeight: 26,
     },
     primarySub: {
         fontSize: 13,
         fontWeight: "500",
-        color: GRAY_TEXT,
     },
     contextLabel: {
         fontSize: 12,
         fontWeight: "500",
-        color: GREEN,
     },
 
     metaGroup: {
@@ -281,10 +279,8 @@ const styles = StyleSheet.create({
     },
     metaLabel: {
         fontSize: 13,
-        color: GRAY_TEXT,
     },
     metaValue: {
-        color: DARK_TEXT,
         fontWeight: "700",
     },
 
@@ -303,7 +299,6 @@ const styles = StyleSheet.create({
         width: BAR_W,
         height: BAR_H,
         borderRadius: 6,
-        backgroundColor: GRAY_BAR,
         justifyContent: "flex-end",
         overflow: "hidden",
     },
@@ -311,8 +306,6 @@ const styles = StyleSheet.create({
     // Today + completed → green glow border
     trackTodayDone: {
         borderWidth: 1.5,
-        borderColor: GREEN,
-        shadowColor: GREEN_GLOW,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
         shadowRadius: 5,
@@ -321,8 +314,6 @@ const styles = StyleSheet.create({
     // Today + pending → outline only, no fill
     trackTodayPending: {
         borderWidth: 1.5,
-        borderColor: GREEN,
-        backgroundColor: "transparent",
     },
     // Past not done + future → slightly faded
     trackFuture: {
@@ -336,13 +327,11 @@ const styles = StyleSheet.create({
 
     dayLabel: {
         fontSize: 9,
-        color: "#b0b8c4",
         fontWeight: "600",
         marginTop: 5,
         letterSpacing: 0.4,
     },
     dayLabelToday: {
-        color: GREEN,
         fontWeight: "800",
     },
     dayLabelFuture: {

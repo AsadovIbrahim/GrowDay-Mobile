@@ -142,7 +142,8 @@
     "minutes": "dakika",
     "time": "Süre",
     "min_spent": "dak harcandı",
-    "completed_count": "Bu hafta 7 günün {{completed}} günü tamamlandı",
+    "completed_count": "{{completed}} / {{total}} {{unit}} tamamlandı",
+    "completed_this_week": "Bu hafta",
     "this_week": "bu hafta",
     "days_short": {
       "mon": "PZT",
@@ -155,6 +156,7 @@
     },
     "note_saved": "Not başarıyla kaydedildi.",
     "notes_label": "Bugünkü Notlar",
+    "notes_placeholder": "Not ekle...",
     "action": {
       "mark_done": "Tamamlandı olarak işaretle",
       "upcoming_title": "Yaklaşan Alışkanlık",
@@ -176,6 +178,7 @@
   },
   "explore": {
     "header": "Keşfet",
+    "search_placeholder": "Alışkanlıkları, görevleri ara...",
     "suggested_habits": "Önerilen alışkanlıklar",
     "no_suggestions": "Şu anda herhangi bir öneri yok.",
     "tasks": "Görevler",
@@ -391,8 +394,10 @@
         "first_name_required": "Ad gereklidir",
         "last_name_required": "Soyad gereklidir",
         "username_required": "Kullanıcı adı gereklidir",
+        "username_taken": "Kullanıcı adı zaten kullanımda.",
         "email_required": "E-posta gereklidir",
-        "email_invalid": "Geçersiz e-posta formatı"
+        "email_invalid": "Geçersiz e-posta formatı",
+        "email_taken": "E-posta zaten kullanımda."
       }
     },
     "change_password_screen": {
@@ -420,6 +425,14 @@
         "number": "Rakam",
         "special": "Özel krkt."
       }
+    },
+    "notification_settings": {
+      "title": "Bildirimler",
+      "push_notifications": "Anlık Bildirimler",
+      "sound_alerts": "Sesli Uyarılar",
+      "email_updates": "E-posta Güncellemeleri",
+      "daily_reminders": "Günlük Hatırlatıcılar",
+      "footer": "GrowDay'den güncellemeleri ve hatırlatıcıları nasıl alacağınızı yönetin."
     }
   },
   "preferences": {
@@ -518,7 +531,7 @@
       "updated_title": "Rutin Güncellendi!",
       "ready_title": "Rutin Hazır!",
       "updated_desc": "Tercihleriniz güncellendi ve yapay zeka rutininizi yeniden optimize etti.",
-      "ready_desc": "Genesis yapay zekası, hedeflerinize ve yaşam tarzınıza uygun kişiselleştirilmiş bir rutin hazırladı.",
+      "ready_desc": "GrowDay AI, hedeflerinize ve yaşam tarzınıza uygun kişiselleştirilmiş bir rutin hazırladı.",
       "explore": "Rutinimi Keşfet"
     }
   },
@@ -577,7 +590,9 @@
       "password_required": "Şifre gereklidir.",
       "passwords_dont_match": "Şifreler uyuşmuyor.",
       "password_reset_success": "Şifre başarıyla sıfırlandı! Giriş ekranına yönlendiriliyorsunuz...",
-      "reset_failed": "Şifre sıfırlanamadı. Kodun süresi dolmuş olabilir."
+      "reset_failed": "Şifre sıfırlanamadı. Kodun süresi dolmuş olabilir.",
+      "username_taken": "Kullanıcı adı zaten kullanımda.",
+      "email_taken": "E-posta zaten kullanımda."
     }
   },
   "onboarding": {
@@ -619,6 +634,60 @@
     "consistency_king": "Tutarlılık Kralı (Gereksinim: {{count}} Alışkanlık)",
     "consistency_king_desc": "Sınırlarınızı aşın! Büyük XP artışı için bir günde en az {{count}} alışkanlığı tamamlayın.",
     "complete_your_profile_title": "Profilinizi Tamamlayın",
-    "complete_your_profile_desc": "Deneyiminizi kişiselleştirmek için adınızı, biyografinizi ve profil fotoğrafınızı ekleyin."
+    "complete_your_profile_desc": "Deneyiminizi kişiselleştirmek için adınızı, biyografinizi ve profil resminizi ekleyin."
+  },
+  "support": {
+    "title": "Destek ile İletişime Geçin",
+    "email_us": "Bize E-posta Gönderin",
+    "live_chat": "Canlı Sohbet",
+    "coming_soon": "Yakında",
+    "send_message": "Mesaj Gönder",
+    "subject": "Konu",
+    "message": "Mesaj",
+    "subject_placeholder": "Size nasıl yardımcı olabiliriz?",
+    "message_placeholder": "Sorununuzu detaylıca açıklayın...",
+    "subject_error": "Konu gereklidir",
+    "message_error": "Lütfen daha fazla detay verin (en az 10 karakter)",
+    "send_btn": "Mesajı Gönder",
+    "sending_btn": "Gönderiliyor...",
+    "success_title": "Mesaj Gönderildi",
+    "success_message": "Ekibimiz 24 saat içinde size geri dönecektir.",
+    "footer": "Bir sorunuz veya geri bildiriminiz mi var? Bize bir mesaj gönderin, en kısa sürede size geri döneceğiz."
+  },
+  "privacy_policy": {
+    "intro_title": "1. Giriş",
+    "intro_text": "GrowDay'e hoş geldiniz. Kişisel bilgilerinizi ve gizlilik hakkınızı korumayı taahhüt ediyoruz. Politikamız veya kişisel bilgilerinizle ilgili uygulamalarımız hakkında herhangi bir sorunuz veya endişeniz varsa, lütfen bizimle iletişime geçin.",
+    "info_collect_title": "2. Topladığımız Bilgiler",
+    "info_collect_text": "Uygulamaya kaydolurken, bizden veya ürünlerimiz ve hizmetlerimiz hakkında bilgi almakla ilgilendiğinizi belirttiğinizde, uygulamadaki etkinliklere katıldığınızda veya bizimle başka bir şekilde iletişime geçtiğinizde gönüllü olarak bize sağladığınız kişisel bilgileri topluyoruz.",
+    "info_use_title": "3. Bilgilerinizi Nasıl Kullanıyoruz?",
+    "info_use_text": "Uygulamamız aracılığıyla toplanan kişisel bilgileri aşağıda açıklanan çeşitli iş amaçları için kullanıyoruz. Kişisel bilgilerinizi bu amaçlar doğrultusunda meşru iş çıkarlarımıza dayanarak, sizinle bir sözleşme akdetmek veya sözleşmeyi yerine getirmek için, rızanızla ve/veya yasal yükümlülüklerimize uymak için işliyoruz.",
+    "info_share_title": "4. Bilgileriniz Paylaşılacak mı?",
+    "info_share_text": "Bilgileri yalnızca rızanızla, yasalara uymak, size hizmet sunmak, haklarınızı korumak veya iş yükümlülüklerini yerine getirmek için paylaşıyoruz. Verileri şu yasal dayanaklara göre işleyebilir veya paylaşabiliriz: Rıza, Meşru Çıkarlar, Bir Sözleşmenin İfası veya Yasal Yükümlülükler.",
+    "info_keep_title": "5. Bilgilerinizi Ne Kadar Süre Saklıyoruz?",
+    "info_keep_text": "Yasalarca aksi belirtilmedikçe, bilgilerinizi bu gizlilik politikasında belirtilen amaçları yerine getirmek için gerekli olan süre boyunca saklıyoruz. Bu politikadaki hiçbir amaç, kişisel bilgilerinizi kullanıcıların bizde bir hesabı olduğu süreden daha uzun süre saklamamızı gerektirmeyecektir.",
+    "info_safe_title": "6. Bilgilerinizi Nasıl Güvende Tutuyoruz?",
+    "info_safe_text": "İşlediğimiz her türlü kişisel bilginin güvenliğini korumak için tasarlanmış uygun teknik ve kurumsal güvenlik önlemlerini uyguladık. Ancak, lütfen internetin kendisinin %100 güvenli olduğunu garanti edemeyeceğimizi de unutmayın.",
+    "privacy_rights_title": "7. Gizlilik Haklarınız Nelerdir?",
+    "privacy_rights_text": "Bazı bölgelerde, kişisel bilgilerinize daha fazla erişmenize ve bunlar üzerinde kontrol sahibi olmanıza izin veren haklarınız vardır. Hesabınızı istediğiniz zaman inceleyebilir, değiştirebilir veya sonlandırabilirsiniz.",
+    "contact_us_title": "8. Bize Ulaşın",
+    "contact_us_text": "Bu politika hakkında sorularınız veya yorumlarınız varsa, support@growday.com adresinden bize e-posta gönderebilirsiniz.",
+    "agreement_text": "GrowDay'i kullanarak, bilgilerin bu politikaya uygun olarak toplanmasını ve kullanılmasını kabul etmiş olursunuz."
+  },
+  "terms_of_service": {
+    "intro_title": "1. Şartların Kabulü",
+    "intro_text": "GrowDay'e erişerek, bu Kullanım Koşullarına bağlı kalmayı kabul etmiş olursunuz. Kabul etmiyorsanız, lütfen uygulamayı kullanmayın.",
+    "accounts_title": "2. Kullanıcı Hesapları",
+    "accounts_text": "Hesabınızın ve şifrenizin gizliliğini korumaktan siz sorumlusunuz. Hesabınız altında gerçekleşen tüm faaliyetlerin sorumluluğunu kabul etmeyi onaylıyorsunuz.",
+    "prohibited_title": "3. Yasaklanmış Faaliyetler",
+    "prohibited_text": "Uygulamayı herhangi bir yasa dışı amaç için veya yargı alanınızdaki herhangi bir yasayı ihlal etmek için kullanamazsınız. Uygulamanın herhangi bir bölümünü iznimiz olmadan kopyalamamayı, değiştirmemeyi veya dağıtmamayı kabul ediyorsunuz.",
+    "property_title": "4. Fikri Mülkiyet",
+    "property_text": "GrowDay'in tüm içeriği, özellikleri ve işlevselliği şirketimizin münhasır mülkiyetindedir ve uluslararası telif hakkı ve ticari marka yasalarıyla korunmaktadır.",
+    "liability_title": "5. Sorumluluğun Sınırlandırılması",
+    "liability_text": "GrowDay, uygulamayı kullanmanızdan veya kullanamamanızdan kaynaklanan herhangi bir dolaylı, arızi, özel, sonuçsal veya cezai zarardan sorumlu olmayacaktır.",
+    "termination_title": "6. Fesih",
+    "termination_text": "Herhangi bir nedenle, önceden bildirimde bulunmaksızın hesabınızı ve hizmete erişiminizi derhal sonlandırabilir veya askıya alabiliriz.",
+    "changes_title": "7. Şartlarda Değişiklikler",
+    "changes_text": "Bu şartları istediğimiz zaman değiştirme hakkını saklı tutarız. Herhangi bir önemli değişikliği, yeni şartları uygulamada yayınlayarak kullanıcılara bildireceğiz.",
+    "agreement_text": "GrowDay'i kullanmaya devam ederek, bu şart ve koşulları kabul etmiş olursunuz."
   }
 }

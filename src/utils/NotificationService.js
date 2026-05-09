@@ -34,7 +34,8 @@ export const getFcmToken = async (token) => {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
       console.log('FCM Token:', fcmToken);
-      await updateFcmTokenFetch(token, fcmToken);
+      const lang = storage.getString('userLanguage') || 'en';
+      await updateFcmTokenFetch(token, `${fcmToken}||${lang}`);
       return fcmToken;
     }
   } catch (error) {
@@ -66,8 +67,9 @@ export const displayLocalNotification = async (remoteMessage) => {
   await notifee.createChannel({
     id: channelId,
     name: soundEnabled ? t('notifications.channel_sound') : t('notifications.channel_silent'),
-    importance: AndroidImportance.HIGH,
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
     sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
   });
 
   await notifee.displayNotification({
@@ -153,11 +155,15 @@ export const scheduleIncompleteReminder = async (habit) => {
     timestamp: Date.now() + 1000 * 60 * 60 * 2, // 2 hours
   };
 
-  const channelId = 'growday_reminder_channel';
+  const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
+  const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
+  
   await notifee.createChannel({
     id: channelId,
     name: t('notifications.channel_reminders'),
-    importance: AndroidImportance.DEFAULT,
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
+    sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
   });
 
   await notifee.createTriggerNotification(
@@ -197,11 +203,15 @@ export const scheduleWinBackReminder = async () => {
     timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
   };
 
-  const channelId = 'growday_reminder_channel';
+  const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
+  const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
+
   await notifee.createChannel({
     id: channelId,
     name: t('notifications.channel_reminders'),
-    importance: AndroidImportance.DEFAULT,
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
+    sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
   });
 
   await notifee.createTriggerNotification(

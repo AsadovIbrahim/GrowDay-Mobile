@@ -217,12 +217,13 @@ const Home = () => {
 
 
   const menuItems = [
-    { id: 'home', label: t('menu.home'), icon: faHome, active: true, route: 'Home' },
-    { id: 'explore', label: t('menu.explore'), icon: faCompass, active: false, route: 'Explore' },
-    { id: 'habits', label: t('menu.habits'), icon: faWalking, active: false, route: 'UserHabits' },
-    { id: 'achievements', label: t('menu.achievements'), icon: faMedal, active: false, route: 'Achievements' },
-    { id: 'support', label: t('menu.support'), icon: faQuestionCircle, active: false, route: 'Profile', screen: 'ContactSupport' },
-    { id: 'settings', label: t('menu.settings'), icon: faGear, active: false, route: 'Profile' },
+    { id: 'home', label: t('menu.home'), icon: faHome, route: 'Home' },
+    { id: 'explore', label: t('menu.explore'), icon: faCompass, route: 'Explore' },
+    { id: 'habits', label: t('menu.habits'), icon: faWalking, route: 'UserHabits' },
+    { id: 'achievements', label: t('menu.achievements'), icon: faMedal, route: 'Achievements' },
+    { id: 'support', label: t('menu.support'), icon: faQuestionCircle, route: 'Profile', screen: 'ContactSupport' },
+    { id: 'settings', label: t('menu.settings'), icon: faGear, route: 'Profile' },
+    { id: 'legal', label: t('menu.legal'), icon: faShieldAlt, route: 'Profile', screen: 'PrivacyPolicy' },
   ];
 
   const handleMenuPress = (item) => {
@@ -239,12 +240,12 @@ const Home = () => {
   const handleLogout = () => {
     closeMenu();
     Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
+      t('common.logout'),
+      t('common.logout_confirm'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         { 
-          text: "Logout", 
+          text: t('common.logout'), 
           style: "destructive",
           onPress: () => {
             storage.delete('accessToken');
@@ -317,53 +318,41 @@ const Home = () => {
           </View>
 
           <View className="flex-1">
-            {menuItems.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => handleMenuPress(item)}
-                activeOpacity={0.7}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: 14,
-                  paddingHorizontal: 16,
-                  borderRadius: 16,
-                  marginBottom: 6,
-                  backgroundColor: item.active ? colors.primary + '15' : 'transparent',
-                }}
-              >
-                <View className={`w-8 h-8 items-center justify-center rounded-lg ${item.active ? '' : ''}`}>
-                    <FontAwesomeIcon
-                      icon={item.icon}
-                      color={item.active ? colors.primary : colors.textSecondary}
-                      size={18}
-                    />
-                </View>
-                <Text
-                  style={{ color: item.active ? colors.primary : colors.textSecondary }}
-                  className={`ml-3 text-base ${
-                    item.active ? 'font-redditsans-bold' : 'font-redditsans-medium'
-                  }`}
+            {menuItems.map((item) => {
+              const isActive = item.id === 'home'; // Since we are on Home.jsx
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => handleMenuPress(item)}
+                  activeOpacity={0.7}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: 14,
+                    paddingHorizontal: 16,
+                    borderRadius: 16,
+                    marginBottom: 6,
+                    backgroundColor: isActive ? colors.primary + '15' : 'transparent',
+                  }}
                 >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-
-            <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 15, opacity: 0.3 }} />
-            
-            <TouchableOpacity
-                onPress={() => {
-                    closeMenu();
-                    // Link to Privacy Policy
-                }}
-                className="flex-row items-center py-3 px-4"
-            >
-                <FontAwesomeIcon icon={faShieldAlt} color={colors.textMuted} size={16} />
-                <Text style={{ color: colors.textSecondary }} className="ml-4 text-sm font-redditsans-regular">
-                    {t('menu.legal')}
-                </Text>
-            </TouchableOpacity>
+                  <View className="w-8 h-8 items-center justify-center rounded-lg">
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        color={isActive ? colors.primary : colors.textSecondary}
+                        size={18}
+                      />
+                  </View>
+                  <Text
+                    style={{ color: isActive ? colors.primary : colors.textSecondary }}
+                    className={`ml-3 text-base ${
+                      isActive ? 'font-redditsans-bold' : 'font-redditsans-medium'
+                    }`}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           <View className="mt-auto pb-6">

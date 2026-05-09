@@ -10,7 +10,7 @@ import UserTaskCard from "./UserTaskCard";
 
 import { useTheme } from "../context/ThemeContext";
 
-const UserTasksList = ({ maxItems = 3 }) => {
+const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
     const { theme } = useTheme();
     const { colors } = theme;
     const [userTasks, setUserTasks] = useState([]);
@@ -23,6 +23,10 @@ const UserTasksList = ({ maxItems = 3 }) => {
         useCallback(() => {
             if (token) getUserTasks();
         }, [token])
+    );
+
+    const filteredTasks = userTasks.filter(task => 
+        task.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const getUserTasks = async () => {
@@ -103,9 +107,17 @@ const UserTasksList = ({ maxItems = 3 }) => {
         );
     }
 
+    if (searchQuery && filteredTasks.length === 0) {
+        return (
+            <View className="rounded-xl p-6 items-center justify-center border border-dashed" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
+                <Text className="font-redditsans-medium italic" style={{ color: colors.textSecondary }}>No tasks matching "{searchQuery}"</Text>
+            </View>
+        );
+    }
+
     return (
         <View>
-            {userTasks.map((task) => (
+            {filteredTasks.map((task) => (
                 <UserTaskCard
                     key={task.id}
                     task={task}

@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useTranslation } from 'react-i18next';
 import {
   faChevronLeft,
   faBell,
@@ -26,6 +27,7 @@ const NotificationsSettings = ({ navigation }) => {
   const { theme } = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [token] = useMMKVString('accessToken');
 
   const [pushEnabled, setPushEnabled] = useMMKVBoolean('settings.pushEnabled');
@@ -78,10 +80,10 @@ const NotificationsSettings = ({ navigation }) => {
   const remindersVal = remindersEnabled ?? true;
 
   const rows = [
-    { icon: faBell, title: 'Push Notifications', value: pushVal, setter: (v) => handleToggle('push', v, setPushEnabled) },
-    { icon: faVolumeHigh, title: 'Sound Alerts', value: soundVal, setter: (v) => handleToggle('sound', v, setSoundEnabled) },
-    { icon: faEnvelope, title: 'Email Updates', value: emailVal, setter: (v) => handleToggle('email', v, setEmailEnabled) },
-    { icon: faMobileAlt, title: 'Daily Reminders', value: remindersVal, setter: (v) => handleToggle('reminders', v, setRemindersEnabled) },
+    { icon: faBell, title: t('profile.notification_settings.push_notifications'), value: pushVal, setter: (v) => handleToggle('push', v, setPushEnabled) },
+    { icon: faVolumeHigh, title: t('profile.notification_settings.sound_alerts'), value: soundVal, setter: (v) => handleToggle('sound', v, setSoundEnabled) },
+    { icon: faEnvelope, title: t('profile.notification_settings.email_updates'), value: emailVal, setter: (v) => handleToggle('email', v, setEmailEnabled) },
+    { icon: faMobileAlt, title: t('profile.notification_settings.daily_reminders'), value: remindersVal, setter: (v) => handleToggle('reminders', v, setRemindersEnabled) },
   ];
 
   return (
@@ -98,7 +100,7 @@ const NotificationsSettings = ({ navigation }) => {
           >
             <FontAwesomeIcon icon={faChevronLeft} size={16} color={colors.text} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('profile.notification_settings.title')}</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -129,7 +131,7 @@ const NotificationsSettings = ({ navigation }) => {
         </View>
 
         <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-          Manage how you receive updates and reminders from GrowDay.
+          {t('profile.notification_settings.footer')}
         </Text>
       </ScrollView>
     </LinearGradient>

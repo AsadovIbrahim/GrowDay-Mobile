@@ -155,6 +155,7 @@
     },
     "note_saved": "Notiz erfolgreich gespeichert.",
     "notes_label": "Heutige Notizen",
+    "notes_placeholder": "Notiz hinzufügen...",
     "action": {
       "mark_done": "Als erledigt markieren",
       "upcoming_title": "Bevorstehende Gewohnheit",
@@ -176,6 +177,7 @@
   },
   "explore": {
     "header": "Entdecken",
+    "search_placeholder": "Gewohnheiten, Aufgaben suchen...",
     "suggested_habits": "Vorgeschlagene Gewohnheiten",
     "no_suggestions": "Derzeit sind keine Vorschläge verfügbar.",
     "tasks": "Aufgaben",
@@ -391,8 +393,10 @@
         "first_name_required": "Vorname ist erforderlich",
         "last_name_required": "Nachname ist erforderlich",
         "username_required": "Benutzername ist erforderlich",
+        "username_taken": "Benutzername wird bereits verwendet.",
         "email_required": "E-Mail ist erforderlich",
-        "email_invalid": "Ungültiges E-Mail-Format"
+        "email_invalid": "Ungültiges E-Mail-Format",
+        "email_taken": "E-Mail wird bereits verwendet."
       }
     },
     "change_password_screen": {
@@ -420,6 +424,14 @@
         "number": "Zahlen",
         "special": "Sonderzeich."
       }
+    },
+    "notification_settings": {
+      "title": "Benachrichtigungen",
+      "push_notifications": "Push-Benachrichtigungen",
+      "sound_alerts": "Tonalarm",
+      "email_updates": "Email-Updates",
+      "daily_reminders": "Tägliche Erinnerungen",
+      "footer": "Verwalten Sie, wie Sie Updates und Erinnerungen von GrowDay erhalten."
     }
   },
   "preferences": {
@@ -577,7 +589,9 @@
       "password_required": "Passwort ist erforderlich.",
       "passwords_dont_match": "Passwörter stimmen nicht überein.",
       "password_reset_success": "Passwort erfolgreich zurückgesetzt! Weiterleitung zum Login...",
-      "reset_failed": "Passwort konnte nicht zurückgesetzt werden. Der Code ist möglicherweise abgelaufen."
+      "reset_failed": "Passwort konnte nicht zurückgesetzt werden. Der Code ist möglicherweise abgelaufen.",
+      "username_taken": "Benutzername wird bereits verwendet.",
+      "email_taken": "E-Mail wird bereits verwendet."
     }
   },
   "onboarding": {
@@ -621,6 +635,60 @@
     "consistency_king": "König der Konsequenz (Anforderung: {{count}} Gewohnheiten)",
     "consistency_king_desc": "Übertreffe deine Grenzen! Schließe {{count}} Gewohnheiten an einem einzigen Tag für einen massiven XP-Boost ab.",
     "complete_your_profile_title": "Profil vervollständigen",
-    "complete_your_profile_desc": "Füge deinen Namen, deine Bio und dein Profilbild hinzu, um dein Erlebnis zu personalisieren."
+    "complete_your_profile_desc": "Fügen Sie Ihren Namen, Ihre Biografie und Ihr Profilbild hinzu, um Ihr Erlebnis zu personalisieren."
+  },
+  "support": {
+    "title": "Support kontaktieren",
+    "email_us": "Schreiben Sie uns",
+    "live_chat": "Live-Chat",
+    "coming_soon": "In Kürze",
+    "send_message": "Nachricht senden",
+    "subject": "Betreff",
+    "message": "Nachricht",
+    "subject_placeholder": "Wie können wir Ihnen helfen?",
+    "message_placeholder": "Beschreiben Sie Ihr Problem detailliert...",
+    "subject_error": "Betreff ist erforderlich",
+    "message_error": "Bitte geben Sie mehr Details an (mind. 10 Zeichen)",
+    "send_btn": "Nachricht senden",
+    "sending_btn": "Wird gesendet...",
+    "success_title": "Nachricht gesendet",
+    "success_message": "Unser Team wird sich innerhalb von 24 Stunden bei Ihnen melden.",
+    "footer": "Haben Sie eine Frage oder Feedback? Senden Sie uns eine Nachricht und wir werden uns so schnell wie möglich bei Ihnen melden."
+  },
+  "privacy_policy": {
+    "intro_title": "1. Einleitung",
+    "intro_text": "Willkommen bei GrowDay. Wir setzen uns für den Schutz Ihrer persönlichen Daten und Ihr Recht auf Privatsphäre ein. Wenn Sie Fragen oder Bedenken zu unserer Richtlinie oder unseren Praktiken in Bezug auf Ihre persönlichen Daten haben, kontaktieren Sie uns bitte.",
+    "info_collect_title": "2. Informationen, die wir sammeln",
+    "info_collect_text": "Wir sammeln personenbezogene Daten, die Sie uns freiwillig zur Verfügung stellen, wenn Sie sich bei der Anwendung registrieren, Ihr Interesse an Informationen über uns oder unsere Produkte und Dienstleistungen bekunden, wenn Sie an Aktivitäten in der Anwendung teilnehmen oder uns anderweitig kontaktieren.",
+    "info_use_title": "3. Wie wir Ihre Informationen verwenden",
+    "info_use_text": "Wir verwenden die über unsere Anwendung gesammelten personenbezogenen Daten für eine Vielzahl der unten beschriebenen geschäftlichen Zwecke. Wir verarbeiten Ihre personenbezogenen Daten für diese Zwecke auf der Grundlage unserer berechtigten Geschäftsinteressen, um einen Vertrag mit Ihnen abzuschließen oder zu erfüllen, mit Ihrer Einwilligung und/oder zur Erfüllung unserer gesetzlichen Verpflichtungen.",
+    "info_share_title": "4. Werden Ihre Informationen weitergegeben?",
+    "info_share_text": "Wir geben Informationen nur mit Ihrer Einwilligung weiter, um Gesetze einzuhalten, Ihnen Dienstleistungen anzubieten, Ihre Rechte zu schützen oder geschäftliche Verpflichtungen zu erfüllen. Wir können Daten auf der folgenden Rechtsgrundlage verarbeiten oder weitergeben: Einwilligung, berechtigte Interessen, Erfüllung eines Vertrags oder rechtliche Verpflichtungen.",
+    "info_keep_title": "5. Wie lange bewahren wir Ihre Informationen auf?",
+    "info_keep_text": "Wir bewahren Ihre Informationen so lange auf, wie es zur Erfüllung der in dieser Datenschutzrichtlinie dargelegten Zwecke erforderlich ist, sofern gesetzlich nichts anderes vorgeschrieben ist. Kein Zweck in dieser Richtlinie erfordert, dass wir Ihre personenbezogenen Daten länger aufbewahren, als der Zeitraum, in dem Benutzer ein Konto bei uns haben.",
+    "info_safe_title": "6. Wie halten wir Ihre Informationen sicher?",
+    "info_safe_text": "Wir haben angemessene technische und organisatorische Sicherheitsmaßnahmen implementiert, um die Sicherheit der von uns verarbeiteten personenbezogenen Daten zu schützen. Bitte denken Sie jedoch auch daran, dass wir nicht garantieren können, dass das Internet selbst zu 100 % sicher ist.",
+    "privacy_rights_title": "7. Was sind Ihre Datenschutzrechte?",
+    "privacy_rights_text": "In einigen Regionen haben Sie Rechte, die Ihnen einen besseren Zugang zu Ihren personenbezogenen Daten und eine stärkere Kontrolle darüber ermöglichen. Sie können Ihr Konto jederzeit überprüfen, ändern oder kündigen.",
+    "contact_us_title": "8. Kontaktieren Sie uns",
+    "contact_us_text": "Wenn Sie Fragen oder Kommentare zu dieser Richtlinie haben, können Sie uns eine E-Mail an support@growday.com senden.",
+    "agreement_text": "Durch die Nutzung von GrowDay stimmen Sie der Erhebung und Verwendung von Informationen gemäß dieser Richtlinie zu."
+  },
+  "terms_of_service": {
+    "intro_title": "1. Zustimmung zu den Bedingungen",
+    "intro_text": "Durch den Zugriff auf GrowDay erklären Sie sich mit diesen Nutzungsbedingungen einverstanden. Wenn Sie nicht einverstanden sind, nutzen Sie die Anwendung bitte nicht.",
+    "accounts_title": "2. Benutzerkonten",
+    "accounts_text": "Sie sind für die Wahrung der Vertraulichkeit Ihres Kontos und Passworts verantwortlich. Sie erklären sich damit einverstanden, die Verantwortung für alle Aktivitäten zu übernehmen, die unter Ihrem Konto stattfinden.",
+    "prohibited_title": "3. Verbotene Aktivitäten",
+    "prohibited_text": "Sie dürfen die App nicht für illegale Zwecke oder zur Verletzung von Gesetzen in Ihrer Gerichtsbarkeit verwenden. Sie erklären sich damit einverstanden, keine Teile der Anwendung ohne unsere Erlaubnis zu kopieren, zu modifizieren oder zu verbreiten.",
+    "property_title": "4. Geistiges Eigentum",
+    "property_text": "Alle Inhalte, Merkmale und Funktionalitäten von GrowDay sind das ausschließliche Eigentum unseres Unternehmens und durch internationale Urheberrechts- und Markenrechte geschützt.",
+    "liability_title": "5. Haftungsbeschränkung",
+    "liability_text": "GrowDay haftet nicht für indirekte, zufällige, spezielle, Folgeschäden oder Strafschadensersatz, die sich aus Ihrer Nutzung oder Unfähigkeit zur Nutzung der Anwendung ergeben.",
+    "termination_title": "6. Beendigung",
+    "termination_text": "Wir können Ihr Konto und den Zugriff auf den Dienst jederzeit ohne vorherige Ankündigung oder Haftung aus irgendeinem Grund kündigen oder sperren.",
+    "changes_title": "7. Änderungen der Bedingungen",
+    "changes_text": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden die Benutzer über alle wesentlichen Änderungen informieren, indem wir die neuen Bedingungen in der Anwendung veröffentlichen.",
+    "agreement_text": "Durch die weitere Nutzung von GrowDay erklären Sie sich mit diesen Bedingungen einverstanden."
   }
 }

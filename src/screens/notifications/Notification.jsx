@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Dimensions } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
@@ -301,6 +301,28 @@ const Notification = () => {
 
 
   const unreadCount = unreadNotificationCount;
+  const screenWidth = Dimensions.get('window').width;
+  const scrollViewRef = React.useRef(null);
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+    if (scrollViewRef.current) {
+      if (tab === 'all') {
+        scrollViewRef.current.scrollTo({ x: 0, animated: true });
+      } else {
+        scrollViewRef.current.scrollTo({ x: screenWidth, animated: true });
+      }
+    }
+  };
+
+  const handleScrollEnd = (e) => {
+    const offset = e.nativeEvent.contentOffset.x;
+    if (offset > screenWidth / 2) {
+      if (selectedTab !== 'unread') setSelectedTab('unread');
+    } else {
+      if (selectedTab !== 'all') setSelectedTab('all');
+    }
+  };
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
@@ -320,7 +342,7 @@ const Notification = () => {
           <View className="flex-row items-center gap-6">
             {/* View All Tab */}
             <TouchableOpacity
-              onPress={() => setSelectedTab('all')}
+              onPress={() => handleTabChange('all')}
               className="flex-row items-center"
             >
               <Text
@@ -336,7 +358,7 @@ const Notification = () => {
 
             {/* Unread Tab */}
             <TouchableOpacity
-              onPress={() => setSelectedTab('unread')}
+              onPress={() => handleTabChange('unread')}
               className="flex-row items-center"
             >
               <Text
@@ -400,31 +422,62 @@ const Notification = () => {
       </View>
 
       {/* Notifications List */}
-      <FlatList
-        className="flex-1 px-4"
-        showsVerticalScrollIndicator={false}
-        data={filteredNotifications}
-        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
-        renderItem={({ item, index }) => (
-          <NotificationItem notification={item} index={index} />
-        )}
-        onRefresh={handleRefresh}
-        refreshing={refreshing}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() => (
-          <View className="py-4 mt-2 mb-8">
-            {isLoadingMore && <ActivityIndicator size="small" color="#22c55e" />}
-          </View>
-        )}
-        ListEmptyComponent={() => (
-          <View className="flex-1 items-center justify-center py-20">
-            <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>
-            {loading ? t('notifications.loading') : t('notifications.none_found')}
-            </Text>
-          </View>
-        )}
-      />
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleScrollEnd}
+        className="flex-1"
+      >
+        <View style={{ width: screenWidth }}>
+          <FlatList
+            className="flex-1 px-4"
+            showsVerticalScrollIndicator={false}
+            data={notifications}
+            keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+            renderItem={({ item, index }) => (
+              <NotificationItem notification={item} index={index} />
+            )}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={() => (
+              <View className="py-4 mt-2 mb-8">
+                {isLoadingMore && <ActivityIndicator size="small" color="#22c55e" />}
+              </View>
+            )}
+            ListEmptyComponent={() => (
+              <View className="flex-1 items-center justify-center py-20">
+                <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>
+                  {loading ? t('notifications.loading') : t('notifications.none_found')}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
+        <View style={{ width: screenWidth }}>
+          <FlatList
+            className="flex-1 px-4"
+            showsVerticalScrollIndicator={false}
+            data={unreadNotifications}
+            keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+            renderItem={({ item, index }) => (
+              <NotificationItem notification={item} index={index} />
+            )}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            ListEmptyComponent={() => (
+              <View className="flex-1 items-center justify-center py-20">
+                <Text className="font-redditsans-regular" style={{ color: colors.textSecondary }}>
+                  {loading ? t('notifications.loading') : t('notifications.none_found')}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };

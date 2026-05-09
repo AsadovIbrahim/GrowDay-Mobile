@@ -155,6 +155,7 @@
     },
     "note_saved": "Nota salvata con successo.",
     "notes_label": "Note di oggi",
+    "notes_placeholder": "Aggiungi una nota...",
     "action": {
       "mark_done": "Segna come fatto",
       "upcoming_title": "Abitudine futura",
@@ -176,6 +177,7 @@
   },
   "explore": {
     "header": "Esplora",
+    "search_placeholder": "Cerca abitudini, compiti...",
     "suggested_habits": "Abitudini suggerite",
     "no_suggestions": "Nessun suggerimento disponibile al momento.",
     "tasks": "Attività",
@@ -390,9 +392,11 @@
       "validation": {
         "first_name_required": "Il nome è obbligatorio",
         "last_name_required": "Il cognome è obbligatorio",
-        "username_required": "Il nome utente è obbligatorio",
-        "email_required": "L'email è obbligatoria",
-        "email_invalid": "Formato email non valido"
+        "username_required": "Nome utente richiesto",
+        "username_taken": "Il nome utente è già in uso.",
+        "email_required": "Email richiesta",
+        "email_invalid": "Formato email non valido",
+        "email_taken": "L'e-mail è già in uso."
       }
     },
     "change_password_screen": {
@@ -420,6 +424,14 @@
         "number": "Numeri",
         "special": "Speciali"
       }
+    },
+    "notification_settings": {
+      "title": "Notifiche",
+      "push_notifications": "Notifiche Push",
+      "sound_alerts": "Avvisi Sonori",
+      "email_updates": "Aggiornamenti via Email",
+      "daily_reminders": "Promemoria Giornalieri",
+      "footer": "Gestisci come ricevi aggiornamenti e promemoria da GrowDay."
     }
   },
   "preferences": {
@@ -518,7 +530,7 @@
       "updated_title": "Routine aggiornata!",
       "ready_title": "La routine è pronta!",
       "updated_desc": "Le tue preferenze sono state aggiornate e l'IA ha riottimizzato la tua routine.",
-      "ready_desc": "Genesis AI ha creato con successo una routine personalizzata su misura per i tuoi obiettivi e il tuo stile di vita.",
+      "ready_desc": "GrowDay AI ha creato con successo una routine personalizzata su misura per i tuoi obiettivi e il tuo stile di vita.",
       "explore": "Esplora la mia routine"
     }
   },
@@ -577,7 +589,9 @@
       "password_required": "La password è obbligatoria.",
       "passwords_dont_match": "Le password non corrispondono.",
       "password_reset_success": "Password reimpostata con successo! Reindirizzamento al login...",
-      "reset_failed": "Impossibile reimpostare la password. Il codice potrebbe essere scaduto."
+      "reset_failed": "Impossibile reimpostare la password. Il codice potrebbe essere scaduto.",
+      "username_taken": "Il nome utente è già in uso.",
+      "email_taken": "L'e-mail è già in uso."
     }
   },
   "onboarding": {
@@ -621,6 +635,60 @@
     "consistency_king": "Re della costanza (Requisito: {{count}} abitudini)",
     "consistency_king_desc": "Supera i tuoi limiti! Completa {{count}} abitudini in un solo giorno per un enorme bonus XP.",
     "complete_your_profile_title": "Completa il tuo profilo",
-    "complete_your_profile_desc": "Aggiungi il tuo nome, una bio e una foto profilo per personalizzare la tua esperienza."
+    "complete_your_profile_desc": "Aggiungi il tuo nome, la tua biografia e la tua foto del profilo per personalizzare la tua esperienza."
+  },
+  "support": {
+    "title": "Contatta il supporto",
+    "email_us": "Inviaci un'e-mail",
+    "live_chat": "Chat dal vivo",
+    "coming_soon": "Prossimamente",
+    "send_message": "Invia un messaggio",
+    "subject": "Oggetto",
+    "message": "Messaggio",
+    "subject_placeholder": "Come possiamo aiutarti?",
+    "message_placeholder": "Descrivi il tuo problema in dettaglio...",
+    "subject_error": "L'oggetto è obbligatorio",
+    "message_error": "Fornisci maggiori dettagli (min 10 caratteri)",
+    "send_btn": "Invia messaggio",
+    "sending_btn": "Invio in corso...",
+    "success_title": "Messaggio inviato",
+    "success_message": "Il nostro team ti risponderà entro 24 ore.",
+    "footer": "Hai una domanda o un feedback? Inviaci un messaggio e ti risponderemo il prima possibile."
+  },
+  "privacy_policy": {
+    "intro_title": "1. Introduzione",
+    "intro_text": "Benvenuti su GrowDay. Ci impegniamo a proteggere le vostre informazioni personali e il vostro diritto alla privacy. In caso di domande o dubbi sulla nostra politica o sulle nostre pratiche relative alle vostre informazioni personali, vi preghiamo di contattarci.",
+    "info_collect_title": "2. Informazioni che raccogliamo",
+    "info_collect_text": "Raccogliamo le informazioni personali che ci fornite volontariamente al momento della registrazione all'applicazione, quando esprimete interesse a ottenere informazioni su di noi o sui nostri prodotti e servizi, quando partecipate ad attività sull'applicazione o quando ci contattate in altro modo.",
+    "info_use_title": "3. Come utilizziamo le vostre informazioni",
+    "info_use_text": "Utilizziamo le informazioni personali raccolte tramite la nostra applicazione per una varietà di scopi commerciali descritti di seguito. Trattiamo le vostre informazioni personali per questi scopi sulla base dei nostri legittimi interessi commerciali, al fine di stipulare o eseguire un contratto con voi, con il vostro consenso e/o per adempiere ai nostri obblighi legali.",
+    "info_share_title": "4. Le vostre informazioni saranno condivise?",
+    "info_share_text": "Condividiamo le informazioni solo con il vostro consenso, per rispettare le leggi, per fornirvi servizi, per proteggere i vostri diritti o per adempiere a obblighi commerciali. Possiamo trattare o condividere i dati sulla base della seguente base giuridica: Consenso, Legittimi Interessi, Esecuzione di un Contrato o Obblighi di Legge.",
+    "info_keep_title": "5. Per quanto tempo conserviamo le vostre informazioni?",
+    "info_keep_text": "Conserviamo le vostre informazioni per il tempo necessario a soddisfare gli scopi delineati in questa informativa sulla privacy, a meno che non sia richiesto diversamente dalla legge. Nessuno scopo in questa informativa richiederà la conservazione delle vostre informazioni personali per un periodo superiore a quello in cui gli utenti hanno un account con noi.",
+    "info_safe_title": "6. Come manteniamo al sicuro le vostre informazioni?",
+    "info_safe_text": "Abbiamo implementato adeguate misure di sicurezza tecniche e organizzative progettate per proteggere la sicurezza di tutte le informazioni personali che trattiamo. Tuttavia, vi preghiamo di ricordare che non possiamo garantire che l'internet stesso sia sicuro al 100%.",
+    "privacy_rights_title": "7. Quali sono i vostri diritti alla privacy?",
+    "privacy_rights_text": "In alcune regioni, disponete di diritti che vi consentono un maggiore accesso e controllo sulle vostre informazioni personali. Potete rivedere, modificare o chiudere il vostro account in qualsiasi momento.",
+    "contact_us_title": "8. Contattaci",
+    "contact_us_text": "In caso di domande o commenti su questa informativa, è possibile inviare un'e-mail all'indirizzo support@growday.com.",
+    "agreement_text": "Utilizzando GrowDay, l'utente accetta la raccolta e l'uso delle informazioni in conformità con la presente informativa."
+  },
+  "terms_of_service": {
+    "intro_title": "1. Accettazione dei termini",
+    "intro_text": "Accedendo a GrowDay, accetti di essere vincolato dai presenti Termini di servizio. Se non sei d'accordo, ti preghiamo di non utilizzare l'applicazione.",
+    "accounts_title": "2. Account utente",
+    "accounts_text": "Sei responsabile del mantenimento della riservatezza del tuo account e della tua password. Accetti di assumerti la responsabilità di tutte le attività che avvengono sotto il tuo account.",
+    "prohibited_title": "3. Attività vietate",
+    "prohibited_text": "Non puoi utilizzare l'app per scopi illegali o per violare le leggi della tua giurisdizione. Accetti di non copiare, modificare o distribuire alcuna parte dell'applicazione senza il nostro permesso.",
+    "property_title": "4. Proprietà intellettuali",
+    "property_text": "Tutti i contenuti, le caratteristiche e le funzionalità di GrowDay sono di proprietà esclusiva della nostra società e sono protetti dalle leggi internazionali sul copyright e sui marchi.",
+    "liability_title": "5. Limitazione di responsabilità",
+    "liability_text": "GrowDay non sarà responsabile per eventuali danni indiretti, incidentali, speciali, consequenziali o punitivi derivanti dall'uso o dall'impossibilità di utilizzare l'applicazione.",
+    "termination_title": "6. Risoluzione",
+    "termination_text": "Possiamo chiudere o sospendere il tuo account e l'accesso al servizio immediatamente, senza preavviso o responsabilità, per qualsiasi motivo.",
+    "changes_title": "7. Modifiche ai termini",
+    "changes_text": "Ci riserviamo il diritto di modificare questi termini in qualsiasi momento. Notificheremo agli utenti eventuali modifiche sostanziali pubblicando i nuovi termini sull'applicazione.",
+    "agreement_text": "Continuando a utilizzare GrowDay, accetti i presenti termini e condizioni."
   }
 }
