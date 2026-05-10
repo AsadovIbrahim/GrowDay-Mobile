@@ -689,5 +689,24 @@
     "changes_title": "7. Şartlarda Değişiklikler",
     "changes_text": "Bu şartları istediğimiz zaman değiştirme hakkını saklı tutarız. Herhangi bir önemli değişikliği, yeni şartları uygulamada yayınlayarak kullanıcılara bildireceğiz.",
     "agreement_text": "GrowDay'i kullanmaya devam ederek, bu şart ve koşulları kabul etmiş olursunuz."
+  },
+  "statistics": {
+    "header": "İstatistikler",
+    "daily": "Günlük",
+    "weekly": "Haftalık",
+    "monthly": "Aylık",
+    "completion_rate": "Tamamlama Oranı",
+    "missed_rate": "Kaçırma Oranı",
+    "completed": "Tamamlandı",
+    "missed": "Kaçırıldı",
+    "period_summary": "Dönem Özeti",
+    "performance_overview": "Performans Genel Bakışı",
+    "consistency_score": "İstikrar Puanı",
+    "habits_completed": "Tamamlanan Alışkanlıklar",
+    "habits_missed": "Kaçırılan Alışkanlıklar",
+    "daily_average": "Günlük Ortalama",
+    "best_day": "En İyi Gün",
+    "keep_going": "Böyle devam et! Harika gidiyorsun! 🚀",
+    "improve_hint": "Oranını artırmak için daha fazla alışkanlık tamamlamaya çalış! 🔥"
   }
 }

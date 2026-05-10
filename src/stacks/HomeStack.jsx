@@ -7,6 +7,7 @@ import UserHabitDetails from "../screens/home/UserHabitDetails";
 import HabitCelebration from "../screens/home/HabitCelebration";
 import CreateCustomHabit from "../screens/create/CreateCustomHabit";
 import HabitHistory from "../screens/home/HabitHistory";
+import Statistics from "../screens/statistics/Statistics";
 const Stack = createNativeStackNavigator();
 
 
@@ -21,6 +22,7 @@ const HomeStack = () => {
             <Stack.Screen name="HabitCelebration" component={HabitCelebration} options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
             <Stack.Screen name="CreateCustomHabit" component={CreateCustomHabit} />
             <Stack.Screen name="HabitHistory" component={HabitHistory} />
+            <Stack.Screen name="Statistics" component={Statistics} />
 
         </Stack.Navigator>
     )

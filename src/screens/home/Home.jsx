@@ -28,6 +28,7 @@ import HomeEmptyState from './HomeEmptyState';
 import CalendarSelector from './components/CalendarSelector';
 import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
+import { faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -121,10 +122,8 @@ const Home = () => {
     try {
       const dateStr = getLocalDateString(selectedDateObject);
       const response = await getDailyStatisticsFetch(token, dateStr);
-      console.log('Daily statistics response:', response);
       setDailyStatistics(response.data);
     } catch (error) {
-      console.log('Error fetching daily statistics:', error);
       setError(error);
     }
   }
@@ -135,7 +134,6 @@ const Home = () => {
         setIsInitialLoading(true);
       }
       const response = await getUserHabitCountFetch(token);
-      console.log('getUserHabitCount response =>', response);
       let count = 0;
       if (typeof response === 'number') {
         count = response;
@@ -152,7 +150,6 @@ const Home = () => {
 
       setUserHabitCount(count);
     } catch (error) {
-      console.log(error);
       setError(error);
     } finally {
       setIsInitialLoading(false);
@@ -220,6 +217,7 @@ const Home = () => {
     { id: 'home', label: t('menu.home'), icon: faHome, route: 'Home' },
     { id: 'explore', label: t('menu.explore'), icon: faCompass, route: 'Explore' },
     { id: 'habits', label: t('menu.habits'), icon: faWalking, route: 'UserHabits' },
+    { id: 'statistics', label: t('statistics.header'), icon: faChartLine, route: 'Statistics' },
     { id: 'achievements', label: t('menu.achievements'), icon: faMedal, route: 'Achievements' },
     { id: 'support', label: t('menu.support'), icon: faQuestionCircle, route: 'Profile', screen: 'ContactSupport' },
     { id: 'settings', label: t('menu.settings'), icon: faGear, route: 'Profile' },
@@ -497,6 +495,20 @@ const Home = () => {
               ))}
             </View> 
 
+            <View className="px-4 mb-4 flex-row justify-between items-center">
+              <Text style={{ color: colors.text }} className="text-xl font-redditsans-bold">
+                {t('home.progress_today')}
+              </Text>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('Statistics')}
+                className="flex-row items-center gap-1"
+              >
+                <Text style={{ color: colors.primary }} className="text-sm font-redditsans-medium">
+                  {t('home.view_all')}
+                </Text>
+                <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={12} />
+              </TouchableOpacity>
+            </View>
             <ProgressSummary dailyStatistics={dailyStatistics} />
           </>
         )}

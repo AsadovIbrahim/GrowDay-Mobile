@@ -690,5 +690,24 @@
     "changes_title": "7. Modifiche ai termini",
     "changes_text": "Ci riserviamo il diritto di modificare questi termini in qualsiasi momento. Notificheremo agli utenti eventuali modifiche sostanziali pubblicando i nuovi termini sull'applicazione.",
     "agreement_text": "Continuando a utilizzare GrowDay, accetti i presenti termini e condizioni."
+  },
+  "statistics": {
+    "header": "Statistiche",
+    "daily": "Giornaliero",
+    "weekly": "Settimanale",
+    "monthly": "Mensile",
+    "completion_rate": "Tasso di Completamento",
+    "missed_rate": "Tasso di Insuccesso",
+    "completed": "Completato",
+    "missed": "Mancato",
+    "period_summary": "Riepilogo del Periodo",
+    "performance_overview": "Panoramica delle Prestazioni",
+    "consistency_score": "Punteggio di Costanza",
+    "habits_completed": "Abitudini Completate",
+    "habits_missed": "Abitudini Mancate",
+    "daily_average": "Media Giornaliera",
+    "best_day": "Miglior Giorno",
+    "keep_going": "Continua così! Stai andando alla grande! 🚀",
+    "improve_hint": "Prova a completare più abitudini per aumentare il tuo tasso! 🔥"
   }
 }

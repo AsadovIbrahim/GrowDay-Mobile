@@ -689,5 +689,24 @@
     "changes_title": "7. Şərtlərdə Dəyişikliklər",
     "changes_text": "Biz bu şərtləri istənilən vaxt dəyişdirmək hüququnu özümüzdə saxlayırıq. Hər hansı əhəmiyyətli dəyişiklik barədə yeni şərtləri tətbiqdə yerləşdirərək istifadəçilərə xəbər verəcəyik.",
     "agreement_text": "GrowDay-dən istifadə etməyə davam edərək, siz bu şərt və qaydalarla razılaşırsınız."
+  },
+  "statistics": {
+    "header": "Statistika",
+    "daily": "Günlük",
+    "weekly": "Həftəlik",
+    "monthly": "Aylıq",
+    "completion_rate": "Tamamlama Faizi",
+    "missed_rate": "Buraxılma Faizi",
+    "completed": "Tamamlandı",
+    "missed": "Buraxıldı",
+    "period_summary": "Dövrün Xülasəsi",
+    "performance_overview": "Performans İcmalı",
+    "consistency_score": "Davamlılıq Balı",
+    "habits_completed": "Tamamlanan Vərdişlər",
+    "habits_missed": "Buraxılan Vərdişlər",
+    "daily_average": "Günlük Orta",
+    "best_day": "Ən Yaxşı Gün",
+    "keep_going": "Davam edin! Əla gedirsiniz! 🚀",
+    "improve_hint": "Faizi artırmaq üçün daha çox vərdiş tamamlamağa çalışın! 🔥"
   }
 }

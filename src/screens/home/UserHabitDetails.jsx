@@ -93,7 +93,7 @@ const UserHabitDetails = () => {
 
 
         } catch (e) {
-            console.log("Habit fetch error:", e);
+            // Error handled
         }
     };
 
@@ -112,7 +112,6 @@ const UserHabitDetails = () => {
                 navigation.navigate("Home", { screen: "HomeScreen" });
             }
         } catch (error) {
-            console.log("Delete error:", error);
             Alert.alert(t("common.error"), t("common.failed_load"));
         } finally {
             setIsDeleting(false);
@@ -142,7 +141,7 @@ const UserHabitDetails = () => {
                 }
             }
         } catch (e) {
-            console.log("Weekly progress fetch error:", e);
+            // Error handled
         }
     };
 

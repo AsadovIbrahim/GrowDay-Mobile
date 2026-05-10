@@ -691,5 +691,24 @@
     "changes_title": "7. Changes to Terms",
     "changes_text": "We reserve the right to modify these terms at any time. We will notify users of any material changes by posting the new terms on the application.",
     "agreement_text": "By continuing to use GrowDay, you agree to these terms and conditions."
+  },
+  "statistics": {
+    "header": "Statistics",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "completion_rate": "Completion Rate",
+    "missed_rate": "Missed Rate",
+    "completed": "Completed",
+    "missed": "Missed",
+    "period_summary": "Period Summary",
+    "performance_overview": "Performance Overview",
+    "consistency_score": "Consistency Score",
+    "habits_completed": "Habits Completed",
+    "habits_missed": "Habits Missed",
+    "daily_average": "Daily Average",
+    "best_day": "Best Day",
+    "keep_going": "Keep going! You're doing great! 🚀",
+    "improve_hint": "Try to complete more habits to increase your rate! 🔥"
   }
 }

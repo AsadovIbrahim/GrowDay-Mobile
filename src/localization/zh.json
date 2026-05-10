@@ -691,5 +691,24 @@
     "changes_title": "7. 条款变更",
     "changes_text": "我们保留随时修改这些条款的权利。我们将通过在应用程序上发布新条款来通知用户任何重大变更。",
     "agreement_text": "继续使用 GrowDay 即表示您同意这些条款和条件。"
+  },
+  "statistics": {
+    "header": "统计",
+    "daily": "每日",
+    "weekly": "每周",
+    "monthly": "每月",
+    "completion_rate": "完成率",
+    "missed_rate": "未完成率",
+    "completed": "已完成",
+    "missed": "未完成",
+    "period_summary": "阶段总结",
+    "performance_overview": "表现概览",
+    "consistency_score": "坚持得分",
+    "habits_completed": "完成的习惯",
+    "habits_missed": "未完成的习惯",
+    "daily_average": "每日平均",
+    "best_day": "最佳表现日",
+    "keep_going": "继续加油！你表现得太棒了！ 🚀",
+    "improve_hint": "尝试完成更多习惯以提高完成率！ 🔥"
   }
 }

@@ -291,6 +291,30 @@ export const getDailyStatisticsFetch = async (token, date = null) => {
     return data;
 };
 
+export const getWeeklyStatisticsFetch = async (token, weekStart = null) => {
+    let url = `${VITE_API_URL}/api/Statistic/weekly?_t=${Date.now()}`;
+    if (weekStart) {
+        url += `&weekStart=${weekStart}`;
+    }
+    const response = await fetch(url, {
+        method: "GET",
+        headers: getHeaders(token),
+        cache: "no-store",
+    });
+    const data = await response.json();
+    return data;
+};
+
+export const getMonthlyStatisticsFetch = async (token, year, month) => {
+    const response = await fetch(`${VITE_API_URL}/api/Statistic/monthly?year=${year}&month=${month}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+        cache: "no-store",
+    });
+    const data = await response.json();
+    return data;
+};
+
 export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10) => {
     const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/GetUserSuggestedHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",
