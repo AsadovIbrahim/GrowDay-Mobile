@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  Vibration,
 } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -17,8 +18,10 @@ import {
   faCheckDouble,
   faBolt,
   faChartBar,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import LinearGradient from "react-native-linear-gradient";
+import CelebrationModal from "../../components/CelebrationModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getUserTasksFetch,
@@ -30,6 +33,7 @@ import {
 import UserTaskCard from "../../components/UserTaskCard";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { getTranslatedTask } from "../../utils/taskTranslations";
 
 const STATUS_FILTERS = ["All", "Pending", "InProgress", "Completed"];
 
@@ -61,6 +65,8 @@ const UserTasks = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState("All");
   const [error, setError] = useState(null);
+  const [celebrationVisible, setCelebrationVisible] = useState(false);
+  const [completedTaskData, setCompletedTaskData] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -115,6 +121,12 @@ const UserTasks = () => {
         // Mark as completed
         const res = await completeUserTaskFetch(token, taskId);
         if (res?.success) {
+          // Play haptic feedback for success
+          Vibration.vibrate(100);
+          
+          setCompletedTaskData(task);
+          setCelebrationVisible(true);
+          
           setTasks((prev) =>
             prev.map((t) =>
               t.id === taskId ? { ...t, status: "Completed", isOverdue: false } : t
@@ -352,6 +364,13 @@ const UserTasks = () => {
           </ScrollView>
         )}
       </SafeAreaView>
+
+      {/* Celebration Modal */}
+      <CelebrationModal 
+        visible={celebrationVisible}
+        taskData={completedTaskData}
+        onClose={() => setCelebrationVisible(false)}
+      />
     </LinearGradient>
   );
 };

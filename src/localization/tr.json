@@ -18,7 +18,10 @@
     "day": "gün",
     "week": "hafta",
     "month": "ay",
-    "custom": "özel"
+    "custom": "özel",
+    "progress": "İlerleme",
+    "congratulations": "Tebrikler!",
+    "continue": "Devam et"
   },
   "menu": {
     "home": "Ana Sayfa",
@@ -34,6 +37,8 @@
     "view_all": "Tümünü gör",
     "unread": "Okunmamış",
     "mark_all_read": "Tümünü okundu işaretle",
+    "select_all": "Tümünü seç",
+    "deselect_all": "Seçimi kaldır",
     "delete_count": "Sil ({{count}})",
     "cancel": "İptal",
     "loading": "Yükleniyor...",
@@ -70,7 +75,7 @@
     "We're excited to have you on board. Start your journey towards better habits today!": "Sizi aramızda görmekten heyecan duyuyoruz. Daha iyi alışkanlıklara doğru yolculuğunuza bugün başlayın!",
     "Habit Completed ✅": "Alışkanlık Tamamlandı ✅",
     "You successfully reached your goal for this habit! Great job!": "Bu alışkanlık için hedefinize başarıyla ulaştınız! Harika iş!",
-    "Time to complete your habit \u23f0": "Alışkanlığınızı tamamlama zamanı \u23f0"
+    "Time to complete your habit ⏰": "Alışkanlığınızı tamamlama zamanı ⏰"
   },
   "home": {
     "greeting": "Merhaba {{name}}!",
@@ -87,7 +92,7 @@
     "empty_subtitle": "Küçükten başlayın, tutarlı olun",
     "add_first_habit": "İlk alışkanlığınızı ekleyin",
     "empty_hint": "Alışkanlıklarınızı günlük takip edebilir\nve ilerlemenizi görebilirsiniz",
-    "progress_today": "Bugünkü ilerleme",
+    "progress_today": "Bugünkü İlerleme",
     "add_habits_tracking": "Takibe başlamak için alışkanlık ekleyin",
     "days_habits": "{{day}} günü alışkanlıkları",
     "day_names": {
@@ -159,6 +164,7 @@
     "notes_placeholder": "Not ekle...",
     "action": {
       "mark_done": "Tamamlandı olarak işaretle",
+      "log_progress": "İlerlemeyi Kaydet",
       "upcoming_title": "Yaklaşan Alışkanlık",
       "upcoming_sub": "Bu alışkanlığı planlanmış güne kadar tamamlayamazsınız.",
       "not_scheduled_title": "Bugün için planlanmadı",
@@ -214,7 +220,9 @@
       "pending": "Bekliyor",
       "in_progress": "Devam ediyor",
       "completed": "Tamamlandı"
-    }
+    },
+    "completed_msg": "Görev başarıyla tamamlandı:",
+    "reward_earned": "Ödül kazanıldı"
   },
   "create_habit": {
     "header": "Özel Alışkanlık Oluştur",
@@ -278,6 +286,7 @@
     "productivity": "Üretkenlik",
     "finance": "Finans",
     "social": "Sosyal",
+    "wellness": "Esenlik",
     "other": "Diğer"
   },
   "achievements": {
@@ -301,26 +310,86 @@
     "earned_on": "Kazanılma tarihi",
     "unlocked_badge": "Kazanıldı",
     "list": {
-      "first_step": { "title": "İlk Adım!", "desc": "İlk görevinizi tamamladınız!" },
-      "getting_started": { "title": "Başlangıç", "desc": "5 görev tamamladınız. Devam edin!" },
-      "on_a_roll": { "title": "Ritmini Buldunuz", "desc": "10 görev bitti. Harika gidiyorsunuz!" },
-      "quarter_century": { "title": "Çeyrek Yüz", "desc": "25 görev tamamlandı. Muhteşem!" },
-      "half_century": { "title": "Yarım Yüz", "desc": "50 görev bitti. Efsane olmaya az kaldı!" },
-      "centurion": { "title": "Yüzbaşı", "desc": "100 görev tamamlandı. Bir efsanesiniz!" },
-      "fire_fighter": { "title": "İtfaiyeci", "desc": "İlk kritik görevinizin üstesinden geldiniz!" },
-      "critical_mass": { "title": "Kritik Kütle", "desc": "5 kritik görev tamamladınız. Korkusuz!" },
-      "high_achiever": { "title": "Yüksek Başarılı", "desc": "10 yüksek öncelikli görev tamamladınız!" },
-      "speed_runner": { "title": "Hız Koşucusu", "desc": "Görevi oluşturulduktan sonra 1 saat içinde bitirdiniz!" },
-      "same_day_slayer": { "title": "Aynı Günün Kahramanı", "desc": "Görevi aynı gün oluşturup tamamladınız!" },
-      "3_day_streak": { "title": "3 Günlük Seri", "desc": "3 gün arka arkaya görev tamamladınız!" },
-      "week_warrior": { "title": "Hafta Savaşçısı", "desc": "7 günlük görev serisi. Durdurulamazsınız!" },
-      "fortnight_force": { "title": "İki Haftalık Güç", "desc": "Arka arkaya 14 gün görev tamamladınız!" },
-      "monthly_master": { "title": "Aylık Usta", "desc": "30 günlük görev serisi. Olağanüstü!" },
-      "early_bird": { "title": "Erken Kuş", "desc": "Sabah 8'den önce görev tamamladınız!" },
-      "night_owl": { "title": "Gece Kuşu", "desc": "Gece 10'dan sonra görev tamamladınız!" },
-      "weekend_warrior": { "title": "Hafta Sonu Savaşçısı", "desc": "Hafta sonu boyunca 3 görev tamamladınız!" },
-      "all_rounder": { "title": "Çok Yönlü", "desc": "4 öncelik seviyesinin tümünde görev tamamladınız!" },
-      "productive_duo": { "title": "Üretken İkili", "desc": "Aynı günde hem alışkanlık hem de görev tamamladınız!" }
+      "first_step": {
+        "title": "İlk Adım!",
+        "desc": "İlk görevinizi tamamladınız!"
+      },
+      "getting_started": {
+        "title": "Başlangıç",
+        "desc": "5 görev tamamladınız. Devam edin!"
+      },
+      "on_a_roll": {
+        "title": "Ritmini Buldunuz",
+        "desc": "10 görev bitti. Harika gidiyorsunuz!"
+      },
+      "quarter_century": {
+        "title": "Çeyrek Yüz",
+        "desc": "25 görev tamamlandı. Muhteşem!"
+      },
+      "half_century": {
+        "title": "Yarım Yüz",
+        "desc": "50 görev bitti. Efsane olmaya az kaldı!"
+      },
+      "centurion": {
+        "title": "Yüzbaşı",
+        "desc": "100 görev tamamlandı. Bir efsanesiniz!"
+      },
+      "fire_fighter": {
+        "title": "İtfaiyeci",
+        "desc": "İlk kritik görevinizin üstesinden geldiniz!"
+      },
+      "critical_mass": {
+        "title": "Kritik Kütle",
+        "desc": "5 kritik görev tamamladınız. Korkusuz!"
+      },
+      "high_achiever": {
+        "title": "Yüksek Başarılı",
+        "desc": "10 yüksek öncelikli görev tamamladınız!"
+      },
+      "speed_runner": {
+        "title": "Hız Koşucusu",
+        "desc": "Görevi oluşturulduktan sonra 1 saat içinde bitirdiniz!"
+      },
+      "same_day_slayer": {
+        "title": "Aynı Günün Kahramanı",
+        "desc": "Görevi aynı gün oluşturup tamamladınız!"
+      },
+      "3_day_streak": {
+        "title": "3 Günlük Seri",
+        "desc": "3 gün arka arkaya görev tamamladınız!"
+      },
+      "week_warrior": {
+        "title": "Hafta Savaşçısı",
+        "desc": "7 günlük görev serisi. Durdurulamazsınız!"
+      },
+      "fortnight_force": {
+        "title": "İki Haftalık Güç",
+        "desc": "Arka arkaya 14 gün görev tamamladınız!"
+      },
+      "monthly_master": {
+        "title": "Aylık Usta",
+        "desc": "30 günlük görev serisi. Olağanüstü!"
+      },
+      "early_bird": {
+        "title": "Erken Kuş",
+        "desc": "Sabah 8'den önce görev tamamladınız!"
+      },
+      "night_owl": {
+        "title": "Gece Kuşu",
+        "desc": "Gece 10'dan sonra görev tamamladınız!"
+      },
+      "weekend_warrior": {
+        "title": "Hafta Sonu Savaşçısı",
+        "desc": "Hafta sonu boyunca 3 görev tamamladınız!"
+      },
+      "all_rounder": {
+        "title": "Çok Yönlü",
+        "desc": "4 öncelik seviyesinin tümünde görev tamamladınız!"
+      },
+      "productive_duo": {
+        "title": "Üretken İkili",
+        "desc": "Aynı günde hem alışkanlık hem de görev tamamladınız!"
+      }
     }
   },
   "habit_history": {
@@ -352,10 +421,52 @@
     "continue": "Devam et"
   },
   "calendar": {
-    "monthNames": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
-    "monthNamesShort": ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
-    "dayNames": ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"],
-    "dayNamesShort": ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
+    "monthNames": [
+      "Ocak",
+      "Şubat",
+      "Mart",
+      "Nisan",
+      "Mayıs",
+      "Haziran",
+      "Temmuz",
+      "Ağustos",
+      "Eylül",
+      "Ekim",
+      "Kasım",
+      "Aralık"
+    ],
+    "monthNamesShort": [
+      "Oca",
+      "Şub",
+      "Mar",
+      "Nis",
+      "May",
+      "Haz",
+      "Tem",
+      "Ağu",
+      "Eyl",
+      "Eki",
+      "Kas",
+      "Ara"
+    ],
+    "dayNames": [
+      "Pazar",
+      "Pazartesi",
+      "Salı",
+      "Çarşamba",
+      "Perşembe",
+      "Cuma",
+      "Cumartesi"
+    ],
+    "dayNamesShort": [
+      "Paz",
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt"
+    ],
     "today": "Bugün"
   },
   "profile": {
@@ -634,7 +745,15 @@
     "consistency_king": "Tutarlılık Kralı (Gereksinim: {{count}} Alışkanlık)",
     "consistency_king_desc": "Sınırlarınızı aşın! Büyük XP artışı için bir günde en az {{count}} alışkanlığı tamamlayın.",
     "complete_your_profile_title": "Profilinizi Tamamlayın",
-    "complete_your_profile_desc": "Deneyiminizi kişiselleştirmek için adınızı, biyografinizi ve profil resminizi ekleyin."
+    "complete_your_profile_desc": "Deneyiminizi kişiselleştirmek için adınızı, biyografinizi ve profil resminizi ekleyin.",
+    "skill_sharpener_title": "Yetenek Geliştirici",
+    "skill_sharpener_desc": "Bu hafta 'Günlük Kodlama' veya 'Öğrenme' alışkanlığınızı 5 kez tamamlayın.",
+    "knowledge_seeker_title": "Bilgi Avcısı",
+    "knowledge_seeker_desc": "Keşfet sekmesinde bir kitaptan 10 sayfa veya bir eğitim makalesi okuyun.",
+    "weekend_warrior_title": "Hafta Sonu Savaşçısı",
+    "weekend_warrior_desc": "Serinizi bozmayın! Hafta sonu boyunca en az 4 alışkanlığı tamamlayın.",
+    "water_master_title": "Su Ustası",
+    "water_master_desc": "Susuz kalmamak için bugün en az 8 bardak su iç."
   },
   "support": {
     "title": "Destek ile İletişime Geçin",

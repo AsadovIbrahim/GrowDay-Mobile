@@ -18,7 +18,10 @@
     "day": "Día",
     "week": "Semana",
     "month": "Mes",
-    "custom": "Personalizado"
+    "custom": "Personalizado",
+    "progress": "Progreso",
+    "congratulations": "¡Felicidades!",
+    "continue": "Continuar"
   },
   "menu": {
     "home": "Inicio",
@@ -34,6 +37,8 @@
     "view_all": "Ver todo",
     "unread": "No leídas",
     "mark_all_read": "Marcar todo como leído",
+    "select_all": "Seleccionar todo",
+    "deselect_all": "Deseleccionar todo",
     "delete_count": "Eliminar ({{count}})",
     "cancel": "Cancelar",
     "loading": "Cargando...",
@@ -70,7 +75,7 @@
     "We're excited to have you on board. Start your journey towards better habits today!": "Estamos emocionados de tenerte aquí. ¡Comienza tu camino hacia mejores hábitos hoy!",
     "Habit Completed ✅": "Hábito completado ✅",
     "You successfully reached your goal for this habit! Great job!": "¡Alcanzaste tu objetivo para este hábito con éxito! ¡Buen trabajo!",
-    "Time to complete your habit \u23f0": "Es hora de completar tu hábito \u23f0"
+    "Time to complete your habit ⏰": "Es hora de completar tu hábito ⏰"
   },
   "home": {
     "greeting": "¡Hola, {{name}}!",
@@ -87,7 +92,7 @@
     "empty_subtitle": "Empieza poco a poco, mantente constante",
     "add_first_habit": "Agrega tu primer hábito",
     "empty_hint": "Puedes hacer seguimiento de tus hábitos a diario\ny ver crecer tu progreso",
-    "progress_today": "Progreso de hoy",
+    "progress_today": "Progreso De Hoy",
     "add_habits_tracking": "Agrega hábitos para comenzar el seguimiento",
     "days_habits": "Hábitos del {{day}}",
     "day_names": {
@@ -158,6 +163,7 @@
     "notes_placeholder": "Agregar una nota...",
     "action": {
       "mark_done": "Marcar como hecho",
+      "log_progress": "Registrar progreso",
       "upcoming_title": "Hábito próximo",
       "upcoming_sub": "No puedes completar este hábito hasta el día programado.",
       "not_scheduled_title": "No programado para este día",
@@ -213,7 +219,9 @@
       "pending": "Pendientes",
       "in_progress": "En progreso",
       "completed": "Completadas"
-    }
+    },
+    "completed_msg": "Tarea completada con éxito:",
+    "reward_earned": "Recompensa obtenida"
   },
   "create_habit": {
     "header": "Crear hábito personalizado",
@@ -277,6 +285,7 @@
     "productivity": "Productividad",
     "finance": "Finanzas",
     "social": "Social",
+    "wellness": "Bienestar",
     "other": "Otro"
   },
   "achievements": {
@@ -300,26 +309,86 @@
     "earned_on": "Obtenido el",
     "unlocked_badge": "Desbloqueado",
     "list": {
-      "first_step": { "title": "¡Primer paso!", "desc": "¡Completaste tu primera tarea!" },
-      "getting_started": { "title": "Empezando", "desc": "5 tareas completadas. ¡Sigue así!" },
-      "on_a_roll": { "title": "En racha", "desc": "10 tareas completadas. ¡Estás en llamas!" },
-      "quarter_century": { "title": "Cuarto de siglo", "desc": "25 tareas completadas. ¡Impresionante!" },
-      "half_century": { "title": "Medio siglo", "desc": "50 tareas completadas. ¡A mitad de camino a la leyenda!" },
-      "centurion": { "title": "Centurión", "desc": "100 tareas completadas. ¡Eres una leyenda!" },
-      "fire_fighter": { "title": "Bombero", "desc": "¡Superaste tu primera tarea crítica!" },
-      "critical_mass": { "title": "Masa crítica", "desc": "5 tareas críticas completadas. ¡Sin miedo!" },
-      "high_achiever": { "title": "Alto rendimiento", "desc": "¡10 tareas de alta prioridad completadas!" },
-      "speed_runner": { "title": "Corredor veloz", "desc": "¡Terminaste una tarea en menos de 1 hora tras crearla!" },
-      "same_day_slayer": { "title": "Maestro del día", "desc": "¡Creaste y completaste una tarea el mismo día!" },
-      "3_day_streak": { "title": "Racha de 3 días", "desc": "¡Tareas completadas 3 días seguidos!" },
-      "week_warrior": { "title": "Guerrero semanal", "desc": "Racha de 7 días. ¡Imparable!" },
-      "fortnight_force": { "title": "Fuerza quincenal", "desc": "¡14 días consecutivos con tareas!" },
-      "monthly_master": { "title": "Maestro mensual", "desc": "Racha de 30 días. ¡Fenomenal!" },
-      "early_bird": { "title": "Madrugador", "desc": "¡Completaste una tarea antes de las 8 AM!" },
-      "night_owl": { "title": "Noctámbulo", "desc": "¡Completaste una tarea después de las 10 PM!" },
-      "weekend_warrior": { "title": "Guerrero de fin de semana", "desc": "¡Completaste 3 tareas durante el fin de semana!" },
-      "all_rounder": { "title": "Todoterreno", "desc": "¡Completaste tareas de los 4 niveles de prioridad!" },
-      "productive_duo": { "title": "Dúo productivo", "desc": "¡Completaste un hábito y una tarea el mismo día!" }
+      "first_step": {
+        "title": "¡Primer paso!",
+        "desc": "¡Completaste tu primera tarea!"
+      },
+      "getting_started": {
+        "title": "Empezando",
+        "desc": "5 tareas completadas. ¡Sigue así!"
+      },
+      "on_a_roll": {
+        "title": "En racha",
+        "desc": "10 tareas completadas. ¡Estás en llamas!"
+      },
+      "quarter_century": {
+        "title": "Cuarto de siglo",
+        "desc": "25 tareas completadas. ¡Impresionante!"
+      },
+      "half_century": {
+        "title": "Medio siglo",
+        "desc": "50 tareas completadas. ¡A mitad de camino a la leyenda!"
+      },
+      "centurion": {
+        "title": "Centurión",
+        "desc": "100 tareas completadas. ¡Eres una leyenda!"
+      },
+      "fire_fighter": {
+        "title": "Bombero",
+        "desc": "¡Superaste tu primera tarea crítica!"
+      },
+      "critical_mass": {
+        "title": "Masa crítica",
+        "desc": "5 tareas críticas completadas. ¡Sin miedo!"
+      },
+      "high_achiever": {
+        "title": "Alto rendimiento",
+        "desc": "¡10 tareas de alta prioridad completadas!"
+      },
+      "speed_runner": {
+        "title": "Corredor veloz",
+        "desc": "¡Terminaste una tarea en menos de 1 hora tras crearla!"
+      },
+      "same_day_slayer": {
+        "title": "Maestro del día",
+        "desc": "¡Creaste y completaste una tarea el mismo día!"
+      },
+      "3_day_streak": {
+        "title": "Racha de 3 días",
+        "desc": "¡Tareas completadas 3 días seguidos!"
+      },
+      "week_warrior": {
+        "title": "Guerrero semanal",
+        "desc": "Racha de 7 días. ¡Imparable!"
+      },
+      "fortnight_force": {
+        "title": "Fuerza quincenal",
+        "desc": "¡14 días consecutivos con tareas!"
+      },
+      "monthly_master": {
+        "title": "Maestro mensual",
+        "desc": "Racha de 30 días. ¡Fenomenal!"
+      },
+      "early_bird": {
+        "title": "Madrugador",
+        "desc": "¡Completaste una tarea antes de las 8 AM!"
+      },
+      "night_owl": {
+        "title": "Noctámbulo",
+        "desc": "¡Completaste una tarea después de las 10 PM!"
+      },
+      "weekend_warrior": {
+        "title": "Guerrero de fin de semana",
+        "desc": "¡Completaste 3 tareas durante el fin de semana!"
+      },
+      "all_rounder": {
+        "title": "Todoterreno",
+        "desc": "¡Completaste tareas de los 4 niveles de prioridad!"
+      },
+      "productive_duo": {
+        "title": "Dúo productivo",
+        "desc": "¡Completaste un hábito y una tarea el mismo día!"
+      }
     }
   },
   "habit_history": {
@@ -351,10 +420,52 @@
     "continue": "Continuar"
   },
   "calendar": {
-    "monthNames": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-    "monthNamesShort": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-    "dayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-    "dayNamesShort": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+    "monthNames": [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre"
+    ],
+    "monthNamesShort": [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic"
+    ],
+    "dayNames": [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado"
+    ],
+    "dayNamesShort": [
+      "Dom",
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb"
+    ],
     "today": "Hoy"
   },
   "profile": {
@@ -635,7 +746,15 @@
     "consistency_king": "Rey de la constancia (Requisito: {{count}} hábitos)",
     "consistency_king_desc": "¡Supera tus límites! Completa {{count}} hábitos en un solo día para obtener un gran impulso de XP.",
     "complete_your_profile_title": "Completa tu perfil",
-    "complete_your_profile_desc": "Agregue su nombre, biografía y foto de perfil para personalizar su experiencia."
+    "complete_your_profile_desc": "Agregue su nombre, biografía y foto de perfil para personalizar su experiencia.",
+    "skill_sharpener_title": "Afilador de Habilidades",
+    "skill_sharpener_desc": "Completa tu hábito de 'Programación diaria' o 'Aprendizaje' 5 veces esta semana.",
+    "knowledge_seeker_title": "Buscador de Conocimientos",
+    "knowledge_seeker_desc": "Lee 10 páginas de un libro o un artículo educativo en la pestaña Explorar.",
+    "weekend_warrior_title": "Guerrero de Fin de Semana",
+    "weekend_warrior_desc": "¡No rompas tu racha! Completa al menos 4 hábitos durante el fin de semana.",
+    "water_master_title": "Maestro del Agua",
+    "water_master_desc": "Bebe al menos 8 vasos de agua hoy para mantenerte hidratado."
   },
   "support": {
     "title": "Contactar con Soporte",

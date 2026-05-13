@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity, Vibration } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -7,6 +7,7 @@ import { faTasks, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { getUserTasksFetch, completeUserTaskFetch, updateUserTaskFetch } from "../utils/fetch";
 import { theme } from "../constants/theme";
 import UserTaskCard from "./UserTaskCard";
+import CelebrationModal from "./CelebrationModal";
 
 import { useTheme } from "../context/ThemeContext";
 
@@ -17,6 +18,8 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
     const [token] = useMMKVString('accessToken');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [celebrationVisible, setCelebrationVisible] = useState(false);
+    const [completedTaskData, setCompletedTaskData] = useState(null);
     const navigation = useNavigation();
 
     useFocusEffect(
@@ -60,6 +63,9 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
                 // Mark as completed
                 const res = await completeUserTaskFetch(token, taskId);
                 if (res?.success) {
+                    Vibration.vibrate(100);
+                    setCompletedTaskData(task);
+                    setCelebrationVisible(true);
                     setUserTasks(prev =>
                         prev.map(t => t.id === taskId ? { ...t, status: "Completed" } : t)
                     );
@@ -125,6 +131,11 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
                 />
             ))}
             
+            <CelebrationModal 
+                visible={celebrationVisible}
+                taskData={completedTaskData}
+                onClose={() => setCelebrationVisible(false)}
+            />
         </View>
     );
 };

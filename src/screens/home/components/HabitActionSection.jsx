@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, PermissionsAndroid, Platform,
 import { useMMKVString } from 'react-native-mmkv';
 import Geolocation from 'react-native-geolocation-service';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faPlay, faPause, faStop } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPause, faStop, faPlus, faKeyboard, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { Modal, TextInput, Vibration } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { completeUserHabitFetch, reportHabitProgressFetch } from '../../../utils/fetch';
 import { useTheme } from '../../../context/ThemeContext';
@@ -46,6 +47,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
     const [isReporting, setIsReporting] = useState(false);
     const [stepCount, setStepCount] = useState(0);
+    const [showManualModal, setShowManualModal] = useState(false);
+    const [manualValue, setManualValue] = useState("");
 
     const watchId = useRef(null);
     const lastPos = useRef({ lat: null, lon: null });
@@ -463,24 +466,93 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         let incs = [1, 2, 5];
         if (unit === "ml") incs = [100, 250, 500];
         if (unit === "count") incs = [1, 5, 10];
+        if (unit === "pages") incs = [1, 5, 10];
+
+        const handleIncrement = (val) => {
+            Vibration.vibrate(10); // Subtle haptic-like vibration
+            onLiveUpdate?.(prev => prev + val);
+            handleReportProgress(val);
+        };
+
+        const handleManualSubmit = () => {
+            const val = parseFloat(manualValue);
+            if (!isNaN(val) && val > 0) {
+                onLiveUpdate?.(prev => prev + val);
+                handleReportProgress(val);
+                setShowManualModal(false);
+                setManualValue("");
+                Vibration.vibrate(20);
+            }
+        };
+
         return (
             <View style={styles.numericContainer}>
                 <View style={styles.incrementsRow}>
                     {incs.map(inc => (
                         <TouchableOpacity 
                             key={inc} 
-                            onPress={() => {
-                                onLiveUpdate?.(prev => prev + inc);
-                                handleReportProgress(inc);
-                            }} 
+                            onPress={() => handleIncrement(inc)} 
                             disabled={isReporting}
+                            activeOpacity={0.7}
                             style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary, opacity: isReporting ? 0.6 : 1 }]}
                         >
                             <Text style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
                         </TouchableOpacity>
                     ))}
+                    <TouchableOpacity 
+                        onPress={() => {
+                            Vibration.vibrate(15);
+                            setShowManualModal(true);
+                        }} 
+                        disabled={isReporting}
+                        activeOpacity={0.7}
+                        style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary }]}
+                    >
+                        <FontAwesomeIcon icon={faKeyboard} color={colors.primary} size={18} />
+                    </TouchableOpacity>
                 </View>
-                <Text style={[styles.helperText, { color: colors.textSecondary }]}>{t("habit_details.action.tap_to_add", { unit: habit.unit })}</Text>
+                <Text style={[styles.helperText, { color: colors.textSecondary }]}>
+                    {t("habit_details.action.tap_to_add", { unit: habit.unit })}
+                </Text>
+
+                {/* Manual Entry Modal */}
+                <Modal
+                    visible={showManualModal}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setShowManualModal(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                            <View style={styles.modalHeader}>
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>{t("habit_details.action.log_progress")}</Text>
+                                <TouchableOpacity onPress={() => setShowManualModal(false)}>
+                                    <FontAwesomeIcon icon={faTimes} color={colors.textSecondary} size={20} />
+                                </TouchableOpacity>
+                            </View>
+                            
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[styles.manualInput, { color: colors.text, borderColor: colors.border }]}
+                                    keyboardType="numeric"
+                                    placeholder="0"
+                                    placeholderTextColor={colors.textMuted}
+                                    autoFocus
+                                    value={manualValue}
+                                    onChangeText={setManualValue}
+                                />
+                                <Text style={[styles.unitText, { color: colors.textSecondary }]}>{habit.unit}</Text>
+                            </View>
+
+                            <TouchableOpacity 
+                                style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+                                onPress={handleManualSubmit}
+                            >
+                                <Text style={styles.submitBtnText}>{t("common.save")}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         );
     }
@@ -583,6 +655,16 @@ const styles = StyleSheet.create({
     lockedEmoji: { fontSize: 32, marginBottom: 4 },
     lockedTitle: { fontSize: 16, fontWeight: '700', textAlign: 'center' },
     lockedSub: { fontSize: 13, textAlign: 'center', lineHeight: 18 },
+    manualBtn: { paddingHorizontal: 16, minWidth: 60 },
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+    modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40, elevation: 20 },
+    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+    modalTitle: { fontSize: 20, fontWeight: '700' },
+    inputContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 24, gap: 12 },
+    manualInput: { flex: 1, height: 60, borderWidth: 2, borderRadius: 16, paddingHorizontal: 20, fontSize: 24, fontWeight: '600' },
+    unitText: { fontSize: 18, fontWeight: '600' },
+    submitBtn: { height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', elevation: 4 },
+    submitBtnText: { color: '#fff', fontSize: 18, fontWeight: '700' },
 });
 
 HabitActionSection.displayName = "HabitActionSection";

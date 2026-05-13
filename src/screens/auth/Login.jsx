@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -27,6 +27,13 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState([]);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: false,
+    });
+  }, []);
 
   const showToast = (message, type = "success") => {
     setToast({ visible: true, message, type });
@@ -84,15 +91,20 @@ const Login = () => {
   }
 
   const handleGoogleLogin = async () => {
-    // 1. Configure GoogleSignin (requires Web Client ID)
-    GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
-    
-    // 2. Perform login and get idToken
+    setLoading(true);
     try {
+      // 1. Ensure a fresh session to avoid stale tokens
+      try {
+        await GoogleSignin.hasPlayServices();
+        await GoogleSignin.signOut();
+      } catch (e) {
+        // Sign out might fail if no user is signed in, which is fine
+      }
+
+      // 2. Perform login
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       
-      // In @react-native-google-signin/google-signin v14+, the structure is userInfo.data.idToken
       const idToken = userInfo?.data?.idToken || userInfo?.idToken;
       
       if (!idToken) {

@@ -497,7 +497,18 @@ const Home = () => {
 
             <View className="px-4 mb-4 flex-row justify-between items-center">
               <Text style={{ color: colors.text }} className="text-xl font-redditsans-bold">
-                {t('home.progress_today')}
+                {(() => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                  selected.setHours(0, 0, 0, 0);
+                  const isToday = selected.getTime() === today.getTime();
+                  
+                  if (isToday) return t('home.progress_today');
+                  const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                  const dayName = t(`home.day_names.${dayKeys[selected.getDay()]}`);
+                  return `${dayName} - ${t('common.progress', { defaultValue: 'Progress' })}`;
+                })()}
               </Text>
               <TouchableOpacity 
                 onPress={() => navigation.navigate('Statistics')}

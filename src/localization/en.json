@@ -18,7 +18,10 @@
     "day": "Day",
     "week": "Week",
     "month": "Month",
-    "custom": "Custom"
+    "custom": "Custom",
+    "progress": "Progress",
+    "congratulations": "Congratulations!",
+    "continue": "Continue"
   },
   "menu": {
     "home": "Home",
@@ -34,6 +37,8 @@
     "view_all": "View All",
     "unread": "Unread",
     "mark_all_read": "Mark all read",
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
     "delete_count": "Delete ({{count}})",
     "cancel": "Cancel",
     "loading": "Loading...",
@@ -70,7 +75,7 @@
     "We're excited to have you on board. Start your journey towards better habits today!": "We're excited to have you on board. Start your journey towards better habits today!",
     "Habit Completed ✅": "Habit Completed ✅",
     "You successfully reached your goal for this habit! Great job!": "You successfully reached your goal for this habit! Great job!",
-    "Time to complete your habit \u23f0": "Time to complete your habit \u23f0"
+    "Time to complete your habit ⏰": "Time to complete your habit ⏰"
   },
   "home": {
     "greeting": "Hi {{name}}!",
@@ -159,6 +164,7 @@
     "notes_placeholder": "Add a note...",
     "action": {
       "mark_done": "Mark as done",
+      "log_progress": "Log Progress",
       "upcoming_title": "Upcoming Habit",
       "upcoming_sub": "You cannot complete this habit until the scheduled day.",
       "not_scheduled_title": "Not scheduled for this day",
@@ -214,7 +220,9 @@
       "pending": "Pending",
       "in_progress": "In Progress",
       "completed": "Completed"
-    }
+    },
+    "completed_msg": "You've successfully completed the task:",
+    "reward_earned": "Reward Earned"
   },
   "create_habit": {
     "header": "Create Custom Habit",
@@ -278,6 +286,7 @@
     "productivity": "Productivity",
     "finance": "Finance",
     "social": "Social",
+    "wellness": "Wellness",
     "other": "Other"
   },
   "achievements": {
@@ -301,26 +310,86 @@
     "earned_on": "Earned on",
     "unlocked_badge": "Unlocked",
     "list": {
-      "first_step": { "title": "First Step!", "desc": "Completed your very first task!" },
-      "getting_started": { "title": "Getting Started", "desc": "Completed 5 tasks. Keep going!" },
-      "on_a_roll": { "title": "On a Roll", "desc": "10 tasks down. You're on fire!" },
-      "quarter_century": { "title": "Quarter Century", "desc": "25 tasks completed. Impressive!" },
-      "half_century": { "title": "Half Century", "desc": "50 tasks done. Halfway to legend!" },
-      "centurion": { "title": "Centurion", "desc": "100 tasks completed. You're a legend!" },
-      "fire_fighter": { "title": "Fire Fighter", "desc": "Tackled your first critical task!" },
-      "critical_mass": { "title": "Critical Mass", "desc": "Completed 5 critical tasks. Fearless!" },
-      "high_achiever": { "title": "High Achiever", "desc": "Completed 10 high priority tasks!" },
-      "speed_runner": { "title": "Speed Runner", "desc": "Finished a task within 1 hour of creating it!" },
-      "same_day_slayer": { "title": "Same Day Slayer", "desc": "Created and completed a task on the same day!" },
-      "3_day_streak": { "title": "3-Day Streak", "desc": "Completed tasks 3 days in a row!" },
-      "week_warrior": { "title": "Week Warrior", "desc": "7-day task streak. Unstoppable!" },
-      "fortnight_force": { "title": "Fortnight Force", "desc": "14 consecutive days with tasks!" },
-      "monthly_master": { "title": "Monthly Master", "desc": "30-day task streak. Phenomenal!" },
-      "early_bird": { "title": "Early Bird", "desc": "Completed a task before 8 AM!" },
-      "night_owl": { "title": "Night Owl", "desc": "Completed a task after 10 PM!" },
-      "weekend_warrior": { "title": "Weekend Warrior", "desc": "Completed 3 tasks during the weekend!" },
-      "all_rounder": { "title": "All-Rounder", "desc": "Completed tasks of all 4 priority levels!" },
-      "productive_duo": { "title": "Productive Duo", "desc": "Completed both a habit and a task on the same day!" }
+      "first_step": {
+        "title": "First Step!",
+        "desc": "Completed your very first task!"
+      },
+      "getting_started": {
+        "title": "Getting Started",
+        "desc": "Completed 5 tasks. Keep going!"
+      },
+      "on_a_roll": {
+        "title": "On a Roll",
+        "desc": "10 tasks down. You're on fire!"
+      },
+      "quarter_century": {
+        "title": "Quarter Century",
+        "desc": "25 tasks completed. Impressive!"
+      },
+      "half_century": {
+        "title": "Half Century",
+        "desc": "50 tasks done. Halfway to legend!"
+      },
+      "centurion": {
+        "title": "Centurion",
+        "desc": "100 tasks completed. You're a legend!"
+      },
+      "fire_fighter": {
+        "title": "Fire Fighter",
+        "desc": "Tackled your first critical task!"
+      },
+      "critical_mass": {
+        "title": "Critical Mass",
+        "desc": "Completed 5 critical tasks. Fearless!"
+      },
+      "high_achiever": {
+        "title": "High Achiever",
+        "desc": "Completed 10 high priority tasks!"
+      },
+      "speed_runner": {
+        "title": "Speed Runner",
+        "desc": "Finished a task within 1 hour of creating it!"
+      },
+      "same_day_slayer": {
+        "title": "Same Day Slayer",
+        "desc": "Created and completed a task on the same day!"
+      },
+      "3_day_streak": {
+        "title": "3-Day Streak",
+        "desc": "Completed tasks 3 days in a row!"
+      },
+      "week_warrior": {
+        "title": "Week Warrior",
+        "desc": "7-day task streak. Unstoppable!"
+      },
+      "fortnight_force": {
+        "title": "Fortnight Force",
+        "desc": "14 consecutive days with tasks!"
+      },
+      "monthly_master": {
+        "title": "Monthly Master",
+        "desc": "30-day task streak. Phenomenal!"
+      },
+      "early_bird": {
+        "title": "Early Bird",
+        "desc": "Completed a task before 8 AM!"
+      },
+      "night_owl": {
+        "title": "Night Owl",
+        "desc": "Completed a task after 10 PM!"
+      },
+      "weekend_warrior": {
+        "title": "Weekend Warrior",
+        "desc": "Completed 3 tasks during the weekend!"
+      },
+      "all_rounder": {
+        "title": "All-Rounder",
+        "desc": "Completed tasks of all 4 priority levels!"
+      },
+      "productive_duo": {
+        "title": "Productive Duo",
+        "desc": "Completed both a habit and a task on the same day!"
+      }
     }
   },
   "habit_history": {
@@ -352,10 +421,52 @@
     "continue": "Continue"
   },
   "calendar": {
-    "monthNames": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-    "monthNamesShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    "dayNamesShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "monthNames": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "monthNamesShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "dayNames": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "dayNamesShort": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
     "today": "Today"
   },
   "profile": {
@@ -636,7 +747,15 @@
     "consistency_king": "Consistency King (Requirement: {{count}} Habits)",
     "consistency_king_desc": "Push your limits! Complete {{count}} habits in a single day for a massive XP boost.",
     "complete_your_profile_title": "Complete Your Profile",
-    "complete_your_profile_desc": "Add your name, bio, and profile picture to personalize your experience."
+    "complete_your_profile_desc": "Add your name, bio, and profile picture to personalize your experience.",
+    "skill_sharpener_title": "Skill Sharpener",
+    "skill_sharpener_desc": "Complete your 'Daily Coding' or 'Learning' habit 5 times this week.",
+    "knowledge_seeker_title": "Knowledge Seeker",
+    "knowledge_seeker_desc": "Read 10 pages of a book or an educational article in the Explore tab.",
+    "weekend_warrior_title": "Weekend Warrior",
+    "weekend_warrior_desc": "Don't break your streak! Complete at least 4 habits during the weekend.",
+    "water_master_title": "Water Master",
+    "water_master_desc": "Drink at least 8 glasses of water today to stay hydrated."
   },
   "support": {
     "title": "Contact Support",

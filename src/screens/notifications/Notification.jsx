@@ -1,6 +1,6 @@
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Dimensions } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faTrash, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { getUserNotificationsFetch, getUserUnreadNotificationsFetch, markAsAllReadNotificationFetch, getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
@@ -200,6 +200,15 @@ const Notification = () => {
     }
   };
 
+  const handleSelectAll = () => {
+    const currentList = selectedTab === 'all' ? notifications : unreadNotifications;
+    if (selectedNotifications.size === currentList.length && currentList.length > 0) {
+      setSelectedNotifications(new Set());
+    } else {
+      setSelectedNotifications(new Set(currentList.map(item => item.id)));
+    }
+  };
+
   // Notification Item Component
   const NotificationItem = ({ notification, index }) => {
     const isSelected = selectedNotifications.has(notification.id);
@@ -327,57 +336,86 @@ const Notification = () => {
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
-      <View className="pt-12 px-4 pb-4" style={{ backgroundColor: colors.background }}>
-        <View className="flex-row items-center gap-4 mb-4">
-          <TouchableOpacity onPress={handleGoBack}>
+      <View className="pt-12 px-4 pb-2" style={{ backgroundColor: colors.background }}>
+        <View className="flex-row items-center gap-3 mb-4">
+          <TouchableOpacity onPress={handleGoBack} className="p-1">
             <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
           </TouchableOpacity>
-          <Text className="text-3xl mt-3 font-redditsans-bold mb-4" style={{ color: colors.text }}>
+          <Text className="text-2xl font-redditsans-bold" style={{ color: colors.text }}>
             {t('notifications.title')}
           </Text>
         </View>
 
-        {/* Tabs */}
+        {/* Tabs or Selection Info */}
         <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center gap-6">
-            {/* View All Tab */}
-            <TouchableOpacity
-              onPress={() => handleTabChange('all')}
-              className="flex-row items-center"
-            >
-              <Text
-                className="text-base font-redditsans-medium"
-                style={{ color: selectedTab === 'all' ? colors.text : colors.textSecondary }}
+          <View className="flex-row items-center flex-1">
+            {isSelectionMode ? (
+              <TouchableOpacity 
+                onPress={handleSelectAll} 
+                className="flex-row items-center gap-2"
+                activeOpacity={0.7}
               >
-                {t('notifications.view_all')}
-              </Text>
-              {selectedTab === 'all' && (
-                <View className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-500" />
-              )}
-            </TouchableOpacity>
-
-            {/* Unread Tab */}
-            <TouchableOpacity
-              onPress={() => handleTabChange('unread')}
-              className="flex-row items-center"
-            >
-              <Text
-                className="text-base font-redditsans-medium"
-                style={{ color: selectedTab === 'unread' ? colors.text : colors.textSecondary }}
-              >
-                {t('notifications.unread')}
-              </Text>
-              {unreadCount > 0 && (
-                <View className="ml-2 rounded-full px-2 py-0.5" style={{ backgroundColor: colors.cardSecondary }}>
-                  <Text className="text-xs font-redditsans-medium" style={{ color: colors.text }}>
-                    {unreadCount}
-                  </Text>
+                <View 
+                  className="w-5 h-5 rounded items-center justify-center border"
+                  style={{ 
+                    borderColor: (filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) ? colors.primary : colors.textSecondary,
+                    backgroundColor: (filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) ? colors.primary : 'transparent',
+                    borderRadius: 4,
+                    borderWidth: (filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) ? 0 : 2
+                  }}
+                >
+                  {(filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) && (
+                    <FontAwesomeIcon icon={faCheck} size={12} color="#FFFFFF" />
+                  )}
                 </View>
-              )}
-              {selectedTab === 'unread' && (
-                <View className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-500" />
-              )}
-            </TouchableOpacity>
+                <Text className="text-base font-redditsans-medium" style={{ color: colors.text }}>
+                  {(filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id)))
+                    ? t('notifications.deselect_all')
+                    : t('notifications.select_all')}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View className="flex-row items-center gap-4">
+                {/* View All Tab */}
+                <TouchableOpacity
+                  onPress={() => handleTabChange('all')}
+                  className="flex-row items-center"
+                >
+                  <Text
+                    className="text-base font-redditsans-medium"
+                    style={{ color: selectedTab === 'all' ? colors.text : colors.textSecondary }}
+                  >
+                    {t('notifications.view_all')}
+                  </Text>
+                  {selectedTab === 'all' && (
+                    <View className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-500" />
+                  )}
+                </TouchableOpacity>
+
+                {/* Unread Tab */}
+                <TouchableOpacity
+                  onPress={() => handleTabChange('unread')}
+                  className="flex-row items-center"
+                >
+                  <Text
+                    className="text-base font-redditsans-medium"
+                    style={{ color: selectedTab === 'unread' ? colors.text : colors.textSecondary }}
+                  >
+                    {t('notifications.unread')}
+                  </Text>
+                  {unreadCount > 0 && (
+                    <View className="ml-2 rounded-full px-2 py-0.5" style={{ backgroundColor: colors.cardSecondary }}>
+                      <Text className="text-xs font-redditsans-medium" style={{ color: colors.text }}>
+                        {unreadCount}
+                      </Text>
+                    </View>
+                  )}
+                  {selectedTab === 'unread' && (
+                    <View className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-500" />
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           {/* Action Buttons */}
@@ -385,22 +423,23 @@ const Notification = () => {
             {isSelectionMode ? (
               <>
                 <TouchableOpacity
-                  className="bg-red-500 rounded-lg px-4 py-2"
+                  className="bg-red-500 rounded-full px-3 py-1.5"
                   onPress={deleteSelectedNotifications}
                   disabled={selectedNotifications.size === 0}
+                  style={{ opacity: selectedNotifications.size === 0 ? 0.6 : 1 }}
                 >
-                  <Text className="text-white text-sm font-redditsans-medium">
+                  <Text className="text-white text-xs font-redditsans-medium">
                     {t('notifications.delete_count', { count: selectedNotifications.size })}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="bg-gray-500 rounded-lg px-4 py-2"
+                  className="bg-gray-500/20 rounded-full px-3 py-1.5"
                   onPress={() => {
                     setIsSelectionMode(false);
                     setSelectedNotifications(new Set());
                   }}
                 >
-                  <Text className="text-white text-sm font-redditsans-medium">
+                  <Text className="text-sm font-redditsans-medium" style={{ color: colors.textSecondary }}>
                     {t('notifications.cancel')}
                   </Text>
                 </TouchableOpacity>
@@ -408,10 +447,11 @@ const Notification = () => {
             ) : (
               unreadCount > 0 && selectedTab === 'unread' && (
                 <TouchableOpacity
-                  className="bg-green-500 rounded-lg px-4 py-2"
+                  className="bg-green-500/20 rounded-full px-3 py-1.5"
                   onPress={markAsAllReadNotification}
+                  style={{ borderWidth: 1, borderColor: '#22c55e' }}
                 >
-                  <Text className="text-white text-sm font-redditsans-medium">
+                  <Text className="text-xs font-redditsans-bold" style={{ color: '#22c55e' }}>
                     {t('notifications.mark_all_read')}
                   </Text>
                 </TouchableOpacity>

@@ -18,7 +18,10 @@
     "day": "Tag",
     "week": "Woche",
     "month": "Monat",
-    "custom": "Benutzerdefiniert"
+    "custom": "Benutzerdefiniert",
+    "progress": "Fortschritt",
+    "congratulations": "Glückwunsch!",
+    "continue": "Weiter"
   },
   "menu": {
     "home": "Startseite",
@@ -34,6 +37,8 @@
     "view_all": "Alle anzeigen",
     "unread": "Ungelesen",
     "mark_all_read": "Alle als gelesen markieren",
+    "select_all": "Alle auswählen",
+    "deselect_all": "Alle abwählen",
     "delete_count": "Löschen ({{count}})",
     "cancel": "Abbrechen",
     "loading": "Wird geladen...",
@@ -70,7 +75,7 @@
     "We're excited to have you on board. Start your journey towards better habits today!": "Wir freuen uns, dich dabei zu haben. Beginne noch heute deine Reise zu besseren Gewohnheiten!",
     "Habit Completed ✅": "Gewohnheit abgeschlossen ✅",
     "You successfully reached your goal for this habit! Great job!": "Du hast dein Ziel für diese Gewohnheit erfolgreich erreicht! Großartige Arbeit!",
-    "Time to complete your habit \u23f0": "Zeit, deine Gewohnheit abzuschließen \u23f0"
+    "Time to complete your habit ⏰": "Zeit, deine Gewohnheit abzuschließen ⏰"
   },
   "home": {
     "greeting": "Hallo {{name}}!",
@@ -158,6 +163,7 @@
     "notes_placeholder": "Notiz hinzufügen...",
     "action": {
       "mark_done": "Als erledigt markieren",
+      "log_progress": "Fortschritt protokollieren",
       "upcoming_title": "Bevorstehende Gewohnheit",
       "upcoming_sub": "Du kannst diese Gewohnheit erst am geplanten Tag abschließen.",
       "not_scheduled_title": "Nicht für diesen Tag geplant",
@@ -213,7 +219,9 @@
       "pending": "Ausstehend",
       "in_progress": "In Bearbeitung",
       "completed": "Abgeschlossen"
-    }
+    },
+    "completed_msg": "Aufgabe erfolgreich abgeschlossen:",
+    "reward_earned": "Belohnung erhalten"
   },
   "create_habit": {
     "header": "Benutzerdefinierte Gewohnheit erstellen",
@@ -277,6 +285,7 @@
     "productivity": "Produktivität",
     "finance": "Finanzen",
     "social": "Soziales",
+    "wellness": "Wellness",
     "other": "Sonstiges"
   },
   "achievements": {
@@ -300,26 +309,86 @@
     "earned_on": "Verdient am",
     "unlocked_badge": "Freigeschaltet",
     "list": {
-      "first_step": { "title": "Erster Schritt!", "desc": "Du hast deine allererste Aufgabe abgeschlossen!" },
-      "getting_started": { "title": "Erste Schritte", "desc": "5 Aufgaben abgeschlossen. Weiter so!" },
-      "on_a_roll": { "title": "In Fahrt", "desc": "10 Aufgaben geschafft. Du bist in Form!" },
-      "quarter_century": { "title": "Viertel-Jahrhundert", "desc": "25 Aufgaben abgeschlossen. Beeindruckend!" },
-      "half_century": { "title": "Halbes Jahrhundert", "desc": "50 Aufgaben erledigt. Halbzeit auf dem Weg zur Legende!" },
-      "centurion": { "title": "Zenturio", "desc": "100 Aufgaben abgeschlossen. Du bist eine Legende!" },
-      "fire_fighter": { "title": "Feuerwehrmann", "desc": "Deine erste kritische Aufgabe gemeistert!" },
-      "critical_mass": { "title": "Kritische Masse", "desc": "5 kritische Aufgaben abgeschlossen. Furchtlos!" },
-      "high_achiever": { "title": "Leistungsträger", "desc": "10 Aufgaben mit hoher Priorität abgeschlossen!" },
-      "speed_runner": { "title": "Schnellläufer", "desc": "Eine Aufgabe innerhalb von 1 Stunde nach der Erstellung abgeschlossen!" },
-      "same_day_slayer": { "title": "Tagesheld", "desc": "Eine Aufgabe am selben Tag erstellt und abgeschlossen!" },
-      "3_day_streak": { "title": "3-Tage-Serie", "desc": "3 Tage in Folge Aufgaben abgeschlossen!" },
-      "week_warrior": { "title": "Wochenkämpfer", "desc": "7-Tage-Aufgabenserie. Unaufhaltsam!" },
-      "fortnight_force": { "title": "Zwei-Wochen-Kraft", "desc": "14 aufeinanderfolgende Tage mit Aufgaben!" },
-      "monthly_master": { "title": "Monatsmeister", "desc": "30-Tage-Aufgabenserie. Phänomenal!" },
-      "early_bird": { "title": "Frühaufsteher", "desc": "Eine Aufgabe vor 8 Uhr abgeschlossen!" },
-      "night_owl": { "title": "Nachteule", "desc": "Eine Aufgabe nach 22 Uhr abgeschlossen!" },
-      "weekend_warrior": { "title": "Wochenendkämpfer", "desc": "3 Aufgaben am Wochenende abgeschlossen!" },
-      "all_rounder": { "title": "Allrounder", "desc": "Aufgaben aller 4 Prioritätsstufen abgeschlossen!" },
-      "productive_duo": { "title": "Produktives Duo", "desc": "Eine Gewohnheit und eine Aufgabe am selben Tag abgeschlossen!" }
+      "first_step": {
+        "title": "Erster Schritt!",
+        "desc": "Du hast deine allererste Aufgabe abgeschlossen!"
+      },
+      "getting_started": {
+        "title": "Erste Schritte",
+        "desc": "5 Aufgaben abgeschlossen. Weiter so!"
+      },
+      "on_a_roll": {
+        "title": "In Fahrt",
+        "desc": "10 Aufgaben geschafft. Du bist in Form!"
+      },
+      "quarter_century": {
+        "title": "Viertel-Jahrhundert",
+        "desc": "25 Aufgaben abgeschlossen. Beeindruckend!"
+      },
+      "half_century": {
+        "title": "Halbes Jahrhundert",
+        "desc": "50 Aufgaben erledigt. Halbzeit auf dem Weg zur Legende!"
+      },
+      "centurion": {
+        "title": "Zenturio",
+        "desc": "100 Aufgaben abgeschlossen. Du bist eine Legende!"
+      },
+      "fire_fighter": {
+        "title": "Feuerwehrmann",
+        "desc": "Deine erste kritische Aufgabe gemeistert!"
+      },
+      "critical_mass": {
+        "title": "Kritische Masse",
+        "desc": "5 kritische Aufgaben abgeschlossen. Furchtlos!"
+      },
+      "high_achiever": {
+        "title": "Leistungsträger",
+        "desc": "10 Aufgaben mit hoher Priorität abgeschlossen!"
+      },
+      "speed_runner": {
+        "title": "Schnellläufer",
+        "desc": "Eine Aufgabe innerhalb von 1 Stunde nach der Erstellung abgeschlossen!"
+      },
+      "same_day_slayer": {
+        "title": "Tagesheld",
+        "desc": "Eine Aufgabe am selben Tag erstellt und abgeschlossen!"
+      },
+      "3_day_streak": {
+        "title": "3-Tage-Serie",
+        "desc": "3 Tage in Folge Aufgaben abgeschlossen!"
+      },
+      "week_warrior": {
+        "title": "Wochenkämpfer",
+        "desc": "7-Tage-Aufgabenserie. Unaufhaltsam!"
+      },
+      "fortnight_force": {
+        "title": "Zwei-Wochen-Kraft",
+        "desc": "14 aufeinanderfolgende Tage mit Aufgaben!"
+      },
+      "monthly_master": {
+        "title": "Monatsmeister",
+        "desc": "30-Tage-Aufgabenserie. Phänomenal!"
+      },
+      "early_bird": {
+        "title": "Frühaufsteher",
+        "desc": "Eine Aufgabe vor 8 Uhr abgeschlossen!"
+      },
+      "night_owl": {
+        "title": "Nachteule",
+        "desc": "Eine Aufgabe nach 22 Uhr abgeschlossen!"
+      },
+      "weekend_warrior": {
+        "title": "Wochenendkämpfer",
+        "desc": "3 Aufgaben am Wochenende abgeschlossen!"
+      },
+      "all_rounder": {
+        "title": "Allrounder",
+        "desc": "Aufgaben aller 4 Prioritätsstufen abgeschlossen!"
+      },
+      "productive_duo": {
+        "title": "Produktives Duo",
+        "desc": "Eine Gewohnheit und eine Aufgabe am selben Tag abgeschlossen!"
+      }
     }
   },
   "habit_history": {
@@ -351,10 +420,52 @@
     "continue": "Weiter"
   },
   "calendar": {
-    "monthNames": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-    "monthNamesShort": ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
-    "dayNames": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-    "dayNamesShort": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+    "monthNames": [
+      "Januar",
+      "Februar",
+      "März",
+      "April",
+      "Mai",
+      "Juni",
+      "Juli",
+      "August",
+      "September",
+      "Oktober",
+      "November",
+      "Dezember"
+    ],
+    "monthNamesShort": [
+      "Jan",
+      "Feb",
+      "Mär",
+      "Apr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dez"
+    ],
+    "dayNames": [
+      "Sonntag",
+      "Montag",
+      "Dienstag",
+      "Mittwoch",
+      "Donnerstag",
+      "Freitag",
+      "Samstag"
+    ],
+    "dayNamesShort": [
+      "So",
+      "Mo",
+      "Di",
+      "Mi",
+      "Do",
+      "Fr",
+      "Sa"
+    ],
     "today": "Heute"
   },
   "profile": {
@@ -635,7 +746,15 @@
     "consistency_king": "König der Konsequenz (Anforderung: {{count}} Gewohnheiten)",
     "consistency_king_desc": "Übertreffe deine Grenzen! Schließe {{count}} Gewohnheiten an einem einzigen Tag für einen massiven XP-Boost ab.",
     "complete_your_profile_title": "Profil vervollständigen",
-    "complete_your_profile_desc": "Fügen Sie Ihren Namen, Ihre Biografie und Ihr Profilbild hinzu, um Ihr Erlebnis zu personalisieren."
+    "complete_your_profile_desc": "Fügen Sie Ihren Namen, Ihre Biografie und Ihr Profilbild hinzu, um Ihr Erlebnis zu personalisieren.",
+    "skill_sharpener_title": "Fähigkeiten schärfen",
+    "skill_sharpener_desc": "Schließen Sie diese Woche fünfmal Ihre Gewohnheit „Tägliches Codieren“ oder „Lernen“ ab.",
+    "knowledge_seeker_title": "Wissenssucher",
+    "knowledge_seeker_desc": "Lesen Sie 10 Seiten eines Buches oder einen Bildungsartikel im Reiter „Entdecken“.",
+    "weekend_warrior_title": "Wochenend-Krieger",
+    "weekend_warrior_desc": "Unterbrechen Sie Ihre Serie nicht! Schließe am Wochenende mindestens 4 Gewohnheiten ab.",
+    "water_master_title": "Wassermeister",
+    "water_master_desc": "Trinken Sie heute mindestens 8 Gläser Wasser, um hydriert zu bleiben."
   },
   "support": {
     "title": "Support kontaktieren",

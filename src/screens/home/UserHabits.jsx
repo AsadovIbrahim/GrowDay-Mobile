@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch } from '../../utils/fetch';
 
@@ -163,30 +163,6 @@ const UserHabits = ({ route }) => {
         setSelectedHabits(new Set());
     };
 
-    const handleSelectAll = () => {
-        if (!filteredHabits || filteredHabits.length === 0) return;
-        const allHabitIds = filteredHabits.map(habit => habit.userHabitId || habit.id || habit.habitId);
-        setSelectedHabits(new Set(allHabitIds));
-    };
-
-    const handleDeselectAll = () => {
-        setSelectedHabits(new Set());
-    };
-
-    const isAllSelected = useMemo(() => {
-        if (!filteredHabits || filteredHabits.length === 0) return false;
-        const allHabitIds = filteredHabits.map(habit => habit.userHabitId || habit.id || habit.habitId);
-        return allHabitIds.every(id => selectedHabits.has(id));
-    }, [filteredHabits, selectedHabits]);
-
-    const handleToggleSelectAll = () => {
-        if (isAllSelected) {
-            handleDeselectAll();
-        } else {
-            handleSelectAll();
-        }
-    };
-
     const handleDeleteSelected = () => {
         if (selectedHabits.size === 0) return;
         setDeleteDialogVisible(true);
@@ -274,6 +250,28 @@ const UserHabits = ({ route }) => {
         return allFilteredHabits;
     }, [allFilteredHabits, searchQuery, displayLimit]);
 
+    const isAllSelected = (filteredHabits && filteredHabits.length > 0) && filteredHabits.every(habit => 
+        selectedHabits.has(habit.userHabitId || habit.id || habit.habitId)
+    );
+
+    const handleSelectAll = () => {
+        if (!filteredHabits || filteredHabits.length === 0) return;
+        const allHabitIds = filteredHabits.map(habit => habit.userHabitId || habit.id || habit.habitId);
+        setSelectedHabits(new Set(allHabitIds));
+    };
+
+    const handleDeselectAll = () => {
+        setSelectedHabits(new Set());
+    };
+
+    const handleToggleSelectAll = () => {
+        if (isAllSelected) {
+            handleDeselectAll();
+        } else {
+            handleSelectAll();
+        }
+    };
+
     // Check if there are more items to load
     const hasMore = !searchQuery.trim() && allFilteredHabits.length > displayLimit;
 
@@ -309,47 +307,96 @@ const UserHabits = ({ route }) => {
                     </View>
                 </View>
 
-                {/* Filter Chips Section — always visible */}
+                {/* Filter Chips Section or Selection Actions */}
                 <View className="px-4 mb-3">
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingBottom: 4 }}
-                    >
-                        {frequencyOptions.map((option) => (
-                            <TouchableOpacity
-                                key={option}
-                                onPress={() => {
-                                    setSelectedFrequency(option);
-                                    setDisplayLimit(pageSize);
-                                    setSelectedHabits(new Set());
-                                    setIsSelectionMode(false);
-                                }}
-                                className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
-                                style={{
-                                    backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
-                                    borderColor: selectedFrequency === option ? colors.primary : colors.border
-                                }}
-                                activeOpacity={0.8}
+                    {isSelectionMode ? (
+                        <View className="flex-row items-center justify-between">
+                            <TouchableOpacity 
+                                onPress={handleToggleSelectAll} 
+                                className="flex-row items-center gap-2"
+                                activeOpacity={0.7}
                             >
-                                <Text
-                                    className="text-sm font-redditsans-medium"
-                                    style={{
-                                        color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
+                                <View 
+                                    className="w-5 h-5 rounded items-center justify-center border"
+                                    style={{ 
+                                        borderColor: isAllSelected ? colors.primary : colors.textSecondary,
+                                        backgroundColor: isAllSelected ? colors.primary : 'transparent',
+                                        borderRadius: 4,
+                                        borderWidth: isAllSelected ? 0 : 2
                                     }}
                                 >
-                                    {t(`my_habits.filters.${option.toLowerCase()}`)}
+                                    {isAllSelected && (
+                                        <FontAwesomeIcon icon={faCheck} size={12} color="#FFFFFF" />
+                                    )}
+                                </View>
+                                <Text className="text-base font-redditsans-medium" style={{ color: colors.text }}>
+                                    {isAllSelected ? t('my_habits.deselect_all') : t('my_habits.select_all')}
                                 </Text>
                             </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+
+                            <View className="flex-row items-center gap-2">
+                                <TouchableOpacity
+                                    onPress={handleDeleteSelected}
+                                    className="bg-red-500 rounded-full px-4 py-2 flex-row items-center"
+                                    disabled={selectedHabits.size === 0}
+                                    style={{ opacity: selectedHabits.size === 0 ? 0.6 : 1 }}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} color="#ffffff" size={14} />
+                                    <Text className="text-white text-xs font-redditsans-bold ml-1.5">
+                                        {t('my_habits.delete_count', { count: selectedHabits.size })}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    className="bg-gray-500/20 rounded-full px-4 py-2"
+                                    onPress={exitSelectionMode}
+                                >
+                                    <Text className="text-sm font-redditsans-medium" style={{ color: colors.textSecondary }}>
+                                        {t('common.cancel')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    ) : (
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingBottom: 4 }}
+                        >
+                            {frequencyOptions.map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    onPress={() => {
+                                        setSelectedFrequency(option);
+                                        setDisplayLimit(pageSize);
+                                        setSelectedHabits(new Set());
+                                        setIsSelectionMode(false);
+                                    }}
+                                    className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
+                                    style={{
+                                        backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
+                                        borderColor: selectedFrequency === option ? colors.primary : colors.border
+                                    }}
+                                    activeOpacity={0.8}
+                                >
+                                    <Text
+                                        className="text-sm font-redditsans-medium"
+                                        style={{
+                                            color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
+                                        }}
+                                    >
+                                        {t(`my_habits.filters.${option.toLowerCase()}`)}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    )}
                 </View>
 
                 {/* Content */}
                 <ScrollView
                     className="flex-1 px-4"
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 20 }}
+                    contentContainerStyle={{ paddingBottom: 100 }}
                 >
                     {loading ? (
                         <View className="flex-1 items-center justify-center py-20">
@@ -388,55 +435,6 @@ const UserHabits = ({ route }) => {
                                         </TouchableOpacity>
                                     )}
                                 </View>
-
-                                {/* Selection Mode Actions */}
-                                {isSelectionMode && (
-                                    <View className="mb-2">
-                                        <View className="rounded-xl px-4 py-2 mb-2 flex-row items-center">
-                                            <TouchableOpacity
-                                                onPress={handleToggleSelectAll}
-                                                onLongPress={handleSelectAll}
-                                                activeOpacity={0.7}
-                                                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                                            >
-                                                <FontAwesomeIcon
-                                                    icon={isAllSelected ? faCheckSquare : faSquare}
-                                                    color={isAllSelected ? colors.primary : colors.textSecondary}
-                                                    size={20}
-                                                />
-                                            </TouchableOpacity>
-                                            <Text className="text-sm font-redditsans-medium ml-2" style={{ color: colors.text }}>
-                                                {isAllSelected ? t('my_habits.deselect_all') : t('my_habits.select_all')}
-                                            </Text>
-                                        </View>
-
-                                        <View className="flex-row gap-2">
-                                            <TouchableOpacity
-                                                onPress={exitSelectionMode}
-                                                className="rounded-full py-2 px-4 items-center"
-                                                style={{ backgroundColor: colors.cardSecondary }}
-                                                activeOpacity={0.7}
-                                            >
-                                                <Text className="text-sm font-redditsans-medium" style={{ color: colors.text }}>
-                                                    {t('common.cancel')}
-                                                </Text>
-                                            </TouchableOpacity>
-                                            {selectedHabits.size > 0 && (
-                                                <TouchableOpacity
-                                                    onPress={handleDeleteSelected}
-                                                    className="rounded-full py-2 px-4 flex-row items-center justify-center"
-                                                    style={{ backgroundColor: colors.danger }}
-                                                    activeOpacity={0.7}
-                                                >
-                                                    <FontAwesomeIcon icon={faTrash} color="#ffffff" size={14} />
-                                                    <Text className="text-white text-sm font-redditsans-medium ml-1.5">
-                                                        {t('my_habits.delete_count', { count: selectedHabits.size })}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            )}
-                                        </View>
-                                    </View>
-                                )}
                             </View>
 
                             {/* Habit List */}

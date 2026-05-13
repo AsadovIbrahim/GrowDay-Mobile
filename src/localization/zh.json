@@ -18,7 +18,10 @@
     "day": "天",
     "week": "周",
     "month": "月",
-    "custom": "自定义"
+    "custom": "自定义",
+    "progress": "进度",
+    "congratulations": "恭喜！",
+    "continue": "继续"
   },
   "menu": {
     "home": "首页",
@@ -34,6 +37,8 @@
     "view_all": "查看全部",
     "unread": "未读",
     "mark_all_read": "全部标为已读",
+    "select_all": "全选",
+    "deselect_all": "取消全选",
     "delete_count": "删除（{{count}}）",
     "cancel": "取消",
     "loading": "加载中...",
@@ -158,6 +163,7 @@
     "notes_placeholder": "添加备注...",
     "action": {
       "mark_done": "标记为完成",
+      "log_progress": "记录进度",
       "upcoming_title": "即将到来的习惯",
       "upcoming_sub": "在计划日期之前您无法完成此习惯。",
       "not_scheduled_title": "未安排在此日期",
@@ -213,7 +219,9 @@
       "pending": "待处理",
       "in_progress": "进行中",
       "completed": "已完成"
-    }
+    },
+    "completed_msg": "任务成功完成：",
+    "reward_earned": "获得奖励"
   },
   "create_habit": {
     "header": "创建自定义习惯",
@@ -277,6 +285,7 @@
     "productivity": "效率",
     "finance": "财务",
     "social": "社交",
+    "wellness": "身心健康",
     "other": "其他"
   },
   "achievements": {
@@ -300,26 +309,86 @@
     "earned_on": "获得日期",
     "unlocked_badge": "已解锁",
     "list": {
-      "first_step": { "title": "第一步！", "desc": "完成了您的第一个任务！" },
-      "getting_started": { "title": "初入佳境", "desc": "已完成 5 个任务，继续加油！" },
-      "on_a_roll": { "title": "势如破竹", "desc": "已完成 10 个任务，您真棒！" },
-      "quarter_century": { "title": "四分之一世纪", "desc": "已完成 25 个任务，令人印象深刻！" },
-      "half_century": { "title": "半百英雄", "desc": "已完成 50 个任务，距离传奇只差一半！" },
-      "centurion": { "title": "百夫长", "desc": "已完成 100 个任务，您是传奇！" },
-      "fire_fighter": { "title": "救火英雄", "desc": "完成了您的第一个紧急任务！" },
-      "critical_mass": { "title": "临界质量", "desc": "已完成 5 个紧急任务，无所畏惧！" },
-      "high_achiever": { "title": "高效达人", "desc": "已完成 10 个高优先级任务！" },
-      "speed_runner": { "title": "速跑者", "desc": "在创建任务后 1 小时内完成！" },
-      "same_day_slayer": { "title": "当日杀手", "desc": "在同一天创建并完成了一个任务！" },
-      "3_day_streak": { "title": "3 天连续", "desc": "连续 3 天完成任务！" },
-      "week_warrior": { "title": "周战士", "desc": "7 天任务连续，势不可挡！" },
-      "fortnight_force": { "title": "双周力量", "desc": "连续 14 天完成任务！" },
-      "monthly_master": { "title": "月度大师", "desc": "30 天任务连续，非凡成就！" },
-      "early_bird": { "title": "早起之鸟", "desc": "在早上 8 点前完成了一个任务！" },
-      "night_owl": { "title": "夜猫子", "desc": "在晚上 10 点后完成了一个任务！" },
-      "weekend_warrior": { "title": "周末战士", "desc": "周末完成了 3 个任务！" },
-      "all_rounder": { "title": "全能选手", "desc": "完成了所有 4 个优先级别的任务！" },
-      "productive_duo": { "title": "双料高手", "desc": "在同一天完成了一个习惯和一个任务！" }
+      "first_step": {
+        "title": "第一步！",
+        "desc": "完成了您的第一个任务！"
+      },
+      "getting_started": {
+        "title": "初入佳境",
+        "desc": "已完成 5 个任务，继续加油！"
+      },
+      "on_a_roll": {
+        "title": "势如破竹",
+        "desc": "已完成 10 个任务，您真棒！"
+      },
+      "quarter_century": {
+        "title": "四分之一世纪",
+        "desc": "已完成 25 个任务，令人印象深刻！"
+      },
+      "half_century": {
+        "title": "半百英雄",
+        "desc": "已完成 50 个任务，距离传奇只差一半！"
+      },
+      "centurion": {
+        "title": "百夫长",
+        "desc": "已完成 100 个任务，您是传奇！"
+      },
+      "fire_fighter": {
+        "title": "救火英雄",
+        "desc": "完成了您的第一个紧急任务！"
+      },
+      "critical_mass": {
+        "title": "临界质量",
+        "desc": "已完成 5 个紧急任务，无所畏惧！"
+      },
+      "high_achiever": {
+        "title": "高效达人",
+        "desc": "已完成 10 个高优先级任务！"
+      },
+      "speed_runner": {
+        "title": "速跑者",
+        "desc": "在创建任务后 1 小时内完成！"
+      },
+      "same_day_slayer": {
+        "title": "当日杀手",
+        "desc": "在同一天创建并完成了一个任务！"
+      },
+      "3_day_streak": {
+        "title": "3 天连续",
+        "desc": "连续 3 天完成任务！"
+      },
+      "week_warrior": {
+        "title": "周战士",
+        "desc": "7 天任务连续，势不可挡！"
+      },
+      "fortnight_force": {
+        "title": "双周力量",
+        "desc": "连续 14 天完成任务！"
+      },
+      "monthly_master": {
+        "title": "月度大师",
+        "desc": "30 天任务连续，非凡成就！"
+      },
+      "early_bird": {
+        "title": "早起之鸟",
+        "desc": "在早上 8 点前完成了一个任务！"
+      },
+      "night_owl": {
+        "title": "夜猫子",
+        "desc": "在晚上 10 点后完成了一个任务！"
+      },
+      "weekend_warrior": {
+        "title": "周末战士",
+        "desc": "周末完成了 3 个任务！"
+      },
+      "all_rounder": {
+        "title": "全能选手",
+        "desc": "完成了所有 4 个优先级别的任务！"
+      },
+      "productive_duo": {
+        "title": "双料高手",
+        "desc": "在同一天完成了一个习惯和一个任务！"
+      }
     }
   },
   "habit_history": {
@@ -351,10 +420,52 @@
     "continue": "继续"
   },
   "calendar": {
-    "monthNames": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-    "monthNamesShort": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-    "dayNames": ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
-    "dayNamesShort": ["日", "一", "二", "三", "四", "五", "六"],
+    "monthNames": [
+      "一月",
+      "二月",
+      "三月",
+      "四月",
+      "五月",
+      "六月",
+      "七月",
+      "八月",
+      "九月",
+      "十月",
+      "十一月",
+      "十二月"
+    ],
+    "monthNamesShort": [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月"
+    ],
+    "dayNames": [
+      "星期日",
+      "星期一",
+      "星期二",
+      "星期三",
+      "星期四",
+      "星期五",
+      "星期六"
+    ],
+    "dayNamesShort": [
+      "日",
+      "一",
+      "二",
+      "三",
+      "四",
+      "五",
+      "六"
+    ],
     "today": "今天"
   },
   "profile": {
@@ -635,7 +746,15 @@
     "consistency_king": "一致性之王（要求：{{count}} 个习惯）",
     "consistency_king_desc": "挑战极限！在一天内完成 {{count}} 个习惯，获得大量 XP 加成。",
     "complete_your_profile_title": "完善您的个人资料",
-    "complete_your_profile_desc": "添加您的姓名、个人简介和个人资料图片，以个性化您的体验。"
+    "complete_your_profile_desc": "添加您的姓名、个人简介和个人资料图片，以个性化您的体验。",
+    "skill_sharpener_title": "技能磨练者",
+    "skill_sharpener_desc": "本周完成 5 次“每日编程”或“学习”习惯。",
+    "knowledge_seeker_title": "知识寻求者",
+    "knowledge_seeker_desc": "在“探索”选项卡中阅读 10 页书或一篇教育文章。",
+    "weekend_warrior_title": "周末战士",
+    "weekend_warrior_desc": "不要中断你的连续纪录！在周末至少完成 4 个习惯。",
+    "water_master_title": "饮水达人",
+    "water_master_desc": "今天至少喝 8 杯水以保持水分。"
   },
   "support": {
     "title": "联系支持",
