@@ -345,10 +345,10 @@ const UserTasks = () => {
                     ? t("explore.status.completed")
                     : filter === "Pending"
                     ? t("explore.status.pending")
-                    : t("home.no_habits_found")}
+                    : t("tasks.empty")}
                 </Text>
                 <Text className="font-redditsans-regular text-sm mt-1 text-center" style={{ color: colors.textSecondary }}>
-                  Tasks are assigned by admins
+                  {t("tasks.assigned_by_admins")}
                 </Text>
               </View>
             ) : (

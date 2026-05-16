@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faChartLine, faCalendarAlt, faCalendarCheck, faChevronLeft, faChevronRight, faTrophy, faFire, faChartBar } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@ import Svg, { Circle, G } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch } from "../../utils/fetch";
+import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch, getYearlyStatisticsFetch } from "../../utils/fetch";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -19,7 +19,7 @@ const Statistics = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [token] = useMMKVString('accessToken');
 
   const [activeTab, setActiveTab] = useState('weekly'); 
@@ -27,6 +27,12 @@ const Statistics = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isYearPickerVisible, setYearPickerVisible] = useState(false);
+  
+  // Production best practice: Show years from app launch year (e.g. 2024) up to current year
+  const currentYear = new Date().getFullYear();
+  const startYear = 2024; // You can change this to the user's registration year if available
+  const yearsList = Array.from({length: Math.max(1, currentYear - startYear + 1)}, (_, i) => currentYear - i);
 
   // Animation shared values
   const progressValue = useSharedValue(0);
@@ -47,8 +53,10 @@ const Statistics = () => {
         monday.setDate(diff);
         const weekStartStr = monday.toISOString().split('T')[0];
         response = await getWeeklyStatisticsFetch(token, weekStartStr);
-      } else {
+      } else if (activeTab === 'monthly') {
         response = await getMonthlyStatisticsFetch(token, selectedDate.getFullYear(), selectedDate.getMonth() + 1);
+      } else {
+        response = await getYearlyStatisticsFetch(token, selectedDate.getFullYear());
       }
 
       if (response && response.success) {
@@ -77,7 +85,8 @@ const Statistics = () => {
     const newDate = new Date(selectedDate);
     if (activeTab === 'daily') newDate.setDate(selectedDate.getDate() - 1);
     else if (activeTab === 'weekly') newDate.setDate(selectedDate.getDate() - 7);
-    else newDate.setMonth(selectedDate.getMonth() - 1);
+    else if (activeTab === 'monthly') newDate.setMonth(selectedDate.getMonth() - 1);
+    else newDate.setFullYear(selectedDate.getFullYear() - 1);
     setSelectedDate(newDate);
   };
 
@@ -85,25 +94,37 @@ const Statistics = () => {
     const newDate = new Date(selectedDate);
     if (activeTab === 'daily') newDate.setDate(selectedDate.getDate() + 1);
     else if (activeTab === 'weekly') newDate.setDate(selectedDate.getDate() + 7);
-    else newDate.setMonth(selectedDate.getMonth() + 1);
+    else if (activeTab === 'monthly') newDate.setMonth(selectedDate.getMonth() + 1);
+    else newDate.setFullYear(selectedDate.getFullYear() + 1);
     
     if (newDate > new Date()) return;
     setSelectedDate(newDate);
   };
 
   const getHeaderText = () => {
+    const monthNames = t('calendar.monthNames', { returnObjects: true });
+    const monthNamesShort = t('calendar.monthNamesShort', { returnObjects: true });
+
     if (activeTab === 'daily') {
-      return selectedDate.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+      const day = selectedDate.getDate();
+      const month = Array.isArray(monthNames) ? monthNames[selectedDate.getMonth()] : selectedDate.toLocaleDateString(undefined, { month: 'long' });
+      const year = selectedDate.getFullYear();
+      return `${day} ${month} ${year}`;
     } else if (activeTab === 'weekly') {
-      const day = selectedDate.getDay();
-      const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
+      const dayOfWeek = selectedDate.getDay();
+      const diff = selectedDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
       const monday = new Date(selectedDate);
       monday.setDate(diff);
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
-      return `${monday.getDate()} ${monday.toLocaleDateString(undefined, { month: 'short' })} - ${sunday.getDate()} ${sunday.toLocaleDateString(undefined, { month: 'short' })}`;
+      const monMonth = Array.isArray(monthNamesShort) ? monthNamesShort[monday.getMonth()] : monday.toLocaleDateString(undefined, { month: 'short' });
+      const sunMonth = Array.isArray(monthNamesShort) ? monthNamesShort[sunday.getMonth()] : sunday.toLocaleDateString(undefined, { month: 'short' });
+      return `${monday.getDate()} ${monMonth} - ${sunday.getDate()} ${sunMonth}`;
+    } else if (activeTab === 'monthly') {
+      const month = Array.isArray(monthNames) ? monthNames[selectedDate.getMonth()] : selectedDate.toLocaleDateString(undefined, { month: 'long' });
+      return `${month} ${selectedDate.getFullYear()}`;
     } else {
-      return selectedDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+      return selectedDate.getFullYear().toString();
     }
   };
 
@@ -180,7 +201,7 @@ const Statistics = () => {
 
         {/* Tab Switcher */}
         <View className="flex-row mx-5 p-1 rounded-2xl mb-6 shadow-sm" style={{ backgroundColor: colors.card }}>
-          {['daily', 'weekly', 'monthly'].map((tab) => (
+          {['daily', 'weekly', 'monthly', 'yearly'].map((tab) => (
             <TouchableOpacity
               key={tab}
               onPress={() => {
@@ -220,9 +241,18 @@ const Statistics = () => {
             <TouchableOpacity onPress={handlePrev} className="w-10 h-10 items-center justify-center rounded-full" style={{ backgroundColor: colors.backgroundGradient[0] }}>
               <FontAwesomeIcon icon={faChevronLeft} color={colors.primary} size={16} />
             </TouchableOpacity>
-            <Text style={{ color: colors.text }} className="text-base font-redditsans-bold">
-              {getHeaderText()}
-            </Text>
+            <TouchableOpacity 
+              onPress={() => {
+                if (activeTab === 'yearly' || activeTab === 'monthly') {
+                  setYearPickerVisible(true);
+                }
+              }}
+              disabled={activeTab !== 'yearly' && activeTab !== 'monthly'}
+            >
+              <Text style={{ color: colors.text }} className="text-base font-redditsans-bold px-4 py-2">
+                {getHeaderText()}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity 
               onPress={handleNext} 
               className="w-10 h-10 items-center justify-center rounded-full"
@@ -330,7 +360,7 @@ const Statistics = () => {
                     <View>
                        <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider">{t('statistics.daily_average')}</Text>
                        <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                          {activeTab === 'daily' ? '1.0' : (stats.completedCount / (activeTab === 'weekly' ? 7 : 30)).toFixed(1)}
+                          {activeTab === 'daily' ? '1.0' : (stats.completedCount / (activeTab === 'weekly' ? 7 : (activeTab === 'monthly' ? 30 : 365))).toFixed(1)}
                        </Text>
                     </View>
                  </View>
@@ -346,6 +376,70 @@ const Statistics = () => {
           )}
         </ScrollView>
       </SafeAreaView>
+
+      <Modal
+        visible={isYearPickerVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setYearPickerVisible(false)}
+      >
+        <TouchableOpacity 
+          className="flex-1 justify-center items-center bg-black/50"
+          activeOpacity={1}
+          onPress={() => setYearPickerVisible(false)}
+        >
+          <View className="rounded-3xl p-4 shadow-lg" style={{ backgroundColor: colors.card, width: activeTab === 'monthly' ? 260 : 256 }}>
+            <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-4 text-center">
+              {activeTab === 'monthly' 
+                ? t('statistics.select_month', 'Ay seçin') 
+                : t('statistics.select_year', 'İli seçin')}
+            </Text>
+            
+            <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>
+              {activeTab === 'monthly'
+                ? t('calendar.monthNames', { returnObjects: true })?.map((monthName, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      className="py-3 items-center border-b border-gray-500/5"
+                      onPress={() => {
+                        const newDate = new Date(selectedDate);
+                        newDate.setMonth(index);
+                        setSelectedDate(newDate);
+                        setYearPickerVisible(false);
+                      }}
+                    >
+                      <Text 
+                        style={{ color: selectedDate.getMonth() === index ? colors.primary : colors.text }} 
+                        className={`text-base ${selectedDate.getMonth() === index ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
+                      >
+                        {monthName}
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+                : yearsList.map((year) => (
+                    <TouchableOpacity
+                      key={year}
+                      className="py-3 items-center border-b border-gray-500/5"
+                      onPress={() => {
+                        const newDate = new Date(selectedDate);
+                        newDate.setFullYear(year);
+                        setSelectedDate(newDate);
+                        setYearPickerVisible(false);
+                      }}
+                    >
+                      <Text 
+                        style={{ color: selectedDate.getFullYear() === year ? colors.primary : colors.text }} 
+                        className={`text-base ${selectedDate.getFullYear() === year ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
+                      >
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+              }
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </LinearGradient>
   );
 };

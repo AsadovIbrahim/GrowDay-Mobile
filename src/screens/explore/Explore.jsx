@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMinus, faChevronRight, faStar, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { getUserSuggestedHabitsFetch, getUserLearningContentFetch } from "../../utils/fetch";
+import { getUserSuggestedHabitsFetch, getUserLearningContentFetch, getUserPreferencesFetch, updateUserPreferencesWithAIFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
 import UserTasksList from "../../components/UserTasksList";
 import LearningCard from "../../components/LearningCard";
@@ -33,6 +33,7 @@ const Explore = () => {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isGeneratingHabits, setIsGeneratingHabits] = useState(false);
 
   
   useEffect(() => {
@@ -77,7 +78,7 @@ const Explore = () => {
   };
   
 
-  const getUserSuggestedHabits = async () => {
+  const getUserSuggestedHabits = async (isRetry = false) => {
     if (!hasMore && pageIndex !== 0) return;
     try {
       setLoading(true);
@@ -89,6 +90,10 @@ const Explore = () => {
         }
       } else {
         setHasMore(false);
+        setSuggestedHabits([]);
+        if (pageIndex === 0 && !isRetry && !searchQuery) {
+          await generateNewSuggestedHabits();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -97,6 +102,38 @@ const Explore = () => {
       setLoading(false);
     }
   }
+
+  const generateNewSuggestedHabits = async () => {
+    try {
+      setIsGeneratingHabits(true);
+      const prefsResponse = await getUserPreferencesFetch(token);
+      if (prefsResponse && prefsResponse.data) {
+        const data = prefsResponse.data;
+        const payload = {
+          wakeUpTime: data.wakeUpTime || "07:00:00",
+          sleepTime: data.sleepTime || "22:00:00",
+          procrestinateFrequency: data.procrestinateFrequency || data.procrastinationFrequency || "Sometimes",
+          focusDifficulty: data.focusDifficulty || "Occasionally",
+          motivationalFactors: data.motivationalFactors || "None",
+          gender: data.gender || "Male",
+          age: data.age || 25,
+          mainGoal: data.mainGoal || "Productivity"
+        };
+        await updateUserPreferencesWithAIFetch(token, payload);
+        
+        // Re-fetch habits after generation
+        const newResponse = await getUserSuggestedHabitsFetch(token, 0, pageSize);
+        if (newResponse.data && newResponse.data.length > 0) {
+          setSuggestedHabits(newResponse.data);
+          setHasMore(newResponse.data.length >= pageSize);
+        }
+      }
+    } catch (error) {
+      console.log("Error generating new habits:", error);
+    } finally {
+      setIsGeneratingHabits(false);
+    }
+  };
 
   const handleHorizontalScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
@@ -194,6 +231,13 @@ const Explore = () => {
             {loading && pageIndex === 0 ? (
           <View className="py-10 items-center justify-center">
             <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        ) : isGeneratingHabits ? (
+          <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
+             <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
+             <Text style={{ color: colors.textSecondary }} className="font-redditsans-medium">
+               {t("explore.generating_new_habits", "Generating new suggested habits...")}
+             </Text>
           </View>
         ) : (suggestedHabits.filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
           <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Modal, TouchableOpacity } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -28,6 +28,12 @@ const HabitHistory = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [markedDates, setMarkedDates] = useState({});
     const [selectedDayData, setSelectedDayData] = useState(null);
+    const [isYearPickerVisible, setYearPickerVisible] = useState(false);
+    const [calendarKey, setCalendarKey] = useState(0);
+    
+    const currentYear = new Date().getFullYear();
+    const startYear = 2024;
+    const yearsList = Array.from({length: Math.max(1, currentYear - startYear + 1)}, (_, i) => currentYear - i);
 
 
     useEffect(() => {
@@ -144,13 +150,27 @@ const HabitHistory = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                     <Calendar
-                        key={i18n.language}
+                        key={`${i18n.language}-${calendarKey}`}
                         current={currentMonth.toISOString().split('T')[0]}
                         onMonthChange={onMonthChange}
                         onDayPress={onDayPress}
                         markedDates={markedDates}
 
                         markingType={'custom'}
+                        renderHeader={(date) => {
+                            const monthName = LocaleConfig.locales[i18n.language]?.monthNames[date.getMonth()] || 'Month';
+                            return (
+                                <Pressable onPress={() => setYearPickerVisible(true)} hitSlop={10}>
+                                    <Text style={{
+                                        color: isDark ? colors.text : '#1f2937',
+                                        fontSize: 18,
+                                        fontFamily: 'RedditSans-Bold'
+                                    }}>
+                                        {monthName} {date.getFullYear()}
+                                    </Text>
+                                </Pressable>
+                            );
+                        }}
                         theme={{
                             calendarBackground: 'transparent',
                             textSectionTitleColor: isDark ? colors.textSecondary : '#4b5563',
@@ -259,21 +279,94 @@ const HabitHistory = () => {
                                 </View>
                             </View>
                         </View>
-
-                        <View style={[styles.legendCard, { backgroundColor: colors.card }]}>
-                            <Text style={[styles.legendTitle, { color: colors.text }]}>{t("habit_history.legend")}</Text>
-                            <View style={styles.legendItem}>
-                                <View style={[styles.legendDot, { backgroundColor: colors.primary }]} />
-                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>{t("habit_history.legend_completed")}</Text>
-                            </View>
-                            <View style={styles.legendItem}>
-                                <View style={[styles.legendDot, { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border }]} />
-                                <Text style={[styles.legendText, { color: colors.textSecondary }]}>{t("habit_history.legend_missed")}</Text>
-                            </View>
-                        </View>
                     </>
                 )}
             </ScrollView>
+
+            <Modal
+                visible={isYearPickerVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setYearPickerVisible(false)}
+            >
+                <TouchableOpacity 
+                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    activeOpacity={1}
+                    onPress={() => setYearPickerVisible(false)}
+                >
+                    <View style={{ width: 320, borderRadius: 24, padding: 16, backgroundColor: colors.card, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 }}>
+                        <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 16, textAlign: 'center' }}>
+                            {t('statistics.select_month_year', 'Ay və İli seçin')}
+                        </Text>
+                        
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', maxHeight: 240 }}>
+                            {/* Months Column */}
+                            <ScrollView style={{ flex: 1, marginRight: 8 }} showsVerticalScrollIndicator={false}>
+                                {LocaleConfig.locales[i18n.language]?.monthNames.map((monthName, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={{ paddingVertical: 12, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(150,150,150,0.05)' }}
+                                        onPress={() => {
+                                            const newDate = new Date(currentMonth);
+                                            newDate.setMonth(index);
+                                            setCurrentMonth(newDate);
+                                            setSelectedDayData(null);
+                                            setCalendarKey(prev => prev + 1);
+                                        }}
+                                    >
+                                        <Text 
+                                            style={{ 
+                                                color: currentMonth.getMonth() === index ? colors.primary : colors.text,
+                                                fontSize: 16,
+                                                fontWeight: currentMonth.getMonth() === index ? '700' : '500'
+                                            }} 
+                                        >
+                                            {monthName}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+
+                            {/* Separator */}
+                            <View style={{ width: 1, backgroundColor: 'rgba(150,150,150,0.1)', marginVertical: 10 }} />
+
+                            {/* Years Column */}
+                            <ScrollView style={{ flex: 1, marginLeft: 8 }} showsVerticalScrollIndicator={false}>
+                                {yearsList.map((year) => (
+                                    <TouchableOpacity
+                                        key={year}
+                                        style={{ paddingVertical: 12, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(150,150,150,0.05)' }}
+                                        onPress={() => {
+                                            const newDate = new Date(currentMonth);
+                                            newDate.setFullYear(year);
+                                            setCurrentMonth(newDate);
+                                            setSelectedDayData(null);
+                                            setCalendarKey(prev => prev + 1);
+                                        }}
+                                    >
+                                        <Text 
+                                            style={{ 
+                                                color: currentMonth.getFullYear() === year ? colors.primary : colors.text,
+                                                fontSize: 16,
+                                                fontWeight: currentMonth.getFullYear() === year ? '700' : '500'
+                                            }} 
+                                        >
+                                            {year}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+
+                        <TouchableOpacity 
+                            style={{ marginTop: 20, backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16, alignItems: 'center' }}
+                            onPress={() => setYearPickerVisible(false)}
+                        >
+                            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('common.confirm', 'Təsdiq et')}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </LinearGradient>
     );
 };

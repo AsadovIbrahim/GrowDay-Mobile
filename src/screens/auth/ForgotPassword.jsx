@@ -1,9 +1,9 @@
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Image } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
+import GrowDayLogo from "../../../assets/images/main logo.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { forgotPasswordfetch } from "../../utils/fetch";
@@ -89,9 +89,18 @@ const ForgotPassword = () => {
               <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
-            {/* Logo */}
-            <View className="items-center mt-2 mb-6">
-              <GrowDayLogo width={120} height={120} />
+            <View className="items-center mt-4 mb-4">
+              <View style={{
+                borderRadius: 30,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                elevation: 8,
+                backgroundColor: '#000',
+              }}>
+                <Image source={GrowDayLogo} style={{ width: 120, height: 120, borderRadius: 30 }} resizeMode="cover" />
+              </View>
             </View>
 
             {/* Title */}

@@ -1,11 +1,11 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
+import GrowDayLogo from "../../../assets/images/main logo.png";
 import { verifyOtpFetch, verifyForgotPasswordOtpFetch } from "../../utils/fetch";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -100,8 +100,18 @@ const OtpVerification = () => {
               <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
-            <View className="items-center mb-6">
-              <GrowDayLogo width={100} height={100} />
+            <View className="items-center mt-2 mb-4">
+              <View style={{
+                borderRadius: 24,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                elevation: 8,
+                backgroundColor: '#000',
+              }}>
+                <Image source={GrowDayLogo} style={{ width: 100, height: 100, borderRadius: 24 }} resizeMode="cover" />
+              </View>
             </View>
 
             <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>

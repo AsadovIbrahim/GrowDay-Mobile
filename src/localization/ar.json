@@ -221,7 +221,9 @@
       "completed": "مكتمل"
     },
     "completed_msg": "تم إكمال المهمة بنجاح:",
-    "reward_earned": "تم الحصول على المكافأة"
+    "reward_earned": "تم الحصول على المكافأة",
+    "empty": "لم يتم العثور على مهام",
+    "assigned_by_admins": "يتم تعيين المهام من قبل المسؤولين"
   },
   "create_habit": {
     "header": "إنشاء عادة مخصصة",
@@ -703,6 +705,19 @@
       "reset_failed": "فشل إعادة تعيين كلمة المرور. قد تكون صلاحية الرمز قد انتهت.",
       "username_taken": "اسم المستخدم مستخدم بالفعل.",
       "email_taken": "البريد الإلكتروني مستخدم بالفعل."
+    },
+    "validation": {
+      "password_non_alphanumeric": "يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل.",
+      "password_uppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد (A-Z).",
+      "password_lowercase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد (a-z).",
+      "password_digit": "يجب أن تحتوي كلمة المرور على رقم واحد (0-9).",
+      "password_min_length": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+      "invalid_email": "عنوان بريد إلكتروني غير صالح.",
+      "password_wrong": "كلمة المرور خاطئة.",
+      "user_not_found": "المستخدم غير موجود.",
+      "invalid_credentials": "اسم المستخدم أو كلمة المرور غير صحيح.",
+      "account_locked": "تم قفل الحساب مؤقتاً. حاول مرة أخرى لاحقاً.",
+      "email_not_confirmed": "عنوان بريدك الإلكتروني غير مؤكد."
     }
   },
   "onboarding": {
@@ -815,6 +830,10 @@
     "daily": "يومي",
     "weekly": "أسبوعي",
     "monthly": "شهري",
+    "yearly": "سنوي",
+    "select_year": "حدد السنة",
+    "select_month": "حدد الشهر",
+    "select_month_year": "حدد الشهر والسنة",
     "completion_rate": "معدل الإكمال",
     "missed_rate": "معدل الفوات",
     "completed": "مكتمل",

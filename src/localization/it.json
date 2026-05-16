@@ -221,7 +221,9 @@
       "completed": "Completate"
     },
     "completed_msg": "Attività completata con successo:",
-    "reward_earned": "Premio ottenuto"
+    "reward_earned": "Premio ottenuto",
+    "empty": "Nessuna attività trovata",
+    "assigned_by_admins": "I compiti vengono assegnati dagli amministratori"
   },
   "create_habit": {
     "header": "Crea abitudine personalizzata",
@@ -703,6 +705,19 @@
       "reset_failed": "Impossibile reimpostare la password. Il codice potrebbe essere scaduto.",
       "username_taken": "Il nome utente è già in uso.",
       "email_taken": "L'e-mail è già in uso."
+    },
+    "validation": {
+      "password_non_alphanumeric": "La password deve contenere almeno un carattere speciale.",
+      "password_uppercase": "La password deve contenere almeno una lettera maiuscola (A-Z).",
+      "password_lowercase": "La password deve contenere almeno una lettera minuscola (a-z).",
+      "password_digit": "La password deve contenere almeno un numero (0-9).",
+      "password_min_length": "La password deve essere lunga almeno 8 caratteri.",
+      "invalid_email": "Indirizzo email non valido.",
+      "password_wrong": "Password errata.",
+      "user_not_found": "Utente non trovato.",
+      "invalid_credentials": "Nome utente o password non validi.",
+      "account_locked": "L'account è temporaneamente bloccato. Riprova più tardi.",
+      "email_not_confirmed": "Il tuo indirizzo e-mail non è confermato."
     }
   },
   "onboarding": {
@@ -815,6 +830,10 @@
     "daily": "Giornaliero",
     "weekly": "Settimanale",
     "monthly": "Mensile",
+    "yearly": "Annuale",
+    "select_year": "Seleziona anno",
+    "select_month": "Seleziona mese",
+    "select_month_year": "Seleziona mese e anno",
     "completion_rate": "Tasso di Completamento",
     "missed_rate": "Tasso di Insuccesso",
     "completed": "Completato",

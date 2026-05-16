@@ -1,9 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
-import { Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-native";
+import { Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Image } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
+import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
@@ -45,6 +45,25 @@ const Login = () => {
     setToast({ visible: false, message: "", type: "error" });
   }
 
+  const translateServerError = (err) => {
+    const errorMap = {
+      "Password is wrong.": t("auth.validation.password_wrong"),
+      "User not found.": t("auth.validation.user_not_found"),
+      "Invalid username or password.": t("auth.validation.invalid_credentials"),
+      "Account is locked.": t("auth.validation.account_locked"),
+      "Email not confirmed.": t("auth.validation.email_not_confirmed"),
+      "Username is already in use.": t("auth.messages.username_taken"),
+      "Email is already in use.": t("auth.messages.email_taken"),
+      "Passwords must have at least one non alphanumeric character.": t("auth.validation.password_non_alphanumeric"),
+      "Passwords must have at least one uppercase ('A'-'Z').": t("auth.validation.password_uppercase"),
+      "Passwords must have at least one lowercase ('a'-'z').": t("auth.validation.password_lowercase"),
+      "Passwords must have at least one digit ('0'-'9').": t("auth.validation.password_digit"),
+      "Passwords must be at least 8 characters.": t("auth.validation.password_min_length"),
+      "Invalid email address.": t("auth.validation.invalid_email"),
+    };
+    return errorMap[err] || err;
+  };
+
   const handleLogin = async () => {
     setLoading(true);
     setServerErrors([]);
@@ -73,8 +92,8 @@ const Login = () => {
           navigation.navigate("OtpVerification", { email: formData.UsernameOrEmail });
         } else {
           const msgs = data.errors?.length > 0
-            ? data.errors
-            : [data.message || t("auth.messages.login_failed")];
+            ? data.errors.map(err => translateServerError(err))
+            : [translateServerError(data.message) || t("auth.messages.login_failed")];
 
           if (msgs.length === 1) {
             showToast(msgs[0], "error");
@@ -89,6 +108,7 @@ const Login = () => {
       setLoading(false);
     }
   }
+
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -177,9 +197,18 @@ const Login = () => {
               justifyContent: 'center'
             }}
           >
-            {/* Logo */}
-            <View className="items-center mt-4">
-              <GrowDayLogo width={100} height={100} />
+            <View className="items-center mt-4 mb-2">
+              <View style={{
+                borderRadius: 24,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                elevation: 8,
+                backgroundColor: '#000',
+              }}>
+                <Image source={GrowDayLogo} style={{ width: 100, height: 100, borderRadius: 24 }} resizeMode="cover" />
+              </View>
             </View>
 
             {/* Title */}

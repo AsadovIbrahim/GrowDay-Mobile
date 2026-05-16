@@ -221,7 +221,9 @@
       "completed": "Completadas"
     },
     "completed_msg": "Tarea completada con éxito:",
-    "reward_earned": "Recompensa obtenida"
+    "reward_earned": "Recompensa obtenida",
+    "empty": "No se encontraron tareas",
+    "assigned_by_admins": "Las tareas son asignadas por administradores"
   },
   "create_habit": {
     "header": "Crear hábito personalizado",
@@ -703,6 +705,19 @@
       "reset_failed": "Error al restablecer la contraseña. El código puede haber expirado.",
       "username_taken": "El nombre de usuario ya está en uso.",
       "email_taken": "El correo electrónico ya está en uso."
+    },
+    "validation": {
+      "password_non_alphanumeric": "La contraseña debe tener al menos un carácter especial.",
+      "password_uppercase": "La contraseña debe tener al menos una letra mayúscula (A-Z).",
+      "password_lowercase": "La contraseña debe tener al menos una letra minúscula (a-z).",
+      "password_digit": "La contraseña debe tener al menos un dígito (0-9).",
+      "password_min_length": "La contraseña debe tener al menos 8 caracteres.",
+      "invalid_email": "Dirección de correo electrónico no válida.",
+      "password_wrong": "Contraseña incorrecta.",
+      "user_not_found": "Usuario no encontrado.",
+      "invalid_credentials": "Nombre de usuario o contraseña incorrectos.",
+      "account_locked": "La cuenta está bloqueada temporalmente. Inténtalo más tarde.",
+      "email_not_confirmed": "Su dirección de correo electrónico no está confirmada."
     }
   },
   "onboarding": {
@@ -815,6 +830,10 @@
     "daily": "Diario",
     "weekly": "Semanal",
     "monthly": "Mensual",
+    "yearly": "Anual",
+    "select_year": "Seleccionar año",
+    "select_month": "Seleccionar mes",
+    "select_month_year": "Seleccionar mes y año",
     "completion_rate": "Tasa de Finalización",
     "missed_rate": "Tasa de Incumplimiento",
     "completed": "Completado",

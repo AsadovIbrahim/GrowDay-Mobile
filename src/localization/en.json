@@ -222,7 +222,9 @@
       "completed": "Completed"
     },
     "completed_msg": "You've successfully completed the task:",
-    "reward_earned": "Reward Earned"
+    "reward_earned": "Reward Earned",
+    "empty": "No tasks found",
+    "assigned_by_admins": "Tasks are assigned by admins"
   },
   "create_habit": {
     "header": "Create Custom Habit",
@@ -704,6 +706,19 @@
       "reset_failed": "Failed to reset password. Token may be expired.",
       "username_taken": "Username is already in use.",
       "email_taken": "Email is already in use."
+    },
+    "validation": {
+      "password_non_alphanumeric": "Password must have at least one special character.",
+      "password_uppercase": "Password must have at least one uppercase letter (A-Z).",
+      "password_lowercase": "Password must have at least one lowercase letter (a-z).",
+      "password_digit": "Password must have at least one digit (0-9).",
+      "password_min_length": "Password must be at least 8 characters.",
+      "invalid_email": "Invalid email address.",
+      "password_wrong": "Password is incorrect.",
+      "user_not_found": "User not found.",
+      "invalid_credentials": "Invalid username or password.",
+      "account_locked": "Account is temporarily locked. Please try again later.",
+      "email_not_confirmed": "Your email address is not confirmed."
     }
   },
   "onboarding": {
@@ -816,6 +831,10 @@
     "daily": "Daily",
     "weekly": "Weekly",
     "monthly": "Monthly",
+    "yearly": "Yearly",
+    "select_year": "Select Year",
+    "select_month": "Select Month",
+    "select_month_year": "Select Month and Year",
     "completion_rate": "Completion Rate",
     "missed_rate": "Missed Rate",
     "completed": "Completed",

@@ -32,14 +32,14 @@ export const requestUserPermission = async () => {
 export const getFcmToken = async (token) => {
   try {
     const fcmToken = await messaging().getToken();
+    const lang = storage.getString('userLanguage') || 'en';
+    const timezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes (e.g., -240 for UTC+4)
     if (fcmToken) {
-      console.log('FCM Token:', fcmToken);
-      const lang = storage.getString('userLanguage') || 'en';
-      await updateFcmTokenFetch(token, `${fcmToken}||${lang}`);
-      return fcmToken;
+      await updateFcmTokenFetch(token, `${fcmToken}||${lang}||${timezoneOffset}`);
+      console.log('FCM Token Updated with Language and Timezone:', lang, timezoneOffset);
     }
   } catch (error) {
-    console.log('Error getting FCM token:', error);
+    console.log('FCM Token Error:', error);
   }
 };
 
@@ -82,7 +82,7 @@ export const displayLocalNotification = async (remoteMessage) => {
   });
 };
 
-export const displayOngoingHabitNotification = async (habit, seconds, distance = null, isPaused = false) => {
+export const displayOngoingHabitNotification = async (habit, seconds, distance = null, isPaused = false, baseSeconds = 0, targetSeconds = null) => {
   const hId = habit.userHabitId || habit.UserHabitId || habit.id;
   const channelId = 'ongoing_habit_channel';
 
@@ -98,13 +98,16 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
   const timeStr = `${hh > 0 ? hh + ':' : ''}${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}`;
 
   let body = `${t('notifications.push_time_label')}: ${timeStr}`;
-  if (distance !== null) {
+  if (distance !== null && distance !== '') {
     const distStr = typeof distance === 'number' ? `${distance.toFixed(2)} km` : distance;
-    body = `${distStr} | ${timeStr}`;
+    body = `${distStr}`;
+  } else {
+      // If it's just duration, we can let the chronometer handle the visual time
+      body = '';
   }
 
   if (isPaused) {
-    body = t('notifications.push_tracking_paused', { body });
+    body = t('notifications.push_tracking_paused', { body: body || timeStr });
   }
 
   await notifee.displayNotification({
@@ -114,6 +117,10 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
     data: {
       habitId: hId.toString(),
       type: 'ongoing_habit',
+      title: habit.title || '',
+      distance: distance ? distance.toString() : '',
+      baseSeconds: baseSeconds.toString(),
+      targetSeconds: targetSeconds ? targetSeconds.toString() : ''
     },
     android: {
       channelId: channelId,
@@ -121,6 +128,8 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
       autoCancel: false,
       onlyAlertOnce: true,
       asForegroundService: true,
+      showChronometer: !isPaused,
+      timestamp: Date.now() - (seconds * 1000),
       actions: [
         {
           title: isPaused ? t('notifications.push_action_resume') : t('notifications.push_action_pause'),
@@ -232,4 +241,41 @@ export const scheduleWinBackReminder = async () => {
 
 export const cancelWinBackReminder = async () => {
   await notifee.cancelTriggerNotification('winback_7days');
+};
+
+export const scheduleGoalReachedNotification = async (habit, timeRemainingSeconds) => {
+  const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
+  if (!pushEnabled || timeRemainingSeconds <= 0) return;
+
+  const hId = habit.userHabitId || habit.UserHabitId || habit.id;
+  
+  await cancelGoalReachedNotification(hId);
+
+  const trigger = {
+    type: TriggerType.TIMESTAMP,
+    timestamp: Date.now() + (timeRemainingSeconds * 1000),
+  };
+
+  const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
+  const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
+  
+  await notifee.createTriggerNotification({
+    id: `ongoing_${hId}`, // Overwrites the ongoing notification
+    title: "Goal Reached! 🎉",
+    body: `You successfully reached your goal for ${habit.title || 'this habit'}! Tap to celebrate!`,
+    data: {
+      habitId: hId.toString(),
+      type: 'goal_reached',
+    },
+    android: {
+      channelId: channelId,
+      pressAction: { id: 'default' },
+      autoCancel: true,
+    },
+  }, trigger);
+};
+
+export const cancelGoalReachedNotification = async (hId) => {
+  const id = hId.userHabitId || hId.UserHabitId || hId.id || hId;
+  await notifee.cancelTriggerNotification(`ongoing_${id}`);
 };

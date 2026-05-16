@@ -8,8 +8,10 @@ import { ThemeProvider } from '../context/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
 import { AppState, Alert } from 'react-native';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
+import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
 import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder } from '../utils/NotificationService';
 import notifee, { EventType } from '@notifee/react-native';
+import BootSplash from 'react-native-bootsplash';
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -19,6 +21,8 @@ const Navigation = () => {
     const [hasCompletedPreferences] = useMMKVBoolean("hasCompletedPreferences");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isSplashVisible, setIsSplashVisible] = useState(true);
+    const [isNavReady, setIsNavReady] = useState(false);
 
     useEffect(() => {
         let unsubscribe = () => {};
@@ -97,6 +101,71 @@ const Navigation = () => {
                         });
                     }
                 }
+            } else if (type === EventType.ACTION_PRESS) {
+                const habitId = detail.notification?.data?.habitId;
+                if (habitId) {
+                    const startKey = `timer_start_${habitId}`;
+                    const accKey = `timer_acc_${habitId}`;
+                    
+                    if (detail.pressAction.id === 'stop') {
+                        notifee.cancelNotification(detail.notification.id);
+                        
+                        // Import MMKV storage dynamically to avoid cyclic dependencies
+                        import('../utils/MMKVStore').then(({ storage }) => {
+                            const storedStart = storage.getString(startKey);
+                            if (storedStart) {
+                                const diff = Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000);
+                                const currentAcc = parseInt(storage.getString(accKey) || '0', 10);
+                                storage.set(accKey, (currentAcc + diff).toString());
+                                storage.delete(startKey);
+                            }
+                            storage.set(`pending_stop_${habitId}`, true);
+                        });
+                    } else if (detail.pressAction.id === 'pause') {
+                        import('../utils/MMKVStore').then(({ storage }) => {
+                            const storedStart = storage.getString(startKey);
+                            let newAcc = parseInt(storage.getString(accKey) || '0', 10);
+                            if (storedStart) {
+                                const diff = Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000);
+                                newAcc += diff;
+                                storage.set(accKey, newAcc.toString());
+                                storage.delete(startKey);
+                            }
+                            
+                            const baseSecs = parseInt(detail.notification.data?.baseSeconds || '0', 10);
+                            const targetSecsStr = detail.notification.data?.targetSeconds;
+                            const targetSecs = targetSecsStr ? parseInt(targetSecsStr, 10) : null;
+                            const title = detail.notification.data?.title || '';
+                            const distance = detail.notification.data?.distance || null;
+                            import('../utils/NotificationService').then(({ displayOngoingHabitNotification, cancelGoalReachedNotification }) => {
+                                displayOngoingHabitNotification({ id: habitId, title }, newAcc + baseSecs, distance, true, baseSecs, targetSecs);
+                                cancelGoalReachedNotification(habitId);
+                            });
+                        });
+                    } else if (detail.pressAction.id === 'resume') {
+                        import('../utils/MMKVStore').then(({ storage }) => {
+                            storage.set(startKey, new Date().toISOString());
+                            
+                            const currentAcc = parseInt(storage.getString(accKey) || '0', 10);
+                            const baseSecs = parseInt(detail.notification.data?.baseSeconds || '0', 10);
+                            const targetSecsStr = detail.notification.data?.targetSeconds;
+                            const targetSecs = targetSecsStr ? parseInt(targetSecsStr, 10) : null;
+                            const title = detail.notification.data?.title || '';
+                            const distance = detail.notification.data?.distance || null;
+                            import('../utils/NotificationService').then(({ displayOngoingHabitNotification, scheduleGoalReachedNotification }) => {
+                                const totalCurrent = currentAcc + baseSecs;
+                                displayOngoingHabitNotification({ id: habitId, title }, totalCurrent, distance, false, baseSecs, targetSecs);
+                                
+                                if (targetSecs !== null) {
+                                    const remaining = targetSecs - totalCurrent;
+                                    if (remaining > 0) {
+                                        scheduleGoalReachedNotification({ id: habitId, title }, remaining);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
             }
         });
 
@@ -111,7 +180,7 @@ const Navigation = () => {
                 isCreateModalOpen, 
                 setIsCreateModalOpen 
             }}>
-                <NavigationContainer ref={navigationRef}>
+                <NavigationContainer ref={navigationRef} onReady={() => setIsNavReady(true)}>
                     {!accessToken ? (
                         <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
                      ) : !hasCompletedPreferences ? (
@@ -121,6 +190,9 @@ const Navigation = () => {
                     )}
                     <CreateHabitBottomSheet />
                 </NavigationContainer>
+                {isNavReady && isSplashVisible && (
+                    <AnimatedSplashScreen onAnimationEnd={() => setIsSplashVisible(false)} />
+                )}
             </MenuContext.Provider>
         </ThemeProvider>
     );

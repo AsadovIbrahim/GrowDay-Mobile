@@ -315,6 +315,16 @@ export const getMonthlyStatisticsFetch = async (token, year, month) => {
     return data;
 };
 
+export const getYearlyStatisticsFetch = async (token, year) => {
+    const response = await fetch(`${VITE_API_URL}/api/Statistic/yearly?year=${year}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+        cache: "no-store",
+    });
+    const data = await response.json();
+    return data;
+};
+
 export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10) => {
     const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/GetUserSuggestedHabits?pageIndex=${pageIndex}&pageSize=${pageSize}&_t=${Date.now()}`, {
         method: "GET",

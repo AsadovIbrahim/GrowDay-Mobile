@@ -1,9 +1,9 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, StyleSheet, Image } from "react-native";
+import { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import GrowDayLogo from "../../../assets/icons/growday-logo.svg";
+import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
@@ -28,6 +28,22 @@ const Register = () => {
     const [serverErrors, setServerErrors] = useState([]);
     const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
 
+    const scrollViewRef = useRef(null);
+    const firstNameRef = useRef(null);
+    const lastNameRef = useRef(null);
+    const usernameRef = useRef(null);
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
+    const confirmPasswordRef = useRef(null);
+
+    const scrollToInput = (ref) => {
+      setTimeout(() => {
+        ref?.current?.measureInWindow((x, y) => {
+          scrollViewRef.current?.scrollTo({ y: y - 120, animated: true });
+        });
+      }, 100);
+    };
+
     const showToast = (message, type = "success") => {
       setToast({ visible: true, message, type });
     };
@@ -36,6 +52,22 @@ const Register = () => {
       setFormData({ ...formData, [name]: text });
       setServerErrors([]);
     }
+    const translateServerError = (err) => {
+      const errorMap = {
+        "Username is already in use.": t("auth.messages.username_taken"),
+        "Email is already in use.": t("auth.messages.email_taken"),
+        "Passwords must have at least one non alphanumeric character.": t("auth.validation.password_non_alphanumeric"),
+        "Passwords must have at least one uppercase ('A'-'Z').": t("auth.validation.password_uppercase"),
+        "Passwords must have at least one lowercase ('a'-'z').": t("auth.validation.password_lowercase"),
+        "Passwords must have at least one digit ('0'-'9').": t("auth.validation.password_digit"),
+        "Passwords must be at least 8 characters.": t("auth.validation.password_min_length"),
+        "Passwords must have at least one special character.": t("auth.validation.password_non_alphanumeric"),
+        "Passwords do not match.": t("auth.messages.passwords_dont_match"),
+        "Invalid email address.": t("auth.validation.invalid_email"),
+      };
+      return errorMap[err] || err;
+    };
+
     const handleRegister = async () => {
       setLoading(true);
       setServerErrors([]);
@@ -50,12 +82,8 @@ const Register = () => {
           navigation.navigate("OtpVerification", { email: formData.email });
         } else {
           const msgs = data.errors?.length > 0
-            ? data.errors.map(err => {
-                if (err === "Username is already in use.") return t("auth.messages.username_taken");
-                if (err === "Email is already in use.") return t("auth.messages.email_taken");
-                return err;
-              })
-            : [data.message === "Username is already in use." ? t("auth.messages.username_taken") : data.message === "Email is already in use." ? t("auth.messages.email_taken") : data.message || t("auth.messages.registration_failed")];
+            ? data.errors.map(err => translateServerError(err))
+            : [translateServerError(data.message) || t("auth.messages.registration_failed")];
           setServerErrors(msgs);
         }
       } catch (error) {
@@ -64,6 +92,7 @@ const Register = () => {
         setLoading(false);
       }
     }
+
     const handleGoBack = () => {
       navigation.goBack();
     }
@@ -139,11 +168,13 @@ const Register = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <ScrollView
+            ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ 
               paddingHorizontal: 24, 
               paddingTop: insets.top + 20, 
-              paddingBottom: insets.bottom + 60,
+              paddingBottom: insets.bottom + 100,
               flexGrow: 1,
               justifyContent: 'center'
             }}
@@ -154,9 +185,18 @@ const Register = () => {
               <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
-            {/* Logo */}
-            <View className="items-center">
-              <GrowDayLogo width={100} height={100} />
+            <View className="items-center mt-4 mb-2">
+              <View style={{
+                borderRadius: 24,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                elevation: 8,
+                backgroundColor: '#000',
+              }}>
+                <Image source={GrowDayLogo} style={{ width: 100, height: 100, borderRadius: 24 }} resizeMode="cover" />
+              </View>
             </View>
 
             {/* Title */}
@@ -205,16 +245,24 @@ const Register = () => {
             {/* First + Last */}
             <View className="flex-row gap-3">
               <TextInput
+                ref={firstNameRef}
                 placeholder={t("auth.first_name")}
                 placeholderTextColor={colors.textSecondary}
                 onChangeText={(text) => handleInputChange("firstname", text)}
+                onFocus={() => scrollToInput(firstNameRef)}
+                returnKeyType="next"
+                onSubmitEditing={() => lastNameRef.current?.focus()}
                 className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
                 style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />
               <TextInput
+                ref={lastNameRef}
                 placeholder={t("auth.last_name")}
                 placeholderTextColor={colors.textSecondary}
                 onChangeText={(text) => handleInputChange("lastname", text)}
+                onFocus={() => scrollToInput(lastNameRef)}
+                returnKeyType="next"
+                onSubmitEditing={() => usernameRef.current?.focus()}
                 className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
                 style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />
@@ -222,18 +270,28 @@ const Register = () => {
 
             {/* Username */}
             <TextInput
+              ref={usernameRef}
               placeholder={t("auth.username")}
               placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("username", text)}
+              onFocus={() => scrollToInput(usernameRef)}
+              returnKeyType="next"
+              onSubmitEditing={() => emailRef.current?.focus()}
               className="font-redditsans-medium rounded-xl p-4 mb-4"
               style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
             />
 
             {/* Email */}
             <TextInput
+              ref={emailRef}
               placeholder={t("auth.email")}
               placeholderTextColor={colors.textSecondary}
               onChangeText={(text) => handleInputChange("email", text)}
+              onFocus={() => scrollToInput(emailRef)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current?.focus()}
               className="font-redditsans-medium rounded-xl p-4 mb-4"
               style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
             />
@@ -241,10 +299,14 @@ const Register = () => {
             {/* Password */}
             <View className="relative">
               <TextInput
+                ref={passwordRef}
                 placeholder={t("auth.password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 onChangeText={(text) => handleInputChange("password", text)}
+                onFocus={() => scrollToInput(passwordRef)}
+                returnKeyType="next"
+                onSubmitEditing={() => confirmPasswordRef.current?.focus()}
                 className="font-redditsans-medium rounded-xl p-4 mb-4"
                 style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />
@@ -260,10 +322,14 @@ const Register = () => {
             {/* Confirm Password */}
             <View className="relative">
               <TextInput
+                ref={confirmPasswordRef}
                 placeholder={t("auth.confirm_password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showConfirmPassword}
                 onChangeText={(text) => handleInputChange("confirmPassword", text)}
+                onFocus={() => scrollToInput(confirmPasswordRef)}
+                returnKeyType="done"
+                onSubmitEditing={handleRegister}
                 className="font-redditsans-medium rounded-xl p-4 mb-6"
                 style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
               />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, PermissionsAndroid, Platform, Alert, Animated, Easing } from 'react-native';
-import { useMMKVString } from 'react-native-mmkv';
+import { useMMKVString, useMMKVBoolean } from 'react-native-mmkv';
 import Geolocation from 'react-native-geolocation-service';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlay, faPause, faStop, faPlus, faKeyboard, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,7 @@ import { Modal, TextInput, Vibration } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { completeUserHabitFetch, reportHabitProgressFetch } from '../../../utils/fetch';
 import { useTheme } from '../../../context/ThemeContext';
-import { displayOngoingHabitNotification, cancelOngoingHabitNotification, scheduleIncompleteReminder, cancelIncompleteReminder } from '../../../utils/NotificationService';
+import { displayOngoingHabitNotification, cancelOngoingHabitNotification, scheduleIncompleteReminder, cancelIncompleteReminder, scheduleGoalReachedNotification, cancelGoalReachedNotification } from '../../../utils/NotificationService';
 import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
 import { useTranslation } from "react-i18next";
 
@@ -40,6 +40,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const [storedDist, setStoredDist] = useMMKVString(distKey);
     const [storedLat, setStoredLat] = useMMKVString(latKey);
     const [storedLon, setStoredLon] = useMMKVString(lonKey);
+    const [pendingStop, setPendingStop] = useMMKVBoolean(`pending_stop_${hId}`);
 
     const [timerActive, setTimerActive] = useState(!!storedStart);
     const [seconds, setSeconds] = useState(0);
@@ -74,6 +75,19 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         }
     }, [timerActive]);
 
+    // Sync state when MMKV changes externally
+    useEffect(() => {
+        setTimerActive(!!storedStart);
+    }, [storedStart]);
+
+    // Handle pending stop request from notifications
+    useEffect(() => {
+        if (pendingStop) {
+            handleStop();
+            setPendingStop(undefined);
+        }
+    }, [pendingStop]);
+
     useEffect(() => {
         if (!timerActive) return;
         
@@ -95,6 +109,26 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const isDistance = useMemo(() => ["km", "m", "mile", "miles"].includes(unit), [unit]);
     const isSteps = useMemo(() => unit === "steps", [unit]);
     const isNumeric = useMemo(() => !isBoolean && !isDuration && !isDistance && !isSteps, [isBoolean, isDuration, isDistance, isSteps]);
+
+    const baseVal = habit.currentValue || 0;
+    
+    let baseSeconds = 0;
+    if (isDuration) {
+        const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+        baseSeconds = baseVal * unitMod;
+    }
+
+    const displaySeconds = useMemo(() => {
+        return Math.round(seconds + baseSeconds);
+    }, [seconds, baseSeconds]);
+
+    const displayDistance = useMemo(() => {
+        return distance + (isDistance ? baseVal : 0);
+    }, [distance, baseVal, isDistance]);
+
+    const displaySteps = useMemo(() => {
+        return Math.round(stepCount + (isSteps ? baseVal : 0));
+    }, [stepCount, baseVal, isSteps]);
 
     // Strict mode: habits are only actionable on their scheduled days
     const isScheduledOnSelectedDay = useMemo(() => {
@@ -178,19 +212,32 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return () => clearInterval(interval);
     }, [storedStart, storedAcc]);
 
+    // Use a ref for displaySeconds to avoid running the effect every second
+    const displaySecondsRef = useRef(displaySeconds);
+    displaySecondsRef.current = displaySeconds;
+
     // Sync Ongoing Notification
     useEffect(() => {
-        if (timerActive || (seconds > 0 || distance > 0 || stepCount > 0)) {
-            const displayVal = isSteps ? `${stepCount} ${t("habit_details.action.steps")}` : (isDistance ? distance : null);
-            displayOngoingHabitNotification(habit, seconds, displayVal, !timerActive);
+        // We consider the timer "active or has data" if timer is running, or if we accumulated more than the base seconds in this session
+        if (timerActive || (displaySecondsRef.current > baseSeconds || distance > 0 || stepCount > 0)) {
+            const displayVal = isSteps ? `${displaySteps} ${t("habit_details.action.steps")}` : (isDistance ? displayDistance : null);
+            let targetSeconds = null;
+            if (isDuration) {
+                const targetVal = habit.targetValue || 1;
+                const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+                targetSeconds = targetVal * unitMod;
+            }
+            displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, targetSeconds);
         } else {
             cancelOngoingHabitNotification(hId);
         }
         
         return () => {
-            if (!timerActive && seconds === 0) cancelOngoingHabitNotification(hId);
+            if (!timerActive && displaySecondsRef.current <= baseSeconds && distance === 0 && stepCount === 0) {
+                cancelOngoingHabitNotification(hId);
+            }
         };
-    }, [timerActive, seconds, distance, stepCount]);
+    }, [timerActive, displayDistance, displaySteps, hId, isDuration, habit.targetValue, unit, baseSeconds, habit]);
 
     useEffect(() => {
         if ((isDistance || isSteps) && timerActive) startTracking();
@@ -298,6 +345,16 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         blockUpdates.current = false;
         setStoredStart(new Date().toISOString());
         setTimerActive(true);
+
+        if (isDuration) {
+            const targetVal = habit.targetValue || 1;
+            const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+            const targetSeconds = targetVal * unitMod;
+            const remaining = targetSeconds - displaySecondsRef.current;
+            if (remaining > 0) {
+                scheduleGoalReachedNotification(habit, remaining);
+            }
+        }
     };
 
     const handlePause = () => {
@@ -307,6 +364,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         setStoredAcc(newAcc.toString());
         setStoredStart(undefined);
         setTimerActive(false);
+        
+        cancelGoalReachedNotification(hId);
         
         // They paused but haven't finished, so schedule a reminder
         scheduleIncompleteReminder(habit);
@@ -340,6 +399,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         totalDistRef.current = 0; setDistance(0); setStepCount(0);
         setTimerActive(false); stopTracking();
         cancelOngoingHabitNotification(hId);
+        cancelGoalReachedNotification(hId);
         autoStopTriggered.current = false;
     };
 
@@ -574,12 +634,12 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 ]}>
                     <Text style={[styles.sessionLabel, { color: colors.textSecondary }]}>{t("habit_details.action.today_session")}</Text>
                     <Text style={[styles.timerValue, { color: colors.text }]}>
-                        {isSteps ? `${stepCount} ${t("units.steps")}` : (isDistance ? formatDistance(distance) : formatTime(seconds))}
+                        {isSteps ? `${displaySteps} ${t("units.steps")}` : (isDistance ? formatDistance(displayDistance) : formatTime(displaySeconds))}
                     </Text>
                     <Text style={[styles.timerLabel, { color: colors.textSecondary }]}>
                         {isSteps ? t("habit_details.action.live_steps") : (isDistance ? t("habit_details.action.live_distance") : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC"))}
                     </Text>
-                    {(isDistance || isSteps) && <Text style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(seconds)}</Text>}
+                    {(isDistance || isSteps) && <Text style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(displaySeconds)}</Text>}
                 </Animated.View>
                 <View style={styles.controlsRow}>
                     {!timerActive ? (

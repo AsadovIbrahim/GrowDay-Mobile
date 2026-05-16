@@ -221,7 +221,9 @@
       "completed": "已完成"
     },
     "completed_msg": "任务成功完成：",
-    "reward_earned": "获得奖励"
+    "reward_earned": "获得奖励",
+    "empty": "未找到任务",
+    "assigned_by_admins": "任务由管理员分配"
   },
   "create_habit": {
     "header": "创建自定义习惯",
@@ -703,6 +705,19 @@
       "reset_failed": "重置密码失败。验证码可能已过期。",
       "username_taken": "用户名已被占用。",
       "email_taken": "电子邮件已被占用。"
+    },
+    "validation": {
+      "password_non_alphanumeric": "密码必须包含至少一个特殊字符。",
+      "password_uppercase": "密码必须包含至少一个大写字母 (A-Z)。",
+      "password_lowercase": "密码必须包含至少一个小写字母 (a-z)。",
+      "password_digit": "密码必须包含至少一个数字 (0-9)。",
+      "password_min_length": "密码必须至少8个字符。",
+      "invalid_email": "无效的电子邮件地址。",
+      "password_wrong": "密码错误。",
+      "user_not_found": "用户未找到。",
+      "invalid_credentials": "用户名或密码错误。",
+      "account_locked": "账户被暂时锁定。请稍后再试。",
+      "email_not_confirmed": "您的电子邮件地址尚未确认。"
     }
   },
   "onboarding": {
@@ -816,6 +831,10 @@
     "daily": "每日",
     "weekly": "每周",
     "monthly": "每月",
+    "yearly": "每年",
+    "select_year": "选择年份",
+    "select_month": "选择月份",
+    "select_month_year": "选择月份和年份",
     "completion_rate": "完成率",
     "missed_rate": "未完成率",
     "completed": "已完成",

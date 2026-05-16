@@ -222,7 +222,9 @@
       "completed": "Tamamlanıb"
     },
     "completed_msg": "Tapşırığı uğurla tamamladınız:",
-    "reward_earned": "Mükafat qazanıldı"
+    "reward_earned": "Mükafat qazanıldı",
+    "empty": "Tapşırıq tapılmadı",
+    "assigned_by_admins": "Tapşırıqlar adminlər tərəfindən təyin edilir"
   },
   "create_habit": {
     "header": "Xüsusi Vərdiş Yarat",
@@ -704,6 +706,19 @@
       "reset_failed": "Şifrəni sıfırlamaq mümkün olmadı. Kodun vaxtı bitmiş ola bilər.",
       "username_taken": "İstifadəçi adı artıq istifadə olunur.",
       "email_taken": "E-poçt artıq istifadə olunur."
+    },
+    "validation": {
+      "password_non_alphanumeric": "Şifrədə ən az bir xüsusi simvol olmalıdır.",
+      "password_uppercase": "Şifrədə ən az bir böyük hərf (A-Z) olmalıdır.",
+      "password_lowercase": "Şifrədə ən az bir kiçik hərf (a-z) olmalıdır.",
+      "password_digit": "Şifrədə ən az bir rəqəm (0-9) olmalıdır.",
+      "password_min_length": "Şifrə ən az 8 simvol olmalıdır.",
+      "invalid_email": "Yanlış e-poçt formatı.",
+      "password_wrong": "Şifrə yanlışdır.",
+      "user_not_found": "İstifadəçi tapılmadı.",
+      "invalid_credentials": "İstifadəçi adı və ya şifrə yanlışdır.",
+      "account_locked": "Hesab müəqqətli olaraq blokladı. Bir az sonra yenidən cəhd edin.",
+      "email_not_confirmed": "E-poçt ənvəniniz təsdiqlənməyib."
     }
   },
   "onboarding": {
@@ -814,6 +829,10 @@
     "daily": "Günlük",
     "weekly": "Həftəlik",
     "monthly": "Aylıq",
+    "yearly": "İllik",
+    "select_year": "İli seçin",
+    "select_month": "Ay seçin",
+    "select_month_year": "Ay və İli seçin",
     "completion_rate": "Tamamlama Faizi",
     "missed_rate": "Buraxılma Faizi",
     "completed": "Tamamlandı",

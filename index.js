@@ -18,21 +18,57 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 
         if (pressAction.id === 'pause') {
             const storedStart = storage.getString(startKey);
+            let newAcc = parseInt(storage.getString(accKey) || '0', 10);
+            if (storedStart) {
+                const diff = Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000);
+                newAcc += diff;
+                storage.set(accKey, newAcc.toString());
+                storage.delete(startKey);
+            }
+            
+            // Reconstruct and update the notification
+            const baseSecs = parseInt(notification.data?.baseSeconds || '0', 10);
+            const targetSecsStr = notification.data?.targetSeconds;
+            const targetSecs = targetSecsStr ? parseInt(targetSecsStr, 10) : null;
+            const title = notification.data?.title || '';
+            const distance = notification.data?.distance || null;
+            import('./src/utils/NotificationService').then(({ displayOngoingHabitNotification, cancelGoalReachedNotification }) => {
+                displayOngoingHabitNotification({ id: hId, title }, newAcc + baseSecs, distance, true, baseSecs, targetSecs);
+                cancelGoalReachedNotification(hId);
+            });
+
+        } else if (pressAction.id === 'resume') {
+            storage.set(startKey, new Date().toISOString());
+            
+            const currentAcc = parseInt(storage.getString(accKey) || '0', 10);
+            const baseSecs = parseInt(notification.data?.baseSeconds || '0', 10);
+            const targetSecsStr = notification.data?.targetSeconds;
+            const targetSecs = targetSecsStr ? parseInt(targetSecsStr, 10) : null;
+            const title = notification.data?.title || '';
+            const distance = notification.data?.distance || null;
+            import('./src/utils/NotificationService').then(({ displayOngoingHabitNotification, scheduleGoalReachedNotification }) => {
+                const totalCurrent = currentAcc + baseSecs;
+                displayOngoingHabitNotification({ id: hId, title }, totalCurrent, distance, false, baseSecs, targetSecs);
+                
+                if (targetSecs !== null) {
+                    const remaining = targetSecs - totalCurrent;
+                    if (remaining > 0) {
+                        scheduleGoalReachedNotification({ id: hId, title }, remaining);
+                    }
+                }
+            });
+            
+        } else if (pressAction.id === 'stop') {
+            await notifee.cancelNotification(notification.id);
+            const storedStart = storage.getString(startKey);
             if (storedStart) {
                 const diff = Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000);
                 const currentAcc = parseInt(storage.getString(accKey) || '0', 10);
                 storage.set(accKey, (currentAcc + diff).toString());
                 storage.delete(startKey);
             }
-        } else if (pressAction.id === 'resume') {
-            storage.set(startKey, new Date().toISOString());
-        } else if (pressAction.id === 'stop') {
-            // Simply cancel notification for now, app will handle reporting when opened
-            // or we could trigger a fetch here if needed
-            await notifee.cancelNotification(notification.id);
-            storage.delete(startKey);
-            storage.set(accKey, '0');
-            storage.set(`dist_acc_${hId}`, '0');
+            // Signal the UI to handle the report
+            storage.set(`pending_stop_${hId}`, true);
         }
     }
 });

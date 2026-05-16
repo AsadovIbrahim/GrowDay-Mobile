@@ -222,7 +222,9 @@
       "completed": "Tamamlandı"
     },
     "completed_msg": "Görev başarıyla tamamlandı:",
-    "reward_earned": "Ödül kazanıldı"
+    "reward_earned": "Ödül kazanıldı",
+    "empty": "Görev bulunamadı",
+    "assigned_by_admins": "Görevler adminler tarafından atanmıştır"
   },
   "create_habit": {
     "header": "Özel Alışkanlık Oluştur",
@@ -704,6 +706,19 @@
       "reset_failed": "Şifre sıfırlanamadı. Kodun süresi dolmuş olabilir.",
       "username_taken": "Kullanıcı adı zaten kullanımda.",
       "email_taken": "E-posta zaten kullanımda."
+    },
+    "validation": {
+      "password_non_alphanumeric": "Şifre en az bir özel karakter içermelidir.",
+      "password_uppercase": "Şifre en az bir büyük harf (A-Z) içermelidir.",
+      "password_lowercase": "Şifre en az bir küçük harf (a-z) içermelidir.",
+      "password_digit": "Şifre en az bir rakam (0-9) içermelidir.",
+      "password_min_length": "Şifre en az 8 karakter olmalıdır.",
+      "invalid_email": "Geçersiz e-posta adresi.",
+      "password_wrong": "Şifre hatalı.",
+      "user_not_found": "Kullanıcı bulunamadı.",
+      "invalid_credentials": "Kullanıcı adı veya şifre hatalı.",
+      "account_locked": "Hesap geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.",
+      "email_not_confirmed": "E-posta adresiniz doğrulanmamış."
     }
   },
   "onboarding": {
@@ -814,6 +829,10 @@
     "daily": "Günlük",
     "weekly": "Haftalık",
     "monthly": "Aylık",
+    "yearly": "Yıllık",
+    "select_year": "Yılı seçin",
+    "select_month": "Ay seçin",
+    "select_month_year": "Ay ve Yılı seçin",
     "completion_rate": "Tamamlama Oranı",
     "missed_rate": "Kaçırma Oranı",
     "completed": "Tamamlandı",
