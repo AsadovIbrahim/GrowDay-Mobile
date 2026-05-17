@@ -197,7 +197,10 @@
     },
     "status": {
       "completed": "مكتمل",
-      "pending": "قيد الانتظار"
+      "pending": "قيد الانتظار",
+      "inprogress": "قيد التقدم",
+      "cancelled": "ألغيت",
+      "expired": "منتهي الصلاحية"
     },
     "article_header": "مقالة",
     "read_time": "{{count}} دقيقة قراءة",

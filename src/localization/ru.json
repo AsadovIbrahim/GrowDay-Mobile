@@ -21,7 +21,8 @@
     "custom": "Пользовательский",
     "progress": "Прогресс",
     "congratulations": "Поздравляем!",
-    "continue": "Продолжить"
+    "continue": "Продолжить",
+    "confirm": "Подтвердить"
   },
   "menu": {
     "home": "Главная",
@@ -197,7 +198,10 @@
     },
     "status": {
       "completed": "Выполнено",
-      "pending": "Ожидает"
+      "pending": "Ожидает",
+      "inprogress": "В процессе",
+      "cancelled": "Отменено",
+      "expired": "Срок истек"
     },
     "article_header": "Статья",
     "read_time": "{{count}} мин чтения",
@@ -255,7 +259,43 @@
     "every_day": "Каждый день",
     "on_scheduled_days": "В запланированные дни",
     "selected_days": "Выбранные дни",
-    "preview": "✨ Вы будете {{title}} {{targetValue}} {{unit}} каждые {{frequency}}"
+    "preview": "✨ Вы будете {{title}} {{targetValue}} {{unit}} каждые {{frequency}}",
+    "select_icon": "Выберите значок",
+    "icon_subtitle": "Значок",
+    "repeat_on": "Повторять по",
+    "repeat_interval": "Интервал повторения",
+    "every_custom": "Каждые",
+    "days_custom": "дн.",
+    "repeat_schedule": "График повторения",
+    "monthly_repeat_note": "Эта привычка будет повторяться в тот же день каждого месяца (Число {{day}}).",
+    "track_duration": "Отслеживать длительность",
+    "duration_placeholder": "напр. 10",
+    "minutes_per_session": "минут за сеанс"
+  },
+  "icons": {
+    "run": "бег",
+    "water": "вода",
+    "gym": "зал",
+    "book": "книга",
+    "code": "код",
+    "sleep": "сон",
+    "meditate": "медитация",
+    "diet": "диета",
+    "walk": "прогулка",
+    "write": "письмо",
+    "music": "музыка",
+    "study": "учеба",
+    "heart": "сердце",
+    "sun": "солнце",
+    "moon": "луна",
+    "plant": "растение",
+    "coffee": "кофе",
+    "work": "работа",
+    "female": "женщина",
+    "woman": "женщина",
+    "selfcare": "уход за собой",
+    "lock": "замок",
+    "default": "по умолчанию"
   },
   "units": {
     "header": "Выберите единицу",

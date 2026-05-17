@@ -89,12 +89,14 @@ const AnimatedBar = ({ d, isPast, colors, isDark }) => {
                 ]} />
             </Animated.View>
 
-            <Text style={[
-                styles.dayLabel,
-                { color: colors.textSecondary },
-                d.isToday && [styles.dayLabelToday, { color: colors.primary }],
-                isFuture  && !d.isToday && styles.dayLabelFuture,
-            ]}>
+            <Text 
+                className={d.isToday ? "font-redditsans-bold text-[10px] mt-1 tracking-wider" : "font-redditsans-semibold text-[10px] mt-1 tracking-wider"}
+                style={[
+                    { color: colors.textSecondary },
+                    d.isToday && { color: colors.primary },
+                    isFuture  && !d.isToday && styles.dayLabelFuture,
+                ]}
+            >
                 {t(`habit_details.days_short.${["mon", "tue", "wed", "thu", "fri", "sat", "sun"][d._index ?? 0]}`)}
             </Text>
         </View>
@@ -149,7 +151,7 @@ const HabitProgressCard = ({
 
     return (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
-            {title && <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>{title}</Text>}
+            {title && <Text className="font-redditsans-bold text-xs uppercase tracking-[1.2px] mb-4" style={{ color: colors.textSecondary }}>{title}</Text>}
 
             <View style={styles.row}>
                 <CircularProgress
@@ -164,30 +166,30 @@ const HabitProgressCard = ({
                 <View style={styles.statsCol}>
                     {isWeekly ? (
                         <View>
-                            <Text style={[styles.primaryText, { color: colors.text }]}>
+                            <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }}>
                                 {t("habit_details.completed_count", { 
                                     completed: weeklyStats.completedDays, 
                                     total: weeklyStats.totalDays,
                                     unit: t("habit_details.days")
                                 })}
                             </Text>
-                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}>
+                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.completed_this_week")}
                             </Text>
                         </View>
                     ) : (
-                        <Text style={[styles.primaryText, { color: colors.text }]}>
+                        <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
-                            <Text style={[styles.primarySub, { color: colors.textSecondary }]}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
+                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                         </Text>
                     )}
 
                     <View style={styles.metaGroup}>
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faFire}   color="#f59e0b" size={13} />
-                            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.streak")}:{" "}
-                                <Text style={[styles.metaValue, { color: colors.text }]}>
+                                <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
                                     {habit.currentStreak ?? 0}{" "}
                                     {t("habit_details.days")}
                                 </Text>
@@ -195,9 +197,9 @@ const HabitProgressCard = ({
                         </View>
                         <View style={styles.metaRow}>
                             <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={13} />
-                            <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.best")}:{" "}
-                                <Text style={[styles.metaValue, { color: colors.text }]}>
+                                <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
                                     {habit.longestStreak ?? 0}{" "}
                                     {t("habit_details.days")}
                                 </Text>
@@ -206,9 +208,9 @@ const HabitProgressCard = ({
                         {habit.todayActualDuration > 0 && (
                             <View style={styles.metaRow}>
                                 <FontAwesomeIcon icon={faClock} color={colors.primary} size={13} />
-                                <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                                <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
                                     {t("habit_details.time")}:{" "}
-                                    <Text style={[styles.metaValue, { color: colors.text }]}>
+                                    <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
                                         {habit.todayActualDuration} {t("habit_details.min_spent")}
                                     </Text>
                                 </Text>

@@ -140,8 +140,8 @@ const HabitHistory = () => {
                     <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
                 </Pressable>
                 <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={[styles.headerTitle, { color: colors.text }]}>{t("habit_history.header")}</Text>
-                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+                    <Text className='font-redditsans-bold text-2xl' style={{ color: colors.text }}>{t("habit_history.header")}</Text>
+                    <Text className='font-redditsans-medium text-lg' style={{ color: colors.textSecondary }}>
                         {t(`habits.${habitTitle?.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habitTitle })} {ICONS[habitIcon]}
                     </Text>
                 </View>
@@ -241,14 +241,14 @@ const HabitHistory = () => {
                     <>
                         <View style={styles.statsRow}>
                             <View style={[styles.statBox, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.completion")}</Text>
-                                <Text style={[styles.statValue, { color: colors.text }]}>
+                                <Text className="font-redditsans-bold text-xs uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>{t("habit_history.completion")}</Text>
+                                <Text className="font-redditsans-bold text-2xl" style={{ color: colors.text }}>
                                     {Math.round(monthlyData?.completionPercentage || 0)}%
                                 </Text>
                             </View>
                             <View style={[styles.statBox, { backgroundColor: colors.card }]}>
-                                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.days_done")}</Text>
-                                <Text style={[styles.statValue, { color: colors.text }]}>
+                                <Text className="font-redditsans-bold text-xs uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>{t("habit_history.days_done")}</Text>
+                                <Text className="font-redditsans-bold text-2xl" style={{ color: colors.text }}>
                                     {monthlyData?.completedDays || 0}
                                 </Text>
                             </View>
@@ -260,8 +260,8 @@ const HabitHistory = () => {
                                     <FontAwesomeIcon icon={faFire} color="#f59e0b" size={20} />
                                 </View>
                                 <View>
-                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.current_streak")}</Text>
-                                    <Text style={[styles.statValue, { color: colors.text }]}>
+                                    <Text className="font-redditsans-bold text-[10px] uppercase tracking-wider" style={{ color: colors.textSecondary }}>{t("habit_history.current_streak")}</Text>
+                                    <Text className="font-redditsans-bold text-lg" style={{ color: colors.text }}>
                                         {monthlyData?.currentStreak || 0} {t("habit_history.days")}
                                     </Text>
                                 </View>
@@ -272,8 +272,8 @@ const HabitHistory = () => {
                                     <FontAwesomeIcon icon={faTrophy} color="#10b981" size={20} />
                                 </View>
                                 <View>
-                                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t("habit_history.best_streak")}</Text>
-                                    <Text style={[styles.statValue, { color: colors.text }]}>
+                                    <Text className="font-redditsans-bold text-[10px] uppercase tracking-wider" style={{ color: colors.textSecondary }}>{t("habit_history.best_streak")}</Text>
+                                    <Text className="font-redditsans-bold text-lg" style={{ color: colors.text }}>
                                         {monthlyData?.longestStreak || 0} {t("habit_history.days")}
                                     </Text>
                                 </View>
@@ -294,8 +294,8 @@ const HabitHistory = () => {
                     activeOpacity={1}
                     onPress={() => setYearPickerVisible(false)}
                 >
-                    <View style={{ width: 320, borderRadius: 24, padding: 16, backgroundColor: colors.card, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 }}>
-                        <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 16, textAlign: 'center' }}>
+                    <View style={{ width: 320, borderRadius: 24, padding: 20, backgroundColor: colors.card, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 }}>
+                        <Text className="font-redditsans-bold text-xl mb-6 text-center" style={{ color: colors.text }}>
                             {t('statistics.select_month_year', 'Ay və İli seçin')}
                         </Text>
                         
@@ -315,10 +315,9 @@ const HabitHistory = () => {
                                         }}
                                     >
                                         <Text 
+                                            className={currentMonth.getMonth() === index ? "font-redditsans-bold text-base" : "font-redditsans-medium text-base"}
                                             style={{ 
                                                 color: currentMonth.getMonth() === index ? colors.primary : colors.text,
-                                                fontSize: 16,
-                                                fontWeight: currentMonth.getMonth() === index ? '700' : '500'
                                             }} 
                                         >
                                             {monthName}
@@ -345,10 +344,9 @@ const HabitHistory = () => {
                                         }}
                                     >
                                         <Text 
+                                            className={currentMonth.getFullYear() === year ? "font-redditsans-bold text-base" : "font-redditsans-medium text-base"}
                                             style={{ 
                                                 color: currentMonth.getFullYear() === year ? colors.primary : colors.text,
-                                                fontSize: 16,
-                                                fontWeight: currentMonth.getFullYear() === year ? '700' : '500'
                                             }} 
                                         >
                                             {year}
@@ -362,7 +360,7 @@ const HabitHistory = () => {
                             style={{ marginTop: 20, backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 16, alignItems: 'center' }}
                             onPress={() => setYearPickerVisible(false)}
                         >
-                            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>{t('common.confirm', 'Təsdiq et')}</Text>
+                            <Text className="font-redditsans-bold text-base text-white">{t('common.confirm')}</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableOpacity>

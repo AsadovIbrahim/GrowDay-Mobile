@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal, KeyboardAvoidingView, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -173,6 +173,11 @@ const UserHabitDetails = () => {
 
 
     return (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        >
         <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
 
             <View style={styles.header}>
@@ -180,8 +185,8 @@ const UserHabitDetails = () => {
                     <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
                 </Pressable>
                 <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text style={[styles.headerTitle, { color: colors.text }]}>{t("habit_details.header")}</Text>
-                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t("habit_details.sub_header")}</Text>
+                    <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text }]}>{t("habit_details.header")}</Text>
+                    <Text className="font-redditsans-medium" style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t("habit_details.sub_header")}</Text>
                 </View>
                 <View style={styles.headerActions}>
                     {!isFutureDate && (
@@ -225,18 +230,18 @@ const UserHabitDetails = () => {
                 contentContainerStyle={styles.scrollContent}
             >
                 <View style={styles.titleSection}>
-                    <Text className="text-4xl font-redditsans-bold" style={[styles.mainTitle, { color: colors.text }]}>
+                    <Text className="font-redditsans-bold" style={[styles.habitTitle, { color: colors.text }]}>
                         {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: userHabit?.title ?? "Loading..." })}{" "}
                         {ICONS[userHabit?.icon]}
                     </Text>
-                    <Text className="font-redditsans-regular" style={[styles.descriptionText, { color: colors.textSecondary }]}>
+                    <Text className="font-redditsans-medium" style={[styles.habitDesc, { color: colors.textSecondary }]}>
                         {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}_desc`, { defaultValue: userHabit?.description })}
                     </Text>
 
                     <View style={styles.tagRow}>
                         <View style={[styles.tag, { backgroundColor: colors.cardSecondary }]}>
-                            <Text style={[styles.tagText, { color: colors.textSecondary }]}>
-                                {userHabit?.frequency ?? "Daily"}
+                            <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
+                                {t(`my_habits.filters.${(userHabit?.frequency ?? "Daily").toLowerCase()}`, { defaultValue: userHabit?.frequency ?? "Daily" })}
                             </Text>
                         </View>
                     </View>
@@ -266,7 +271,7 @@ const UserHabitDetails = () => {
 
                 {isFutureDate ? (
                     <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
-                        <Text style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
+                        <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
                             {t("home.upcoming_habits")}
                         </Text>
                     </View>
@@ -298,13 +303,13 @@ const UserHabitDetails = () => {
                     >
                         <View style={styles.notesHeader}>
                             <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
-                            <Text style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
+                            <Text className="font-redditsans-bold" style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
                             {(note !== (userHabit?.note || "")) && (
                                 <TouchableOpacity 
                                     onPress={handleSaveNote} 
                                     style={[styles.saveNoteBtn, { backgroundColor: colors.primary + '15', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 }]}
                                 >
-                                    <Text style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
+                                    <Text className="font-redditsans-bold" style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -317,6 +322,7 @@ const UserHabitDetails = () => {
                             placeholderTextColor={colors.textMuted}
                             multiline
                             style={[styles.notesInput, { color: colors.text }]}
+                            className="font-redditsans-medium"
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
                         />
@@ -344,13 +350,13 @@ const UserHabitDetails = () => {
                             <FontAwesomeIcon icon={faTrash} color={colors.danger} size={28} />
                         </View>
                         
-                        <Text style={[styles.modalTitle, { color: colors.text }]}>
-                            {`Delete "${userHabit?.title}"?`}
+                        <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>
+                            {t('home.delete_habits')}
                         </Text>
                         
-                        <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>
+                        <Text className="font-redditsans-medium" style={[styles.modalMessage, { color: colors.textSecondary }]}>
                             <Text>
-                                This will <Text style={{ fontWeight: "700", color: colors.text }}>permanently</Text> remove your progress, streaks, and history. This action <Text style={{ fontWeight: "700", color: colors.text }}>cannot be undone</Text>.
+                                This will <Text className="font-redditsans-bold" style={[styles.boldText, { color: colors.text }]}>permanently</Text> remove your progress, streaks, and history. This action <Text className="font-redditsans-bold" style={[styles.boldText, { color: colors.text }]}>cannot be undone</Text>.
                             </Text>
                         </Text>
 
@@ -360,7 +366,7 @@ const UserHabitDetails = () => {
                                 disabled={isDeleting}
                                 style={[styles.modalButton, styles.ghostButton]}
                             >
-                                <Text style={[styles.buttonText, { color: colors.textSecondary }]}>
+                                <Text className="font-redditsans-bold" style={[styles.buttonText, { color: colors.textSecondary }]}>
                                     {t("common.cancel")}
                                 </Text>
                             </TouchableOpacity>
@@ -370,8 +376,8 @@ const UserHabitDetails = () => {
                                 disabled={isDeleting}
                                 style={[styles.modalButton, styles.deleteButton, { backgroundColor: colors.danger }]}
                             >
-                                <Text style={[styles.buttonText, { color: "#fff" }]}>
-                                    {isDeleting ? t("common.loading") : t("home.delete_habits")}
+                                <Text className="font-redditsans-bold" style={[styles.buttonText, { color: "#fff" }]}>
+                                    {isDeleting ? t("common.loading") : t("home.yes")}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -379,6 +385,7 @@ const UserHabitDetails = () => {
                 </Pressable>
             </Modal>
         </LinearGradient>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -394,7 +401,7 @@ const styles = StyleSheet.create({
         width: 64, height: 64, borderRadius: 32, justifyContent: "center", alignItems: "center", marginBottom: 16
     },
     modalTitle: {
-        fontSize: 22, fontWeight: "700", marginBottom: 12, textAlign: "center"
+        fontSize: 22, marginBottom: 12, textAlign: "center"
     },
     modalMessage: {
         fontSize: 15, textAlign: "center", lineHeight: 22, marginBottom: 28, paddingHorizontal: 10
@@ -412,17 +419,17 @@ const styles = StyleSheet.create({
         elevation: 2, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4
     },
     buttonText: {
-        fontSize: 16, fontWeight: "600"
+        fontSize: 16
     },
     header: {
         flexDirection: "row", alignItems: "center", justifyContent: "space-between",
         paddingHorizontal: 20, paddingTop: 56, paddingBottom: 14,
     },
     headerTitle: {
-        fontSize: 20, fontWeight: "700", color: "#111827", letterSpacing: 0.1
+        fontSize: 20, color: "#111827", letterSpacing: 0.1
     },
     headerSubtitle: {
-        fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: "500"
+        fontSize: 13, color: "#6b7280"
     },
     headerActions: {
         flexDirection: "row", gap: 12
@@ -440,17 +447,17 @@ const styles = StyleSheet.create({
         marginTop: 12, marginBottom: 28
     },
     habitTitle: {
-        fontSize: 40, fontWeight: "900", color: "#111827", letterSpacing: -1
+        fontSize: 32, color: "#111827", letterSpacing: -0.5
     },
     habitDesc: {
-        fontSize: 20, color: "#4b5563", marginTop: 8, fontWeight: "600"
+        fontSize: 16, color: "#4b5563", marginTop: 8, lineHeight: 22
     },
     tag: {
         backgroundColor: "rgba(255,255,255,0.6)", paddingHorizontal: 10, paddingVertical: 4,
         borderRadius: 8, alignSelf: "flex-start", marginTop: 12
     },
     tagText: {
-        fontSize: 12, fontWeight: "600", color: "#4b5563"
+        fontSize: 12, color: "#4b5563"
     },
     notesCard: {
         backgroundColor: "#fff", borderRadius: 16, padding: 16,
@@ -466,7 +473,7 @@ const styles = StyleSheet.create({
         flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10
     },
     notesLabel: {
-        fontSize: 13, fontWeight: "700", color: "#6b7280", letterSpacing: 0.5
+        fontSize: 13, color: "#6b7280", letterSpacing: 0.5
     },
     notesInput: {
         fontSize: 15, color: "#111827", minHeight: 80, textAlignVertical: "top",
@@ -485,9 +492,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 4,
     },
+    boldText: {
+    },
     saveNoteText: {
         fontSize: 14,
-        fontWeight: '700',
     },
     futureNoticeText: {
         fontSize: 14, color: "#4b5563", textAlign: "center", fontStyle: 'italic',
@@ -506,7 +514,6 @@ const styles = StyleSheet.create({
     },
     historyButtonText: {
         fontSize: 14,
-        fontWeight: '600'
     }
 });
 

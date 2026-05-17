@@ -21,7 +21,8 @@
     "custom": "Benutzerdefiniert",
     "progress": "Fortschritt",
     "congratulations": "Glückwunsch!",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "confirm": "Bestätigen"
   },
   "menu": {
     "home": "Startseite",
@@ -197,7 +198,10 @@
     },
     "status": {
       "completed": "Abgeschlossen",
-      "pending": "Ausstehend"
+      "pending": "Ausstehend",
+      "inprogress": "In Bearbeitung",
+      "cancelled": "Abgebrochen",
+      "expired": "Abgelaufen"
     },
     "article_header": "Artikel",
     "read_time": "{{count}} Min. Lesezeit",
@@ -255,7 +259,43 @@
     "every_day": "Jeden Tag",
     "on_scheduled_days": "An geplanten Tagen",
     "selected_days": "Ausgewählte Tage",
-    "preview": "✨ Du wirst {{title}} {{targetValue}} {{unit}} jeden {{frequency}}"
+    "preview": "✨ Du wirst {{title}} {{targetValue}} {{unit}} jeden {{frequency}}",
+    "select_icon": "Symbol auswählen",
+    "icon_subtitle": "Symbol",
+    "repeat_on": "Wiederholen am",
+    "repeat_interval": "Wiederholungsintervall",
+    "every_custom": "Alle",
+    "days_custom": "Tage",
+    "repeat_schedule": "Wiederholungsplan",
+    "monthly_repeat_note": "Diese Gewohnheit wird an jedem gleichen Tag des Monats wiederholt (Tag {{day}}).",
+    "track_duration": "Dauer verfolgen",
+    "duration_placeholder": "z. B. 10",
+    "minutes_per_session": "Minuten pro Sitzung"
+  },
+  "icons": {
+    "run": "Laufen",
+    "water": "Wasser",
+    "gym": "Fitnessstudio",
+    "book": "Buch",
+    "code": "Code",
+    "sleep": "Schlafen",
+    "meditate": "Meditieren",
+    "diet": "Diät",
+    "walk": "Gehen",
+    "write": "Schreiben",
+    "music": "Musik",
+    "study": "Lernen",
+    "heart": "Herz",
+    "sun": "Sonne",
+    "moon": "Mond",
+    "plant": "Pflanze",
+    "coffee": "Kaffee",
+    "work": "Arbeit",
+    "female": "Frau",
+    "woman": "Frau",
+    "selfcare": "Selbstpflege",
+    "lock": "Schloss",
+    "default": "Standard"
   },
   "units": {
     "header": "Einheit auswählen",

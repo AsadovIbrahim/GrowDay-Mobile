@@ -22,6 +22,7 @@ const STATUS_CONFIG = {
   InProgress: { color: "#3b82f6", bg: "#dbeafe", label: "In Progress" },
   Completed: { color: "#22c55e", bg: "#dcfce7", label: "Completed" },
   Cancelled: { color: "#ef4444", bg: "#fee2e2", label: "Cancelled" },
+  Expired: { color: "#94a3b8", bg: "#f1f5f9", label: "Expired" },
 };
 
 import { useTheme } from "../context/ThemeContext";
@@ -34,7 +35,8 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
   const { colors } = theme;
   const { t } = useTranslation();
   const isCompleted = task.status === "Completed";
-  const isOverdue = task.isOverdue;
+  const isExpired = task.status === "Expired";
+  const isOverdue = task.isOverdue || isExpired;
 
   const priority = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.Low;
   const status = STATUS_CONFIG[task.status] || STATUS_CONFIG.Pending;
@@ -67,9 +69,13 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
       <View className="flex-row items-start justify-between mb-3">
         {/* Complete button + title */}
         <TouchableOpacity
-          onPress={() => !isCompleted && onComplete && onComplete(task.id)}
+          onPress={() => {
+            if (isCompleted || isExpired) return;
+            if (task.triggerType === 1) return; // Automated tasks cannot be manually completed
+            if (onComplete) onComplete(task.id);
+          }}
           className="flex-row items-start flex-1 mr-3"
-          activeOpacity={isCompleted ? 1 : 0.7}
+          activeOpacity={isCompleted || isExpired || task.triggerType === 1 ? 1 : 0.7}
         >
           <FontAwesomeIcon
             icon={isCompleted ? faCheckCircle : faCircle}
@@ -89,7 +95,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
         </TouchableOpacity>
 
         {/* Delete */}
-        {!isCompleted && onDelete && (
+        {!isCompleted && !isExpired && onDelete && (
           <TouchableOpacity
             onPress={() => onDelete(task.id)}
             className="w-8 h-8 items-center justify-center rounded-full"

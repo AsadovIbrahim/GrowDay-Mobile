@@ -21,7 +21,8 @@
     "custom": "xüsusi",
     "progress": "Tərəqqi",
     "congratulations": "Təbriklər!",
-    "continue": "Davam et"
+    "continue": "Davam et",
+    "confirm": "Təsdiq et"
   },
   "menu": {
     "home": "Ana Səhifə",
@@ -198,7 +199,10 @@
     },
     "status": {
       "completed": "Tamamlandı",
-      "pending": "Gözləyir"
+      "pending": "Gözləyir",
+      "inprogress": "Davam edir",
+      "cancelled": "Ləğv edilib",
+      "expired": "Vaxtı bitib"
     },
     "article_header": "Məqalə",
     "read_time": "{{count}} dəq oxuma",
@@ -256,7 +260,43 @@
     "every_day": "Hər gün",
     "on_scheduled_days": "Təyin olunmuş günlərdə",
     "selected_days": "Seçilmiş günlərdə",
-    "preview": "✨ Siz {{frequency}} {{targetValue}} {{unit}} {{title}} edəcəksiniz"
+    "preview": "✨ Siz {{frequency}} {{targetValue}} {{unit}} {{title}} edəcəksiniz",
+    "select_icon": "İkonu Seç",
+    "icon_subtitle": "İkon",
+    "repeat_on": "Təkrarla",
+    "repeat_interval": "Təkrar intervalı",
+    "every_custom": "Hər",
+    "days_custom": "gün",
+    "repeat_schedule": "Təkrar cədvəli",
+    "monthly_repeat_note": "Bu vərdiş hər ayın eyni günündə təkrar olunacaq (Gün {{day}}).",
+    "track_duration": "Müddəti izlə",
+    "duration_placeholder": "məs: 10",
+    "minutes_per_session": "seans başına dəqiqə"
+  },
+  "icons": {
+    "run": "qaçış",
+    "water": "su",
+    "gym": "idman zalı",
+    "book": "kitab",
+    "code": "kod",
+    "sleep": "yuxu",
+    "meditate": "meditasiya",
+    "diet": "pəhriz",
+    "walk": "gəzinti",
+    "write": "yazı",
+    "music": "musiqi",
+    "study": "dərs",
+    "heart": "ürək",
+    "sun": "günəş",
+    "moon": "ay",
+    "plant": "bitki",
+    "coffee": "qəhvə",
+    "work": "iş",
+    "female": "qadın",
+    "woman": "qadın",
+    "selfcare": "özünə qulluq",
+    "lock": "kilid",
+    "default": "standart"
   },
   "units": {
     "header": "Vahidi seçin",

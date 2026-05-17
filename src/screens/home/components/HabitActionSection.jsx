@@ -47,6 +47,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const [distance, setDistance] = useState(0);
 
     const [isReporting, setIsReporting] = useState(false);
+    const [cooldownActive, setCooldownActive] = useState(false);
     const [stepCount, setStepCount] = useState(0);
     const [showManualModal, setShowManualModal] = useState(false);
     const [manualValue, setManualValue] = useState("");
@@ -55,6 +56,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const lastPos = useRef({ lat: null, lon: null });
     const totalDistRef = useRef(0);
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const cooldownAnim = useRef(new Animated.Value(0)).current;
     const autoStopTriggered = useRef(false);
     const blockUpdates = useRef(false);
 
@@ -191,6 +193,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         }
     }, []);
 
+    const lastMmkvWriteRef = useRef(0);
+    const lastParentUpdateRef = useRef(0);
+
     useEffect(() => {
         let interval;
         const syncTime = () => {
@@ -201,9 +206,19 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 const now = new Date().getTime();
                 total += Math.floor((now - start) / 1000);
             }
+
+            // GUARD: Skip all React state/UI updates when app is in background to prevent ANR
+            const { AppState } = require('react-native');
+            if (AppState.currentState !== 'active') return;
+
             if (isDuration && !isReporting && !blockUpdates.current) {
-                const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
-                onLiveUpdate?.(total / unitMod);
+                const nowMs = Date.now();
+                // Throttle parent re-renders: once every 5 seconds max
+                if (nowMs - lastParentUpdateRef.current > 5000) {
+                    const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+                    onLiveUpdate?.(total / unitMod);
+                    lastParentUpdateRef.current = nowMs;
+                }
             }
             setSeconds(Math.max(0, total));
         };
@@ -216,11 +231,22 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const displaySecondsRef = useRef(displaySeconds);
     displaySecondsRef.current = displaySeconds;
 
+    const lastNotifUpdateRef = useRef(0);
+    const prevTimerActiveRef = useRef(timerActive);
+
     // Sync Ongoing Notification
     useEffect(() => {
-        // We consider the timer "active or has data" if timer is running, or if we accumulated more than the base seconds in this session
+        const isTimerToggle = prevTimerActiveRef.current !== timerActive;
+        prevTimerActiveRef.current = timerActive;
+        const nowMs = Date.now();
+
+        // Always send immediate update on start/pause/stop; otherwise throttle to 10 seconds
+        if (!isTimerToggle && (nowMs - lastNotifUpdateRef.current < 10000)) {
+            return;
+        }
+
         if (timerActive || (displaySecondsRef.current > baseSeconds || distance > 0 || stepCount > 0)) {
-            const displayVal = isSteps ? `${displaySteps} ${t("habit_details.action.steps")}` : (isDistance ? displayDistance : null);
+            const displayVal = isSteps ? `${displaySteps} ${t("units.steps")}` : (isDistance ? formatDistance(displayDistance) : null);
             let targetSeconds = null;
             if (isDuration) {
                 const targetVal = habit.targetValue || 1;
@@ -228,6 +254,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 targetSeconds = targetVal * unitMod;
             }
             displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, targetSeconds);
+            lastNotifUpdateRef.current = nowMs;
         } else {
             cancelOngoingHabitNotification(hId);
         }
@@ -285,16 +312,20 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         if (traveled > 0.002) {
                             totalDistRef.current += traveled;
                             setDistance(totalDistRef.current);
-                            setStoredDist(totalDistRef.current.toFixed(4));
+                            // Throttle MMKV writes: once every 5 seconds max
+                            const nowMs = Date.now();
+                            if (nowMs - lastMmkvWriteRef.current > 5000) {
+                                setStoredDist(totalDistRef.current.toFixed(4));
+                                lastMmkvWriteRef.current = nowMs;
+                            }
                             if (!isReporting && !blockUpdates.current) onLiveUpdate?.(totalDistRef.current);
                         }
                     }
+                    // Keep only in-memory ref for lat/lon — no MMKV write on every GPS tick
                     lastPos.current = { lat: latitude, lon: longitude };
-                    setStoredLat(latitude.toString());
-                    setStoredLon(longitude.toString());
                 },
                 (error) => console.log("GPS Error:", error.message),
-                { enableHighAccuracy: true, distanceFilter: 0, interval: 3000, fastestInterval: 2000 }
+                { enableHighAccuracy: true, distanceFilter: 5, interval: 8000, fastestInterval: 5000 }
             );
         }
 
@@ -448,17 +479,21 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? `${hh}:${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}` : `${mm}:${ss < 10 ? '0' : ''}${ss}`;
     };
 
-    const formatDistance = (km) => unit === "m" ? `${(km * 1000).toFixed(0)} m` : `${km.toFixed(2)} km`;
+    const formatDistance = (val) => {
+        if (unit === "m") return `${(val * 1000).toFixed(0)} ${t("units.m")}`;
+        if (unit === "miles" || unit === "mile") return `${val.toFixed(2)} ${t("units.miles")}`;
+        return `${val.toFixed(2)} ${t("units.km")}`;
+    };
 
     // Prevent any action for future dates
     if (isFuture) {
         return (
             <View style={[styles.lockedBanner, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <Text style={[styles.lockedEmoji]}>⏳</Text>
-                <Text style={[styles.lockedTitle, { color: colors.text }]}>
+                <Text className="font-redditsans-bold" style={[styles.lockedTitle, { color: colors.text }]}>
                     {t("habit_details.action.upcoming_title")}
                 </Text>
-                <Text style={[styles.lockedSub, { color: colors.textSecondary }]}>
+                <Text className="font-redditsans-medium" style={[styles.lockedSub, { color: colors.textSecondary }]}>
                     {t("habit_details.action.upcoming_sub")}
                 </Text>
             </View>
@@ -493,10 +528,10 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return (
             <View style={[styles.lockedBanner, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <Text style={[styles.lockedEmoji]}>🔒</Text>
-                <Text style={[styles.lockedTitle, { color: colors.text }]}>
+                <Text className="font-redditsans-bold" style={[styles.lockedTitle, { color: colors.text }]}>
                     {t("habit_details.action.not_scheduled_title")}
                 </Text>
-                <Text style={[styles.lockedSub, { color: colors.textSecondary }]}>
+                <Text className="font-redditsans-medium" style={[styles.lockedSub, { color: colors.textSecondary }]}>
                     {t("habit_details.action.not_scheduled_sub", { day: t(`habit_details.days_short.${dayAbbrev.toLowerCase()}`), scheduleText })}
                 </Text>
             </View>
@@ -514,7 +549,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 Alert.alert("Error", res.message || "Failed to complete habit.");
             }
         }} style={[styles.mainBtn, { backgroundColor: colors.primary }]}>
-            <Text style={styles.btnText}>{t("habit_details.action.mark_done")}</Text>
+            <Text className="font-redditsans-bold" style={styles.btnText}>{t("habit_details.action.mark_done")}</Text>
         </TouchableOpacity>
     );
 
@@ -529,9 +564,23 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         if (unit === "pages") incs = [1, 5, 10];
 
         const handleIncrement = (val) => {
+            if (isReporting || cooldownActive) return;
+            
             Vibration.vibrate(10); // Subtle haptic-like vibration
             onLiveUpdate?.(prev => prev + val);
             handleReportProgress(val);
+
+            // Cooldown animation
+            setCooldownActive(true);
+            cooldownAnim.setValue(0);
+            Animated.timing(cooldownAnim, {
+                toValue: 1,
+                duration: 1200, // 1.2 seconds cooldown
+                easing: Easing.out(Easing.quad),
+                useNativeDriver: false,
+            }).start(({ finished }) => {
+                if (finished) setCooldownActive(false);
+            });
         };
 
         const handleManualSubmit = () => {
@@ -552,27 +601,56 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         <TouchableOpacity 
                             key={inc} 
                             onPress={() => handleIncrement(inc)} 
-                            disabled={isReporting}
+                            disabled={isReporting || cooldownActive}
                             activeOpacity={0.7}
-                            style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary, opacity: isReporting ? 0.6 : 1 }]}
+                            style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
                         >
-                            <Text style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
+                            {cooldownActive && (
+                                <Animated.View 
+                                    style={[
+                                        styles.cooldownFill, 
+                                        { 
+                                            backgroundColor: colors.primary + '20',
+                                            width: cooldownAnim.interpolate({
+                                                inputRange: [0, 1],
+                                                outputRange: ['0%', '100%']
+                                            })
+                                        }
+                                    ]} 
+                                />
+                            )}
+                            <Text className="font-redditsans-bold" style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
                         </TouchableOpacity>
                     ))}
                     <TouchableOpacity 
                         onPress={() => {
+                            if (isReporting || cooldownActive) return;
                             Vibration.vibrate(15);
                             setShowManualModal(true);
                         }} 
-                        disabled={isReporting}
+                        disabled={isReporting || cooldownActive}
                         activeOpacity={0.7}
-                        style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary }]}
+                        style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
                     >
+                        {cooldownActive && (
+                            <Animated.View 
+                                style={[
+                                    styles.cooldownFill, 
+                                    { 
+                                        backgroundColor: colors.primary + '20',
+                                        width: cooldownAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: ['0%', '100%']
+                                        })
+                                    }
+                                ]} 
+                            />
+                        )}
                         <FontAwesomeIcon icon={faKeyboard} color={colors.primary} size={18} />
                     </TouchableOpacity>
                 </View>
-                <Text style={[styles.helperText, { color: colors.textSecondary }]}>
-                    {t("habit_details.action.tap_to_add", { unit: habit.unit })}
+                <Text className="font-redditsans-medium" style={[styles.helperText, { color: colors.textSecondary }]}>
+                    {t("habit_details.action.tap_to_add", { unit: t(`units.${(habit.unit || "").toLowerCase()}`, { defaultValue: habit.unit }) })}
                 </Text>
 
                 {/* Manual Entry Modal */}
@@ -585,7 +663,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     <View style={styles.modalOverlay}>
                         <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
                             <View style={styles.modalHeader}>
-                                <Text style={[styles.modalTitle, { color: colors.text }]}>{t("habit_details.action.log_progress")}</Text>
+                                <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>{t("habit_details.action.log_progress")}</Text>
                                 <TouchableOpacity onPress={() => setShowManualModal(false)}>
                                     <FontAwesomeIcon icon={faTimes} color={colors.textSecondary} size={20} />
                                 </TouchableOpacity>
@@ -594,6 +672,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                             <View style={styles.inputContainer}>
                                 <TextInput
                                     style={[styles.manualInput, { color: colors.text, borderColor: colors.border }]}
+                                    className="font-redditsans-bold"
                                     keyboardType="numeric"
                                     placeholder="0"
                                     placeholderTextColor={colors.textMuted}
@@ -601,14 +680,14 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                                     value={manualValue}
                                     onChangeText={setManualValue}
                                 />
-                                <Text style={[styles.unitText, { color: colors.textSecondary }]}>{habit.unit}</Text>
+                                <Text className="font-redditsans-bold" style={[styles.unitText, { color: colors.textSecondary }]}>{t(`units.${(habit.unit || "").toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                             </View>
 
                             <TouchableOpacity 
                                 style={[styles.submitBtn, { backgroundColor: colors.primary }]}
                                 onPress={handleManualSubmit}
                             >
-                                <Text style={styles.submitBtnText}>{t("common.save")}</Text>
+                                <Text className="font-redditsans-bold" style={styles.submitBtnText}>{t("common.save")}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -632,14 +711,14 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     (isDistance || isSteps) && styles.workoutDisplay,
                     { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
                 ]}>
-                    <Text style={[styles.sessionLabel, { color: colors.textSecondary }]}>{t("habit_details.action.today_session")}</Text>
-                    <Text style={[styles.timerValue, { color: colors.text }]}>
+                    <Text className="font-redditsans-bold" style={[styles.sessionLabel, { color: colors.textSecondary }]}>{t("habit_details.action.today_session")}</Text>
+                    <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
                         {isSteps ? `${displaySteps} ${t("units.steps")}` : (isDistance ? formatDistance(displayDistance) : formatTime(displaySeconds))}
                     </Text>
-                    <Text style={[styles.timerLabel, { color: colors.textSecondary }]}>
+                    <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
                         {isSteps ? t("habit_details.action.live_steps") : (isDistance ? t("habit_details.action.live_distance") : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC"))}
                     </Text>
-                    {(isDistance || isSteps) && <Text style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(displaySeconds)}</Text>}
+                    {(isDistance || isSteps) && <Text className="font-redditsans-medium" style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(displaySeconds)}</Text>}
                 </Animated.View>
                 <View style={styles.controlsRow}>
                     {!timerActive ? (
@@ -656,7 +735,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     </TouchableOpacity>
                 </View>
                 {timerActive && (
-                    <Text style={[styles.activeHint, { color: colors.primary }]}>
+                    <Text className="font-redditsans-bold" style={[styles.activeHint, { color: colors.primary }]}>
                         {isDistance ? t("habit_details.action.location_active") : (isSteps ? t("habit_details.action.step_sensor_active") : t("habit_details.action.session_started"))}
                     </Text>
                 )}
@@ -668,11 +747,12 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
 const styles = StyleSheet.create({
     mainBtn: { backgroundColor: "#2f6f3f", borderRadius: 16, paddingVertical: 16, alignItems: "center", width: "100%", elevation: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, marginBottom: 16 },
-    btnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+    btnText: { color: "#fff", fontSize: 16 },
     numericContainer: { alignItems: 'center', gap: 16, width: '100%', marginTop: 8, marginBottom: 16 },
     incrementsRow: { flexDirection: 'row', gap: 12, width: '100%', justifyContent: 'center' },
-    incBtn: { backgroundColor: '#fff', borderColor: '#2f6f3f', borderWidth: 1.5, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, minWidth: 80, alignItems: 'center' },
-    incText: { fontSize: 18, fontWeight: '700', color: '#2f6f3f' },
+    incBtn: { backgroundColor: '#fff', borderColor: '#2f6f3f', borderWidth: 1.5, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, minWidth: 80, alignItems: 'center', overflow: 'hidden' },
+    cooldownFill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
+    incText: { fontSize: 18, color: '#2f6f3f' },
     helperText: { fontSize: 13, color: '#6b7280', fontStyle: 'italic' },
     durationContainer: { alignItems: 'center', gap: 24, marginBottom: 20 },
     timerDisplay: { 
@@ -691,16 +771,16 @@ const styles = StyleSheet.create({
         shadowRadius: 6
     },
     workoutDisplay: { paddingVertical: 14 },
-    sessionLabel: { fontSize: 11, fontWeight: '800', color: '#6b7280', letterSpacing: 1.5, marginBottom: 8 },
-    timerValue: { fontSize: 44, fontWeight: '800', color: '#111827', fontVariant: ['tabular-nums'] },
-    subTimer: { fontSize: 16, fontWeight: '600', color: '#4b5563', marginTop: -2 },
-    timerLabel: { fontSize: 10, fontWeight: '600', color: '#6b7280', letterSpacing: 1, marginTop: 2 },
+    sessionLabel: { fontSize: 11, color: '#6b7280', letterSpacing: 1.5, marginBottom: 8 },
+    timerValue: { fontSize: 44, color: '#111827', fontVariant: ['tabular-nums'] },
+    subTimer: { fontSize: 16, color: '#4b5563', marginTop: -2 },
+    timerLabel: { fontSize: 10, color: '#6b7280', letterSpacing: 1, marginTop: 2 },
     controlsRow: { flexDirection: 'row', gap: 20, width: '100%', justifyContent: 'center', marginTop: 12 },
     controlBtn: { width: 68, height: 68, borderRadius: 34, alignItems: "center", justifyContent: "center", elevation: 6, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 4 },
     startBtn: { backgroundColor: "#2f6f3f" },
     pauseBtn: { backgroundColor: "#f59e0b" },
     stopBtn: { backgroundColor: "#ef4444" },
-    activeHint: { fontSize: 12, color: '#2f6f3f', fontWeight: '600' },
+    activeHint: { fontSize: 12, color: '#2f6f3f' },
     lockedBanner: {
         borderRadius: 16,
         borderWidth: 1,
@@ -713,18 +793,18 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     lockedEmoji: { fontSize: 32, marginBottom: 4 },
-    lockedTitle: { fontSize: 16, fontWeight: '700', textAlign: 'center' },
+    lockedTitle: { fontSize: 16, textAlign: 'center' },
     lockedSub: { fontSize: 13, textAlign: 'center', lineHeight: 18 },
     manualBtn: { paddingHorizontal: 16, minWidth: 60 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
     modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40, elevation: 20 },
     modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    modalTitle: { fontSize: 20, fontWeight: '700' },
+    modalTitle: { fontSize: 20 },
     inputContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 24, gap: 12 },
-    manualInput: { flex: 1, height: 60, borderWidth: 2, borderRadius: 16, paddingHorizontal: 20, fontSize: 24, fontWeight: '600' },
-    unitText: { fontSize: 18, fontWeight: '600' },
+    manualInput: { flex: 1, height: 60, borderWidth: 2, borderRadius: 16, paddingHorizontal: 20, fontSize: 24 },
+    unitText: { fontSize: 18 },
     submitBtn: { height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', elevation: 4 },
-    submitBtnText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+    submitBtnText: { color: '#fff', fontSize: 18 },
 });
 
 HabitActionSection.displayName = "HabitActionSection";

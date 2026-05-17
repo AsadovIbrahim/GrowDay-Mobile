@@ -173,9 +173,9 @@ const HabitCelebration = () => {
             </Animated.View>
 
             <Animated.View style={{ opacity: fadeAnim, alignItems: 'center', marginTop: 24, zIndex: 10 }}>
-                <Text style={styles.completedLabel}>{displayTitle.toUpperCase()} {t("habit_celebration.completed_label")}</Text>
-                <Text style={styles.title}>{t("habit_celebration.title")}</Text>
-                <Text style={styles.subtitle}>{t("habit_celebration.subtitle")}</Text>
+                <Text className="font-redditsans-black" style={styles.completedLabel}>{displayTitle.toUpperCase()} {t("habit_celebration.completed_label")}</Text>
+                <Text className="font-redditsans-black" style={styles.title}>{t("habit_celebration.title")}</Text>
+                <Text className="font-redditsans-medium" style={styles.subtitle}>{t("habit_celebration.subtitle")}</Text>
             </Animated.View>
 
             {/* Stats Card */}
@@ -185,8 +185,8 @@ const HabitCelebration = () => {
                         <Text style={styles.iconText}>{ICONS[habit.icon] || '🎯'}</Text>
                     </View>
                     <View style={styles.cardHeaderText}>
-                        <Text style={styles.habitName}>{displayTitle}</Text>
-                        <Text style={styles.habitDesc}>{descText}</Text>
+                        <Text className="font-redditsans-black" style={styles.habitName}>{displayTitle}</Text>
+                        <Text className="font-redditsans-medium" style={styles.habitDesc}>{descText}</Text>
                     </View>
                 </View>
 
@@ -196,16 +196,16 @@ const HabitCelebration = () => {
                     <View style={styles.statBox}>
                         <FontAwesomeIcon icon={faFire} color="#f59e0b" size={26} />
                         <View style={styles.statTextCol}>
-                            <Text style={styles.statLabel}>{t("habit_celebration.streak")}</Text>
-                            <Text style={styles.statValue}>{newStreak} {t("habit_celebration.days")}</Text>
+                            <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.streak")}</Text>
+                            <Text className="font-redditsans-black" style={styles.statValue}>{newStreak} {t("habit_celebration.days")}</Text>
                         </View>
                     </View>
                     <View style={styles.statDivider} />
                     <View style={styles.statBox}>
                         <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={26} />
                         <View style={styles.statTextCol}>
-                            <Text style={styles.statLabel}>{t("habit_celebration.best")}</Text>
-                            <Text style={styles.statValue}>{highestStreak} {t("habit_celebration.days")}</Text>
+                            <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.best")}</Text>
+                            <Text className="font-redditsans-black" style={styles.statValue}>{highestStreak} {t("habit_celebration.days")}</Text>
                         </View>
                     </View>
                 </View>
@@ -215,12 +215,12 @@ const HabitCelebration = () => {
 
             {/* Footer */}
             <Animated.View style={[styles.footer, { opacity: fadeAnim, paddingBottom: Math.max(insets.bottom + 20, 40) }]}>
-                <Text style={styles.quoteText}>
+                <Text className="font-redditsans-medium" style={styles.quoteText}>
                     {t("habit_celebration.quote")}
                 </Text>
 
                 <Pressable style={styles.continueBtn} onPress={handleContinue}>
-                    <Text style={styles.continueText}>{t("habit_celebration.continue")}</Text>
+                    <Text className="font-redditsans-bold" style={styles.continueText}>{t("habit_celebration.continue")}</Text>
                     <FontAwesomeIcon icon={faArrowRight} color="#fff" size={16} />
                 </Pressable>
             </Animated.View>

@@ -487,7 +487,7 @@ const UserHabits = ({ route }) => {
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-white text-base font-redditsans-medium">
-                                                    {t('my_habits.yes')}
+                                                    {t('home.yes')}
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>

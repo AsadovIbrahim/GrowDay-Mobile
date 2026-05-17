@@ -21,7 +21,8 @@
     "custom": "Personnalisé",
     "progress": "Progrès",
     "congratulations": "Félicitations !",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "confirm": "Confirmer"
   },
   "menu": {
     "home": "Accueil",
@@ -197,7 +198,10 @@
     },
     "status": {
       "completed": "Terminé",
-      "pending": "En attente"
+      "pending": "En attente",
+      "inprogress": "En cours",
+      "cancelled": "Annulé",
+      "expired": "Expiré"
     },
     "article_header": "Article",
     "read_time": "{{count}} min de lecture",
@@ -255,7 +259,43 @@
     "every_day": "Chaque jour",
     "on_scheduled_days": "Les jours planifiés",
     "selected_days": "Jours sélectionnés",
-    "preview": "✨ Vous allez {{title}} {{targetValue}} {{unit}} tous les {{frequency}}"
+    "preview": "✨ Vous allez {{title}} {{targetValue}} {{unit}} tous les {{frequency}}",
+    "select_icon": "Sélectionner l'icône",
+    "icon_subtitle": "Icône",
+    "repeat_on": "Répéter le",
+    "repeat_interval": "Intervalle de répétition",
+    "every_custom": "Tous les",
+    "days_custom": "jours",
+    "repeat_schedule": "Programme de répétition",
+    "monthly_repeat_note": "Cette habitude se répétera le même jour de chaque mois (Jour {{day}}).",
+    "track_duration": "Suivre la durée",
+    "duration_placeholder": "ex. 10",
+    "minutes_per_session": "minutes par séance"
+  },
+  "icons": {
+    "run": "course",
+    "water": "eau",
+    "gym": "gym",
+    "book": "livre",
+    "code": "code",
+    "sleep": "sommeil",
+    "meditate": "méditer",
+    "diet": "régime",
+    "walk": "marche",
+    "write": "écrire",
+    "music": "musique",
+    "study": "étudier",
+    "heart": "cœur",
+    "sun": "soleil",
+    "moon": "lune",
+    "plant": "plante",
+    "coffee": "café",
+    "work": "travail",
+    "female": "femme",
+    "woman": "femme",
+    "selfcare": "soins",
+    "lock": "verrou",
+    "default": "défaut"
   },
   "units": {
     "header": "Sélectionner une unité",

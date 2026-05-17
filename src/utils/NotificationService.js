@@ -97,14 +97,14 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
   const ss = seconds % 60;
   const timeStr = `${hh > 0 ? hh + ':' : ''}${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}`;
 
-  let body = `${t('notifications.push_time_label')}: ${timeStr}`;
-  if (distance !== null && distance !== '') {
-    const distStr = typeof distance === 'number' ? `${distance.toFixed(2)} km` : distance;
-    body = `${distStr}`;
-  } else {
-      // If it's just duration, we can let the chronometer handle the visual time
-      body = '';
-  }
+    let body = `${t('notifications.push_time_label')}: ${timeStr}`;
+    if (distance !== null && distance !== '') {
+        // distance is expected to be a pre-formatted string from the caller (e.g. "1.23 km" or "500 steps")
+        body = `${distance}`;
+    } else {
+        // If it's just duration, we can let the chronometer handle the visual time
+        body = '';
+    }
 
   if (isPaused) {
     body = t('notifications.push_tracking_paused', { body: body || timeStr });
@@ -127,7 +127,6 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
       ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
-      asForegroundService: true,
       showChronometer: !isPaused,
       timestamp: Date.now() - (seconds * 1000),
       actions: [

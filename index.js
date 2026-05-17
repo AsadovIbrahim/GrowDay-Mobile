@@ -73,11 +73,6 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
     }
 });
 
-// Register foreground service (required for Android)
-notifee.registerForegroundService((notification) => {
-    return new Promise(() => {
-        // This promise keeps the service running until it's cancelled
-    });
-});
+// Foreground service removed — using ongoing notification without asForegroundService to prevent ANR
 
 AppRegistry.registerComponent(appName, () => App);

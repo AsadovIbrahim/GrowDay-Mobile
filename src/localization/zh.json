@@ -21,7 +21,8 @@
     "custom": "自定义",
     "progress": "进度",
     "congratulations": "恭喜！",
-    "continue": "继续"
+    "continue": "继续",
+    "confirm": "确认"
   },
   "menu": {
     "home": "首页",
@@ -197,7 +198,10 @@
     },
     "status": {
       "completed": "已完成",
-      "pending": "待处理"
+      "pending": "待处理",
+      "inprogress": "进行中",
+      "cancelled": "已取消",
+      "expired": "已过期"
     },
     "article_header": "文章",
     "read_time": "{{count}} 分钟阅读",
@@ -255,7 +259,43 @@
     "every_day": "每天",
     "on_scheduled_days": "在计划日期",
     "selected_days": "已选天数",
-    "preview": "✨ 您将每 {{frequency}} {{title}} {{targetValue}} {{unit}}"
+    "preview": "✨ 您将每 {{frequency}} {{title}} {{targetValue}} {{unit}}",
+    "select_icon": "选择图标",
+    "icon_subtitle": "图标",
+    "repeat_on": "重复于",
+    "repeat_interval": "重复间隔",
+    "every_custom": "每",
+    "days_custom": "天",
+    "repeat_schedule": "重复计划",
+    "monthly_repeat_note": "习惯将在每月的同一天重复（第 {{day}} 天）。",
+    "track_duration": "追踪时长",
+    "duration_placeholder": "例如 10",
+    "minutes_per_session": "每次时长（分钟）"
+  },
+  "icons": {
+    "run": "跑步",
+    "water": "喝水",
+    "gym": "健身",
+    "book": "阅读",
+    "code": "写代码",
+    "sleep": "睡觉",
+    "meditate": "冥想",
+    "diet": "饮食",
+    "walk": "散步",
+    "write": "写作",
+    "music": "音乐",
+    "study": "学习",
+    "heart": "爱心",
+    "sun": "太阳",
+    "moon": "月亮",
+    "plant": "植物",
+    "coffee": "咖啡",
+    "work": "工作",
+    "female": "女性",
+    "woman": "女人",
+    "selfcare": "自我护理",
+    "lock": "锁定",
+    "default": "默认"
   },
   "units": {
     "header": "选择单位",

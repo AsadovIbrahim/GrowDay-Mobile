@@ -87,9 +87,9 @@ const CircularProgress = ({
             </Svg>
 
             <Text
+                className="font-redditsans-bold"
                 style={{
                     fontSize: 22,
-                    fontWeight: "800",
                     color: textColor,
                     textAlign: "center",
                 }}

@@ -21,7 +21,8 @@
     "custom": "Custom",
     "progress": "Progress",
     "congratulations": "Congratulations!",
-    "continue": "Continue"
+    "continue": "Continue",
+    "confirm": "Confirm"
   },
   "menu": {
     "home": "Home",
@@ -198,7 +199,10 @@
     },
     "status": {
       "completed": "Completed",
-      "pending": "Pending"
+      "pending": "Pending",
+      "inprogress": "In Progress",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
     },
     "article_header": "Article",
     "read_time": "{{count}} min read",
@@ -256,7 +260,43 @@
     "every_day": "Every day",
     "on_scheduled_days": "On scheduled days",
     "selected_days": "Selected days",
-    "preview": "✨ You will {{title}} {{targetValue}} {{unit}} every {{frequency}}"
+    "preview": "✨ You will {{title}} {{targetValue}} {{unit}} every {{frequency}}",
+    "select_icon": "Select Icon",
+    "icon_subtitle": "Icon",
+    "repeat_on": "Repeat on",
+    "repeat_interval": "Repeat interval",
+    "every_custom": "Every",
+    "days_custom": "days",
+    "repeat_schedule": "Repeat schedule",
+    "monthly_repeat_note": "This habit will repeat on the same day of each month (Day {{day}}).",
+    "track_duration": "Track duration",
+    "duration_placeholder": "e.g. 10",
+    "minutes_per_session": "minutes per session"
+  },
+  "icons": {
+    "run": "run",
+    "water": "water",
+    "gym": "gym",
+    "book": "book",
+    "code": "code",
+    "sleep": "sleep",
+    "meditate": "meditate",
+    "diet": "diet",
+    "walk": "walk",
+    "write": "write",
+    "music": "music",
+    "study": "study",
+    "heart": "heart",
+    "sun": "sun",
+    "moon": "moon",
+    "plant": "plant",
+    "coffee": "coffee",
+    "work": "work",
+    "female": "female",
+    "woman": "woman",
+    "selfcare": "self care",
+    "lock": "lock",
+    "default": "default"
   },
   "units": {
     "header": "Select Unit",

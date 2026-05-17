@@ -21,7 +21,8 @@
     "custom": "özel",
     "progress": "İlerleme",
     "congratulations": "Tebrikler!",
-    "continue": "Devam et"
+    "continue": "Devam et",
+    "confirm": "Onayla"
   },
   "menu": {
     "home": "Ana Sayfa",
@@ -198,7 +199,10 @@
     },
     "status": {
       "completed": "Tamamlandı",
-      "pending": "Bekliyor"
+      "pending": "Bekliyor",
+      "inprogress": "Devam Ediyor",
+      "cancelled": "İptal Edildi",
+      "expired": "Süresi Doldu"
     },
     "article_header": "Makale",
     "read_time": "{{count}} dak okuma",
@@ -256,7 +260,43 @@
     "every_day": "Her gün",
     "on_scheduled_days": "Planlanmış günlerde",
     "selected_days": "Seçili günlerde",
-    "preview": "✨ {{frequency}} {{targetValue}} {{unit}} {{title}} yapacaksınız"
+    "preview": "✨ {{frequency}} {{targetValue}} {{unit}} {{title}} yapacaksınız",
+    "select_icon": "Simge Seç",
+    "icon_subtitle": "Simge",
+    "repeat_on": "Tekrarla",
+    "repeat_interval": "Tekrar aralığı",
+    "every_custom": "Her",
+    "days_custom": "gün",
+    "repeat_schedule": "Tekrar programı",
+    "monthly_repeat_note": "Bu alışkanlık her ayın aynı gününde tekrarlanacaktır (Gün {{day}}).",
+    "track_duration": "Süreyi takip et",
+    "duration_placeholder": "örn: 10",
+    "minutes_per_session": "seans başına dakika"
+  },
+  "icons": {
+    "run": "koşu",
+    "water": "su",
+    "gym": "spor salonu",
+    "book": "kitap",
+    "code": "kod",
+    "sleep": "uyku",
+    "meditate": "meditasyon",
+    "diet": "diyet",
+    "walk": "yürüyüş",
+    "write": "yazı",
+    "music": "müzik",
+    "study": "ders",
+    "heart": "kalp",
+    "sun": "güneş",
+    "moon": "ay",
+    "plant": "bitki",
+    "coffee": "kahve",
+    "work": "iş",
+    "female": "kadın",
+    "woman": "kadın",
+    "selfcare": "öz bakım",
+    "lock": "kilit",
+    "default": "varsayılan"
   },
   "units": {
     "header": "Birim seçin",

@@ -263,7 +263,6 @@ const CreateCustomHabit = () => {
       onPress={() => setCategory(item)}
     >
       <Text
-        className="font-redditsans-medium"
         style={[
           styles.categoryText,
           { color: colors.textSecondary },
@@ -284,7 +283,7 @@ const CreateCustomHabit = () => {
         >
           <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
         </TouchableOpacity>
-        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text, ...typography.h1 }]}>
+        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text }]}>
           {isEditMode ? t("create_habit.update_habit") : (isCustom ? t("create_habit.header") : (isSuggested ? t("create_habit.setup_suggested_habit") : t("create_habit.setup_popular_habit")))}
         </Text>
 
@@ -304,17 +303,18 @@ const CreateCustomHabit = () => {
             <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.name_label")}</Text>
             <TextInput
               style={[styles.input, { color: colors.text, borderBottomColor: colors.textGray }]}
+              className="font-redditsans-medium"
               value={title}
               onChangeText={setTitle}
               placeholder={t("create_habit.name_placeholder")}
-              className="font-redditsans-medium"
               placeholderTextColor={colors.textSecondary}
+              autoFocus={!isEditMode}
             />
           </View>
 
           {/* Description Section */}
           <View style={styles.fieldSection}>
-            <Text className="font-redditsans-medium" style={styles.label}>{t("create_habit.desc_label")}</Text>
+            <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.desc_label")}</Text>
             <TextInput
               style={[
                 styles.input, 
@@ -325,11 +325,11 @@ const CreateCustomHabit = () => {
                   paddingTop: 10
                 }
               ]}
+              className="font-redditsans-medium"
               value={description}
               onChangeText={setDescription}
               placeholder={t("create_habit.desc_placeholder")}
               placeholderTextColor={colors.textSecondary}
-              className="font-redditsans-medium"
               multiline={true}
               textAlignVertical="top"
             />
@@ -337,7 +337,7 @@ const CreateCustomHabit = () => {
 
           {/* Category Section */}
           <View style={styles.fieldSection}>
-            <Text style={styles.label}>{t("create_habit.category_label")}</Text>
+            <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.category_label")}</Text>
             <View>
               <FlatList
                 data={CATEGORIES}
@@ -353,7 +353,7 @@ const CreateCustomHabit = () => {
           {/* Icon and Color Section - UPDATED: Removed Color, kept Icon */}
           <View style={styles.row}>
             <View style={[styles.fieldSection, { flex: 1, marginRight: 10 }]}>
-              <Text style={styles.label}>{t("create_habit.icon_label")}</Text>
+              <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.icon_label")}</Text>
               <TouchableOpacity
                 style={[styles.selectionBox, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => setShowIconModal(true)}
@@ -362,10 +362,10 @@ const CreateCustomHabit = () => {
                   <Text style={{ fontSize: 20 }}>{ICONS[icon] || ICONS.default}</Text>
                 </View>
                 <View>
-                  <Text style={[styles.selectionTitle, { color: colors.text }]}>
-                    {icon.charAt(0).toUpperCase() + icon.slice(1)}
+                  <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>
+                    {t(`icons.${icon}`, { defaultValue: icon.charAt(0).toUpperCase() + icon.slice(1) })}
                   </Text>
-                  <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>Icon</Text>
+                  <Text className="font-redditsans-medium" style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{t("create_habit.icon_subtitle")}</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -373,15 +373,16 @@ const CreateCustomHabit = () => {
 
           {/* Goal & Tracking Section - PRODUCTION REFACTOR */}
           <View style={styles.fieldSection}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.goal_label")}</Text>
+            <Text className="font-redditsans-bold" style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.goal_label")}</Text>
             <View style={[styles.goalCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               
-              <Text style={[styles.introText, { color: colors.textSecondary }]}>{t("create_habit.goal_sub")}</Text>
+              <Text className="font-redditsans-medium" style={[styles.introText, { color: colors.textSecondary }]}>{t("create_habit.goal_sub")}</Text>
               
               <>
                   <View style={styles.sentenceRow}>
                     <TextInput
                       style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary }]}
+                      className="font-redditsans-bold"
                       value={targetValue}
                       onChangeText={setTargetValue}
                       keyboardType="numeric"
@@ -393,11 +394,10 @@ const CreateCustomHabit = () => {
                       style={[styles.unitSelector, { backgroundColor: colors.primarySurface }]}
                       onPress={() => setShowUnitModal(true)}
                     >
-                      <Text style={[styles.unitText, { color: colors.primary }]}>{t(`units.${unit.toLowerCase()}`, { defaultValue: unit })}</Text>
+                      <Text className="font-redditsans-bold" style={[styles.unitText, { color: colors.primary }]}>{t(`units.${unit.toLowerCase()}`, { defaultValue: unit })}</Text>
                       <FontAwesomeIcon icon={faChevronRight} size={10} color={colors.primary} style={{ marginLeft: 4, transform: [{ rotate: '90deg' }] }} />
                     </TouchableOpacity>
-
-                    <Text style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.every")}</Text>
+                    <Text className="font-redditsans-bold" style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.every")}</Text>
                   </View>
 
                   {/* Frequency Selection (Chips) */}
@@ -412,11 +412,16 @@ const CreateCustomHabit = () => {
                         ]}
                         onPress={() => setFrequency(freq)}
                       >
-                        <Text style={[
-                          styles.freqChipText,
-                          { color: colors.text },
-                          frequency === freq && { color: colors.white }
-                        ]}>
+                        <Text 
+                          style={[
+                            styles.freqChipText,
+                            { color: colors.text },
+                            frequency === freq && { color: colors.white }
+                          ]}
+                          className="font-redditsans-medium"
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                        >
                           {t(`my_habits.filters.${freq.toLowerCase()}`)}
                         </Text>
                       </TouchableOpacity>
@@ -426,7 +431,7 @@ const CreateCustomHabit = () => {
                   {/* Weekly Day Picker */}
                   {frequency === "Weekly" && (
                     <View style={styles.dayPickerContainer}>
-                      <Text style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>Repeat on</Text>
+                      <Text className="font-redditsans-bold" style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>{t("create_habit.repeat_on")}</Text>
                       <View style={styles.daysRow}>
                         {DAYS.map((day) => (
                           <TouchableOpacity
@@ -438,10 +443,10 @@ const CreateCustomHabit = () => {
                             ]}
                             onPress={() => toggleDay(day)}
                           >
-                            <Text style={[
+                            <Text className="font-redditsans-bold" style={[
                               styles.dayChipText,
                               { color: colors.textSecondary },
-                              selectedDays.includes(day) && { color: colors.primary, fontWeight: 'bold' }
+                              selectedDays.includes(day) && { color: colors.primary }
                             ]}>
                               {day.substring(0, 1)}
                             </Text>
@@ -453,25 +458,28 @@ const CreateCustomHabit = () => {
 
                   {frequency === "Custom" && (
                     <View style={styles.dayPickerContainer}>
-                      <Text style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>Repeat interval</Text>
+                      <Text className="font-redditsans-bold" style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>{t("create_habit.repeat_interval")}</Text>
                       <View style={styles.sentenceRow}>
-                        <Text style={[styles.sentenceLabel, { color: colors.text, marginRight: 10 }]}>Every</Text>
+                        <Text className="font-redditsans-bold" style={[styles.sentenceLabel, { color: colors.text, marginRight: 10 }]}>{t("create_habit.every_custom")}</Text>
                         <TextInput
                           style={[styles.sentenceInput, { color: colors.primary, borderBottomColor: colors.primary, minWidth: 40 }]}
+                          className="font-redditsans-bold"
                           value={customInterval}
                           onChangeText={setCustomInterval}
                           keyboardType="numeric"
                           placeholder="1"
                         />
-                        <Text style={[styles.sentenceLabel, { color: colors.text }]}>days</Text>
+                        <Text className="font-redditsans-bold" style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.days_custom")}</Text>
                       </View>
                     </View>
                   )}
 
                   {frequency === "Monthly" && (
                     <View style={styles.dayPickerContainer}>
-                      <Text style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>Repeat schedule</Text>
-                      <Text style={{ color: colors.textSecondary }}>This habit will repeat on the same day of each month (Day {(new Date(startDate)).getDate()}).</Text>
+                      <Text className="font-redditsans-bold" style={[styles.smallLabel, { color: colors.textSecondary, marginBottom: 8 }]}>{t("create_habit.repeat_schedule")}</Text>
+                      <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>
+                        {t("create_habit.monthly_repeat_note", { day: (new Date(startDate)).getDate() })}
+                      </Text>
                     </View>
                   )}
               </>
@@ -479,7 +487,7 @@ const CreateCustomHabit = () => {
               {/* Duration Toggle */}
               <View style={styles.durationSection}>
                 <View style={styles.durationHeader}>
-                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.text }]}>Track duration</Text>
+                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.track_duration")}</Text>
                   <Switch
                     value={trackDuration}
                     onValueChange={setTrackDuration}
@@ -493,20 +501,19 @@ const CreateCustomHabit = () => {
                       value={durationInMinutes}
                       onChangeText={setDurationInMinutes}
                       keyboardType="numeric"
-                      placeholder="e.g. 10"
+                      placeholder={t("create_habit.duration_placeholder")}
                       placeholderTextColor={colors.textSecondary}
                     />
-                    <Text style={{ color: colors.textSecondary }}>minutes per session</Text>
+                    <Text style={{ color: colors.textSecondary }}>{t("create_habit.minutes_per_session")}</Text>
                   </View>
                 )}
               </View>
             </View>
 
             {/* Natural Language Preview */}
-            {/* Natural Language Preview */}
             <View style={styles.previewContainer}>
               <View style={[styles.previewBadge, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}>
-                <Text style={[styles.previewText, { color: colors.primary }]}>
+                <Text className="font-redditsans-medium" style={[styles.previewText, { color: colors.primary }]}>
                   {t("create_habit.preview", {
                     title: title || t("create_habit.name_placeholder").toLowerCase(),
                     targetValue: targetValue,
@@ -520,7 +527,7 @@ const CreateCustomHabit = () => {
 
           {/* Schedule Section */}
           <View style={styles.fieldSection}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.schedule_label")}</Text>
+            <Text className="font-redditsans-bold" style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.schedule_label")}</Text>
             <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TouchableOpacity 
                 style={styles.cardRow}
@@ -536,14 +543,14 @@ const CreateCustomHabit = () => {
                    <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                   <Text style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.start_date")}</Text>
-                   <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{startDate}</Text>
+                   <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.start_date")}</Text>
+                   <Text className="font-redditsans-medium" style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{startDate}</Text>
                 </View>
                 <TouchableOpacity 
                    style={[styles.miniButton, { backgroundColor: colors.background }]}
                    onPress={() => setStartDate(new Date().toISOString().split('T')[0])}
                 >
-                   <Text style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.today_btn")}</Text>
+                   <Text className="font-redditsans-bold" style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.today_btn")}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
               
@@ -561,14 +568,14 @@ const CreateCustomHabit = () => {
                    <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.danger} />
                 </View>
                 <View style={{ flex: 1 }}>
-                   <Text style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.end_date")}</Text>
-                   <Text style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{endDate || t("create_habit.no_end_date")}</Text>
+                   <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.end_date")}</Text>
+                   <Text className="font-redditsans-medium" style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{endDate || t("create_habit.no_end_date")}</Text>
                 </View>
                 <TouchableOpacity 
                    style={[styles.miniButton, { backgroundColor: colors.background }]}
                    onPress={() => setEndDate("")}
                 >
-                   <Text style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.clear_btn")}</Text>
+                   <Text className="font-redditsans-bold" style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.clear_btn")}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             </View>
@@ -576,10 +583,10 @@ const CreateCustomHabit = () => {
 
           {/* Reminders Section */}
           <View style={styles.fieldSection}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.reminders_label")}</Text>
+            <Text className="font-redditsans-bold" style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.reminders_label")}</Text>
             <View style={[styles.reminderCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.reminderRow}>
-                <Text style={[styles.reminderText, { color: colors.textSecondary }]}>
+                <Text className="font-redditsans-medium" style={[styles.reminderText, { color: colors.textSecondary }]}>
                   {t("create_habit.reminders_sub")}
                 </Text>
                 <Switch
@@ -597,10 +604,10 @@ const CreateCustomHabit = () => {
                 disabled={!reminderEnabled}
               >
                 <View style={[styles.badge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                  <Text style={[styles.badgeText, { color: colors.text }]}>🕒 {reminderTime}</Text>
+                  <Text className="font-redditsans-bold" style={[styles.badgeText, { color: colors.text }]}>🕒 {reminderTime}</Text>
                 </View>
                 <View style={[styles.badge, { marginLeft: 10, backgroundColor: colors.card, borderColor: colors.border }]}>
-                  <Text style={[styles.badgeText, { color: colors.text }]}>
+                  <Text className="font-redditsans-bold" style={[styles.badgeText, { color: colors.text }]}>
                     📋 {frequency === "Daily" ? t("create_habit.every_day") : (frequency === "Weekly" ? t("create_habit.on_scheduled_days") : t("create_habit.selected_days"))}
                   </Text>
                 </View>
@@ -618,7 +625,7 @@ const CreateCustomHabit = () => {
             disabled={isLoading}
             activeOpacity={0.8}
           >
-            <Text style={[styles.addButtonText, { color: colors.white }]}>
+            <Text className="font-redditsans-bold" style={[styles.addButtonText, { color: colors.white }]}>
               {isLoading ? t("common.saving") : (isEditMode ? t("create_habit.update_habit") : t("create_habit.save_habit"))}
             </Text>
           </TouchableOpacity>
@@ -645,7 +652,7 @@ const CreateCustomHabit = () => {
         >
           <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
             <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>
               {showCustomUnitInput ? t("units.custom_header") : t("units.header")}
             </Text>
 
@@ -670,7 +677,7 @@ const CreateCustomHabit = () => {
                     }
                   }}
                 >
-                  <Text style={[styles.addButtonText, { color: colors.white }]}>
+                  <Text className="font-redditsans-bold" style={[styles.addButtonText, { color: colors.white }]}>
                     {t("units.confirm")}
                   </Text>
                 </TouchableOpacity>
@@ -694,6 +701,7 @@ const CreateCustomHabit = () => {
                     }}
                   >
                     <Text
+                      className="font-redditsans-medium"
                       style={[
                         styles.unitOptionText,
                         { color: colors.text },
@@ -726,7 +734,7 @@ const CreateCustomHabit = () => {
           onPress={() => setShowIconModal(false)}
         >
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Icon</Text>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>{t("create_habit.select_icon")}</Text>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
               <View style={styles.iconGrid}>
                 {Object.keys(ICONS).map((key) => (
@@ -743,7 +751,9 @@ const CreateCustomHabit = () => {
                     }}
                   >
                     <Text style={{ fontSize: 28 }}>{ICONS[key]}</Text>
-                    <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]}>{key}</Text>
+                    <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]}>
+                      {t(`icons.${key}`, { defaultValue: key })}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -765,7 +775,7 @@ const CreateCustomHabit = () => {
           onPress={() => setShowTimeModal(false)}
         >
           <View style={[styles.modalContent, { paddingBottom: 30, backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Set Reminder Time</Text>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Set Reminder Time</Text>
             <View style={styles.timePickerContainer}>
               <View style={styles.timeColumn}>
                 <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>Hour</Text>
@@ -780,6 +790,7 @@ const CreateCustomHabit = () => {
                       onPress={() => setTempHours(h)}
                     >
                       <Text
+                        className="font-redditsans-medium"
                         style={[
                           styles.timeSlotText,
                           { color: colors.textSecondary },
@@ -806,6 +817,7 @@ const CreateCustomHabit = () => {
                       onPress={() => setTempMinutes(m)}
                     >
                       <Text
+                        className="font-redditsans-medium"
                         style={[
                           styles.timeSlotText,
                           { color: colors.textSecondary },
@@ -824,7 +836,7 @@ const CreateCustomHabit = () => {
               style={[styles.confirmButton, { backgroundColor: colors.primary }]}
               onPress={handleConfirmTime}
             >
-              <Text style={styles.confirmButtonText}>Confirm</Text>
+              <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -843,7 +855,7 @@ const CreateCustomHabit = () => {
         >
           <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
             <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Start Date</Text>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Select Start Date</Text>
             
             <View style={styles.timePickerContainer}>
               {/* Day Column */}
@@ -856,7 +868,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempDay(d)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -872,7 +884,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempMonth(m)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -888,7 +900,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempYear(y)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -902,7 +914,7 @@ const CreateCustomHabit = () => {
                 setShowStartDateModal(false);
               }}
             >
-              <Text style={styles.confirmButtonText}>Confirm</Text>
+              <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -922,7 +934,7 @@ const CreateCustomHabit = () => {
         >
           <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
             <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Select End Date</Text>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Select End Date</Text>
             
             <View style={styles.timePickerContainer}>
               {/* Day Column */}
@@ -935,7 +947,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempDay(d)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -951,7 +963,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempMonth(m)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -967,7 +979,7 @@ const CreateCustomHabit = () => {
                       style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
                       onPress={() => setTempYear(y)}
                     >
-                      <Text style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
+                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -975,13 +987,14 @@ const CreateCustomHabit = () => {
             </View>
 
             <TouchableOpacity 
+            
               style={[styles.confirmButton, { backgroundColor: colors.primary }]}
               onPress={() => {
                 setEndDate(`${tempYear}-${tempMonth}-${tempDay}`);
                 setShowEndDateModal(false);
               }}
             >
-              <Text style={styles.confirmButtonText}>Confirm</Text>
+              <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -1012,9 +1025,8 @@ const styles = StyleSheet.create({
     borderColor: "#f1f5f9",
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "800",
     marginLeft: 15,
+    fontSize: 20,
   },
   scrollContent: {
     padding: 24,
@@ -1025,7 +1037,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    fontWeight: "bold",
     color: "#94a3b8",
     marginBottom: 10,
     letterSpacing: 1,
@@ -1079,9 +1090,7 @@ const styles = StyleSheet.create({
   },
   selectionTitle: {
     fontSize: 14,
-    fontWeight: "bold",
     color: "#1e293b",
-    fontFamily: "redditsans-bold",
   },
   selectionSubtitle: {
     fontSize: 11,
@@ -1121,7 +1130,6 @@ const styles = StyleSheet.create({
   },
   miniButtonText: {
      fontSize: 12,
-     fontWeight: 'bold',
   },
   reminderCard: {
     borderRadius: 24,
@@ -1155,7 +1163,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 13,
-    fontWeight: "600",
   },
   addButton: {
     paddingVertical: 18,
@@ -1169,15 +1176,11 @@ const styles = StyleSheet.create({
   addButtonText: {
     textAlign: "center",
     fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "redditsans-bold",
   },
   // Refactor Styles
   introText: {
     fontSize: 14,
-    fontWeight: '600',
     marginBottom: 8,
-    fontFamily: 'redditsans-medium',
   },
   sentenceRow: {
     flexDirection: 'row',
@@ -1187,12 +1190,10 @@ const styles = StyleSheet.create({
   },
   sentenceInput: {
     fontSize: 24,
-    fontWeight: 'bold',
     borderBottomWidth: 2,
     minWidth: 50,
     textAlign: 'center',
     marginRight: 10,
-    fontFamily: 'redditsans-bold',
     paddingBottom: 2,
   },
   unitSelector: {
@@ -1206,39 +1207,37 @@ const styles = StyleSheet.create({
   },
   unitText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'redditsans-bold',
   },
   sentenceLabel: {
     fontSize: 18,
-    fontWeight: '600',
   },
   frequencyRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     marginBottom: 20,
   },
   freqChip: {
-    flex: 1,
-    paddingVertical: 10,
+    width: '48%',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    marginRight: 8,
+    marginBottom: 10,
     backgroundColor: '#fff',
   },
   freqChipText: {
     fontSize: 14,
-    fontWeight: '600',
     color: '#64748b',
-    fontFamily: 'redditsans-medium',
   },
   dayPickerContainer: {
     marginBottom: 20,
   },
   smallLabel: {
     fontSize: 12,
-    fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -1287,7 +1286,6 @@ const styles = StyleSheet.create({
   previewText: {
     fontSize: 14,
     lineHeight: 20,
-    fontFamily: 'redditsans-medium',
     textAlign: 'center',
   },
   bottomSheetContent: {
@@ -1328,7 +1326,6 @@ const styles = StyleSheet.create({
   unitOptionText: {
     fontSize: 16,
     color: '#1e293b',
-    fontFamily: 'redditsans-medium',
   },
   modalOverlay: {
     flex: 1,
@@ -1351,11 +1348,9 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "bold",
     color: "#1e293b",
     marginBottom: 20,
     textAlign: "center",
-    fontFamily: "redditsans-bold",
   },
   iconGrid: {
     flexDirection: "row",
@@ -1408,11 +1403,9 @@ const styles = StyleSheet.create({
   timeSlotText: {
     fontSize: 20,
     color: "#64748b",
-    fontFamily: "redditsans-medium",
   },
   timeSlotTextSelected: {
     color: "#22c55e",
-    fontWeight: "bold",
   },
   confirmButton: {
     backgroundColor: "#22c55e",
@@ -1424,7 +1417,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontSize: 16,
-    fontWeight: "bold",
   },
 });
 

@@ -69,7 +69,7 @@ const AnimatedSplashScreen = ({ onAnimationEnd }) => {
       <View style={styles.content}>
         <Animated.Image 
           {...logo}
-          style={[logo.style, { transform: [{ scale: logoScale }] }]} 
+          style={[logo.style, { transform: [{ scale: logoScale }, { translateY: -60 }] }]} 
         />
         {isReady && (
           <View style={styles.textContainer}>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    top: 100, // Adjust this to place it below the logo
+    top: 60, // Moved up from 100 (100 - 40 = 60)
   },
   text: {
     color: '#FFFFFF',
