@@ -69,7 +69,37 @@
     "channel_sound": "声音通知",
     "channel_silent": "静音通知",
     "channel_tracking": "习惯追踪",
-    "channel_reminders": "习惯提醒"
+    "channel_reminders": "习惯提醒",
+    "motivation_quotes": [
+      {
+        "text": "相信你能做到，你就已经成功了一半。",
+        "author": "西奥多·罗斯福"
+      },
+      {
+        "text": "行动是通往成功的最基础钥匙。",
+        "author": "巴勃罗·毕加索"
+      },
+      {
+        "text": "不要看时钟，做它该做的事：不断前进。",
+        "author": "萨姆·利文森"
+      },
+      {
+        "text": "起步是成功的秘诀。",
+        "author": "马克·吐温"
+      },
+      {
+        "text": "在成功之前，一切看似不可能。",
+        "author": "纳尔逊·曼德拉"
+      },
+      {
+        "text": "你的态度决定你做得到底有多好。",
+        "author": "卢·霍茨"
+      },
+      {
+        "text": "随着时间的推移，每天的一点点小进步都会带来惊人的结果。",
+        "author": "罗宾·夏玛"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "欢迎来到 GrowDay！",
@@ -180,7 +210,9 @@
       "runs_monthly": "此习惯在每月第 {{day}} 天执行。",
       "runs_custom": "此习惯每 {{interval}} 天执行一次。",
       "starts_on": "此习惯从 {{date}} 开始。"
-    }
+    },
+    "locked_past_title": "时间已过",
+    "locked_past_desc": "您只能记录今天和昨天的进度。"
   },
   "explore": {
     "header": "发现",
@@ -227,7 +259,17 @@
     "completed_msg": "任务成功完成：",
     "reward_earned": "获得奖励",
     "empty": "未找到任务",
-    "assigned_by_admins": "任务由管理员分配"
+    "assigned_by_admins": "任务由管理员分配",
+    "failed_to_load": "加载任务失败",
+    "try_again": "重试",
+    "could_not_complete": "无法完成任务。",
+    "could_not_uncheck": "无法取消勾选任务。",
+    "failed_to_update": "更新任务失败。",
+    "delete_title": "删除任务",
+    "delete_confirm": "您确定要删除此任务吗？",
+    "could_not_delete": "无法删除任务。",
+    "failed_to_delete": "删除任务失败。",
+    "delete_action": "删除"
   },
   "create_habit": {
     "header": "创建自定义习惯",
@@ -511,6 +553,11 @@
     "today": "今天"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "当前语言",
+      "all_languages": "所有语言",
+      "footer_note": "语言更改会立即生效。"
+    },
     "header": "我的个人资料",
     "edit_profile": "编辑资料",
     "points": "积分",
@@ -532,7 +579,9 @@
       "privacy_policy": "隐私政策",
       "terms": "服务条款",
       "contact_support": "联系支持",
-      "rate_app": "给应用评分"
+      "rate_app": "给应用评分",
+      "help_center": "帮助中心",
+      "delete_account": "删除账户"
     },
     "edit_profile_screen": {
       "title": "编辑个人资料",
@@ -585,7 +634,10 @@
       "email_updates": "电子邮件更新",
       "daily_reminders": "每日提醒",
       "footer": "管理您如何接收来自 GrowDay 的更新和提醒。"
-    }
+    },
+    "delete_confirm_title": "确定删除账户？",
+    "delete_confirm_desc": "您确定要永久删除您的账户吗？您的所有习惯、进度、任务和历史记录都将被永久删除。此操作无法撤销。",
+    "delete_confirm_btn": "删除账户"
   },
   "preferences": {
     "continue": "继续",
@@ -787,7 +839,10 @@
     "su_i̇çmək": "喝水",
     "kitab_oxumaq": "阅读书籍",
     "dərin_i̇ş": "深度工作",
-    "səhər_qaçışı": "晨跑"
+    "səhər_qaçışı": "晨跑",
+    "not_supported": "不支持",
+    "not_supported_pedometer_desc": "您的设备不支持硬件计步或权限被拒绝。",
+    "failed_to_complete": "无法完成习惯。"
   },
   "user_tasks": {
     "early_bird_title": "早起之鸟",
@@ -846,7 +901,7 @@
     "privacy_rights_title": "7. 您的隐私权是什么？",
     "privacy_rights_text": "在某些地区，您拥有的权利允许您更好地访问和控制您的个人信息。您可以随时查看、更改或终止您的账户。",
     "contact_us_title": "8. 联系我们",
-    "contact_us_text": "如果您对本政策有任何疑问或意见，您可以发送电子邮件至 support@growday.com。",
+    "contact_us_text": "如果您对本政策有任何疑问或意见，您可以发送电子邮件至 growday.support@gmail.com。",
     "agreement_text": "使用 GrowDay 即表示您同意按照本政策收集和使用信息。"
   },
   "terms_of_service": {
@@ -888,5 +943,45 @@
     "best_day": "最佳表现日",
     "keep_going": "继续加油！你表现得太棒了！ 🚀",
     "improve_hint": "尝试完成更多习惯以提高完成率！ 🔥"
+  },
+  "help": {
+    "title": "帮助中心",
+    "hero_title": "我们能帮您什么？",
+    "hero_subtitle": "浏览常见问题，探索功能，或联系我们的支持团队。",
+    "quick_links": "快速链接",
+    "email_us": "发送电子邮件",
+    "features_title": "应用程序功能",
+    "faq_title": "常见问题",
+    "tip": "💡 提示：坚持是建立习惯的关键。尝试每天至少完成一个习惯！",
+    "faq": {
+      "q1": "如何创建新习惯？",
+      "a1": "点击屏幕底部的绿色 '+' 按钮。您可以创建自定义习惯或从建议中选择。",
+      "q2": "什么是 XP 积分？",
+      "a2": "完成习惯和任务即可获得 XP（经验值）。完成的越多，获得的越多！",
+      "q3": "为什么我被重定向到登录页面？",
+      "a3": "您的会话可能已过期，这是一项安全措施。只需重新登录即可。",
+      "q4": "任务过期会怎样？",
+      "a4": "过期的任务会在午夜自动标记为 '已过期'。",
+      "q5": "可以更改应用程序的语言吗？",
+      "a5": "可以！转到 个人资料 → 语言，然后选择您的首选语言。",
+      "q6": "如何跟踪习惯的进度？",
+      "a6": "打开任何习惯，您将看到今天的表现，每周进度，当前连续天数和最佳连续天数。",
+      "q7": "如何联系支持人员？",
+      "a7": "转到 个人资料 → 联系支持人员，或发送电子邮件至 growday.support@gmail.com。"
+    },
+    "features": {
+      "habits_title": "习惯追踪",
+      "habits_desc": "创建每日或每周习惯。追踪连续记录并添加笔记。",
+      "tasks_title": "任务与挑战",
+      "tasks_desc": "完成任务以赚取 XP。任务有截止日期和优先级。",
+      "stats_title": "统计数据",
+      "stats_desc": "查看每日、每周、每月和每年的统计数据。",
+      "achievements_title": "成就",
+      "achievements_desc": "达成里程碑时解锁徽章和成就。",
+      "explore_title": "探索与学习",
+      "explore_desc": "发现由人工智能精选的文章和建议的习惯。",
+      "reminders_title": "提醒",
+      "reminders_desc": "设置智能通知，让您绝不错过任何一次进度。"
+    }
   }
 }

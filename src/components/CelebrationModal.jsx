@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import Sound from 'react-native-sound';
+
+Sound.setCategory('Playback');
 import { faCheckDouble, faStar } from '@fortawesome/free-solid-svg-icons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +14,20 @@ const CelebrationModal = ({ visible, taskData, onClose }) => {
   const { theme } = useTheme();
   const { colors } = theme;
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (visible) {
+      const coinSound = new Sound('success.mp3', Sound.MAIN_BUNDLE, (error) => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        }
+        coinSound.play((success) => {
+          coinSound.release();
+        });
+      });
+    }
+  }, [visible]);
 
   if (!taskData) return null;
 

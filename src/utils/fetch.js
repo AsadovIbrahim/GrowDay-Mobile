@@ -16,6 +16,53 @@ const getHeaders = (token = null, contentType = "application/json") => {
     return headers;
 };
 
+// Override global fetch locally to handle 401s and Refresh Tokens transparently
+const originalFetch = global.fetch || fetch;
+
+const customFetch = async (url, options = {}) => {
+    let response = await originalFetch(url, options);
+
+    // If unauthorized, and it's not a login or refresh request
+    if (response.status === 401 && !url.includes('/api/auth/login') && !url.includes('/api/auth/refresh-token')) {
+        try {
+            // Attempt to refresh token
+            const refreshRes = await originalFetch(`${VITE_API_URL}/api/auth/refresh-token`, {
+                method: "POST",
+                headers: {
+                    "Accept-Language": storage.getString('userLanguage') || 'en',
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include'
+            });
+
+            if (refreshRes.ok) {
+                const refreshData = await refreshRes.json();
+                // Depending on your API's standard response structure: Result<T> or raw object
+                const newToken = refreshData?.data?.token || refreshData?.token;
+
+                if (newToken) {
+                    // Save new token
+                    storage.set('accessToken', newToken);
+
+                    // Update headers and retry original request
+                    const newHeaders = { ...options.headers };
+                    newHeaders["Authorization"] = `Bearer ${newToken}`;
+                    const newOptions = { ...options, headers: newHeaders };
+
+                    response = await originalFetch(url, newOptions);
+                }
+            }
+        } catch (error) {
+            console.log('Refresh token error:', error);
+        }
+    }
+
+    return response;
+};
+
+// Shadow fetch for all functions below this point in this file
+const fetch = customFetch;
+
 const handleResponse = async (response) => {
     if (response.status === 401) {
         storage.delete('accessToken');
@@ -709,6 +756,14 @@ export const sendSupportMessageFetch = async (token, payload) => {
         method: "POST",
         headers: getHeaders(token),
         body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
+};
+
+export const deleteAccountFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Account/DeleteAccount`, {
+        method: "DELETE",
+        headers: getHeaders(token),
     });
     return handleResponse(response);
 };

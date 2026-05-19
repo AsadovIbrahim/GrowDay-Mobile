@@ -40,14 +40,15 @@ const LanguageSettings = ({ navigation }) => {
     i18n.changeLanguage(code);
     storage.set('userLanguage', code);
 
-    const token = storage.getString('accessToken');
-    if (token) {
-      import('../../utils/NotificationService')
-        .then(({ getFcmToken }) => {
+    import('../../utils/NotificationService')
+      .then(({ getFcmToken, scheduleDailyMotivationalQuotes }) => {
+        const token = storage.getString('accessToken');
+        if (token) {
           getFcmToken(token);
-        })
-        .catch(err => console.log('Error updating FCM token after language change:', err));
-    }
+        }
+        scheduleDailyMotivationalQuotes();
+      })
+      .catch(err => console.log('Error updating FCM token / scheduling quotes after language change:', err));
   };
 
   const selectedLang = LANGUAGES.find(l => l.code === selected);
@@ -84,7 +85,7 @@ const LanguageSettings = ({ navigation }) => {
               <FontAwesomeIcon icon={faGlobe} size={18} color="#fff" />
             </View>
             <View>
-              <Text style={styles.activeBannerLabel}>Active Language</Text>
+              <Text style={styles.activeBannerLabel}>{t('profile.language_settings_screen.active_language')}</Text>
               <Text style={styles.activeBannerLang}>
                 {selectedLang?.flag}  {selectedLang?.native}
               </Text>
@@ -97,7 +98,7 @@ const LanguageSettings = ({ navigation }) => {
 
         {/* Section Title */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-          ALL LANGUAGES
+          {t('profile.language_settings_screen.all_languages')}
         </Text>
 
         {/* Languages Card */}
@@ -148,7 +149,7 @@ const LanguageSettings = ({ navigation }) => {
         </View>
 
         <Text style={[styles.footerNote, { color: colors.textSecondary }]}>
-          Language changes take effect immediately across the app.
+          {t('profile.language_settings_screen.footer_note')}
         </Text>
       </ScrollView>
     </LinearGradient>

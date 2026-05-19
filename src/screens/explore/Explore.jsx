@@ -289,7 +289,7 @@ const Explore = () => {
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
               </TouchableOpacity>
             </View>
-            <UserTasksList searchQuery={searchQuery} />
+            <UserTasksList searchQuery={searchQuery} t={t} />
             
             
           </View>

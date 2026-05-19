@@ -69,7 +69,37 @@
     "channel_sound": "Notifiche sonore",
     "channel_silent": "Notifiche silenziose",
     "channel_tracking": "Monitoraggio abitudini",
-    "channel_reminders": "Promemoria abitudini"
+    "channel_reminders": "Promemoria abitudini",
+    "motivation_quotes": [
+      {
+        "text": "Credi di farcela e sarai già a metà strada.",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "text": "L'azione è la chiave fondamentale per ogni successo.",
+        "author": "Pablo Picasso"
+      },
+      {
+        "text": "Non guardare l'orologio; fa' quello che fa lui. Continua.",
+        "author": "Sam Levenson"
+      },
+      {
+        "text": "Il segreto per andare avanti è iniziare.",
+        "author": "Mark Twain"
+      },
+      {
+        "text": "Sembra sempre impossibile finché non viene fatto.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Il tuo atteggiamento determina come lo fai.",
+        "author": "Lou Holtz"
+      },
+      {
+        "text": "Piccoli miglioramenti quotidiani nel tempo portano a risultati straordinari.",
+        "author": "Robin Sharma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "Benvenuto su GrowDay!",
@@ -180,7 +210,9 @@
       "runs_monthly": "Questa abitudine si svolge il {{day}} di ogni mese.",
       "runs_custom": "Questa abitudine si svolge ogni {{interval}} giorni.",
       "starts_on": "Questa abitudine inizia il {{date}}."
-    }
+    },
+    "locked_past_title": "Tempo Scaduto",
+    "locked_past_desc": "Puoi registrare i progressi solo per oggi e ieri."
   },
   "explore": {
     "header": "Esplora",
@@ -227,7 +259,17 @@
     "completed_msg": "Attività completata con successo:",
     "reward_earned": "Premio ottenuto",
     "empty": "Nessuna attività trovata",
-    "assigned_by_admins": "I compiti vengono assegnati dagli amministratori"
+    "assigned_by_admins": "I compiti vengono assegnati dagli amministratori",
+    "failed_to_load": "Impossibile caricare le attività",
+    "try_again": "Riprova",
+    "could_not_complete": "Impossibile completare l'attività.",
+    "could_not_uncheck": "Impossibile deselezionare l'attività.",
+    "failed_to_update": "Impossibile aggiornare l'attività.",
+    "delete_title": "Elimina attività",
+    "delete_confirm": "Sei sicuro de voler eliminare questa attività?",
+    "could_not_delete": "Impossibile eliminare l'attività.",
+    "failed_to_delete": "Impossibile eliminare l'attività.",
+    "delete_action": "Elimina"
   },
   "create_habit": {
     "header": "Crea abitudine personalizzata",
@@ -511,6 +553,11 @@
     "today": "Oggi"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Lingua attiva",
+      "all_languages": "TUTTE LE LINGUE",
+      "footer_note": "Le modifiche alla lingua hanno effetto immediato."
+    },
     "header": "Il tuo Profilo",
     "edit_profile": "Modifica profilo",
     "points": "Punti",
@@ -532,7 +579,9 @@
       "privacy_policy": "Informativa sulla privacy",
       "terms": "Termini di servizio",
       "contact_support": "Contatta il supporto",
-      "rate_app": "Valuta l'app"
+      "rate_app": "Valuta l'app",
+      "help_center": "Centro Assistenza",
+      "delete_account": "Elimina account"
     },
     "edit_profile_screen": {
       "title": "Modifica profilo",
@@ -585,7 +634,10 @@
       "email_updates": "Aggiornamenti via Email",
       "daily_reminders": "Promemoria Giornalieri",
       "footer": "Gestisci come ricevi aggiornamenti e promemoria da GrowDay."
-    }
+    },
+    "delete_confirm_title": "Elimina account?",
+    "delete_confirm_desc": "Sei sicuro di voler eliminare permanentemente il tuo account? Tutti i tuoi abitudini, progressi, compiti e cronologia verranno eliminati per sempre. Questa azione non può essere annullata.",
+    "delete_confirm_btn": "Elimina account"
   },
   "preferences": {
     "continue": "Continua",
@@ -787,7 +839,10 @@
     "su_i̇çmək": "Bevi acqua",
     "kitab_oxumaq": "Leggi un libro",
     "dərin_i̇ş": "Lavoro intenso",
-    "səhər_qaçışı": "Corsa mattutina"
+    "səhər_qaçışı": "Corsa mattutina",
+    "not_supported": "Non supportato",
+    "not_supported_pedometer_desc": "Il tuo dispositivo non supporta il conteggio dei passi hardware o l'autorizzazione è stata negata.",
+    "failed_to_complete": "Impossibile completare l'abitudine."
   },
   "user_tasks": {
     "early_bird_title": "Mattiniero",
@@ -845,7 +900,7 @@
     "privacy_rights_title": "7. Quali sono i vostri diritti alla privacy?",
     "privacy_rights_text": "In alcune regioni, disponete di diritti che vi consentono un maggiore accesso e controllo sulle vostre informazioni personali. Potete rivedere, modificare o chiudere il vostro account in qualsiasi momento.",
     "contact_us_title": "8. Contattaci",
-    "contact_us_text": "In caso di domande o commenti su questa informativa, è possibile inviare un'e-mail all'indirizzo support@growday.com.",
+    "contact_us_text": "In caso di domande o commenti su questa informativa, è possibile inviare un'e-mail all'indirizzo growday.support@gmail.com.",
     "agreement_text": "Utilizzando GrowDay, l'utente accetta la raccolta e l'uso delle informazioni in conformità con la presente informativa."
   },
   "terms_of_service": {
@@ -887,5 +942,45 @@
     "best_day": "Miglior Giorno",
     "keep_going": "Continua così! Stai andando alla grande! 🚀",
     "improve_hint": "Prova a completare più abitudini per aumentare il tuo tasso! 🔥"
+  },
+  "help": {
+    "title": "Centro Assistenza",
+    "hero_title": "Come possiamo aiutarti?",
+    "hero_subtitle": "Sfoglia le FAQ, esplora le funzioni o contattaci.",
+    "quick_links": "Link rapidi",
+    "email_us": "Scrivici un'email",
+    "features_title": "Funzionalità",
+    "faq_title": "Domande Frequenti",
+    "tip": "💡 Suggerimento: La costanza è la chiave. Cerca di completare almeno un'abitudine al giorno!",
+    "faq": {
+      "q1": "Come creo una nuova abitudine?",
+      "a1": "Tocca il pulsante verde '+' in basso. Puoi crearne una personalizzata o sceglierne una suggerita.",
+      "q2": "Cosa sono i punti XP?",
+      "a2": "Gli XP (Punti Esperienza) si ottengono completando abitudini e attività.",
+      "q3": "Perché sono stato reindirizzato al login?",
+      "a3": "La tua sessione potrebbe essere scaduta per sicurezza. Accedi di nuovo, i tuoi dati sono salvi.",
+      "q4": "Cosa succede quando scade il termine di un'attività?",
+      "a4": "Le attività scadute vengono contrassegnate automaticamente come 'Scadute' a mezzanotte.",
+      "q5": "Posso cambiare la lingua dell'app?",
+      "a5": "Sì! Vai in Profilo → Lingue e seleziona la lingua che preferisci.",
+      "q6": "Come controllo i miei progressi?",
+      "a6": "Apri un'abitudine per vedere le tue prestazioni di oggi, i progressi settimanali e le tue serie.",
+      "q7": "Come contatto il supporto?",
+      "a7": "Vai su Profilo → Contatta Supporto o scrivici a growday.support@gmail.com."
+    },
+    "features": {
+      "habits_title": "Tracciamento Abitudini",
+      "habits_desc": "Crea abitudini giornaliere o settimanali. Tieni traccia delle serie e aggiungi note.",
+      "tasks_title": "Attività & Sfide",
+      "tasks_desc": "Completa le attività assegnate per ottenere XP. Hanno scadenze e priorità.",
+      "stats_title": "Statistiche",
+      "stats_desc": "Visualizza statistiche giornaliere, settimanali, mensili e annuali.",
+      "achievements_title": "Risultati",
+      "achievements_desc": "Sblocca badge e obiettivi man mano che raggiungi i traguardi.",
+      "explore_title": "Esplora & Impara",
+      "explore_desc": "Scopri articoli e abitudini suggerite dall'intelligenza artificiale.",
+      "reminders_title": "Promemoria",
+      "reminders_desc": "Imposta notifiche intelligenti per non perdere mai una sessione."
+    }
   }
 }

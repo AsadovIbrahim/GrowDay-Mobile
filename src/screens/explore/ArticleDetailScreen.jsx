@@ -51,6 +51,18 @@ const ArticleDetailScreen = () => {
   const wordCount = article.content ? article.content.trim().split(/\s+/).length : 0;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
+  // Try to force high resolution for known image providers (like Unsplash) by replacing width parameters
+  const getHighResImageUrl = (url) => {
+    if (!url) return null;
+    // Replace w=400 with w=2000 for higher quality
+    if (url.includes('w=') || url.includes('width=')) {
+      return url.replace(/w=\d+/g, 'w=2000').replace(/width=\d+/g, 'width=2000');
+    }
+    return url;
+  };
+
+  const highResImage = getHighResImageUrl(article.imageUrl || article.image);
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} />
@@ -75,7 +87,7 @@ const ArticleDetailScreen = () => {
         {/* ── Hero Image ── */}
         <View style={[styles.imageContainer, { height: height * 0.32 }]}>
           <Image 
-            source={{ uri: article.imageUrl || article.image }} 
+            source={{ uri: highResImage }} 
             style={styles.image}
             resizeMode="cover"
           />

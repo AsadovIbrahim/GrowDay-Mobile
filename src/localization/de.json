@@ -69,7 +69,37 @@
     "channel_sound": "Tonbenachrichtigungen",
     "channel_silent": "Lautlose Benachrichtigungen",
     "channel_tracking": "Gewohnheitsverfolgung",
-    "channel_reminders": "Gewohnheitserinnerungen"
+    "channel_reminders": "Gewohnheitserinnerungen",
+    "motivation_quotes": [
+      {
+        "text": "Glaube daran, dass du es kannst, und du hast den halben Weg geschafft.",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "text": "Handeln ist der grundlegende Schlüssel zum Erfolg.",
+        "author": "Pablo Picasso"
+      },
+      {
+        "text": "Schau nicht auf die Uhr; tu, was sie tut. Mach weiter.",
+        "author": "Sam Levenson"
+      },
+      {
+        "text": "Das Geheimnis des Vorankommens liegt im Anfangen.",
+        "author": "Mark Twain"
+      },
+      {
+        "text": "Es scheint immer unmöglich, bis es vollbracht ist.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Deine Einstellung bestimmt, wie gut du es tust.",
+        "author": "Lou Holtz"
+      },
+      {
+        "text": "Kleine tägliche Verbesserungen führen im Laufe der Zeit zu erstaunlichen Ergebnissen.",
+        "author": "Robin Sharma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "Willkommen bei GrowDay!",
@@ -180,7 +210,9 @@
       "runs_monthly": "Diese Gewohnheit läuft am {{day}}. jeden Monats.",
       "runs_custom": "Diese Gewohnheit läuft alle {{interval}} Tage.",
       "starts_on": "Diese Gewohnheit beginnt am {{date}}."
-    }
+    },
+    "locked_past_title": "Zeit abgelaufen",
+    "locked_past_desc": "Sie können nur den Fortschritt für heute und gestern protokollieren."
   },
   "explore": {
     "header": "Entdecken",
@@ -227,7 +259,17 @@
     "completed_msg": "Aufgabe erfolgreich abgeschlossen:",
     "reward_earned": "Belohnung erhalten",
     "empty": "Keine Aufgaben gefunden",
-    "assigned_by_admins": "Aufgaben werden von Administratoren zugewiesen"
+    "assigned_by_admins": "Aufgaben werden von Administratoren zugewiesen",
+    "failed_to_load": "Aufgaben konnten nicht geladen werden",
+    "try_again": "Erneut versuchen",
+    "could_not_complete": "Aufgabe konnte nicht abgeschlossen werden.",
+    "could_not_uncheck": "Aufgabenauswahl konnte nicht aufgehoben werden.",
+    "failed_to_update": "Aufgabe konnte nicht aktualisiert werden.",
+    "delete_title": "Aufgabe löschen",
+    "delete_confirm": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?",
+    "could_not_delete": "Aufgabe konnte nicht gelöscht werden.",
+    "failed_to_delete": "Aufgabe konnte nicht gelöscht werden.",
+    "delete_action": "Löschen"
   },
   "create_habit": {
     "header": "Benutzerdefinierte Gewohnheit erstellen",
@@ -511,6 +553,11 @@
     "today": "Heute"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Aktive Sprache",
+      "all_languages": "ALLE SPRACHEN",
+      "footer_note": "Sprachänderungen werden sofort wirksam."
+    },
     "header": "Dein Profil",
     "edit_profile": "Profil bearbeiten",
     "points": "Punkte",
@@ -532,7 +579,9 @@
       "privacy_policy": "Datenschutzrichtlinie",
       "terms": "Nutzungsbedingungen",
       "contact_support": "Support kontaktieren",
-      "rate_app": "App bewerten"
+      "rate_app": "App bewerten",
+      "help_center": "Hilfe-Center",
+      "delete_account": "Konto löschen"
     },
     "edit_profile_screen": {
       "title": "Profil bearbeiten",
@@ -585,7 +634,10 @@
       "email_updates": "Email-Updates",
       "daily_reminders": "Tägliche Erinnerungen",
       "footer": "Verwalten Sie, wie Sie Updates und Erinnerungen von GrowDay erhalten."
-    }
+    },
+    "delete_confirm_title": "Konto löschen?",
+    "delete_confirm_desc": "Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Alle Ihre Gewohnheiten, Fortschritte, Aufgaben und Ihr Verlauf werden für immer gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "delete_confirm_btn": "Konto löschen"
   },
   "preferences": {
     "continue": "Weiter",
@@ -787,7 +839,10 @@
     "su_i̇çmək": "Wasser trinken",
     "kitab_oxumaq": "Ein Buch lesen",
     "dərin_i̇ş": "Tiefes Arbeiten",
-    "səhər_qaçışı": "Morgenlauf"
+    "səhər_qaçışı": "Morgenlauf",
+    "not_supported": "Nicht unterstützt",
+    "not_supported_pedometer_desc": "Ihr Gerät unterstützt kein Hardware-Schrittzählen oder die Berechtigung wurde verweigert.",
+    "failed_to_complete": "Gewohnheit konnte nicht abgeschlossen werden."
   },
   "user_tasks": {
     "early_bird_title": "Frühaufsteher",
@@ -845,7 +900,7 @@
     "privacy_rights_title": "7. Was sind Ihre Datenschutzrechte?",
     "privacy_rights_text": "In einigen Regionen haben Sie Rechte, die Ihnen einen besseren Zugang zu Ihren personenbezogenen Daten und eine stärkere Kontrolle darüber ermöglichen. Sie können Ihr Konto jederzeit überprüfen, ändern oder kündigen.",
     "contact_us_title": "8. Kontaktieren Sie uns",
-    "contact_us_text": "Wenn Sie Fragen oder Kommentare zu dieser Richtlinie haben, können Sie uns eine E-Mail an support@growday.com senden.",
+    "contact_us_text": "Wenn Sie Fragen oder Kommentare zu dieser Richtlinie haben, können Sie uns eine E-Mail an growday.support@gmail.com senden.",
     "agreement_text": "Durch die Nutzung von GrowDay stimmen Sie der Erhebung und Verwendung von Informationen gemäß dieser Richtlinie zu."
   },
   "terms_of_service": {
@@ -887,5 +942,45 @@
     "best_day": "Bester Tag",
     "keep_going": "Mach weiter so! Du machst das großartig! 🚀",
     "improve_hint": "Versuche mehr Gewohnheiten abzuschließen, um deine Rate zu erhöhen! 🔥"
+  },
+  "help": {
+    "title": "Hilfe-Center",
+    "hero_title": "Wie können wir helfen?",
+    "hero_subtitle": "Durchsuche FAQs, Funktionen oder kontaktiere den Support.",
+    "quick_links": "Schnellzugriffe",
+    "email_us": "Sende uns eine E-Mail",
+    "features_title": "App-Funktionen",
+    "faq_title": "Häufig gestellte Fragen",
+    "tip": "💡 Tipp: Beständigkeit ist der Schlüssel. Versuche, jeden Tag mindestens eine Gewohnheit zu erfüllen!",
+    "faq": {
+      "q1": "Wie erstelle ich eine neue Gewohnheit?",
+      "a1": "Tippe auf das grüne '+' am unteren Bildschirmrand. Erstelle eine eigene oder wähle eine vorgeschlagene Gewohnheit.",
+      "q2": "Was sind XP-Punkte?",
+      "a2": "XP (Erfahrungspunkte) verdienst du durch das Abschließen von Gewohnheiten und Aufgaben.",
+      "q3": "Warum wurde ich zum Login weitergeleitet?",
+      "a3": "Deine Sitzung ist abgelaufen. Dies dient der Sicherheit. Logge dich einfach wieder ein.",
+      "q4": "Was passiert, wenn die Frist einer Aufgabe abläuft?",
+      "a4": "Abgelaufene Aufgaben werden um Mitternacht automatisch als 'Abgelaufen' markiert.",
+      "q5": "Kann ich die App-Sprache ändern?",
+      "a5": "Ja! Gehe zu Profil → Sprachen und wähle deine bevorzugte Sprache.",
+      "q6": "Wie verfolge ich den Fortschritt?",
+      "a6": "Öffne eine Gewohnheit, um deine heutige Leistung, den Wochenfortschritt und deine Serien zu sehen.",
+      "q7": "Wie kontaktiere ich den Support?",
+      "a7": "Gehe zu Profil → Support kontaktieren oder schreibe an growday.support@gmail.com."
+    },
+    "features": {
+      "habits_title": "Gewohnheiten tracken",
+      "habits_desc": "Erstelle tägliche, wöchentliche oder eigene Gewohnheiten. Verfolge Serien und Notizen.",
+      "tasks_title": "Aufgaben & Herausforderungen",
+      "tasks_desc": "Erledige Aufgaben, um XP zu sammeln. Sie haben Fristen und Prioritäten.",
+      "stats_title": "Statistiken",
+      "stats_desc": "Sieh dir tägliche, wöchentliche, monatliche und jährliche Statistiken an.",
+      "achievements_title": "Erfolge",
+      "achievements_desc": "Schalte Abzeichen und Erfolge frei, wenn du Meilensteine erreichst.",
+      "explore_title": "Entdecken & Lernen",
+      "explore_desc": "Entdecke von KI kuratierte Artikel und Gewohnheiten für deine Ziele.",
+      "reminders_title": "Erinnerungen",
+      "reminders_desc": "Stelle clevere Benachrichtigungen ein, um keine Session zu verpassen."
+    }
   }
 }

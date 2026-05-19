@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AppState, Alert } from 'react-native';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
 import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
-import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder } from '../utils/NotificationService';
+import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder, scheduleDailyMotivationalQuotes } from '../utils/NotificationService';
 import notifee, { EventType } from '@notifee/react-native';
 import BootSplash from 'react-native-bootsplash';
 
@@ -57,6 +57,7 @@ const Navigation = () => {
 
         // Also cancel it right away when the app first loads
         cancelWinBackReminder();
+        scheduleDailyMotivationalQuotes();
 
         return () => {
             subscription.remove();
@@ -103,9 +104,11 @@ const Navigation = () => {
                 }
             } else if (type === EventType.ACTION_PRESS) {
                 const habitId = detail.notification?.data?.habitId;
+                const dateStr = detail.notification?.data?.dateStr || '';
                 if (habitId) {
-                    const startKey = `timer_start_${habitId}`;
-                    const accKey = `timer_acc_${habitId}`;
+                    const dateSuffix = dateStr ? `_${dateStr}` : '';
+                    const startKey = `timer_start_${habitId}${dateSuffix}`;
+                    const accKey = `timer_acc_${habitId}${dateSuffix}`;
                     
                     if (detail.pressAction.id === 'stop') {
                         notifee.cancelNotification(detail.notification.id);
@@ -119,7 +122,7 @@ const Navigation = () => {
                                 storage.set(accKey, (currentAcc + diff).toString());
                                 storage.delete(startKey);
                             }
-                            storage.set(`pending_stop_${habitId}`, true);
+                            storage.set(`pending_stop_${habitId}${dateSuffix}`, true);
                         });
                     } else if (detail.pressAction.id === 'pause') {
                         import('../utils/MMKVStore').then(({ storage }) => {
@@ -138,7 +141,7 @@ const Navigation = () => {
                             const title = detail.notification.data?.title || '';
                             const distance = detail.notification.data?.distance || null;
                             import('../utils/NotificationService').then(({ displayOngoingHabitNotification, cancelGoalReachedNotification }) => {
-                                displayOngoingHabitNotification({ id: habitId, title }, newAcc + baseSecs, distance, true, baseSecs, targetSecs);
+                                displayOngoingHabitNotification({ id: habitId, title }, newAcc + baseSecs, distance, true, baseSecs, targetSecs, dateStr);
                                 cancelGoalReachedNotification(habitId);
                             });
                         });
@@ -154,7 +157,7 @@ const Navigation = () => {
                             const distance = detail.notification.data?.distance || null;
                             import('../utils/NotificationService').then(({ displayOngoingHabitNotification, scheduleGoalReachedNotification }) => {
                                 const totalCurrent = currentAcc + baseSecs;
-                                displayOngoingHabitNotification({ id: habitId, title }, totalCurrent, distance, false, baseSecs, targetSecs);
+                                displayOngoingHabitNotification({ id: habitId, title }, totalCurrent, distance, false, baseSecs, targetSecs, dateStr);
                                 
                                 if (targetSecs !== null) {
                                     const remaining = targetSecs - totalCurrent;

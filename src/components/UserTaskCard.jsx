@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faCheckCircle,
   faCircle,
-  faTrash,
   faFlag,
   faClock,
   faStar,
@@ -94,16 +93,6 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
           </Text>
         </TouchableOpacity>
 
-        {/* Delete */}
-        {!isCompleted && !isExpired && onDelete && (
-          <TouchableOpacity
-            onPress={() => onDelete(task.id)}
-            className="w-8 h-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2' }}
-          >
-            <FontAwesomeIcon icon={faTrash} size={13} color="#ef4444" />
-          </TouchableOpacity>
-        )}
       </View>
 
       {/* Description */}

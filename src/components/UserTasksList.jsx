@@ -8,10 +8,13 @@ import { getUserTasksFetch, completeUserTaskFetch, updateUserTaskFetch } from ".
 import { theme } from "../constants/theme";
 import UserTaskCard from "./UserTaskCard";
 import CelebrationModal from "./CelebrationModal";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../context/ThemeContext";
 
-const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
+const UserTasksList = ({ maxItems = 3, searchQuery = "", t }) => {
+    const { t: localT } = useTranslation();
+    const translate = t || localT;
     const { theme } = useTheme();
     const { colors } = theme;
     const [userTasks, setUserTasks] = useState([]);
@@ -28,15 +31,39 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
         }, [token])
     );
 
-    const filteredTasks = userTasks.filter(task => 
-        task.title?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredTasks = userTasks.filter(task => {
+        // Search query matching
+        if (searchQuery && !task.title?.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return false;
+        }
+
+        // Hide Cancelled or Expired tasks completely from the UI
+        if (task.status === "Cancelled" || task.status === "Expired") {
+            return false;
+        }
+
+        // Filter out tasks from past days (deadline passed)
+        if (task.dueDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const taskDate = new Date(task.dueDate);
+            taskDate.setHours(0, 0, 0, 0);
+
+            if (taskDate < today) {
+                return false;
+            }
+        }
+
+        return true;
+    }).slice(0, maxItems);
 
     const getUserTasks = async () => {
         try {
             setLoading(true);
             setError(false);
-            const response = await getUserTasksFetch(token, 0, maxItems);
+            // Fetch 50 tasks so we have enough items for client-side filtering
+            const response = await getUserTasksFetch(token, 0, 50);
             if (response?.success && response?.data) {
                 setUserTasks(response.data);
             } else if (response?.success === false) {
@@ -96,27 +123,26 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "" }) => {
         return (
             <View className="rounded-xl p-6 items-center justify-center border" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
                 <FontAwesomeIcon icon={faTasks} color="#ef4444" size={24} />
-                <Text className="text-red-500 font-redditsans-medium mt-2">Failed to load tasks</Text>
+                <Text className="text-red-500 font-redditsans-medium mt-2">{translate("tasks.failed_to_load", { defaultValue: "Failed to load tasks" })}</Text>
                 <TouchableOpacity onPress={getUserTasks} className="mt-2">
-                    <Text className="text-green-600 font-redditsans-bold text-xs underline">Try Again</Text>
+                    <Text className="text-green-600 font-redditsans-bold text-xs underline">{translate("tasks.try_again", { defaultValue: "Try Again" })}</Text>
                 </TouchableOpacity>
             </View>
         );
     }
 
-    if (userTasks.length === 0) {
+    if (filteredTasks.length === 0) {
+        if (searchQuery) {
+            return (
+                <View className="rounded-xl p-6 items-center justify-center border border-dashed" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
+                    <Text className="font-redditsans-medium italic" style={{ color: colors.textSecondary }}>{t("my_habits.no_habits_search", { defaultValue: `No tasks matching "${searchQuery}"` })}</Text>
+                </View>
+            );
+        }
         return (
             <View className="rounded-xl p-8 items-center justify-center border border-dashed" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
                 <FontAwesomeIcon icon={faTasks} color={colors.textSecondary} size={24} />
-                <Text className="font-redditsans-medium mt-2" style={{ color: colors.textSecondary }}>No tasks assigned</Text>
-            </View>
-        );
-    }
-
-    if (searchQuery && filteredTasks.length === 0) {
-        return (
-            <View className="rounded-xl p-6 items-center justify-center border border-dashed" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
-                <Text className="font-redditsans-medium italic" style={{ color: colors.textSecondary }}>No tasks matching "{searchQuery}"</Text>
+                <Text className="font-redditsans-medium mt-2" style={{ color: colors.textSecondary }}>{t("tasks.empty", { defaultValue: "No tasks assigned" })}</Text>
             </View>
         );
     }

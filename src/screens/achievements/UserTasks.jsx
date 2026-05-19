@@ -35,7 +35,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getTranslatedTask } from "../../utils/taskTranslations";
 
-const STATUS_FILTERS = ["All", "Pending", "InProgress", "Completed"];
+const STATUS_FILTERS = ["All", "Pending", "InProgress", "Completed", "Missed"];
 
 const StatBox = ({ value, label, color = "#16a34a", colors }) => (
   <View className="flex-1 rounded-2xl p-4 items-center mx-1" style={{ backgroundColor: colors.card }}>
@@ -79,7 +79,7 @@ const UserTasks = () => {
       if (tasksRes?.success && tasksRes?.data) {
         setTasks(tasksRes.data);
       } else if (tasksRes?.success === false) {
-        setError(tasksRes.error || "Failed to load tasks.");
+        setError(tasksRes.error || "tasks.failed_to_load");
         setTasks([]);
       } else {
         setTasks([]);
@@ -89,7 +89,7 @@ const UserTasks = () => {
         setStats(statsRes.data);
       }
     } catch (err) {
-      setError("Failed to load tasks.");
+      setError("tasks.failed_to_load");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -133,7 +133,7 @@ const UserTasks = () => {
             )
           );
         } else {
-          Alert.alert("Error", res?.message || "Could not complete task.");
+          Alert.alert(t("common.error"), res?.message || t("tasks.could_not_complete"));
         }
       } else {
         // Mark as pending (Uncheck)
@@ -145,7 +145,7 @@ const UserTasks = () => {
             )
           );
         } else {
-          Alert.alert("Error", res?.message || "Could not uncheck task.");
+          Alert.alert(t("common.error"), res?.message || t("tasks.could_not_uncheck"));
         }
       }
       
@@ -154,18 +154,18 @@ const UserTasks = () => {
         if (r?.success && r?.data) setStats(r.data);
       });
     } catch {
-      Alert.alert("Error", "Failed to update task.");
+      Alert.alert(t("common.error"), t("tasks.failed_to_update"));
     }
   };
 
   const handleDelete = (taskId) => {
     Alert.alert(
-      "Delete Task",
-      "Are you sure you want to delete this task?",
+      t("tasks.delete_title"),
+      t("tasks.delete_confirm"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("tasks.delete_action"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -176,10 +176,10 @@ const UserTasks = () => {
                   if (r?.success && r?.data) setStats(r.data);
                 });
               } else {
-                Alert.alert("Error", res?.message || "Could not delete task.");
+                Alert.alert(t("common.error"), res?.message || t("tasks.could_not_delete"));
               }
             } catch {
-              Alert.alert("Error", "Failed to delete task.");
+              Alert.alert(t("common.error"), t("tasks.failed_to_delete"));
             }
           },
         },
@@ -188,8 +188,62 @@ const UserTasks = () => {
   };
 
   const filteredTasks = tasks.filter((t) => {
-    if (filter === "All") return true;
-    return t.status === filter;
+    if (filter === "Missed") {
+      // Show expired tasks
+      if (t.status === "Expired") {
+        return true;
+      }
+      
+      // Cancelled or Completed are not missed
+      if (t.status === "Cancelled" || t.status === "Completed") {
+        return false;
+      }
+      
+      // Pending/InProgress with past due date are missed
+      if (t.dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const taskDate = new Date(t.dueDate);
+        taskDate.setHours(0, 0, 0, 0);
+
+        if (taskDate < today) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+
+    // For other tabs:
+    // Hide Cancelled or Expired tasks completely from the UI
+    if (t.status === "Cancelled" || t.status === "Expired") {
+      return false;
+    }
+
+    if (filter !== "All" && t.status !== filter) return false;
+
+    // Filter out tasks from past days (deadline passed)
+    if (t.dueDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const taskDate = new Date(t.dueDate);
+      taskDate.setHours(0, 0, 0, 0);
+
+      if (taskDate < today) {
+        // If the task's deadline passed and it wasn't completed, hide it completely
+        if (t.status !== "Completed") {
+          return false;
+        }
+        // If it was completed, hide it only from the "All" tab (keep in "Completed" history)
+        if (filter === "All") {
+          return false;
+        }
+      }
+    }
+
+    return true;
   });
 
   const filterLabel = (f) => {
@@ -214,14 +268,6 @@ const UserTasks = () => {
               {t("tasks.header")}
             </Text>
           </View>
-          {stats?.overdueTasks > 0 && (
-            <View className="bg-red-500 rounded-full px-3 py-1 flex-row items-center">
-              <FontAwesomeIcon icon={faBolt} size={12} color="#fff" />
-              <Text className="text-white text-[12px] font-redditsans-bold ml-1">
-                {stats.overdueTasks} {t("common.missed")}
-              </Text>
-            </View>
-          )}
         </View>
 
         {loading ? (
@@ -310,7 +356,11 @@ const UserTasks = () => {
                     className="font-redditsans-bold text-[13px]"
                     style={{ color: filter === f ? colors.primary : colors.textSecondary }}
                   >
-                    {t(`tasks.filters.${f === "InProgress" ? "in_progress" : f.toLowerCase()}`)}
+                    {f === "InProgress"
+                      ? t("tasks.filters.in_progress", { defaultValue: "In Progress" })
+                      : f === "Missed"
+                      ? t("common.missed", { defaultValue: "Missed" })
+                      : t(`tasks.filters.${f.toLowerCase()}`, { defaultValue: f })}
                     {f !== "All" && stats
                       ? ` (${
                           f === "Pending"
@@ -319,6 +369,8 @@ const UserTasks = () => {
                             ? stats.inProgressTasks
                             : f === "Completed"
                             ? stats.completedTasks
+                            : f === "Missed"
+                            ? stats.overdueTasks
                             : ""
                         })`
                       : ""}
@@ -331,7 +383,9 @@ const UserTasks = () => {
             {error && (
               <View className="bg-red-100 rounded-2xl p-4 mb-4">
                 <Text className="text-red-600 font-redditsans-medium text-center">
-                  {error}
+                  {error.includes("tasks.failed_to_load") || error === "Failed to load tasks." 
+                    ? t("tasks.failed_to_load", { defaultValue: "Failed to load tasks" }) 
+                    : error}
                 </Text>
               </View>
             )}
@@ -345,6 +399,8 @@ const UserTasks = () => {
                     ? t("explore.status.completed")
                     : filter === "Pending"
                     ? t("explore.status.pending")
+                    : filter === "Missed"
+                    ? t("common.missed")
                     : t("tasks.empty")}
                 </Text>
                 <Text className="font-redditsans-regular text-sm mt-1 text-center" style={{ color: colors.textSecondary }}>

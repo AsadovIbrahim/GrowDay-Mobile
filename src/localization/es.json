@@ -69,7 +69,37 @@
     "channel_sound": "Notificaciones con sonido",
     "channel_silent": "Notificaciones silenciosas",
     "channel_tracking": "Seguimiento de hábitos",
-    "channel_reminders": "Recordatorios de hábitos"
+    "channel_reminders": "Recordatorios de hábitos",
+    "motivation_quotes": [
+      {
+        "text": "Cree que puedes y casi lo habrás logrado.",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "text": "La action es la clave fundamental para el éxito.",
+        "author": "Pablo Picasso"
+      },
+      {
+        "text": "No mires el reloj; haz lo que él hace. Sigue adelante.",
+        "author": "Sam Levenson"
+      },
+      {
+        "text": "El secreto para salir adelante es empezar.",
+        "author": "Mark Twain"
+      },
+      {
+        "text": "Siempre parece imposible hasta que se hace.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Tu actitud determina qué tan bien lo haces.",
+        "author": "Lou Holtz"
+      },
+      {
+        "text": "Pequeñas mejoras diarias con el tiempo conducen a resultados impresionantes.",
+        "author": "Robin Sharma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "¡Bienvenido a GrowDay!",
@@ -180,7 +210,9 @@
       "runs_monthly": "Este hábito se realiza el día {{day}} de cada mes.",
       "runs_custom": "Este hábito se realiza cada {{interval}} días.",
       "starts_on": "Este hábito comienza el {{date}}."
-    }
+    },
+    "locked_past_title": "Tiempo Expirado",
+    "locked_past_desc": "Solo puede registrar el progreso de hoy y ayer."
   },
   "explore": {
     "header": "Explorar",
@@ -227,7 +259,17 @@
     "completed_msg": "Tarea completada con éxito:",
     "reward_earned": "Recompensa obtenida",
     "empty": "No se encontraron tareas",
-    "assigned_by_admins": "Las tareas son asignadas por administradores"
+    "assigned_by_admins": "Las tareas son asignadas por administradores",
+    "failed_to_load": "Error al cargar las tareas",
+    "try_again": "Intentar de nuevo",
+    "could_not_complete": "No se pudo completar la tarea.",
+    "could_not_uncheck": "No se pudo desmarcar la tarea.",
+    "failed_to_update": "Error al actualizar la tarea.",
+    "delete_title": "Eliminar tarea",
+    "delete_confirm": "¿Está seguro de que desea eliminar esta tarea?",
+    "could_not_delete": "No se pudo eliminar la tarea.",
+    "failed_to_delete": "Error al eliminar la tarea.",
+    "delete_action": "Eliminar"
   },
   "create_habit": {
     "header": "Crear hábito personalizado",
@@ -511,6 +553,11 @@
     "today": "Hoy"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Idioma activo",
+      "all_languages": "TODOS LOS IDIOMAS",
+      "footer_note": "Los cambios de idioma surten efecto inmediatamente."
+    },
     "header": "Tu Perfil",
     "edit_profile": "Editar perfil",
     "points": "Puntos",
@@ -532,7 +579,9 @@
       "privacy_policy": "Política de privacidad",
       "terms": "Términos de servicio",
       "contact_support": "Contactar soporte",
-      "rate_app": "Calificar la app"
+      "rate_app": "Calificar la app",
+      "help_center": "Centro de Ayuda",
+      "delete_account": "Eliminar cuenta"
     },
     "edit_profile_screen": {
       "title": "Editar perfil",
@@ -585,7 +634,10 @@
       "email_updates": "Actualizaciones por Email",
       "daily_reminders": "Recordatorios Diarios",
       "footer": "Administra cómo recibes actualizaciones y recordatorios de GrowDay."
-    }
+    },
+    "delete_confirm_title": "¿Eliminar cuenta?",
+    "delete_confirm_desc": "¿Está seguro de que desea eliminar permanentemente su cuenta? Todos sus hábitos, progreso, tareas e historial se eliminarán para siempre. Esta acción no se puede deshacer.",
+    "delete_confirm_btn": "Eliminar cuenta"
   },
   "preferences": {
     "continue": "Continuar",
@@ -787,7 +839,10 @@
     "su_i̇çmək": "Beber agua",
     "kitab_oxumaq": "Leer un libro",
     "dərin_i̇ş": "Trabajo profundo",
-    "səhər_qaçışı": "Carrera matutina"
+    "səhər_qaçışı": "Carrera matutina",
+    "not_supported": "No soportado",
+    "not_supported_pedometer_desc": "Su dispositivo no es compatible con el conteo de pasos por hardware o se denegó el permiso.",
+    "failed_to_complete": "Error al completar el hábito."
   },
   "user_tasks": {
     "early_bird_title": "Madrugador",
@@ -845,7 +900,7 @@
     "privacy_rights_title": "7. ¿Cuáles son sus derechos de privacidad?",
     "privacy_rights_text": "En algunas regiones, usted tiene derechos que le permiten un mayor acceso y control sobre su información personal. Puede revisar, cambiar o cancelar su cuenta en cualquier momento.",
     "contact_us_title": "8. Contáctenos",
-    "contact_us_text": "Si tiene preguntas o comentarios sobre esta política, puede enviarnos un correo electrónico a support@growday.com.",
+    "contact_us_text": "Si tiene preguntas o comentarios sobre esta política, puede enviarnos un correo electrónico a growday.support@gmail.com.",
     "agreement_text": "Al usar GrowDay, usted acepta la recopilación y el uso de información de acuerdo con esta política."
   },
   "terms_of_service": {
@@ -887,5 +942,45 @@
     "best_day": "Mejor Día",
     "keep_going": "¡Sigue así! ¡Lo estás haciendo genial! 🚀",
     "improve_hint": "¡Intenta completar más hábitos para aumentar tu tasa! 🔥"
+  },
+  "help": {
+    "title": "Centro de Ayuda",
+    "hero_title": "¿Cómo podemos ayudarte?",
+    "hero_subtitle": "Explora las preguntas frecuentes, funciones o contacta con soporte.",
+    "quick_links": "Enlaces rápidos",
+    "email_us": "Envíanos un correo",
+    "features_title": "Funciones de la App",
+    "faq_title": "Preguntas Frecuentes",
+    "tip": "💡 Consejo: La constancia es clave para crear hábitos. ¡Intenta completar al menos uno cada día!",
+    "faq": {
+      "q1": "¿Cómo creo un nuevo hábito?",
+      "a1": "Toca el botón verde '+' en la parte inferior de la pantalla. Puedes crear un hábito personalizado o elegir uno sugerido.",
+      "q2": "¿Qué son los Puntos XP?",
+      "a2": "Los XP (Puntos de Experiencia) se ganan al completar hábitos y tareas. ¡Cuanto más completes, más ganarás!",
+      "q3": "¿Por qué fui redirigido a la pantalla de inicio de sesión?",
+      "a3": "Tu sesión puede haber expirado por seguridad. Solo vuelve a iniciar sesión, tus datos están a salvo.",
+      "q4": "¿Qué pasa cuando vence el plazo de una tarea?",
+      "a4": "Las tareas vencidas se marcan automáticamente como 'Expiradas' a la medianoche.",
+      "q5": "¿Puedo cambiar el idioma de la aplicación?",
+      "a5": "¡Sí! Ve a Perfil → Idiomas y selecciona tu idioma preferido.",
+      "q6": "¿Cómo sigo el progreso de mis hábitos?",
+      "a6": "Abre cualquier hábito para ver tu rendimiento de hoy, progreso semanal y tus rachas.",
+      "q7": "¿Cómo contacto a soporte?",
+      "a7": "Ve a Perfil → Contactar Soporte o envíanos un correo a growday.support@gmail.com. Respondemos en 24 horas."
+    },
+    "features": {
+      "habits_title": "Seguimiento de Hábitos",
+      "habits_desc": "Crea hábitos diarios, semanales o personalizados. Sigue tus rachas y añade notas.",
+      "tasks_title": "Tareas y Retos",
+      "tasks_desc": "Completa tareas para ganar XP. Tienen plazos y niveles de prioridad.",
+      "stats_title": "Estadísticas",
+      "stats_desc": "Visualiza tus estadísticas diarias, semanales, mensuales y anuales.",
+      "achievements_title": "Logros",
+      "achievements_desc": "Desbloquea insignias y logros al alcanzar nuevas metas.",
+      "explore_title": "Explorar y Aprender",
+      "explore_desc": "Descubre artículos de aprendizaje y hábitos sugeridos por IA.",
+      "reminders_title": "Recordatorios",
+      "reminders_desc": "Configura notificaciones inteligentes para nunca perderte una sesión."
+    }
   }
 }

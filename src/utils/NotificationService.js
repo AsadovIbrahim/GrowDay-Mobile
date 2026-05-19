@@ -82,7 +82,7 @@ export const displayLocalNotification = async (remoteMessage) => {
   });
 };
 
-export const displayOngoingHabitNotification = async (habit, seconds, distance = null, isPaused = false, baseSeconds = 0, targetSeconds = null) => {
+export const displayOngoingHabitNotification = async (habit, seconds, distance = null, isPaused = false, baseSeconds = 0, targetSeconds = null, dateStr = '') => {
   const hId = habit.userHabitId || habit.UserHabitId || habit.id;
   const channelId = 'ongoing_habit_channel';
 
@@ -120,7 +120,8 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
       title: habit.title || '',
       distance: distance ? distance.toString() : '',
       baseSeconds: baseSeconds.toString(),
-      targetSeconds: targetSeconds ? targetSeconds.toString() : ''
+      targetSeconds: targetSeconds ? targetSeconds.toString() : '',
+      dateStr: dateStr
     },
     android: {
       channelId: channelId,
@@ -277,4 +278,82 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
 export const cancelGoalReachedNotification = async (hId) => {
   const id = hId.userHabitId || hId.UserHabitId || hId.id || hId;
   await notifee.cancelTriggerNotification(`ongoing_${id}`);
+};
+
+export const scheduleDailyMotivationalQuotes = async () => {
+  const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
+  if (!pushEnabled) return;
+
+  // Let's cancel all previously scheduled motivation triggers to avoid duplication
+  for (let i = 0; i < 7; i++) {
+    await notifee.cancelTriggerNotification(`motivation_${i}`);
+  }
+
+  // Get active language
+  const lang = storage.getString('userLanguage') || 'en';
+
+  // Get localized motivational quotes from localization files
+  let selectedQuotes = t('notifications.motivation_quotes', { returnObjects: true });
+
+  // Fallback if translations are not loaded or empty
+  if (!Array.isArray(selectedQuotes) || selectedQuotes.length === 0) {
+    selectedQuotes = [
+      { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+      { text: "Action is the foundational key to all success.", author: "Pablo Picasso" },
+      { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+      { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+      { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+      { text: "Your attitude determines how well you do it.", author: "Lou Holtz" },
+      { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" }
+    ];
+  }
+  
+  // Shuffle/Randomize quotes to schedule unique ones for the next 7 days
+  const shuffled = [...selectedQuotes].sort(() => 0.5 - Math.random());
+
+  const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
+  const channelId = soundEnabled ? 'growday_motivation_channel_sound' : 'growday_motivation_channel_silent';
+
+  await notifee.createChannel({
+    id: channelId,
+    name: 'Daily Motivation',
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
+    sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
+  });
+
+  const now = new Date();
+  
+  for (let i = 0; i < 7; i++) {
+    // Schedule for i-th day at 9:00 AM
+    const scheduledTime = new Date();
+    scheduledTime.setDate(now.getDate() + i);
+    scheduledTime.setHours(9, 0, 0, 0);
+
+    // If 9:00 AM has already passed today, schedule for tomorrow instead
+    if (i === 0 && scheduledTime <= now) {
+      continue;
+    }
+
+    const quote = shuffled[i % shuffled.length];
+    const trigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: scheduledTime.getTime(),
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        id: `motivation_${i}`,
+        title: "Daily Motivation ✨",
+        body: `"${quote.text}" — ${quote.author}`,
+        data: { type: 'motivation' },
+        android: {
+          channelId: channelId,
+          pressAction: { id: 'default' },
+        },
+      },
+      trigger
+    );
+  }
+  console.log(`Successfully scheduled 7 days of daily motivational quotes for language: ${lang}`);
 };

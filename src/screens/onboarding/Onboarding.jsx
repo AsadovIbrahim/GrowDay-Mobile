@@ -39,6 +39,12 @@ export default function Onboarding() {
     i18n.changeLanguage(code);
     storage.set("userLanguage", code);
     setLangModalVisible(false);
+
+    import('../../utils/NotificationService')
+      .then(({ scheduleDailyMotivationalQuotes }) => {
+        scheduleDailyMotivationalQuotes();
+      })
+      .catch(err => console.log('Error scheduling motivational quotes:', err));
   };
 
   const data = [

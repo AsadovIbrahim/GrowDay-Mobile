@@ -7,13 +7,14 @@ import {
   StyleSheet,
   ActivityIndicator,
   Animated,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../utils/MMKVStore';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getUserTotalXPFetch, getAccountDataFetch, getUserPreferencesFetch } from '../../utils/fetch';
+import { getUserTotalXPFetch, getAccountDataFetch, getUserPreferencesFetch, deleteAccountFetch } from '../../utils/fetch';
 import {
   faMedal,
   faMoon,
@@ -29,7 +30,9 @@ import {
   faCircleExclamation,
   faArrowRightFromBracket,
   faGear,
-  faClock
+  faClock,
+  faQuestionCircle,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
 import SettingsItem from '../../components/SettingsItem';
 import { useTheme } from '../../context/ThemeContext';
@@ -163,6 +166,43 @@ const Profile = ({ navigation }) => {
     storage.delete('accessToken');
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t("profile.delete_confirm_title"),
+      t("profile.delete_confirm_desc"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        { 
+          text: t("profile.delete_confirm_btn"), 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = storage.getString('accessToken');
+              if (token) {
+                const res = await deleteAccountFetch(token);
+                if (res?.success) {
+                  // Sign out from Google if signed in
+                  try {
+                    await GoogleSignin.signOut();
+                  } catch (e) {
+                    console.log('Google sign out error on delete:', e);
+                  }
+                  // Clear token to log user out
+                  storage.delete('accessToken');
+                } else {
+                  Alert.alert(t("common.error"), res?.message || t("common.failed_load"));
+                }
+              }
+            } catch (err) {
+              console.error('Delete account error:', err);
+              Alert.alert(t("common.error"), t("common.failed_load"));
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const fetchData = async () => {
     setProfileLoading(true);
     setProfileError(false);
@@ -269,13 +309,22 @@ const Profile = ({ navigation }) => {
             icon={faScaleBalanced}
             title={t("profile.menu.terms")}
             onPress={() => navigation.navigate('TermsOfService')}
+          />
+          <SettingsItem
+            icon={faTrash}
+            title={t("profile.menu.delete_account")}
+            onPress={handleDeleteAccount}
             hideBorder
           />
         </View>
 
-        {/* ── Support ── */}
         <SectionLabel label={t("profile.sections.support")} colors={colors} />
         <View style={[styles.card, { backgroundColor: colors.card }]}>
+          <SettingsItem
+            icon={faQuestionCircle}
+            title={t("profile.menu.help_center")}
+            onPress={() => navigation.navigate('HelpCenter')}
+          />
           <SettingsItem
             icon={faComment}
             title={t("profile.menu.contact_support")}

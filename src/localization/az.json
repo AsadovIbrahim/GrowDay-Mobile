@@ -69,7 +69,37 @@
     "channel_sound": "Səsli Bildirişlər",
     "channel_silent": "Səssiz Bildirişlər",
     "channel_tracking": "Vərdiş İzləməsi",
-    "channel_reminders": "Vərdiş Xətirləticişləri"
+    "channel_reminders": "Vərdiş Xətirləticişləri",
+    "motivation_quotes": [
+      {
+        "text": "İnansan ki, bacaracaqsan, artıq yolun yarısını keçmisən.",
+        "author": "Teodor Ruzvelt"
+      },
+      {
+        "text": "Hərəkət bütün uğurların təməl açarıdır.",
+        "author": "Pablo Pikasso"
+      },
+      {
+        "text": "Saata baxma, onun etdiyini et: irəliləməyə davam et.",
+        "author": "Sem Levenson"
+      },
+      {
+        "text": "Başlamaq, uğur qazanmağın sirridir.",
+        "author": "Mark Tven"
+      },
+      {
+        "text": "Hər şey tamamlanana qədər qeyri-mümkün görünür.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Münasibətiniz işinizi necə edəcəyinizi müəyyən edir.",
+        "author": "Lu Holts"
+      },
+      {
+        "text": "Zamanla kiçik gündəlik irəliləyişlər böyük nəticələrə gətirib çıxarır.",
+        "author": "Robin Şarma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "GrowDay-ə xoş gəlmisiniz!",
@@ -181,7 +211,9 @@
       "runs_monthly": "Bu vərdiş hər ayın {{day}}-i işləyir.",
       "runs_custom": "Bu vərdiş hər {{interval}} gündən bir işləyir.",
       "starts_on": "Bu vərdiş {{date}} tarixində başlayır."
-    }
+    },
+    "locked_past_title": "Vaxt bitdi",
+    "locked_past_desc": "Yalnız bu gün və dünənki vərdişləri tamamlaya bilərsiniz."
   },
   "explore": {
     "header": "Kəşf et",
@@ -228,7 +260,17 @@
     "completed_msg": "Tapşırığı uğurla tamamladınız:",
     "reward_earned": "Mükafat qazanıldı",
     "empty": "Tapşırıq tapılmadı",
-    "assigned_by_admins": "Tapşırıqlar adminlər tərəfindən təyin edilir"
+    "assigned_by_admins": "Tapşırıqlar adminlər tərəfindən təyin edilir",
+    "failed_to_load": "Tapşırıqları yükləmək mümkün olmadı",
+    "try_again": "Yenidən cəhd edin",
+    "could_not_complete": "Tapşırığı tamamlamaq mümkün olmadı.",
+    "could_not_uncheck": "Tapşırıq seçimini ləğv etmək mümkün olmadı.",
+    "failed_to_update": "Tapşırığı yeniləmək mümkün olmadı.",
+    "delete_title": "Tapşırığı sil",
+    "delete_confirm": "Bu tapşırığı silmək istədiyinizdən əminsiniz?",
+    "could_not_delete": "Tapşırığı silmək mümkün olmadı.",
+    "failed_to_delete": "Tapşırığın silinməsi zamanı xəta baş verdi.",
+    "delete_action": "Sil"
   },
   "create_habit": {
     "header": "Xüsusi Vərdiş Yarat",
@@ -512,6 +554,11 @@
     "today": "Bugün"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Aktiv Dil",
+      "all_languages": "BÜTÜN DİLLƏR",
+      "footer_note": "Dil dəyişiklikləri bütün tətbiqdə dərhal qüvvəyə minir."
+    },
     "header": "Profiliniz",
     "edit_profile": "Profili Redaktə Et",
     "points": "Xal",
@@ -533,7 +580,9 @@
       "privacy_policy": "Məxfilik Siyasəti",
       "terms": "İstifadə Şərtləri",
       "contact_support": "Dəstəklə Əlaqə",
-      "rate_app": "Tətbiqi Qiymətləndirin"
+      "rate_app": "Tətbiqi Qiymətləndirin",
+      "help_center": "Kömək Mərkəzi",
+      "delete_account": "Hesabı sil"
     },
     "edit_profile_screen": {
       "title": "Profili Redaktə Et",
@@ -586,7 +635,10 @@
       "email_updates": "E-poçt Yeniləmələri",
       "daily_reminders": "Gündəlik Xatırlatmalar",
       "footer": "GrowDay-dən bildirişləri və xatırlatmaları necə alacağınızı idarə edin."
-    }
+    },
+    "delete_confirm_title": "Hesab silinsin?",
+    "delete_confirm_desc": "Hesabınızı birdəfəlik silmək istədiyinizdən əminsiniz? Bütün vərdişləriniz, nailiyyətləriniz, tapşırıqlarınız və tarixçəniz geri qaytarılmamaq üzrə silinəcək. Bu əməliyyat geri alına bilməz.",
+    "delete_confirm_btn": "Hesabı Sil"
   },
   "preferences": {
     "continue": "Davam et",
@@ -786,7 +838,10 @@
     "meditation": "Meditasiya",
     "drink_water": "Su İçmək",
     "deep_work": "Dərin İş",
-    "evening_reflection": "Günün Analizi"
+    "evening_reflection": "Günün Analizi",
+    "not_supported": "Dəstəklənmir",
+    "not_supported_pedometer_desc": "Cihazınız aparat səviyyəsində addım saymağı dəstəkləmir və ya icazə imtina edilib.",
+    "failed_to_complete": "Vərdişi tamamlamaq mümkün olmadı."
   },
   "user_tasks": {
     "early_bird_title": "Səhər Qəhrəmanı",
@@ -844,7 +899,7 @@
     "privacy_rights_title": "7. Məxfilik Hüquqlarınız Nələrdir?",
     "privacy_rights_text": "Bəzi bölgələrdə şəxsi məlumatlarınıza daha çox daxil olmaq və onlara nəzarət etmək imkanı verən hüquqlarınız var. İstənilən vaxt hesabınızı nəzərdən keçirə, dəyişdirə və ya ləğv edə bilərsiniz.",
     "contact_us_title": "8. Bizimlə Əlaqə",
-    "contact_us_text": "Bu siyasətlə bağlı suallarınız və ya şərhləriniz varsa, support@growday.com ünvanına e-poçt göndərə bilərsiniz.",
+    "contact_us_text": "Bu siyasətlə bağlı suallarınız və ya şərhləriniz varsa, growday.support@gmail.com ünvanına e-poçt göndərə bilərsiniz.",
     "agreement_text": "GrowDay-dən istifadə edərək, məlumatların bu siyasətə uyğun olaraq toplanması və istifadəsi ilə razılaşırsınız."
   },
   "terms_of_service": {
@@ -886,5 +941,45 @@
     "best_day": "Ən Yaxşı Gün",
     "keep_going": "Davam edin! Əla gedirsiniz! 🚀",
     "improve_hint": "Faizi artırmaq üçün daha çox vərdiş tamamlamağa çalışın! 🔥"
+  },
+  "help": {
+    "title": "Kömək Mərkəzi",
+    "hero_title": "Sizə necə kömək edə bilərik?",
+    "hero_subtitle": "FAQ-ə baxın, funksiyaları kəşf edin və ya dəstək komandamızla əlaqə saxlayın.",
+    "quick_links": "Sürətli Keçidlər",
+    "email_us": "Bizə E-poçt Göndər",
+    "features_title": "Tətbiq Funksiyaları",
+    "faq_title": "Tez-tez Verilən Suallar",
+    "tip": "💡 İpucu: Sabitlik uzunmüddətli vərdişlər qurmağın açarıdır. Seriyənizi artırmaq üçün hər gün ən azı bir vərdiş tamamlamağa çalışın!",
+    "faq": {
+      "q1": "Yeni vərdiş necə yaradılır?",
+      "a1": "Ekranın altındakı yaşıl '+' düyməsinə toxunun. Xüsusi vərdiş yarada və ya populyar tövsiyə olunan vərdişlərdən seçə bilərsiniz. Cədvəlinizi, hədəfinizi və xatırlatmalarınızı təyin edin.",
+      "q2": "XP Xalları nədir?",
+      "a2": "XP (Təcrübə Xalları) vərdişlər və tapşırıqları tamamladığınızda qazanılır. Onlar tərəqqinizi və sabitliyinizi əks etdirir. Nə qədər çox tamamlasanız, bir o qədər çox XP qazanırsınız!",
+      "q3": "Nə üçün giriş ekranına yönləndirildim?",
+      "a3": "Sessiyanızın vaxtı bitmiş ola bilər. Bu, hesabınızı qorumaq üçün bir təhlükəsizlik tədbiridi. Sadəcə yenidən daxil olun — məlumatlarınız tam təhlükəsizdir.",
+      "q4": "Tapşırığın son tarixi keçəndə nə baş verir?",
+      "a4": "Son tarixi keçmiş tapşırıqlar gecə yarısı avtomatik olaraq 'Vaxtı keçmiş' kimi işarələnir. Aktiv tapşırıqlar siyahısından gizlədilir, lakin tarixçə və statistika üçün qorunur.",
+      "q5": "Tətbiq dilini dəyişə bilərəmmi?",
+      "a5": "Bəli! Profil → Dillər bölməsinə keçin və üstünlük verdiyin dili seçin. Tətbiq Azərbaycan, İngilis, Rus dillərini və daha çoxunu dəstəkləyir.",
+      "q6": "Vərdiş tərəqqisini necə izləyə bilərəm?",
+      "a6": "Ana ekrandakı istənilən vərdişi açın. Bu günkü performansınızı, həftəlik tərəqqinizi, mövcud seriya və ən yaxşı seriya nəticənizi görəcəksiniz. Hər gün üçün qeydlər də əlavə edə bilərsiniz.",
+      "q7": "Dəstəklə necə əlaqə saxlaya bilərəm?",
+      "a7": "Profil → Dəstəklə Əlaqə bölməsinə keçin və bizə mesaj göndərin. Həmçinin birbaşa growday.support@gmail.com ünvanına e-poçt göndərə bilərsiniz. 24 saat ərzində cavab veririk."
+    },
+    "features": {
+      "habits_title": "Vərdiş İzləmə",
+      "habits_desc": "Gündəlik, həftəlik və ya xüsusi vərdişlər yaradın. Seriyaları izləyin, həftəlik qrafikləri görün və hər sessiya üçün qeydlər əlavə edin.",
+      "tasks_title": "Tapşırıqlar və Çağırışlar",
+      "tasks_desc": "XP qazanmaq üçün tapşırıqları tamamlayın. Tapşırıqların son tarixləri və prioritet səviyyələri var — vaxtı bitmədən bitirin!",
+      "stats_title": "Statistika",
+      "stats_desc": "Zamanla sabitliyinizi və tərəqqinizi anlamaq üçün gündəlik, həftəlik, aylıq və illik statistikalara baxın.",
+      "achievements_title": "Nailiyyətlər",
+      "achievements_desc": "Əhəmiyyətli nöqtələrə çatdıqda nişanlar və nailiyyətlər açın. Yeni mükafatlar üçün profilinizi yoxlayın!",
+      "explore_title": "Kəşf et və Öyrən",
+      "explore_desc": "Hədəflərinizə və üstünlüklərinizə uyğun olaraq AI tərəfindən seçilmiş öyrənmə məqalələrini və tövsiyə olunan vərdişləri kəşf edin.",
+      "reminders_title": "Xatırlatmalar",
+      "reminders_desc": "Heç bir seansı qaçırmamaq üçün vərdişlər üçün ağıllı bildirişlər təyin edin. Hər vərdiş üçün xatırlatma vaxtlarını fərdiləşdirin."
+    }
   }
 }

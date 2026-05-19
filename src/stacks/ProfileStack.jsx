@@ -7,6 +7,7 @@ import ContactSupport from '../screens/profile/ContactSupport';
 import EditProfile from '../screens/profile/EditProfile';
 import PrivacyPolicy from '../screens/profile/PrivacyPolicy';
 import TermsOfService from '../screens/profile/TermsOfService';
+import HelpCenter from '../screens/profile/HelpCenter';
 import UserPref0 from '../screens/preferences/UserPref0';
 import UserPref1 from '../screens/preferences/UserPref1';
 import UserPref2 from '../screens/preferences/UserPref2';
@@ -55,6 +56,11 @@ const ProfileStack = () => {
             <Stack.Screen
                 name="TermsOfService"
                 component={TermsOfService}
+                options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="HelpCenter"
+                component={HelpCenter}
                 options={{ animation: 'slide_from_right' }}
             />
             <Stack.Screen name="UserPref0" component={UserPref0} />

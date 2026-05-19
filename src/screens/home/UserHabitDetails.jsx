@@ -2,8 +2,8 @@ import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal,
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faTrash, faNoteSticky, faExclamationTriangle, faHistory, faCheck } from "@fortawesome/free-solid-svg-icons";
-import { getUserHabitByIdFetch, getWeeklyProgressFetch, removeUserHabitFetch, reportHabitProgressFetch } from "../../utils/fetch";
+import { faArrowLeft, faEdit, faNoteSticky, faExclamationTriangle, faHistory, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { getUserHabitByIdFetch, getWeeklyProgressFetch, reportHabitProgressFetch } from "../../utils/fetch";
 
 import { useMMKVString } from "react-native-mmkv";
 import { useEffect, useState, useRef } from "react";
@@ -36,8 +36,6 @@ const UserHabitDetails = () => {
     const noteInputRef = useRef(null);
     const [token] = useMMKVString("accessToken");
     const [isFocused, setIsFocused] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
     const { theme } = useTheme();
     const { colors } = theme;
     const isFutureDate = route.params?.isFuture || (() => {
@@ -55,8 +53,25 @@ const UserHabitDetails = () => {
         return targetStr > todayStr;
     })();
 
+    const isLockedPastDate = (() => {
+        const dateParam = route.params?.date;
+        if (!dateParam) return false;
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        
+        const targetDate = new Date(dateParam.includes('T') ? dateParam.split('T')[0] : dateParam);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        return targetDate < yesterday;
+    })();
+
+    const targetDateObj = route.params?.date ? new Date(route.params.date) : new Date();
     const isAlreadyDone = userHabit?.lastCompletedDate && 
-        new Date(userHabit.lastCompletedDate).toDateString() === new Date().toDateString();
+        new Date(userHabit.lastCompletedDate).toDateString() === targetDateObj.toDateString();
 
     const isProgressCompleted = userHabit && (userHabit.progressPercentage >= 100);
 
@@ -94,27 +109,6 @@ const UserHabitDetails = () => {
 
         } catch (e) {
             // Error handled
-        }
-    };
-
-    const handleDelete = () => {
-        setShowDeleteModal(true);
-    };
-
-    const confirmDelete = async () => {
-        try {
-            setIsDeleting(true);
-            const habitId = route.params?.habitId;
-            if (!habitId || !token) return;
-            const response = await removeUserHabitFetch(token, habitId);
-            if (response) {
-                setShowDeleteModal(false);
-                navigation.navigate("Home", { screen: "HomeScreen" });
-            }
-        } catch (error) {
-            Alert.alert(t("common.error"), t("common.failed_load"));
-        } finally {
-            setIsDeleting(false);
         }
     };
 
@@ -202,7 +196,7 @@ const UserHabitDetails = () => {
                             >
                                 <FontAwesomeIcon icon={faHistory} color={colors.primary} size={16} />
                             </Pressable>
-                             <Pressable 
+                            <Pressable 
                                 onPress={() => navigation.navigate("CreateCustomHabit", { 
                                     habitData: userHabit, 
                                     isEditMode: true,
@@ -213,13 +207,6 @@ const UserHabitDetails = () => {
                             >
                                 <FontAwesomeIcon icon={faEdit} color={colors.textSecondary} size={16} />
                             </Pressable>
-                             <Pressable 
-                                onPress={handleDelete}
-                                style={[styles.iconCircle, { backgroundColor: colors.dangerSurface }]} 
-                                hitSlop={10}
-                             >
-                                 <FontAwesomeIcon icon={faTrash} color={colors.danger} size={16} />
-                             </Pressable>
                         </>
                     )}
                 </View>
@@ -275,6 +262,16 @@ const UserHabitDetails = () => {
                             {t("home.upcoming_habits")}
                         </Text>
                     </View>
+                ) : isLockedPastDate && !isFullyCompleted ? (
+                    <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
+                        <Text style={{fontSize: 24, marginBottom: 8, textAlign: 'center'}}>🔒</Text>
+                        <Text className="font-redditsans-bold" style={[{ fontSize: 16, textAlign: 'center', marginBottom: 4, color: colors.text }]}>
+                            {t("habit_details.locked_past_title", { defaultValue: "Time Expired" })}
+                        </Text>
+                        <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
+                            {t("habit_details.locked_past_desc", { defaultValue: "You can only log progress for today and yesterday." })}
+                        </Text>
+                    </View>
                 ) : userHabit && !isFullyCompleted && (
                     <HabitActionSection 
                         habit={userHabit}
@@ -292,7 +289,7 @@ const UserHabitDetails = () => {
                     />
                 )}
 
-                {!isFutureDate && (
+                {!isFutureDate && !isLockedPastDate && (
                     <Pressable 
                         onPress={() => noteInputRef.current?.focus()}
                         style={[
@@ -331,59 +328,6 @@ const UserHabitDetails = () => {
                 
             </ScrollView>
 
-            {/* Modern Delete Confirmation Modal */}
-            <Modal
-                visible={showDeleteModal}
-                transparent
-                animationType="fade"
-                onRequestClose={() => !isDeleting && setShowDeleteModal(false)}
-            >
-                <Pressable 
-                    style={styles.modalOverlay}
-                    onPress={() => !isDeleting && setShowDeleteModal(false)}
-                >
-                    <Pressable 
-                        style={[styles.modalContent, { backgroundColor: colors.card }]}
-                        onPress={(e) => e.stopPropagation()}
-                    >
-                        <View style={[styles.warningIconContainer, { backgroundColor: colors.dangerSurface }]}>
-                            <FontAwesomeIcon icon={faTrash} color={colors.danger} size={28} />
-                        </View>
-                        
-                        <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>
-                            {t('home.delete_habits')}
-                        </Text>
-                        
-                        <Text className="font-redditsans-medium" style={[styles.modalMessage, { color: colors.textSecondary }]}>
-                            <Text>
-                                This will <Text className="font-redditsans-bold" style={[styles.boldText, { color: colors.text }]}>permanently</Text> remove your progress, streaks, and history. This action <Text className="font-redditsans-bold" style={[styles.boldText, { color: colors.text }]}>cannot be undone</Text>.
-                            </Text>
-                        </Text>
-
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity 
-                                onPress={() => setShowDeleteModal(false)}
-                                disabled={isDeleting}
-                                style={[styles.modalButton, styles.ghostButton]}
-                            >
-                                <Text className="font-redditsans-bold" style={[styles.buttonText, { color: colors.textSecondary }]}>
-                                    {t("common.cancel")}
-                                </Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity 
-                                onPress={confirmDelete}
-                                disabled={isDeleting}
-                                style={[styles.modalButton, styles.deleteButton, { backgroundColor: colors.danger }]}
-                            >
-                                <Text className="font-redditsans-bold" style={[styles.buttonText, { color: "#fff" }]}>
-                                    {isDeleting ? t("common.loading") : t("home.yes")}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Pressable>
-                </Pressable>
-            </Modal>
         </LinearGradient>
         </KeyboardAvoidingView>
     );

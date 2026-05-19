@@ -53,7 +53,7 @@ const HabitCelebration = () => {
         });
 
         // Play applause sound
-        let applause = new Sound('applause.mp3', Sound.MAIN_BUNDLE, (error) => {
+        let applause = new Sound('congrats.mp3', Sound.MAIN_BUNDLE, (error) => {
             if (error) {
                 console.log('failed to load the applause sound', error);
                 return;

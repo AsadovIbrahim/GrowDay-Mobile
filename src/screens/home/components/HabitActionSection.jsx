@@ -29,18 +29,20 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const { t } = useTranslation();
     const { colors } = theme;
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-    const startKey = `timer_start_${hId}`;
-    const accKey = `timer_acc_${hId}`;
-    const distKey = `dist_acc_${hId}`;
-    const latKey = `last_lat_${hId}`;
-    const lonKey = `last_lon_${hId}`;
+    const dateStr = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
+    
+    const startKey = `timer_start_${hId}_${dateStr}`;
+    const accKey = `timer_acc_${hId}_${dateStr}`;
+    const distKey = `dist_acc_${hId}_${dateStr}`;
+    const latKey = `last_lat_${hId}_${dateStr}`;
+    const lonKey = `last_lon_${hId}_${dateStr}`;
     
     const [storedStart, setStoredStart] = useMMKVString(startKey);
     const [storedAcc, setStoredAcc] = useMMKVString(accKey);
     const [storedDist, setStoredDist] = useMMKVString(distKey);
     const [storedLat, setStoredLat] = useMMKVString(latKey);
     const [storedLon, setStoredLon] = useMMKVString(lonKey);
-    const [pendingStop, setPendingStop] = useMMKVBoolean(`pending_stop_${hId}`);
+    const [pendingStop, setPendingStop] = useMMKVBoolean(`pending_stop_${hId}_${dateStr}`);
 
     const [timerActive, setTimerActive] = useState(!!storedStart);
     const [seconds, setSeconds] = useState(0);
@@ -253,7 +255,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
                 targetSeconds = targetVal * unitMod;
             }
-            displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, targetSeconds);
+            displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, targetSeconds, dateStr);
             lastNotifUpdateRef.current = nowMs;
         } else {
             cancelOngoingHabitNotification(hId);
@@ -343,7 +345,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         if (!isReporting && !blockUpdates.current) onLiveUpdate?.(count);
                     });
                 } else {
-                    Alert.alert("Not Supported", "Your device does not support hardware step counting or permission was denied.");
+                    Alert.alert(t("habits.not_supported"), t("habits.not_supported_pedometer_desc"));
                 }
             }).catch(err => {
                 console.warn("Pedometer check error:", err);
@@ -546,7 +548,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 onActionComplete();
                 navigation.navigate("HabitCelebration", { habit });
             } else {
-                Alert.alert("Error", res.message || "Failed to complete habit.");
+                Alert.alert(t("common.error"), res.message || t("habits.failed_to_complete"));
             }
         }} style={[styles.mainBtn, { backgroundColor: colors.primary }]}>
             <Text className="font-redditsans-bold" style={styles.btnText}>{t("habit_details.action.mark_done")}</Text>

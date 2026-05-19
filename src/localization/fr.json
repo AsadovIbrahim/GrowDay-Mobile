@@ -69,7 +69,37 @@
     "channel_sound": "Notifications sonores",
     "channel_silent": "Notifications silencieuses",
     "channel_tracking": "Suivi des habitudes",
-    "channel_reminders": "Rappels d'habitudes"
+    "channel_reminders": "Rappels d'habitudes",
+    "motivation_quotes": [
+      {
+        "text": "Croyez en vous-même et vous serez à mi-chemin.",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "text": "L'action est la clé fondamentale de tout succès.",
+        "author": "Pablo Picasso"
+      },
+      {
+        "text": "Ne regardez pas l'horloge ; faites ce qu'elle fait. Continuez.",
+        "author": "Sam Levenson"
+      },
+      {
+        "text": "Le secret pour avancer, c'est de commencer.",
+        "author": "Mark Twain"
+      },
+      {
+        "text": "Cela semble toujours impossible jusqu'à ce que ce soit fait.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Votre attitude détermine si bien vous le faites.",
+        "author": "Lou Holtz"
+      },
+      {
+        "text": "De petites améliorations quotidiennes mènent à des résultats époustouflants.",
+        "author": "Robin Sharma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "Bienvenue sur GrowDay !",
@@ -180,7 +210,9 @@
       "runs_monthly": "Cette habitude se déroule le {{day}} de chaque mois.",
       "runs_custom": "Cette habitude se déroule tous les {{interval}} jours.",
       "starts_on": "Cette habitude commence le {{date}}."
-    }
+    },
+    "locked_past_title": "Temps Écoulé",
+    "locked_past_desc": "Vous ne pouvez enregistrer la progression que pour aujourd'hui et hier."
   },
   "explore": {
     "header": "Explorer",
@@ -227,7 +259,17 @@
     "completed_msg": "Tâche terminée avec succès :",
     "reward_earned": "Récompense obtenue",
     "empty": "Aucune tâche trouvée",
-    "assigned_by_admins": "Les tâches sont attribuées par les administrateurs"
+    "assigned_by_admins": "Les tâches sont attribuées par les administrateurs",
+    "failed_to_load": "Échec du chargement des tâches",
+    "try_again": "Réessayer",
+    "could_not_complete": "Impossible de terminer la tâche.",
+    "could_not_uncheck": "Impossible de décocher la tâche.",
+    "failed_to_update": "Échec de la mise à jour de la tâche.",
+    "delete_title": "Supprimer la tâche",
+    "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
+    "could_not_delete": "Impossible de supprimer la tâche.",
+    "failed_to_delete": "Échec de la suppression de la tâche.",
+    "delete_action": "Supprimer"
   },
   "create_habit": {
     "header": "Créer une habitude personnalisée",
@@ -511,6 +553,11 @@
     "today": "Aujourd'hui"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Langue active",
+      "all_languages": "TOUTES LES LANGUES",
+      "footer_note": "Les changements de langue prennent effet immédiatement."
+    },
     "header": "Votre Profil",
     "edit_profile": "Modifier le profil",
     "points": "Points",
@@ -532,7 +579,9 @@
       "privacy_policy": "Politique de confidentialité",
       "terms": "Conditions d'utilisation",
       "contact_support": "Contacter l'assistance",
-      "rate_app": "Noter l'application"
+      "rate_app": "Noter l'application",
+      "help_center": "Centre d'aide",
+      "delete_account": "Supprimer le compte"
     },
     "edit_profile_screen": {
       "title": "Modifier le profil",
@@ -585,7 +634,10 @@
       "email_updates": "Mises à jour par Email",
       "daily_reminders": "Rappels Quotidiens",
       "footer": "Gérez la façon dont vous recevez les mises à jour et les rappels de GrowDay."
-    }
+    },
+    "delete_confirm_title": "Supprimer le compte ?",
+    "delete_confirm_desc": "Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Tous vos habitudes, progrès, tâches et historique seront supprimés à jamais. Cette action est irréversible.",
+    "delete_confirm_btn": "Supprimer le compte"
   },
   "preferences": {
     "continue": "Continuer",
@@ -787,7 +839,10 @@
     "su_i̇çmək": "Boire de l'eau",
     "kitab_oxumaq": "Lire un livre",
     "dərin_i̇ş": "Travail en profondeur",
-    "səhər_qaçışı": "Course matinale"
+    "səhər_qaçışı": "Course matinale",
+    "not_supported": "Non supporté",
+    "not_supported_pedometer_desc": "Votre appareil ne prend pas en charge le comptage des pas matériel ou l'autorisation a été refusée.",
+    "failed_to_complete": "Échec de la validation de l'habitude."
   },
   "user_tasks": {
     "early_bird_title": "Lève-tôt",
@@ -845,7 +900,7 @@
     "privacy_rights_title": "7. Quels sont vos droits en matière de confidentialité ?",
     "privacy_rights_text": "Dans certaines régions, vous dispose de droits qui vous permettent d'accéder plus facilement à vos informations personnelles et de mieux les contrôler. Vous pouvez réviser, modifier ou résilier votre compte à tout moment.",
     "contact_us_title": "8. Contactez-nous",
-    "contact_us_text": "Si vous avez des questions ou des commentaires sur cette politique, vous pouvez nous envoyer un e-mail à support@growday.com.",
+    "contact_us_text": "Si vous avez des questions ou des commentaires sur cette politique, vous pouvez nous envoyer un e-mail à growday.support@gmail.com",
     "agreement_text": "En utilisant GrowDay, vous acceptez la collecte et l'utilisation des informations conformément à cette politique."
   },
   "terms_of_service": {
@@ -887,5 +942,45 @@
     "best_day": "Meilleur Jour",
     "keep_going": "Continuez comme ça ! Vous vous en sortez très bien ! 🚀",
     "improve_hint": "Essayez de terminer plus d'habitudes pour augmenter votre taux ! 🔥"
+  },
+  "help": {
+    "title": "Centre d'aide",
+    "hero_title": "Comment pouvons-nous vous aider ?",
+    "hero_subtitle": "Parcourez la FAQ, explorez les fonctionnalités ou contactez-nous.",
+    "quick_links": "Liens rapides",
+    "email_us": "Envoyez-nous un email",
+    "features_title": "Fonctionnalités",
+    "faq_title": "Questions fréquentes",
+    "tip": "💡 Astuce : La régularité est essentielle. Essayez de faire au moins une habitude chaque jour !",
+    "faq": {
+      "q1": "Comment créer une nouvelle habitude ?",
+      "a1": "Appuyez sur le bouton vert '+' en bas. Vous pouvez créer la vôtre ou choisir parmi nos suggestions.",
+      "q2": "Que sont les points XP ?",
+      "a2": "Les XP (Points d'expérience) sont gagnés en accomplissant des habitudes et des tâches.",
+      "q3": "Pourquoi ai-je été redirigé vers la connexion ?",
+      "a3": "Votre session a expiré. C'est une mesure de sécurité. Reconnectez-vous, vos données sont en sécurité.",
+      "q4": "Que se passe-t-il quand une tâche expire ?",
+      "a4": "Les tâches expirées sont automatiquement marquées comme 'Expiré' à minuit.",
+      "q5": "Puis-je changer la langue de l'application ?",
+      "a5": "Oui ! Allez dans Profil → Langues et choisissez votre langue préférée.",
+      "q6": "Comment suivre ma progression ?",
+      "a6": "Ouvrez n'importe quelle habitude pour voir vos performances du jour, votre progression et vos séries.",
+      "q7": "Comment contacter le support ?",
+      "a7": "Allez dans Profil → Contacter le support ou envoyez un email à growday.support@gmail.com."
+    },
+    "features": {
+      "habits_title": "Suivi des habitudes",
+      "habits_desc": "Créez des habitudes quotidiennes, hebdomadaires. Suivez vos séries et ajoutez des notes.",
+      "tasks_title": "Tâches & Défis",
+      "tasks_desc": "Accomplissez des tâches pour gagner de l'XP. Elles ont des dates limites et des priorités.",
+      "stats_title": "Statistiques",
+      "stats_desc": "Consultez vos statistiques quotidiennes, hebdomadaires, mensuelles et annuelles.",
+      "achievements_title": "Réalisations",
+      "achievements_desc": "Débloquez des badges et des succès en atteignant des étapes.",
+      "explore_title": "Explorer et Apprendre",
+      "explore_desc": "Découvrez des articles et des habitudes suggérés par l'IA.",
+      "reminders_title": "Rappels",
+      "reminders_desc": "Configurez des notifications intelligentes pour ne jamais manquer une session."
+    }
   }
 }

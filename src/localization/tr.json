@@ -69,7 +69,37 @@
     "channel_sound": "Sesli Bildirimler",
     "channel_silent": "Sessiz Bildirimler",
     "channel_tracking": "Alışkanlık Takibi",
-    "channel_reminders": "Alışkanlık Hatırlatıcıları"
+    "channel_reminders": "Alışkanlık Hatırlatıcıları",
+    "motivation_quotes": [
+      {
+        "text": "Yapabileceğine inan, yolun yarısındasın demektir.",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "text": "Eylem, tüm başarıların temel anahtarıdır.",
+        "author": "Pablo Picasso"
+      },
+      {
+        "text": "Saate bakma; onun yaptığını yap. İlerlemeye devam et.",
+        "author": "Sam Levenson"
+      },
+      {
+        "text": "Başlamanın sırrı, ilk adımı atmaktır.",
+        "author": "Mark Twain"
+      },
+      {
+        "text": "Tamamlanana kadar her şey imkansız görünür.",
+        "author": "Nelson Mandela"
+      },
+      {
+        "text": "Kararlılığınız işinizi nasıl yapacağınızı belirler.",
+        "author": "Lou Holtz"
+      },
+      {
+        "text": "Zamanla küçük günlük ilerlemeler muhteşem sonuçlar doğurur.",
+        "author": "Robin Sharma"
+      }
+    ]
   },
   "backend_notifications": {
     "Welcome to GrowDay!": "GrowDay'e hoş geldiniz!",
@@ -181,7 +211,9 @@
       "runs_monthly": "Bu alışkanlık her ayın {{day}}. günü çalışır.",
       "runs_custom": "Bu alışkanlık her {{interval}} günde bir çalışır.",
       "starts_on": "Bu alışkanlık {{date}} tarihinde başlıyor."
-    }
+    },
+    "locked_past_title": "Süre Doldu",
+    "locked_past_desc": "Yalnızca bugün ve dün için ilerleme kaydedebilirsiniz."
   },
   "explore": {
     "header": "Keşfet",
@@ -228,7 +260,17 @@
     "completed_msg": "Görev başarıyla tamamlandı:",
     "reward_earned": "Ödül kazanıldı",
     "empty": "Görev bulunamadı",
-    "assigned_by_admins": "Görevler adminler tarafından atanmıştır"
+    "assigned_by_admins": "Görevler adminler tarafından atanmıştır",
+    "failed_to_load": "Görevler yüklenemedi",
+    "try_again": "Tekrar Deneyin",
+    "could_not_complete": "Görev tamamlanamadı.",
+    "could_not_uncheck": "Görevin işareti kaldırılamadı.",
+    "failed_to_update": "Görev güncellenemedi.",
+    "delete_title": "Görevi Sil",
+    "delete_confirm": "Bu görevi silmek istediğinize emin misiniz?",
+    "could_not_delete": "Görev silinemedi.",
+    "failed_to_delete": "Görev silinirken hata oluştu.",
+    "delete_action": "Sil"
   },
   "create_habit": {
     "header": "Özel Alışkanlık Oluştur",
@@ -512,6 +554,11 @@
     "today": "Bugün"
   },
   "profile": {
+    "language_settings_screen": {
+      "active_language": "Aktif Dil",
+      "all_languages": "TÜM DİLLER",
+      "footer_note": "Dil değişiklikleri uygulama genelinde hemen geçerli olur."
+    },
     "header": "Profiliniz",
     "edit_profile": "Profili Düzenle",
     "points": "Puan",
@@ -533,7 +580,9 @@
       "privacy_policy": "Gizlilik Politikası",
       "terms": "Kullanım Koşulları",
       "contact_support": "Destekle İletişime Geç",
-      "rate_app": "Uygulamayı Değerlendirin"
+      "rate_app": "Uygulamayı Değerlendirin",
+      "help_center": "Yardım Merkezi",
+      "delete_account": "Hesabı Sil"
     },
     "edit_profile_screen": {
       "title": "Profili Düzenle",
@@ -586,7 +635,10 @@
       "email_updates": "E-posta Güncellemeleri",
       "daily_reminders": "Günlük Hatırlatıcılar",
       "footer": "GrowDay'den güncellemeleri ve hatırlatıcıları nasıl alacağınızı yönetin."
-    }
+    },
+    "delete_confirm_title": "Hesabı Sil?",
+    "delete_confirm_desc": "Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Tüm alışkanlıklarınız, ilerlemeniz, görevleriniz ve geçmişiniz sonsuza kadar silinecektir. Bu işlem geri alınamaz.",
+    "delete_confirm_btn": "Hesabı Sil"
   },
   "preferences": {
     "continue": "Devam et",
@@ -786,7 +838,10 @@
     "meditation": "Meditasyon",
     "drink_water": "Su İçmek",
     "deep_work": "Derin Çalışma",
-    "evening_reflection": "Akşam Değerlendirmesi"
+    "evening_reflection": "Akşam Değerlendirmesi",
+    "not_supported": "Desteklenmiyor",
+    "not_supported_pedometer_desc": "Cihazınız donanımsal adım saymayı desteklemiyor veya izin reddedildi.",
+    "failed_to_complete": "Alışkanlık tamamlanamadı."
   },
   "user_tasks": {
     "early_bird_title": "Erken Kuş",
@@ -844,7 +899,7 @@
     "privacy_rights_title": "7. Gizlilik Haklarınız Nelerdir?",
     "privacy_rights_text": "Bazı bölgelerde, kişisel bilgilerinize daha fazla erişmenize ve bunlar üzerinde kontrol sahibi olmanıza izin veren haklarınız vardır. Hesabınızı istediğiniz zaman inceleyebilir, değiştirebilir veya sonlandırabilirsiniz.",
     "contact_us_title": "8. Bize Ulaşın",
-    "contact_us_text": "Bu politika hakkında sorularınız veya yorumlarınız varsa, support@growday.com adresinden bize e-posta gönderebilirsiniz.",
+    "contact_us_text": "Bu politika hakkında sorularınız veya yorumlarınız varsa, growday.support@gmail.com adresinden bize e-posta gönderebilirsiniz.",
     "agreement_text": "GrowDay'i kullanarak, bilgilerin bu politikaya uygun olarak toplanmasını ve kullanılmasını kabul etmiş olursunuz."
   },
   "terms_of_service": {
@@ -886,5 +941,45 @@
     "best_day": "En İyi Gün",
     "keep_going": "Böyle devam et! Harika gidiyorsun! 🚀",
     "improve_hint": "Oranını artırmak için daha fazla alışkanlık tamamlamaya çalış! 🔥"
+  },
+  "help": {
+    "title": "Yardım Merkezi",
+    "hero_title": "Size nasıl yardımcı olabiliriz?",
+    "hero_subtitle": "SSS'leri inceleyin, özellikleri keşfedin veya destek ekibimizle iletişime geçin.",
+    "quick_links": "Hızlı Bağlantılar",
+    "email_us": "Bize E-posta Gönderin",
+    "features_title": "Uygulama Özellikleri",
+    "faq_title": "Sıkça Sorulan Sorular",
+    "tip": "💡 İpucu: Tutarlılık kalıcı alışkanlıklar oluşturmanın anahtarıdır. Serinizi geliştirmek için her gün en az bir alışkanlık tamamlamaya çalışın!",
+    "faq": {
+      "q1": "Nasıl yeni bir alışkanlık oluştururum?",
+      "a1": "Ekranın altındaki yeşil '+' düğmesine dokunun. Özel bir alışkanlık oluşturabilir veya önerilen alışkanlıklardan seçebilirsiniz.",
+      "q2": "XP Puanları nedir?",
+      "a2": "XP (Deneyim Puanları) alışkanlıkları ve görevleri tamamladığınızda kazanılır. Ne kadar çok tamamlarsanız, o kadar çok XP kazanırsınız!",
+      "q3": "Neden giriş ekranına yönlendirildim?",
+      "a3": "Oturumunuzun süresi dolmuş olabilir. Bu bir güvenlik önlemidir. Tekrar giriş yapmanız yeterlidir.",
+      "q4": "Bir görevin son tarihi geçtiğinde ne olur?",
+      "a4": "Son tarihi geçen görevler gece yarısı otomatik olarak 'Süresi Doldu' olarak işaretlenir.",
+      "q5": "Uygulama dilini değiştirebilir miyim?",
+      "a5": "Evet! Profil → Diller bölümüne gidin ve tercih ettiğiniz dili seçin.",
+      "q6": "Alışkanlık ilerlemesini nasıl takip edebilirim?",
+      "a6": "Herhangi bir alışkanlığı açın. Bugünkü performansınızı, haftalık ilerlemenizi, mevcut ve en iyi serinizi görebilirsiniz.",
+      "q7": "Destek ekibiyle nasıl iletişime geçebilirim?",
+      "a7": "Profil → Destek ile İletişime Geç bölümüne gidin veya growday.support@gmail.com adresine e-posta gönderin."
+    },
+    "features": {
+      "habits_title": "Alışkanlık Takibi",
+      "habits_desc": "Günlük, haftalık veya özel alışkanlıklar oluşturun. Serileri takip edin ve notlar ekleyin.",
+      "tasks_title": "Görevler ve Görevler",
+      "tasks_desc": "XP kazanmak için atanan görevleri tamamlayın. Görevlerin son tarihleri ve öncelik seviyeleri vardır.",
+      "stats_title": "İstatistikler",
+      "stats_desc": "Tutarlılığınızı anlamak için günlük, haftalık, aylık ve yıllık istatistikleri görüntüleyin.",
+      "achievements_title": "Başarılar",
+      "achievements_desc": "Kilometre taşlarına ulaştıkça rozetlerin ve başarıların kilidini açın.",
+      "explore_title": "Keşfet ve Öğren",
+      "explore_desc": "Hedeflerinize göre hazırlanmış, yapay zeka tarafından seçilen makaleleri keşfedin.",
+      "reminders_title": "Hatırlatıcılar",
+      "reminders_desc": "Hiçbir seansı kaçırmamak için alışkanlıklarınız için akıllı bildirimler ayarlayın."
+    }
   }
 }
