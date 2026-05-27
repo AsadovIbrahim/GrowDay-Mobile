@@ -7,6 +7,7 @@ import GrowDayLogo from "../../../assets/images/main logo.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleExclamation, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { forgotPasswordfetch } from "../../utils/fetch";
+import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -37,8 +38,8 @@ const ForgotPassword = () => {
         navigation.navigate("OtpVerification", { email, type: "forgot_password" });
       } else {
         const msgs = data.errors?.length > 0
-          ? data.errors
-          : [data.message || "Something went wrong. Please try again."];
+          ? translateAuthErrors(data.errors, t)
+          : [translateAuthError(data.message, t) || t("auth.messages.something_wrong")];
 
         if (msgs.length === 1) {
           showToast(msgs[0], "error");

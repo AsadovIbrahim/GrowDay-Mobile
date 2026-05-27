@@ -23,6 +23,7 @@ import {
   readNotificationFetch,
 } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
+import { storage } from "../../utils/MMKVStore";
 import { useState, useEffect, useRef } from "react";
 import { Animated } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
@@ -34,7 +35,7 @@ const GREEN_LIGHT = "#78C67E";
 const GREEN_BG = "#F0FAF2";
 
 /* ─── helper: format date ────────────────────────────────────── */
-const formatDate = (iso) => {
+const formatDate = (iso, lang) => {
   if (!iso) return "N/A";
   
   // Force 'Z' if missing to ensure UTC-to-local conversion
@@ -42,14 +43,39 @@ const formatDate = (iso) => {
       ? iso.replace(' ', 'T') + 'Z' 
       : iso;
 
-  return new Date(isoStr).toLocaleString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  const localeMap = {
+    az: 'az-AZ',
+    ru: 'ru-RU',
+    tr: 'tr-TR',
+    en: 'en-US',
+    de: 'de-DE',
+    fr: 'fr-FR',
+    es: 'es-ES',
+    it: 'it-IT',
+    ar: 'ar-AE',
+    zh: 'zh-CN'
+  };
+  const locale = localeMap[lang] || lang || 'en-US';
+
+  try {
+    return new Date(isoStr).toLocaleString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } catch (e) {
+    return new Date(isoStr).toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  }
 };
 
 /* ─── sub-components ─────────────────────────────────────────── */
@@ -140,15 +166,19 @@ const NotificationDetail = () => {
   const [loading, setLoading] = useState(false);
   const { theme, isDark } = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     if (routeNotification?.id) {
-      getNotificationDetail();
-      readNotification();
+      if (typeof routeNotification.id === 'string' && routeNotification.id.startsWith('local_')) {
+        markLocalAsRead();
+      } else {
+        getNotificationDetail();
+        readNotification();
+      }
     }
   }, []);
 
@@ -169,6 +199,20 @@ const NotificationDetail = () => {
       ]).start();
     }
   }, [loading, notification]);
+
+  const markLocalAsRead = () => {
+    try {
+      const raw = storage.getString('local_push_notifications');
+      if (raw) {
+        const list = JSON.parse(raw);
+        const updated = list.map(n => n.id === routeNotification.id ? { ...n, isRead: true } : n);
+        storage.set('local_push_notifications', JSON.stringify(updated));
+      }
+      setNotification((prev) => (prev ? { ...prev, isRead: true } : prev));
+    } catch (err) {
+      console.log("Error marking local notification as read:", err);
+    }
+  };
 
   const readNotification = async () => {
     if (!routeNotification?.id) return;
@@ -281,7 +325,7 @@ const NotificationDetail = () => {
                     !notification.isRead && { fontFamily: "RedditSans-Bold" },
                   ]}
                 >
-                  {notification.habitTitle ? t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle }) : "N/A"}
+                  {notification.habitTitle ? t(`habits.${notification.habitTitle.toLowerCase().replace(/ /g, '_')}`, { defaultValue: t(`backend_notifications.${notification.habitTitle}`, { defaultValue: notification.habitTitle }) }) : "N/A"}
                 </Text>
               </View>
             </View>
@@ -299,7 +343,7 @@ const NotificationDetail = () => {
             <InfoRow
               icon={faCalendarAlt}
               label={t('notifications.label_datetime')}
-              value={formatDate(notification.createdAt)}
+              value={formatDate(notification.createdAt, i18n.language)}
             />
 
             {/* Status row */}

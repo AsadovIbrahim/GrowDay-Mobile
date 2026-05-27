@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import GrowDayLogo from "../../../assets/images/main logo.png";
 import { verifyOtpFetch, verifyForgotPasswordOtpFetch } from "../../utils/fetch";
+import { translateAuthError } from "../../utils/translateAuthError";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
@@ -64,7 +65,7 @@ const OtpVerification = () => {
           navigation.navigate("Login");
         }
       } else {
-        setError(result.message || t("auth.messages.invalid_otp"));
+        setError(translateAuthError(result.message, t) || t("auth.messages.invalid_otp"));
       }
     } catch (err) {
       setError(t("auth.messages.something_wrong"));

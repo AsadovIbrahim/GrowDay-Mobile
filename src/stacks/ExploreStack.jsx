@@ -3,6 +3,11 @@ import Explore from "../screens/explore/Explore";
 import ArticleDetailScreen from "../screens/explore/ArticleDetailScreen";
 import UserTasks from "../screens/achievements/UserTasks";
 import CreateCustomHabit from '../screens/create/CreateCustomHabit';
+import MemoryGameScreen from '../screens/explore/MemoryGameScreen';
+import GameLeaderboardScreen from '../screens/explore/GameLeaderboardScreen';
+import SequenceGameScreen from '../screens/explore/SequenceGameScreen';
+import StroopGameScreen from '../screens/explore/StroopGameScreen';
+import ReactionGameScreen from '../screens/explore/ReactionGameScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +18,11 @@ const ExploreStack = () => {
             <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
             <Stack.Screen name="UserTasks" component={UserTasks} />
             <Stack.Screen name="CreateCustomHabit" component={CreateCustomHabit} />
+            <Stack.Screen name="MemoryGame" component={MemoryGameScreen} />
+            <Stack.Screen name="GameLeaderboard" component={GameLeaderboardScreen} />
+            <Stack.Screen name="SequenceGame" component={SequenceGameScreen} />
+            <Stack.Screen name="StroopGame" component={StroopGameScreen} />
+            <Stack.Screen name="ReactionGame" component={ReactionGameScreen} />
         </Stack.Navigator>
     )
 }

@@ -8,9 +8,12 @@ import {
   ActivityIndicator,
   Animated,
   Alert,
+  Image,
+  Linking,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { storage } from '../../utils/MMKVStore';
+import { storage, clearUserSession } from '../../utils/MMKVStore';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -32,14 +35,24 @@ import {
   faGear,
   faClock,
   faQuestionCircle,
-  faTrash
+  faTrash,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 import SettingsItem from '../../components/SettingsItem';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import AvatarWithBorder from '../../components/AvatarWithBorder';
 
 // App version – read from constants ideally
 const APP_VERSION = '1.0.0';
+
+const getTitleForLevel = (level, t) => {
+  if (level >= 20) return t("levelup.title_lvl20", "Legendary Champion");
+  if (level >= 15) return t("levelup.title_lvl15", "Gold Master");
+  if (level >= 10) return t("levelup.title_lvl10", "Silver Elite");
+  if (level >= 5) return t("levelup.title_lvl5", "Bronze Pioneer");
+  return t("levelup.title_lvl1", "Newbie");
+};
 
 /* ------------------------------------------------------------------ */
 /*  Section label                                                        */
@@ -51,39 +64,113 @@ const SectionLabel = ({ label, colors }) => (
 /* ------------------------------------------------------------------ */
 /*  Profile Card                                                         */
 /* ------------------------------------------------------------------ */
-const ProfileCard = ({ firstName, lastName, points, loading, error, colors, onEditPress }) => {
+const ProfileCard = ({ firstName, lastName, points, profilePicture, activeBorder, loading, error, colors, onEditPress }) => {
   const { t } = useTranslation();
+  const userLevel = Math.floor(Math.sqrt(points / 50)) + 1;
+  const levelTitle = getTitleForLevel(userLevel, t);
+
+  // Level calculations for progress bar
+  const currentLvlPoints = points !== undefined ? 50 * Math.pow(userLevel - 1, 2) : 0;
+  const nextLvlPoints = points !== undefined ? 50 * Math.pow(userLevel, 2) : 0;
+  const totalLvlRange = nextLvlPoints - currentLvlPoints;
+  const pointsInCurrentLvl = points !== undefined ? points - currentLvlPoints : 0;
+  const xpRemaining = nextLvlPoints - points;
+  const progressRatio = totalLvlRange > 0 ? Math.min(Math.max(pointsInCurrentLvl / totalLvlRange, 0), 1) : 0;
+
   return (
-    <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
-    <View style={{ flex: 1 }}>
-      {loading ? (
-        <ActivityIndicator color={colors.primary} style={{ alignSelf: 'flex-start', marginBottom: 8 }} />
-      ) : error ? (
-        <View style={styles.errorRow}>
-          <FontAwesomeIcon icon={faCircleExclamation} size={16} color={colors.danger} />
-          <Text style={[styles.errorText, { color: colors.danger }]}>{t("profile.error_load")}</Text>
+    <View style={[styles.profileCard, { backgroundColor: colors.card, flexDirection: 'column', alignItems: 'stretch', padding: 18 }]}>
+      {/* Top Row: Avatar & Name & Badges */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+        <AvatarWithBorder
+          avatarUrl={profilePicture}
+          level={activeBorder || userLevel}
+          size={64}
+        />
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          {loading ? (
+            <ActivityIndicator color={colors.primary} style={{ alignSelf: 'flex-start' }} />
+          ) : error ? (
+            <View style={styles.errorRow}>
+              <FontAwesomeIcon icon={faCircleExclamation} size={16} color={colors.danger} />
+              <Text style={[styles.errorText, { color: colors.danger }]}>{t("profile.error_load")}</Text>
+            </View>
+          ) : (
+            <>
+              <Text 
+                numberOfLines={1} 
+                ellipsizeMode="tail"
+                className='font-redditsans-bold' 
+                style={{ fontSize: 20, color: colors.text, marginBottom: 4 }}
+              >
+                {firstName ?? '—'} {lastName ?? ''}
+              </Text>
+              
+              {levelTitle ? (
+                <Text className='font-redditsans-medium' style={{ fontSize: 11, color: colors.primary, marginBottom: 4 }}>
+                  {levelTitle}
+                </Text>
+              ) : null}
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}>
+                  <Text style={{ color: colors.primary, fontSize: 11, fontFamily: 'RedditSans-Bold', fontWeight: '700' }}>
+                    {t("common.level_short", { level: userLevel })}
+                  </Text>
+                </View>
+                <View style={[styles.pointsBadge, { backgroundColor: colors.pointsBadge, paddingVertical: 3 }]}>
+                  <FontAwesomeIcon icon={faMedal} size={11} color={colors.pointsText} />
+                  <Text style={[styles.pointsText, { color: colors.pointsText, fontSize: 11 }]}>{points} {t("profile.points")}</Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
-      ) : (
-        <>
-          <Text className='font-redditsans-bold' style={[styles.profileName, { color: colors.text }]}>
-            {firstName ?? '—'} {lastName ?? ''}
-          </Text>
-          <View style={[styles.pointsBadge, { backgroundColor: colors.pointsBadge }]}>
-            <FontAwesomeIcon icon={faMedal} size={15} color={colors.pointsText} />
-            <Text style={[styles.pointsText, { color: colors.pointsText }]}>{points} {t("profile.points")}</Text>
+      </View>
+
+      {/* Level Progress Bar Section */}
+      {!loading && !error && (
+        <View style={{ marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <Text style={{ fontSize: 11, fontFamily: 'RedditSans-Medium', color: colors.textSecondary }}>
+              {t("profile.xp_to_next_level", { xp: xpRemaining, level: userLevel + 1 })}
+            </Text>
+            <Text style={{ fontSize: 11, fontFamily: 'RedditSans-Bold', color: colors.textSecondary }}>
+              {pointsInCurrentLvl} / {totalLvlRange} XP
+            </Text>
           </View>
-        </>
+          <View style={{ height: 6, width: '100%', backgroundColor: colors.border + '30', borderRadius: 3, overflow: 'hidden' }}>
+            <LinearGradient
+              colors={[colors.primary, colors.primaryLight]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ height: '100%', width: `${progressRatio * 100}%`, borderRadius: 3 }}
+            />
+          </View>
+        </View>
       )}
+
+      {/* Bottom Row: Wide Edit Profile Action Button */}
+      <TouchableOpacity
+        onPress={onEditPress}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          paddingVertical: 10,
+          borderRadius: 16,
+          backgroundColor: colors.cardSecondary,
+          borderWidth: 1,
+          borderColor: colors.border + '30',
+        }}
+        activeOpacity={0.8}
+      >
+        <FontAwesomeIcon icon={faPencil} size={12} color={colors.textSecondary} />
+        <Text style={{ fontSize: 13, fontFamily: 'RedditSans-Bold', fontWeight: '700', color: colors.text }}>
+          {t("profile.edit_profile")}
+        </Text>
+      </TouchableOpacity>
     </View>
-    <TouchableOpacity
-      onPress={onEditPress}
-      style={[styles.editBtn, { backgroundColor: colors.cardSecondary }]}
-      activeOpacity={0.8}
-    >
-      <FontAwesomeIcon icon={faPencil} size={13} color={colors.textSecondary} />
-      <Text style={[styles.editText, { color: colors.text }]}>{t("profile.edit_profile")}</Text>
-    </TouchableOpacity>
-  </View>
   );
 };
 
@@ -146,6 +233,7 @@ const Profile = ({ navigation }) => {
   const [accountData, setAccountData] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState(false);
+  const [activeBorder, setActiveBorder] = useState(1);
 
   // Animate background gradient transition
   const themeAnim = useRef(new Animated.Value(isDark ? 1 : 0)).current;
@@ -163,7 +251,7 @@ const Profile = ({ navigation }) => {
     } catch (error) {
       console.log('Google sign out error:', error);
     }
-    storage.delete('accessToken');
+    clearUserSession();
   };
 
   const handleDeleteAccount = () => {
@@ -187,8 +275,8 @@ const Profile = ({ navigation }) => {
                   } catch (e) {
                     console.log('Google sign out error on delete:', e);
                   }
-                  // Clear token to log user out
-                  storage.delete('accessToken');
+                  // Clear user session to log user out
+                  clearUserSession();
                 } else {
                   Alert.alert(t("common.error"), res?.message || t("common.failed_load"));
                 }
@@ -212,8 +300,17 @@ const Profile = ({ navigation }) => {
         getUserTotalXPFetch(token),
         getAccountDataFetch(token),
       ]);
-      setPoints(pointsRes.data ?? 0);
+      const pts = pointsRes.data ?? 0;
+      setPoints(pts);
       setAccountData(accountRes.data);
+      
+      const realLevel = Math.floor(Math.sqrt(pts / 50)) + 1;
+      let savedBorder = storage.getNumber('user.activeBorder');
+      if (!savedBorder || savedBorder > realLevel) {
+        savedBorder = realLevel;
+        storage.set('user.activeBorder', realLevel);
+      }
+      setActiveBorder(savedBorder);
     } catch (err) {
       console.error('Profile fetch error', err);
       setProfileError(true);
@@ -247,10 +344,12 @@ const Profile = ({ navigation }) => {
           firstName={accountData?.firstName}
           lastName={accountData?.lastName}
           points={points}
+          profilePicture={accountData?.profilePicture}
+          activeBorder={activeBorder}
           loading={profileLoading}
           error={profileError}
           colors={colors}
-          onEditPress={() => navigation.navigate('EditProfile', { initialData: accountData })}
+          onEditPress={() => navigation.navigate('EditProfile', { initialData: accountData, points: points })}
         />
 
         {/* ── General ── */}
@@ -333,7 +432,20 @@ const Profile = ({ navigation }) => {
           <SettingsItem
             icon={faStar}
             title={t("profile.menu.rate_app")}
-            onPress={() => {}}
+            onPress={() => {
+              const GOOGLE_PLAY_PACKAGE_NAME = 'com.growday';
+              const APPLE_APP_ID = '6443477382'; // Gələcəkdə App Store-da canlıya çıxanda bu ID-ni real Apple App ID ilə əvəzləyin
+              
+              if (Platform.OS === 'android') {
+                Linking.openURL(`market://details?id=${GOOGLE_PLAY_PACKAGE_NAME}`).catch(() => {
+                  Linking.openURL(`https://play.google.com/store/apps/details?id=${GOOGLE_PLAY_PACKAGE_NAME}`);
+                });
+              } else if (Platform.OS === 'ios') {
+                Linking.openURL(`itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${APPLE_APP_ID}?action=write-review`).catch(() => {
+                  Linking.openURL(`https://apps.apple.com/app/id${APPLE_APP_ID}`);
+                });
+              }
+            }}
             hideBorder
           />
         </View>

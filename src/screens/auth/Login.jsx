@@ -7,9 +7,10 @@ import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { storage } from "../../utils/MMKVStore";
+import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { View } from "react-native";
 import { loginfetch, getUserPreferencesFetch, googleLoginFetch } from "../../utils/fetch";
+import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
 import Toast from "../../components/common/Toast";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
@@ -45,25 +46,6 @@ const Login = () => {
     setToast({ visible: false, message: "", type: "error" });
   }
 
-  const translateServerError = (err) => {
-    const errorMap = {
-      "Password is wrong.": t("auth.validation.password_wrong"),
-      "User not found.": t("auth.validation.user_not_found"),
-      "Invalid username or password.": t("auth.validation.invalid_credentials"),
-      "Account is locked.": t("auth.validation.account_locked"),
-      "Email not confirmed.": t("auth.validation.email_not_confirmed"),
-      "Username is already in use.": t("auth.messages.username_taken"),
-      "Email is already in use.": t("auth.messages.email_taken"),
-      "Passwords must have at least one non alphanumeric character.": t("auth.validation.password_non_alphanumeric"),
-      "Passwords must have at least one uppercase ('A'-'Z').": t("auth.validation.password_uppercase"),
-      "Passwords must have at least one lowercase ('a'-'z').": t("auth.validation.password_lowercase"),
-      "Passwords must have at least one digit ('0'-'9').": t("auth.validation.password_digit"),
-      "Passwords must be at least 8 characters.": t("auth.validation.password_min_length"),
-      "Invalid email address.": t("auth.validation.invalid_email"),
-    };
-    return errorMap[err] || err;
-  };
-
   const handleLogin = async () => {
     setLoading(true);
     setServerErrors([]);
@@ -83,6 +65,7 @@ const Login = () => {
         showToast(t("auth.messages.welcome_back_toast"), "success");
 
         setTimeout(() => {
+          clearUserSession();
           storage.set("UsernameOrEmail", formData.UsernameOrEmail);
           storage.set("hasCompletedPreferences", hasPrefs);
           storage.set("accessToken", token);
@@ -92,8 +75,8 @@ const Login = () => {
           navigation.navigate("OtpVerification", { email: formData.UsernameOrEmail });
         } else {
           const msgs = data.errors?.length > 0
-            ? data.errors.map(err => translateServerError(err))
-            : [translateServerError(data.message) || t("auth.messages.login_failed")];
+            ? translateAuthErrors(data.errors, t)
+            : [translateAuthError(data.message, t) || t("auth.messages.login_failed")];
 
           if (msgs.length === 1) {
             showToast(msgs[0], "error");
@@ -155,6 +138,7 @@ const Login = () => {
         setTimeout(() => {
           // For google login, we might not have a UsernameOrEmail in formData,
           // but we can set a flag or just the token and preferences.
+          clearUserSession();
           storage.set("hasCompletedPreferences", hasPrefs);
           storage.set("accessToken", token);
         }, 1100);
@@ -164,7 +148,8 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      showToast(error.message || t("auth.messages.google_failed"), "error");
+      const clientPrefix = GOOGLE_WEB_CLIENT_ID ? GOOGLE_WEB_CLIENT_ID.substring(0, 15) : 'null';
+      showToast(`${error.message || t("auth.messages.google_failed")} (ID: ${clientPrefix}...)`, "error");
     } finally {
       setLoading(false);
     }

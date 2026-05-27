@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal, Alert, Share, Linking } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faChartLine, faCalendarAlt, faCalendarCheck, faChevronLeft, faChevronRight, faTrophy, faFire, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { API_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { useMMKVString } from "react-native-mmkv";
+import { storage } from '../../utils/MMKVStore';
 import Svg, { Circle, G } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch, getYearlyStatisticsFetch } from "../../utils/fetch";
+import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch, getYearlyStatisticsFetch, getUserTotalXPFetch } from "../../utils/fetch";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -28,6 +30,8 @@ const Statistics = () => {
   const [stats, setStats] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isYearPickerVisible, setYearPickerVisible] = useState(false);
+  const [points, setPoints] = useState(0);
+
   
   // Production best practice: Show years from app launch year (e.g. 2024) up to current year
   const currentYear = new Date().getFullYear();
@@ -63,6 +67,11 @@ const Statistics = () => {
         setStats(response.data);
         // Trigger animation
         progressValue.value = withTiming(response.data.completionRate, { duration: 1500 });
+      }
+
+      const ptsRes = await getUserTotalXPFetch(token);
+      if (ptsRes && ptsRes.success) {
+        setPoints(ptsRes.data ?? 0);
       }
     } catch (error) {
       console.error("Failed to fetch stats:", error);
@@ -352,7 +361,7 @@ const Statistics = () => {
               </View>
 
               {/* Extra Summary Row */}
-              <View className="flex-row gap-4 mb-8">
+              <View className="flex-row gap-4 mb-6">
                  <View className="flex-1 p-5 rounded-3xl flex-row items-center shadow-sm" style={{ backgroundColor: colors.card }}>
                     <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: colors.primary + '15' }}>
                        <FontAwesomeIcon icon={faChartBar} color={colors.primary} size={18} />
@@ -365,6 +374,7 @@ const Statistics = () => {
                     </View>
                  </View>
               </View>
+
             </>
           ) : (
             <View className="items-center py-20 bg-white/5 rounded-3xl border border-white/10 mx-5">
@@ -440,6 +450,9 @@ const Statistics = () => {
           </View>
         </TouchableOpacity>
       </Modal>
+
+
+
     </LinearGradient>
   );
 };

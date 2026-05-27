@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMinus, faChevronRight, faStar, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { getUserSuggestedHabitsFetch, getUserLearningContentFetch, getUserPreferencesFetch, updateUserPreferencesWithAIFetch } from "../../utils/fetch";
+import { faMinus, faChevronRight, faStar, faSearch, faTimes, faBrain, faLock } from '@fortawesome/free-solid-svg-icons';
+import { getUserSuggestedHabitsFetch, getUserLearningContentFetch, regenerateSuggestedHabitsFetch, getUserTotalXPFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
+import { storage } from "../../utils/MMKVStore";
+import {
+  loadCachedSuggestedHabits,
+  saveSuggestedHabitsCache,
+  aiCoachCountKey,
+  aiCoachDateKey,
+} from "../../utils/suggestedHabitsCache";
 import UserTasksList from "../../components/UserTasksList";
 import LearningCard from "../../components/LearningCard";
 import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
+import AdBanner from "../../components/AdBanner";
 
 
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+
+const AI_COACH_MIN_LEVEL = 3;
+const AI_COACH_DAILY_LIMIT = 3;
 
 const Explore = () => {
   const navigation = useNavigation();
@@ -34,19 +45,80 @@ const Explore = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isGeneratingHabits, setIsGeneratingHabits] = useState(false);
+  const [points, setPoints] = useState(0);
+  const [aiCount, setAiCount] = useState(0);
+  const userLevel = Math.floor(Math.sqrt(points / 50)) + 1;
 
-  
+  const fetchXP = async () => {
+    try {
+      const xpRes = await getUserTotalXPFetch(token);
+      if (xpRes && xpRes.success) {
+        setPoints(xpRes.data ?? 0);
+      }
+    } catch (err) {
+      console.log("Error loading XP in Explore:", err);
+    }
+  };
+
+  const syncAiCoachLimitFromStorage = () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const lastDate = storage.getString(aiCoachDateKey());
+      let count = storage.getNumber(aiCoachCountKey()) || 0;
+      if (lastDate !== today) {
+        count = 0;
+        storage.set(aiCoachCountKey(), 0);
+        storage.set(aiCoachDateKey(), today);
+      }
+      setAiCount(count);
+    } catch (e) {
+      console.log("Error loading AI count:", e);
+    }
+  };
+
+  const recordAiCoachGeneration = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const nextCount = aiCount + 1;
+    storage.set(aiCoachCountKey(), nextCount);
+    storage.set(aiCoachDateKey(), today);
+    setAiCount(nextCount);
+  };
+
+  const showAiCoachError = (errorCode, fallbackMessage) => {
+    if (errorCode === 'AI_COACH_LEVEL_LOCKED') {
+      Alert.alert(
+        t('levelup.ai_locked_title'),
+        t('levelup.ai_locked_desc', { userLevel })
+      );
+      return;
+    }
+    if (errorCode === 'AI_COACH_DAILY_LIMIT_REACHED') {
+      Alert.alert(t('levelup.ai_limit_title'), t('levelup.ai_limit_desc'));
+      return;
+    }
+    Alert.alert(
+      t('preferences.alerts.error_title', 'Error'),
+      fallbackMessage || t('levelup.ai_generate_failed')
+    );
+  };
+
   useEffect(() => {
-    getUserSuggestedHabits();
-    getLearningContent();
-  }, [pageIndex]);
+    fetchXP();
+    syncAiCoachLimitFromStorage();
+    if (token) getUserSuggestedHabits();
+    if (token) getLearningContent();
+  }, [pageIndex, token]);
 
   useFocusEffect(
     React.useCallback(() => {
+      if (!token) return;
+      fetchXP();
+      syncAiCoachLimitFromStorage();
       setPageIndex(0);
+      setHasMore(true);
       getUserSuggestedHabits();
       getLearningContent();
-    }, [])
+    }, [token])
   );
 
   const getLearningContent = async () => {
@@ -78,21 +150,31 @@ const Explore = () => {
   };
   
 
-  const getUserSuggestedHabits = async (isRetry = false) => {
+  const getUserSuggestedHabits = async () => {
+    if (!token) return;
     if (!hasMore && pageIndex !== 0) return;
+    if (pageIndex === 0) {
+      const cached = loadCachedSuggestedHabits();
+      if (cached?.length) {
+        setSuggestedHabits(cached);
+      }
+    }
     try {
       setLoading(true);
       const response = await getUserSuggestedHabitsFetch(token, pageIndex, pageSize);
       if (response.data && response.data.length > 0) {
         setSuggestedHabits(prev => pageIndex === 0 ? response.data : [...prev, ...response.data]);
+        if (pageIndex === 0) {
+          saveSuggestedHabitsCache(response.data);
+        }
         if (response.data.length < pageSize) {
           setHasMore(false);
         }
       } else {
         setHasMore(false);
-        setSuggestedHabits([]);
-        if (pageIndex === 0 && !isRetry && !searchQuery) {
-          await generateNewSuggestedHabits();
+        if (pageIndex === 0) {
+          setSuggestedHabits([]);
+          saveSuggestedHabitsCache([]);
         }
       }
     } catch (error) {
@@ -104,32 +186,28 @@ const Explore = () => {
   }
 
   const generateNewSuggestedHabits = async () => {
+    if (!token) return false;
     try {
       setIsGeneratingHabits(true);
-      const prefsResponse = await getUserPreferencesFetch(token);
-      if (prefsResponse && prefsResponse.data) {
-        const data = prefsResponse.data;
-        const payload = {
-          wakeUpTime: data.wakeUpTime || "07:00:00",
-          sleepTime: data.sleepTime || "22:00:00",
-          procrestinateFrequency: data.procrestinateFrequency || data.procrastinationFrequency || "Sometimes",
-          focusDifficulty: data.focusDifficulty || "Occasionally",
-          motivationalFactors: data.motivationalFactors || "None",
-          gender: data.gender || "Male",
-          age: data.age || 25,
-          mainGoal: data.mainGoal || "Productivity"
-        };
-        await updateUserPreferencesWithAIFetch(token, payload);
-        
-        // Re-fetch habits after generation
-        const newResponse = await getUserSuggestedHabitsFetch(token, 0, pageSize);
-        if (newResponse.data && newResponse.data.length > 0) {
-          setSuggestedHabits(newResponse.data);
-          setHasMore(newResponse.data.length >= pageSize);
-        }
+      const response = await regenerateSuggestedHabitsFetch(token);
+      if (!response?.success) {
+        showAiCoachError(response?.message, response?.message);
+        return false;
       }
+      const habits = response?.data;
+      if (!habits?.length) {
+        showAiCoachError('AI_GENERATION_FAILED');
+        return false;
+      }
+      setSuggestedHabits(habits);
+      saveSuggestedHabitsCache(habits);
+      setHasMore(habits.length >= pageSize);
+      recordAiCoachGeneration();
+      return true;
     } catch (error) {
       console.log("Error generating new habits:", error);
+      showAiCoachError(null);
+      return false;
     } finally {
       setIsGeneratingHabits(false);
     }
@@ -149,7 +227,11 @@ const Explore = () => {
   
   const handleSuggestedHabitPress = (habit) => {
     // Remove immediately from UI for better feedback
-    setSuggestedHabits(prev => prev.filter(h => h.id !== habit.id));
+    setSuggestedHabits(prev => {
+      const next = prev.filter(h => h.id !== habit.id);
+      saveSuggestedHabitsCache(next);
+      return next;
+    });
     
     navigation.navigate('CreateCustomHabit', { 
       habitData: {
@@ -221,11 +303,82 @@ const Explore = () => {
             )}
           </View>
 
+          {/* Premium AI Coach Level-Locked Action Card */}
+          <TouchableOpacity
+            onPress={async () => {
+              if (userLevel < AI_COACH_MIN_LEVEL) {
+                Alert.alert(
+                  t("levelup.ai_locked_title"),
+                  t("levelup.ai_locked_desc", { userLevel })
+                );
+              } else if (aiCount >= AI_COACH_DAILY_LIMIT) {
+                Alert.alert(t("levelup.ai_limit_title"), t("levelup.ai_limit_desc"));
+              } else {
+                Alert.alert(
+                  t("levelup.ai_confirm_title"),
+                  t("levelup.ai_confirm_desc"),
+                  [
+                    { text: t("common.cancel"), style: "cancel" },
+                    {
+                      text: t("common.confirm"),
+                      onPress: async () => {
+                        const ok = await generateNewSuggestedHabits();
+                        if (ok) {
+                          Alert.alert(
+                            t("levelup.ai_success_title"),
+                            t("levelup.ai_success_desc")
+                          );
+                        }
+                      },
+                    },
+                  ]
+                );
+              }
+            }}
+            className="p-4 rounded-3xl mb-6 flex-row items-center justify-between shadow-sm border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger + '30' : colors.primary + '30') : colors.border,
+              marginHorizontal: 16,
+            }}
+            activeOpacity={0.8}
+          >
+            <View className="flex-row items-center flex-1">
+              <View 
+                className="w-10 h-10 rounded-2xl items-center justify-center mr-3"
+                style={{ backgroundColor: userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger + '15' : colors.primary + '15') : '#d9770615' }}
+              >
+                <FontAwesomeIcon 
+                  icon={userLevel >= AI_COACH_MIN_LEVEL ? faBrain : faLock} 
+                  color={userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger : colors.primary) : '#d97706'} 
+                  size={18} 
+                />
+              </View>
+              <View className="flex-1 pr-2">
+                <Text style={{ color: colors.text }} className="text-sm font-redditsans-bold">
+                  {t("levelup.ai_coach_title", "AI Fərdi Vərdiş Məşqçisi")}
+                </Text>
+                <Text style={{ color: colors.textSecondary }} className="text-[11px] font-redditsans-regular mt-0.5">
+                  {userLevel >= AI_COACH_MIN_LEVEL
+                    ? `${t("levelup.ai_coach_unlocked")} ${t("levelup.ai_coach_limit_remaining", { remaining: AI_COACH_DAILY_LIMIT - aiCount })}`
+                    : t("levelup.ai_coach_locked")
+                  }
+                </Text>
+              </View>
+            </View>
+            <View className="px-2.5 py-1 rounded-full" style={{ backgroundColor: userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger + '20' : colors.primary + '20') : '#d9770620' }}>
+              <Text style={{ color: userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger : colors.primary) : '#d97706' }} className="text-[9px] font-redditsans-bold">
+                {userLevel >= AI_COACH_MIN_LEVEL
+                  ? (aiCount >= AI_COACH_DAILY_LIMIT ? t('levelup.ai_badge_limit') : t('levelup.ai_badge_active'))
+                  : t('levelup.ai_badge_level')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
           {/* Suggested Habits Section */}
           <View className="px-4 mb-6">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
-             
             </View>
             
             {loading && pageIndex === 0 ? (
@@ -236,7 +389,7 @@ const Explore = () => {
           <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
              <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
              <Text style={{ color: colors.textSecondary }} className="font-redditsans-medium">
-               {t("explore.generating_new_habits", "Generating new suggested habits...")}
+               {t("levelup.generating_new_habits", "Generating new suggested habits...")}
              </Text>
           </View>
         ) : (suggestedHabits.filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
@@ -294,6 +447,172 @@ const Explore = () => {
             
           </View>
 
+          {/* Brain Games Section */}
+          <View className="mb-6">
+            <View className="px-4 mb-4">
+              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>🧠 {t("games.title")}</Text>
+            </View>
+            
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="px-4 mb-6"
+              contentContainerStyle={{ paddingRight: 40 }}
+            >
+              {/* Memory Game Card */}
+              <TouchableOpacity 
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('MemoryGame')}
+                className="mr-3 rounded-2xl p-4 justify-between"
+                style={{ 
+                  width: 250, 
+                  height: 160, 
+                  backgroundColor: colors.cardSecondary,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 4,
+                  elevation: 2
+                }}
+              >
+                <View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                      🧩 {t("games.memory_match")}
+                    </Text>
+                    <View className="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 items-center justify-center">
+                      <Text className="text-base">🧩</Text>
+                    </View>
+                  </View>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                    {t("games.memory_match_desc")}
+                  </Text>
+                </View>
+                
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'MemoryMatch' })}
+                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                >
+                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+
+              {/* Sequence Game Card */}
+              <TouchableOpacity 
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('SequenceGame')}
+                className="mr-3 rounded-2xl p-4 justify-between"
+                style={{ 
+                  width: 250, 
+                  height: 160, 
+                  backgroundColor: colors.cardSecondary,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 4,
+                  elevation: 2
+                }}
+              >
+                <View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                      ⚡ {t("games.sequence_memory")}
+                    </Text>
+                    <View className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 items-center justify-center">
+                      <Text className="text-base">⚡</Text>
+                    </View>
+                  </View>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                    {t("games.sequence_memory_desc")}
+                  </Text>
+                </View>
+                
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'SequenceMemory' })}
+                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                >
+                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+
+              {/* Stroop Game Card */}
+              <TouchableOpacity 
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('StroopGame')}
+                className="mr-3 rounded-2xl p-4 justify-between"
+                style={{ 
+                  width: 250, 
+                  height: 160, 
+                  backgroundColor: colors.cardSecondary,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 4,
+                  elevation: 2
+                }}
+              >
+                <View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                      🎨 {t("games.stroop_test")}
+                    </Text>
+                    <View className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 items-center justify-center">
+                      <Text className="text-base">🎨</Text>
+                    </View>
+                  </View>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                    {t("games.stroop_test_desc")}
+                  </Text>
+                </View>
+                
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'StroopTest' })}
+                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                >
+                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+
+              {/* Reaction Game Card */}
+              <TouchableOpacity 
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('ReactionGame')}
+                className="mr-3 rounded-2xl p-4 justify-between"
+                style={{ 
+                  width: 250, 
+                  height: 160, 
+                  backgroundColor: colors.cardSecondary,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 4,
+                  elevation: 2
+                }}
+              >
+                <View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                      ⏱️ {t("games.reaction_game")}
+                    </Text>
+                    <View className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 items-center justify-center">
+                      <Text className="text-base">⏱️</Text>
+                    </View>
+                  </View>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                    {t("games.reaction_game_desc")}
+                  </Text>
+                </View>
+                
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'ReactionTime' })}
+                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                >
+                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+
           {/* Learning Section */}
           <View className="mb-6">
             <View className="px-4 mb-4">
@@ -324,8 +643,8 @@ const Explore = () => {
                   ))
               )}
             </ScrollView>
-        </View>
-
+         </View>
+         <AdBanner />
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

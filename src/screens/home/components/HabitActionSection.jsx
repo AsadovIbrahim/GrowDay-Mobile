@@ -16,10 +16,10 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 };
 
@@ -30,13 +30,13 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const { colors } = theme;
     const hId = habit.userHabitId || habit.UserHabitId || habit.id;
     const dateStr = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
-    
+
     const startKey = `timer_start_${hId}_${dateStr}`;
     const accKey = `timer_acc_${hId}_${dateStr}`;
     const distKey = `dist_acc_${hId}_${dateStr}`;
     const latKey = `last_lat_${hId}_${dateStr}`;
     const lonKey = `last_lon_${hId}_${dateStr}`;
-    
+
     const [storedStart, setStoredStart] = useMMKVString(startKey);
     const [storedAcc, setStoredAcc] = useMMKVString(accKey);
     const [storedDist, setStoredDist] = useMMKVString(distKey);
@@ -57,6 +57,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const watchId = useRef(null);
     const lastPos = useRef({ lat: null, lon: null });
     const totalDistRef = useRef(0);
+    const stepCountRef = useRef(0);
     const pulseAnim = useRef(new Animated.Value(1)).current;
     const cooldownAnim = useRef(new Animated.Value(0)).current;
     const autoStopTriggered = useRef(false);
@@ -94,28 +95,38 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
     useEffect(() => {
         if (!timerActive) return;
-        
+
         const currentVal = habit.currentValue || 0;
         const targetVal = habit.targetValue || 1;
-        
-        let currentDelta = isDistance ? distance : (seconds / 60);
-        if (isDistance && unit === "m") currentDelta = distance * 1000;
-        if (!isDistance && (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours")) currentDelta = seconds / 3600;
+
+        let currentDelta = 0;
+        if (isDistance) {
+            currentDelta = distance;
+            if (unit === "m") currentDelta = distance * 1000;
+        } else if (isSteps) {
+            currentDelta = stepCount;
+        } else if (isKcal) {
+            currentDelta = Math.max(stepCount * 0.04, seconds * (6.5 / 60));
+        } else {
+            const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+            currentDelta = seconds / unitMod;
+        }
 
         if (currentVal + currentDelta >= targetVal && !autoStopTriggered.current) {
             autoStopTriggered.current = true;
             handleStop();
         }
-    }, [distance, seconds, timerActive]);
+    }, [distance, seconds, stepCount, timerActive]);
 
     const isBoolean = useMemo(() => !habit.unit || !habit.targetValue || habit.targetValue <= 0, [habit]);
-    const isDuration = useMemo(() => ["minute","minutes", "hour","hours", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
+    const isDuration = useMemo(() => ["minute", "minutes", "hour", "hours", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
     const isDistance = useMemo(() => ["km", "m", "mile", "miles"].includes(unit), [unit]);
     const isSteps = useMemo(() => unit === "steps", [unit]);
-    const isNumeric = useMemo(() => !isBoolean && !isDuration && !isDistance && !isSteps, [isBoolean, isDuration, isDistance, isSteps]);
+    const isKcal = useMemo(() => ["kcal", "cal", "calories"].includes(unit), [unit]);
+    const isNumeric = useMemo(() => !isBoolean && !isDuration && !isDistance && !isSteps && !isKcal, [isBoolean, isDuration, isDistance, isSteps, isKcal]);
 
     const baseVal = habit.currentValue || 0;
-    
+
     let baseSeconds = 0;
     if (isDuration) {
         const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
@@ -134,13 +145,18 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return Math.round(stepCount + (isSteps ? baseVal : 0));
     }, [stepCount, baseVal, isSteps]);
 
+    const displayKcal = useMemo(() => {
+        const sessionKcal = Math.max(stepCount * 0.04, seconds * (6.5 / 60));
+        return sessionKcal + (isKcal ? baseVal : 0);
+    }, [stepCount, seconds, baseVal, isKcal]);
+
     // Strict mode: habits are only actionable on their scheduled days
     const isScheduledOnSelectedDay = useMemo(() => {
         const freq = (habit.frequency || habit.frequencyType || '').toLowerCase();
-        
+
         // If no specific date is provided, we assume today (which is always actionable unless future check fails)
         if (!date) return true;
-        
+
         const targetDate = new Date(date);
         targetDate.setHours(0, 0, 0, 0);
 
@@ -153,7 +169,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         // 1. Check date range
         if (targetDate < startDate) return false;
         if (endDate && targetDate > endDate) return false;
-        
+
         // 2. Check frequency
         if (freq === 'weekly') {
             if (!habit.selectedDays) return true;
@@ -174,7 +190,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
             return diffDays >= 0 && diffDays % interval === 0;
         }
-        
+
         return true;
     }, [habit.frequency, habit.frequencyType, habit.selectedDays, habit.startDate, habit.createdAt, habit.endDate, date]);
 
@@ -182,7 +198,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     useEffect(() => {
         if (storedLat) lastPos.current.lat = parseFloat(storedLat);
         if (storedLon) lastPos.current.lon = parseFloat(storedLon);
-        
+
         const initialDist = parseFloat(storedDist || "0");
         totalDistRef.current = initialDist;
         setDistance(initialDist);
@@ -192,6 +208,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         if (isDuration && initialAcc > 0) {
             const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
             onLiveUpdate?.(initialAcc / unitMod);
+        } else if (isKcal && initialAcc > 0) {
+            const kcalBurned = Math.max(stepCountRef.current * 0.04, initialAcc * (6.5 / 60));
+            onLiveUpdate?.(kcalBurned);
         }
     }, []);
 
@@ -213,12 +232,17 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const { AppState } = require('react-native');
             if (AppState.currentState !== 'active') return;
 
-            if (isDuration && !isReporting && !blockUpdates.current) {
+            if ((isDuration || isKcal) && !isReporting && !blockUpdates.current) {
                 const nowMs = Date.now();
                 // Throttle parent re-renders: once every 5 seconds max
                 if (nowMs - lastParentUpdateRef.current > 5000) {
-                    const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
-                    onLiveUpdate?.(total / unitMod);
+                    if (isKcal) {
+                        const kcalBurned = Math.max(stepCountRef.current * 0.04, total * (6.5 / 60));
+                        onLiveUpdate?.(kcalBurned);
+                    } else {
+                        const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+                        onLiveUpdate?.(total / unitMod);
+                    }
                     lastParentUpdateRef.current = nowMs;
                 }
             }
@@ -248,7 +272,15 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         }
 
         if (timerActive || (displaySecondsRef.current > baseSeconds || distance > 0 || stepCount > 0)) {
-            const displayVal = isSteps ? `${displaySteps} ${t("units.steps")}` : (isDistance ? formatDistance(displayDistance) : null);
+            let displayVal = null;
+            if (isSteps) {
+                displayVal = `${displaySteps} ${t("units.steps")}`;
+            } else if (isDistance) {
+                displayVal = formatDistance(displayDistance);
+            } else if (isKcal) {
+                displayVal = `${displayKcal.toFixed(1)} kcal`;
+            }
+
             let targetSeconds = null;
             if (isDuration) {
                 const targetVal = habit.targetValue || 1;
@@ -260,43 +292,43 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         } else {
             cancelOngoingHabitNotification(hId);
         }
-        
+
         return () => {
             if (!timerActive && displaySecondsRef.current <= baseSeconds && distance === 0 && stepCount === 0) {
                 cancelOngoingHabitNotification(hId);
             }
         };
-    }, [timerActive, displayDistance, displaySteps, hId, isDuration, habit.targetValue, unit, baseSeconds, habit]);
+    }, [timerActive, displayDistance, displaySteps, displayKcal, hId, isDuration, isKcal, habit.targetValue, unit, baseSeconds, habit]);
 
     useEffect(() => {
-        if ((isDistance || isSteps) && timerActive) startTracking();
+        if ((isDistance || isSteps || isKcal) && timerActive) startTracking();
         else stopTracking();
         return () => stopTracking();
-    }, [isDistance, isSteps, timerActive]);
+    }, [isDistance, isSteps, isKcal, timerActive]);
 
     const requestPermissions = async () => {
         if (Platform.OS === 'ios') return true;
         try {
             console.log("Requesting permissions for unit:", unit);
             const permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
-            
+
             // ACTIVITY_RECOGNITION is for Android 10+
-            if (isSteps && Platform.Version >= 29) {
+            if ((isSteps || isKcal) && Platform.Version >= 29) {
                 permissions.push(PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION);
             }
-            
+
             const granted = await PermissionsAndroid.requestMultiple(permissions);
-            
+
             const locGranted = granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED;
-            const actGranted = Platform.Version >= 29 
+            const actGranted = Platform.Version >= 29
                 ? granted[PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION] === PermissionsAndroid.RESULTS.GRANTED
                 : true; // Older versions don't need runtime permission
 
             console.log("Permissions status:", { locGranted, actGranted });
-            return isSteps ? actGranted : locGranted;
-        } catch (err) { 
+            return (isSteps || isKcal) ? actGranted : locGranted;
+        } catch (err) {
             console.log("Permission Error:", err);
-            return false; 
+            return false;
         }
     };
 
@@ -331,7 +363,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             );
         }
 
-        if (isSteps) {
+        if (isSteps || isKcal) {
             console.log("Checking Pedometer support...");
             isStepCountingSupported().then(({ supported, granted }) => {
                 console.log("Pedometer supported:", supported, "granted:", granted);
@@ -341,8 +373,23 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     watchId.current = startStepCounterUpdate(now, (data) => {
                         console.log("Pedometer Data Received:", data);
                         const count = data.steps || 0;
+                        stepCountRef.current = count;
                         setStepCount(count);
-                        if (!isReporting && !blockUpdates.current) onLiveUpdate?.(count);
+                        if (!isReporting && !blockUpdates.current) {
+                            if (isKcal) {
+                                const acc = parseInt(storedAcc || "0", 10);
+                                let total = acc;
+                                if (storedStart) {
+                                    const start = new Date(storedStart).getTime();
+                                    const now = new Date().getTime();
+                                    total += Math.floor((now - start) / 1000);
+                                }
+                                const kcalBurned = Math.max(count * 0.04, total * (6.5 / 60));
+                                onLiveUpdate?.(kcalBurned);
+                            } else {
+                                onLiveUpdate?.(count);
+                            }
+                        }
                     });
                 } else {
                     Alert.alert(t("habits.not_supported"), t("habits.not_supported_pedometer_desc"));
@@ -358,7 +405,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             Geolocation.clearWatch(watchId.current);
             watchId.current = null;
         }
-        if (isSteps) {
+        if (isSteps || isKcal) {
             try {
                 if (watchId.current && typeof watchId.current.remove === 'function') {
                     watchId.current.remove();
@@ -397,9 +444,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         setStoredAcc(newAcc.toString());
         setStoredStart(undefined);
         setTimerActive(false);
-        
+
         cancelGoalReachedNotification(hId);
-        
+
         // They paused but haven't finished, so schedule a reminder
         scheduleIncompleteReminder(habit);
     };
@@ -407,14 +454,15 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const handleStop = async () => {
         const acc = parseInt(storedAcc || "0", 10);
         let totalTime = acc + (storedStart ? Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000) : 0);
-        
+
         let delta = isDistance ? totalDistRef.current : (totalTime / 60);
         if (isSteps) delta = stepCount;
+        if (isKcal) delta = Math.max(stepCountRef.current * 0.04, totalTime * (6.5 / 60));
         if (isDistance && unit === "m") delta *= 1000;
-        if (!isDistance && !isSteps && (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours")) delta = totalTime / 3600;
+        if (!isDistance && !isSteps && !isKcal && (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours")) delta = totalTime / 3600;
 
         // Validation: Allow 1+ unit
-        if (isSteps ? (stepCount < 1) : (isDistance ? (delta < (unit === "km" ? 0.001 : 1)) : (totalTime < 1))) {
+        if (isKcal ? (delta < 0.1) : (isSteps ? (stepCount < 1) : (isDistance ? (delta < (unit === "km" ? 0.001 : 1)) : (totalTime < 1)))) {
             console.log("Session too short");
             cleanup();
             return;
@@ -429,7 +477,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         blockUpdates.current = true;
         setStoredStart(undefined); setStoredAcc("0"); setStoredDist("0");
         setStoredLat(undefined); setStoredLon(undefined);
-        totalDistRef.current = 0; setDistance(0); setStepCount(0);
+        totalDistRef.current = 0; stepCountRef.current = 0; setDistance(0); setStepCount(0);
         setTimerActive(false); stopTracking();
         cancelOngoingHabitNotification(hId);
         cancelGoalReachedNotification(hId);
@@ -442,11 +490,11 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         try {
             setIsReporting(true);
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-            const payload = { 
-                userHabitId: hId, 
-                deltaValue: delta, 
-                source, 
-                note, 
+            const payload = {
+                userHabitId: hId,
+                deltaValue: delta,
+                source,
+                note,
                 timestamp: new Date().toISOString(),
                 date: date,
                 actualDuration: durationInSec > 0 ? Math.round(durationInSec / 60) : null
@@ -468,8 +516,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 return true;
             }
             return false;
-        } catch (e) { 
-            console.error("Report error:", e); 
+        } catch (e) {
+            console.error("Report error:", e);
             return false;
         } finally {
             setIsReporting(false);
@@ -507,10 +555,10 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         const targetDate = new Date(date);
         const dayMap = { 0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' };
         const dayAbbrev = dayMap[targetDate.getDay()];
-        
+
         const freq = (habit.frequency || habit.frequencyType || '').toLowerCase();
         let scheduleText = '';
-        
+
         if (freq === 'weekly') {
             const scheduledDays = habit.selectedDays ? habit.selectedDays.split(',').map(d => d.trim()).join(', ') : '';
             scheduleText = t("habit_details.action.runs_on", { days: scheduledDays });
@@ -522,7 +570,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         }
 
         const startDate = new Date(habit.startDate || habit.createdAt);
-        startDate.setHours(0,0,0,0);
+        startDate.setHours(0, 0, 0, 0);
         if (targetDate < startDate) {
             scheduleText = t("habit_details.action.starts_on", { date: startDate.toLocaleDateString() });
         }
@@ -567,7 +615,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
         const handleIncrement = (val) => {
             if (isReporting || cooldownActive) return;
-            
+
             Vibration.vibrate(10); // Subtle haptic-like vibration
             onLiveUpdate?.(prev => prev + val);
             handleReportProgress(val);
@@ -600,52 +648,52 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             <View style={styles.numericContainer}>
                 <View style={styles.incrementsRow}>
                     {incs.map(inc => (
-                        <TouchableOpacity 
-                            key={inc} 
-                            onPress={() => handleIncrement(inc)} 
+                        <TouchableOpacity
+                            key={inc}
+                            onPress={() => handleIncrement(inc)}
                             disabled={isReporting || cooldownActive}
                             activeOpacity={0.7}
                             style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
                         >
                             {cooldownActive && (
-                                <Animated.View 
+                                <Animated.View
                                     style={[
-                                        styles.cooldownFill, 
-                                        { 
+                                        styles.cooldownFill,
+                                        {
                                             backgroundColor: colors.primary + '20',
                                             width: cooldownAnim.interpolate({
                                                 inputRange: [0, 1],
                                                 outputRange: ['0%', '100%']
                                             })
                                         }
-                                    ]} 
+                                    ]}
                                 />
                             )}
                             <Text className="font-redditsans-bold" style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
                         </TouchableOpacity>
                     ))}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => {
                             if (isReporting || cooldownActive) return;
                             Vibration.vibrate(15);
                             setShowManualModal(true);
-                        }} 
+                        }}
                         disabled={isReporting || cooldownActive}
                         activeOpacity={0.7}
                         style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
                     >
                         {cooldownActive && (
-                            <Animated.View 
+                            <Animated.View
                                 style={[
-                                    styles.cooldownFill, 
-                                    { 
+                                    styles.cooldownFill,
+                                    {
                                         backgroundColor: colors.primary + '20',
                                         width: cooldownAnim.interpolate({
                                             inputRange: [0, 1],
                                             outputRange: ['0%', '100%']
                                         })
                                     }
-                                ]} 
+                                ]}
                             />
                         )}
                         <FontAwesomeIcon icon={faKeyboard} color={colors.primary} size={18} />
@@ -670,7 +718,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                                     <FontAwesomeIcon icon={faTimes} color={colors.textSecondary} size={20} />
                                 </TouchableOpacity>
                             </View>
-                            
+
                             <View style={styles.inputContainer}>
                                 <TextInput
                                     style={[styles.manualInput, { color: colors.text, borderColor: colors.border }]}
@@ -685,7 +733,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                                 <Text className="font-redditsans-bold" style={[styles.unitText, { color: colors.textSecondary }]}>{t(`units.${(habit.unit || "").toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                             </View>
 
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[styles.submitBtn, { backgroundColor: colors.primary }]}
                                 onPress={handleManualSubmit}
                             >
@@ -698,9 +746,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         );
     }
 
-    if (isDuration || isDistance || isSteps) {
+    if (isDuration || isDistance || isSteps || isKcal) {
         const isCompleted = (habit.progressPercentage >= 100) || ((habit.currentValue ?? 0) >= (habit.targetValue ?? 0));
-        
+
         // If not active and reached goal, hide action section
         if (isCompleted && !timerActive && seconds === 0 && distance === 0 && stepCount === 0) {
             return null;
@@ -709,19 +757,82 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return (
             <View style={styles.durationContainer}>
                 <Animated.View style={[
-                    styles.timerDisplay, 
-                    (isDistance || isSteps) && styles.workoutDisplay,
-                    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
-                ]}>
-                    <Text className="font-redditsans-bold" style={[styles.sessionLabel, { color: colors.textSecondary }]}>{t("habit_details.action.today_session")}</Text>
-                    <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
-                        {isSteps ? `${displaySteps} ${t("units.steps")}` : (isDistance ? formatDistance(displayDistance) : formatTime(displaySeconds))}
-                    </Text>
-                    <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
-                        {isSteps ? t("habit_details.action.live_steps") : (isDistance ? t("habit_details.action.live_distance") : (["hour", "hr", "hrs", "hours"].includes(unit) ? "HRS:MIN:SEC" : "MIN:SEC"))}
-                    </Text>
-                    {(isDistance || isSteps) && <Text className="font-redditsans-medium" style={[styles.subTimer, { color: colors.textMuted }]}>{formatTime(displaySeconds)}</Text>}
-                </Animated.View>
+    styles.timerDisplay,
+    (isDistance || isSteps || isKcal) && styles.workoutDisplay,
+    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
+]}>
+    <Text className="font-redditsans-bold" style={[styles.sessionLabel, { color: colors.textSecondary }]}>
+        {t("habit_details.action.today_session")}
+    </Text>
+
+    {/* Əsas metrik */}
+    <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
+        {isKcal ? `${displayKcal.toFixed(1)} kcal`
+            : isSteps ? `${displaySteps} ${t("units.steps")}`
+            : isDistance ? formatDistance(displayDistance)
+            : formatTime(displaySeconds)}
+    </Text>
+    <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
+        {isKcal ? t("habit_details.action.live_calories")
+            : isSteps ? t("habit_details.action.live_steps")
+            : isDistance ? t("habit_details.action.live_distance")
+            : ["hour", "hr", "hrs", "hours"].includes(unit)
+                ? t("habit_details.action.duration_hms")
+                : t("habit_details.action.duration_ms")}
+    </Text>
+
+    {(isDistance || isSteps || isKcal) && (() => {
+        const chips = [];
+        if (isDistance) {
+            chips.push(
+                { value: String(Math.round(displayDistance * 1250)), label: t("units.steps") },
+                { value: (displayDistance * 60).toFixed(1), label: t("units.kcal") },
+                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+            );
+        } else if (isSteps) {
+            chips.push(
+                { value: String(displaySteps), label: t("units.steps") },
+                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
+                { value: (displaySteps * 0.04).toFixed(1), label: t("units.kcal") },
+                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+            );
+        } else if (isKcal) {
+            chips.push(
+                { value: String(displaySteps), label: t("units.steps") },
+                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
+                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+            );
+        }
+        return (
+            <View style={styles.metricsGrid}>
+                {chips.map((chip, index) => (
+                    <View
+                        key={`${chip.label}-${index}`}
+                        style={[styles.metricChip, { backgroundColor: colors.background || colors.cardSecondary }]}
+                    >
+                        <Text
+                            className="font-redditsans-bold"
+                            style={[styles.metricValue, { color: colors.text }]}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.75}
+                        >
+                            {chip.value}
+                        </Text>
+                        <Text
+                            className="font-redditsans-medium"
+                            style={[styles.metricLabel, { color: colors.textSecondary }]}
+                            numberOfLines={2}
+                        >
+                            {chip.label}
+                        </Text>
+                    </View>
+                ))}
+            </View>
+        );
+    })()}
+
+</Animated.View>
                 <View style={styles.controlsRow}>
                     {!timerActive ? (
                         <TouchableOpacity onPress={handleStartResume} style={[styles.controlBtn, styles.startBtn, { backgroundColor: colors.primary }]}>
@@ -738,7 +849,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 </View>
                 {timerActive && (
                     <Text className="font-redditsans-bold" style={[styles.activeHint, { color: colors.primary }]}>
-                        {isDistance ? t("habit_details.action.location_active") : (isSteps ? t("habit_details.action.step_sensor_active") : t("habit_details.action.session_started"))}
+                        {isDistance ? t("habit_details.action.location_active") : ((isSteps || isKcal) ? t("habit_details.action.step_sensor_active") : t("habit_details.action.session_started"))}
                     </Text>
                 )}
             </View>
@@ -757,14 +868,14 @@ const styles = StyleSheet.create({
     incText: { fontSize: 18, color: '#2f6f3f' },
     helperText: { fontSize: 13, color: '#6b7280', fontStyle: 'italic' },
     durationContainer: { alignItems: 'center', gap: 24, marginBottom: 20 },
-    timerDisplay: { 
-        alignItems: 'center', 
-        backgroundColor: '#fff', 
-        paddingVertical: 18, 
-        paddingHorizontal: 24, 
-        borderRadius: 16, 
-        width: '100%', 
-        borderWidth: 1, 
+    timerDisplay: {
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        paddingVertical: 18,
+        paddingHorizontal: 24,
+        borderRadius: 16,
+        width: '100%',
+        borderWidth: 1,
         borderColor: '#e5e7eb',
         elevation: 8,
         shadowColor: "#000",
@@ -773,8 +884,38 @@ const styles = StyleSheet.create({
         shadowRadius: 6
     },
     workoutDisplay: { paddingVertical: 14 },
+    metricsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: '100%',
+        marginTop: 14,
+        gap: 8,
+    },
+    metricChip: {
+        flexGrow: 1,
+        flexBasis: '30%',
+        minWidth: 88,
+        maxWidth: '48%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 6,
+        borderRadius: 12,
+    },
+    metricValue: {
+        fontSize: 16,
+        fontVariant: ['tabular-nums'],
+        textAlign: 'center',
+    },
+    metricLabel: {
+        fontSize: 10,
+        marginTop: 4,
+        textAlign: 'center',
+        lineHeight: 13,
+        letterSpacing: 0.2,
+    },
     sessionLabel: { fontSize: 11, color: '#6b7280', letterSpacing: 1.5, marginBottom: 8 },
-    timerValue: { fontSize: 44, color: '#111827', fontVariant: ['tabular-nums'] },
+    timerValue: { fontSize: 40, color: '#111827', fontVariant: ['tabular-nums'], textAlign: 'center' },
     subTimer: { fontSize: 16, color: '#4b5563', marginTop: -2 },
     timerLabel: { fontSize: 10, color: '#6b7280', letterSpacing: 1, marginTop: 2 },
     controlsRow: { flexDirection: 'row', gap: 20, width: '100%', justifyContent: 'center', marginTop: 12 },

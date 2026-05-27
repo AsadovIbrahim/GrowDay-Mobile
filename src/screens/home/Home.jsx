@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getUserHabitFetch,getAccountDataFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
 import { useEffect, useState, useRef, useContext, useCallback } from "react";
 import { useMMKVString } from "react-native-mmkv";
-import { storage } from "../../utils/MMKVStore";
+import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { ICONS } from "../../constants/icons";
 import { 
   faBars, 
@@ -28,6 +28,8 @@ import HomeEmptyState from './HomeEmptyState';
 import CalendarSelector from './components/CalendarSelector';
 import ProgressSummary from './components/ProgressSummary';
 import HabitCard from '../../components/HabitCard';
+import AdBanner from '../../components/AdBanner';
+import AvatarWithBorder from '../../components/AvatarWithBorder';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
@@ -246,7 +248,7 @@ const Home = () => {
           text: t('common.logout'), 
           style: "destructive",
           onPress: () => {
-            storage.delete('accessToken');
+            clearUserSession();
             // Navigation will automatically switch to AuthStack via Navigation.tsx
           } 
         }
@@ -299,12 +301,11 @@ const Home = () => {
         <View className="flex-1 pt-14 px-4">
           {/* Profile Header */}
           <View className="flex-row items-center px-2 mb-8 mt-2">
-            <View 
-                style={{ backgroundColor: colors.primary + '20' }} 
-                className="w-14 h-14 rounded-2xl items-center justify-center border border-white/10"
-            >
-                <FontAwesomeIcon icon={faUserCircle} color={colors.primary} size={32} />
-            </View>
+            <AvatarWithBorder
+              avatarUrl={accountData?.profilePicture}
+              level={storage.getNumber('user.activeBorder') || 1}
+              size={50}
+            />
             <View className="ml-4 flex-1">
                 <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
                     {firstName || 'User'}
@@ -521,6 +522,7 @@ const Home = () => {
               </TouchableOpacity>
             </View>
             <ProgressSummary dailyStatistics={dailyStatistics} />
+            <AdBanner />
           </>
         )}
       </ScrollView>

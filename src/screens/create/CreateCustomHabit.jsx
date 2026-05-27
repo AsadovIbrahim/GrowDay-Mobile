@@ -49,7 +49,6 @@ const UNITS = [
   "glasses",
   "pages",
   "chapters",
-  "kcal",
   "tasks",
   "Other",
 ];
@@ -67,6 +66,10 @@ const CreateCustomHabit = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
   const { t } = useTranslation();
+
+  const navigateOnSuccess = () => {
+    navigation.navigate("Home", { screen: "HomeScreen" });
+  };
 
   // Core Fields
   const [title, setTitle] = useState(habitData?.title || "");
@@ -194,7 +197,7 @@ const CreateCustomHabit = () => {
           };
           const response = await addSuggestedHabitFetch(accessToken, payload);
           if (response) {
-            navigation.navigate("Home", { screen: "HomeScreen" });
+            navigateOnSuccess();
           }
         } else {
           // Popular Habit (Shared Habit)
@@ -215,7 +218,7 @@ const CreateCustomHabit = () => {
           };
           const response = await addUserHabitFetch(accessToken, payload);
           if (response) {
-            navigation.navigate("Home", { screen: "HomeScreen" });
+            navigateOnSuccess();
           }
         }
       } else {
@@ -243,7 +246,7 @@ const CreateCustomHabit = () => {
         }
 
         if (response) {
-          navigation.navigate("Home", { screen: "HomeScreen" });
+          navigateOnSuccess();
         }
       }
     } catch (error) {

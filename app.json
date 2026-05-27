@@ -1,4 +1,8 @@
 {
   "name": "growday",
-  "displayName": "GrowDay"
+  "displayName": "GrowDay",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-8430015420939329~2178146786",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511"
+  }
 }

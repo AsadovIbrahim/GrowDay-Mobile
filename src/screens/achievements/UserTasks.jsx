@@ -136,7 +136,6 @@ const UserTasks = () => {
           Alert.alert(t("common.error"), res?.message || t("tasks.could_not_complete"));
         }
       } else {
-        // Mark as pending (Uncheck)
         const res = await updateUserTaskFetch(token, taskId, { status: "Pending" });
         if (res?.success) {
           setTasks((prev) =>

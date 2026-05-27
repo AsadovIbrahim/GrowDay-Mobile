@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faTrash, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from "react";
 import { useMMKVString } from "react-native-mmkv";
+import { storage } from "../../utils/MMKVStore";
 import { getUserNotificationsFetch, getUserUnreadNotificationsFetch, markAsAllReadNotificationFetch, getUnreadNotificationCountFetch, deleteNotificationFetch } from "../../utils/fetch";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from "../../context/ThemeContext";
@@ -11,7 +12,7 @@ import { useTranslation } from "react-i18next";
 const Notification = () => {
   const { theme, isDark } = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const navigation = useNavigation();
   const [token] = useMMKVString('accessToken');
@@ -51,43 +52,73 @@ const Notification = () => {
   const handleGoBack = () => {
     navigation.navigate('HomeScreen');
   };
+  // const getLocalNotifications = () => {
+  //   try {
+  //     const raw = storage.getString('local_push_notifications');
+  //     return raw ? JSON.parse(raw) : [];
+  //   } catch (e) {
+  //     console.log('Error reading local push notifications:', e);
+  //     return [];
+  //   }
+  // };
+
+  const dedupeNotifications = (items) => {
+    const map = new Map();
+    for (const n of items) {
+        const id = n.id;
+        if (id && !id.startsWith('local_')) {
+            map.set(id, n);
+            continue;
+        }
+        const title = (n.habitTitle || n.title || '').trim().toLowerCase();
+        const message = (n.message || '').trim().toLowerCase();
+        const minute = n.createdAt 
+            ? new Date(n.createdAt).toISOString().slice(0, 16) 
+            : '';
+        const key = `${title}|${message}|${minute}`;
+        if (!map.has(key)) map.set(key, n);
+    }
+    return Array.from(map.values())
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  };
+
   const getNotifications = async (page = 0, isRefresh = false) => {
     if (page === 0 && !isRefresh) setLoading(true);
     else if (page > 0) setIsLoadingMore(true);
 
     try {
-      const response = await getUserNotificationsFetch(token, page, pageSize);
-      let newNotifications = [];
-      if (Array.isArray(response)) {
-        newNotifications = response;
-      } else if (response && Array.isArray(response.data)) {
-        newNotifications = response.data;
-      }
+        const response = await getUserNotificationsFetch(token, page, pageSize);
+        let newNotifications = [];
+        if (Array.isArray(response)) {
+            newNotifications = response;
+        } else if (response && Array.isArray(response.data)) {
+            newNotifications = response.data;
+        }
 
-      if (newNotifications.length < pageSize) {
-        setHasMore(false);
-      } else {
-        setHasMore(true);
-      }
+        if (newNotifications.length < pageSize) {
+            setHasMore(false);
+        } else {
+            setHasMore(true);
+        }
 
-      if (page === 0) {
-        setNotifications(newNotifications);
-      } else {
-        setNotifications(prev => {
-          const prevailingIds = new Set(prev.map(i => i.id));
-          const uniqueNew = newNotifications.filter(i => !prevailingIds.has(i.id));
-          return [...prev, ...uniqueNew];
-        });
-      }
+        if (page === 0) {
+            // ✅ Local storage yoxdur, yalnız API data
+            setNotifications(newNotifications);
+        } else {
+            setNotifications(prev => {
+                const prevIds = new Set(prev.map(i => i.id));
+                const uniqueNew = newNotifications.filter(i => !prevIds.has(i.id));
+                return [...prev, ...uniqueNew];
+            });
+        }
     } catch (error) {
-      console.log('Error fetching notifications:', error);
-      if (page === 0) setNotifications([]);
+        console.log('Error fetching notifications:', error);
     } finally {
-      if (page === 0) setLoading(false);
-      setIsLoadingMore(false);
-      setRefreshing(false);
+        if (page === 0) setLoading(false);
+        setIsLoadingMore(false);
+        setRefreshing(false);
     }
-  };
+};
 
   const handleLoadMore = () => {
     if (!hasMore || loading || isLoadingMore || selectedTab === 'unread') return;
@@ -98,41 +129,37 @@ const Notification = () => {
   const getUnreadNotifications = async () => {
     setLoading(true);
     try {
-      const response = await getUserUnreadNotificationsFetch(token);
-      console.log('Unread notifications response:', response);
-      setUnreadNotifications(response);
+        const response = await getUserUnreadNotificationsFetch(token);
+        const apiUnread = Array.isArray(response) ? response : [];
+        setUnreadNotifications(apiUnread);
     } catch (error) {
-      console.log('Error fetching unread notifications:', error);
+        console.log('Error fetching unread notifications:', error);
+    } finally {
+        setLoading(false);
     }
   };
   const getUnreadNotificationCount = async () => {
     try {
-      const response = await getUnreadNotificationCountFetch(token);
-      console.log('Unread notification count response:', response);
-      setUnreadNotificationCount(response);
+        const response = await getUnreadNotificationCountFetch(token);
+        const apiCount = typeof response === 'number' ? response : 0;
+        setUnreadNotificationCount(apiCount);
     } catch (error) {
-      console.log('Error fetching unread notification count:', error);
+        console.log('Error fetching unread notification count:', error);
     }
-  };
+};
   const deleteNotification = async (notificationId) => {
     try {
-      const response = await deleteNotificationFetch(token, notificationId);
-      console.log('Notification deleted response:', response);
+        const response = await deleteNotificationFetch(token, notificationId);
+        console.log('Notification deleted response:', response);
 
-      // Immediately update states to remove the deleted notification
-      setNotifications(prevNotifications =>
-        prevNotifications.filter(notification => notification.id !== notificationId)
-      );
-      setUnreadNotifications(prevUnreadNotifications =>
-        prevUnreadNotifications.filter(notification => notification.id !== notificationId)
-      );
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        setUnreadNotifications(prev => prev.filter(n => n.id !== notificationId));
 
-      // Refresh data from server to ensure consistency
-      handleRefresh();
+        handleRefresh();
     } catch (error) {
-      console.log('Error deleting notification:', error);
+        console.log('Error deleting notification:', error);
     }
-  };
+};
 
   const deleteSelectedNotifications = async () => {
     if (selectedNotifications.size === 0) return;
@@ -178,27 +205,18 @@ const Notification = () => {
   };
   const markAsAllReadNotification = async () => {
     try {
-      const response = await markAsAllReadNotificationFetch(token);
-      console.log('Mark as all read response:', response);
+        await markAsAllReadNotificationFetch(token);
 
-      setNotifications(prevNotifications =>
-        prevNotifications.map(notification => ({
-          ...notification,
-          isRead: true
-        }))
-      );
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        setUnreadNotifications([]);
+        setUnreadNotificationCount(0);
 
-      setUnreadNotifications([]);
-
-      setUnreadNotificationCount(0);
-
-      handleRefresh();
-
-      setMarkAsAllRead(true);
+        handleRefresh();
+        setMarkAsAllRead(true);
     } catch (error) {
-      console.log('Error marking as all read:', error);
+        console.log('Error marking as all read:', error);
     }
-  };
+};
 
   const handleSelectAll = () => {
     const currentList = selectedTab === 'all' ? notifications : unreadNotifications;
@@ -281,11 +299,34 @@ const Notification = () => {
             <Text className="text-xs font-redditsans-regular" style={{ color: colors.textSecondary }}>
               {notification.createdAt
                 ? (() => {
-                    const dateStr = notification.createdAt;
-                    // Force 'Z' if missing to ensure UTC-to-local conversion
-                    const isoStr = (dateStr.includes('T') || dateStr.includes(' ')) && !dateStr.endsWith('Z') && !dateStr.includes('+') 
-                        ? dateStr.replace(' ', 'T') + 'Z' 
-                        : dateStr;
+                  const dateStr = notification.createdAt;
+                  // Force 'Z' if missing to ensure UTC-to-local conversion
+                  const isoStr = (dateStr.includes('T') || dateStr.includes(' ')) && !dateStr.endsWith('Z') && !dateStr.includes('+')
+                    ? dateStr.replace(' ', 'T') + 'Z'
+                    : dateStr;
+                  const localeMap = {
+                    az: 'az-AZ',
+                    ru: 'ru-RU',
+                    tr: 'tr-TR',
+                    en: 'en-US',
+                    de: 'de-DE',
+                    fr: 'fr-FR',
+                    es: 'es-ES',
+                    it: 'it-IT',
+                    ar: 'ar-AE',
+                    zh: 'zh-CN'
+                  };
+                  const locale = localeMap[i18n.language] || i18n.language || 'en-US';
+                  try {
+                    return new Date(isoStr).toLocaleString(locale, {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    }).replace(',', '');
+                  } catch (e) {
                     return new Date(isoStr).toLocaleString('en-US', {
                       year: 'numeric',
                       month: '2-digit',
@@ -294,7 +335,8 @@ const Notification = () => {
                       minute: '2-digit',
                       hour12: false
                     }).replace(',', '');
-                  })()
+                  }
+                })()
                 : 'N/A'
               }
             </Text>
@@ -350,14 +392,14 @@ const Notification = () => {
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center flex-1">
             {isSelectionMode ? (
-              <TouchableOpacity 
-                onPress={handleSelectAll} 
+              <TouchableOpacity
+                onPress={handleSelectAll}
                 className="flex-row items-center gap-2"
                 activeOpacity={0.7}
               >
-                <View 
+                <View
                   className="w-5 h-5 rounded items-center justify-center border"
-                  style={{ 
+                  style={{
                     borderColor: (filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) ? colors.primary : colors.textSecondary,
                     backgroundColor: (filteredNotifications && filteredNotifications.length > 0 && filteredNotifications.every(n => selectedNotifications.has(n.id))) ? colors.primary : 'transparent',
                     borderRadius: 4,

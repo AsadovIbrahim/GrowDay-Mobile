@@ -56,6 +56,37 @@ export const notificationListener = async () => {
   return unsubscribe;
 };
 
+export const saveLocalPushNotification = (title, body) => {
+  try {
+    const raw = storage.getString('local_push_notifications');
+    const existing = raw ? JSON.parse(raw) : [];
+    const normalizedTitle = (title || 'GrowDay').trim().toLowerCase();
+    const normalizedBody = (body || '').trim().toLowerCase();
+    const nowMinute = new Date().toISOString().slice(0, 16);
+    const isDuplicate = existing.some((n) => {
+      const t = (n.habitTitle || n.title || 'GrowDay').trim().toLowerCase();
+      const m = (n.message || '').trim().toLowerCase();
+      const minute = n.createdAt ? new Date(n.createdAt).toISOString().slice(0, 16) : '';
+      return t === normalizedTitle && m === normalizedBody && minute === nowMinute;
+    });
+    if (isDuplicate) return;
+
+    const newEntry = {
+      id: `local_${Date.now()}`,
+      habitTitle: title || 'GrowDay',
+      message: body || '',
+      isRead: false,
+      isLocal: true,
+      createdAt: new Date().toISOString(),
+    };
+    // Keep latest 50 push notifications
+    const updated = [newEntry, ...existing].slice(0, 50);
+    storage.set('local_push_notifications', JSON.stringify(updated));
+  } catch (e) {
+    console.log('Error saving local push notification:', e);
+  }
+};
+
 export const displayLocalNotification = async (remoteMessage) => {
   const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
   const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
@@ -72,9 +103,13 @@ export const displayLocalNotification = async (remoteMessage) => {
     vibration: soundEnabled,
   });
 
+  const title = remoteMessage.notification?.title || remoteMessage.data?.title || 'GrowDay';
+  const body = remoteMessage.notification?.body || remoteMessage.data?.body || '';
+
+
   await notifee.displayNotification({
-    title: remoteMessage.notification?.title || remoteMessage.data?.title || 'GrowDay',
-    body: remoteMessage.notification?.body || remoteMessage.data?.body || '',
+    title,
+    body,
     android: {
       channelId: channelId,
       pressAction: { id: 'default' },
@@ -261,8 +296,10 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
   
   await notifee.createTriggerNotification({
     id: `ongoing_${hId}`, // Overwrites the ongoing notification
-    title: "Goal Reached! 🎉",
-    body: `You successfully reached your goal for ${habit.title || 'this habit'}! Tap to celebrate!`,
+    title: t('notifications.push_goal_reached_title'),
+    body: t('notifications.push_goal_reached_body', {
+      habit: habit.title || t('explore.suggested_habits'),
+    }),
     data: {
       habitId: hId.toString(),
       type: 'goal_reached',
@@ -316,7 +353,7 @@ export const scheduleDailyMotivationalQuotes = async () => {
 
   await notifee.createChannel({
     id: channelId,
-    name: 'Daily Motivation',
+    name: t('notifications.channel_motivation'),
     importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
     sound: soundEnabled ? 'default' : undefined,
     vibration: soundEnabled,
@@ -344,7 +381,7 @@ export const scheduleDailyMotivationalQuotes = async () => {
     await notifee.createTriggerNotification(
       {
         id: `motivation_${i}`,
-        title: "Daily Motivation ✨",
+        title: t('notifications.push_motivation_title'),
         body: `"${quote.text}" — ${quote.author}`,
         data: { type: 'motivation' },
         android: {

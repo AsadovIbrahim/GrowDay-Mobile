@@ -10,7 +10,8 @@ import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation } from '@fortawesom
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { registerfetch, googleLoginFetch, getUserPreferencesFetch } from "../../utils/fetch";
-import { storage } from "../../utils/MMKVStore";
+import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
+import { storage, clearUserSession } from "../../utils/MMKVStore";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -52,22 +53,6 @@ const Register = () => {
       setFormData({ ...formData, [name]: text });
       setServerErrors([]);
     }
-    const translateServerError = (err) => {
-      const errorMap = {
-        "Username is already in use.": t("auth.messages.username_taken"),
-        "Email is already in use.": t("auth.messages.email_taken"),
-        "Passwords must have at least one non alphanumeric character.": t("auth.validation.password_non_alphanumeric"),
-        "Passwords must have at least one uppercase ('A'-'Z').": t("auth.validation.password_uppercase"),
-        "Passwords must have at least one lowercase ('a'-'z').": t("auth.validation.password_lowercase"),
-        "Passwords must have at least one digit ('0'-'9').": t("auth.validation.password_digit"),
-        "Passwords must be at least 8 characters.": t("auth.validation.password_min_length"),
-        "Passwords must have at least one special character.": t("auth.validation.password_non_alphanumeric"),
-        "Passwords do not match.": t("auth.messages.passwords_dont_match"),
-        "Invalid email address.": t("auth.validation.invalid_email"),
-      };
-      return errorMap[err] || err;
-    };
-
     const handleRegister = async () => {
       setLoading(true);
       setServerErrors([]);
@@ -82,8 +67,8 @@ const Register = () => {
           navigation.navigate("OtpVerification", { email: formData.email });
         } else {
           const msgs = data.errors?.length > 0
-            ? data.errors.map(err => translateServerError(err))
-            : [translateServerError(data.message) || t("auth.messages.registration_failed")];
+            ? translateAuthErrors(data.errors, t)
+            : [translateAuthError(data.message, t) || t("auth.messages.registration_failed")];
           setServerErrors(msgs);
         }
       } catch (error) {
@@ -133,6 +118,7 @@ const Register = () => {
           showToast(t("auth.messages.google_signup_success"), "success");
   
           setTimeout(() => {
+            clearUserSession();
             storage.set("hasCompletedPreferences", hasPrefs);
             storage.set("accessToken", token);
           }, 1100);
@@ -142,7 +128,8 @@ const Register = () => {
         }
       } catch (error) {
         console.error("Google Sign-In Error:", error);
-        showToast(error.message || t("auth.messages.google_failed"), "error");
+        const clientPrefix = GOOGLE_WEB_CLIENT_ID ? GOOGLE_WEB_CLIENT_ID.substring(0, 15) : 'null';
+        showToast(`${error.message || t("auth.messages.google_failed")} (ID: ${clientPrefix}...)`, "error");
       } finally {
         setLoading(false);
       }

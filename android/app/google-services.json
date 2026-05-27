@@ -12,7 +12,44 @@
           "package_name": "com.growday"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "792340848380-0kcdjqhq4ubpeh6487iulvg5vhg3kldo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.growday",
+            "certificate_hash": "384405b1a3b9fd79a911e7c4f3390d392bd9629e"
+          }
+        },
+        {
+          "client_id": "792340848380-c57010ggqb8r898nhiasn8arolftmcoa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.growday",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "792340848380-lnrt04c2b97s861por6fc8hpnroc0g7s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.growday",
+            "certificate_hash": "bc816ef16cd612cfd2d246164ce201aefff11546"
+          }
+        },
+        {
+          "client_id": "792340848380-vcgubhp8v238s9lm95e8ha20fhl9ae15.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.growday",
+            "certificate_hash": "1b47dc0df3abe7fea9383b2c37c834d7e21cbeac"
+          }
+        },
+        {
+          "client_id": "792340848380-lk0be4824i5svolmnedijtjbalem8aam.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCe_TnaA28u0rcus9qd4kk-RWOSwtr97xg"
@@ -20,7 +57,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792340848380-lk0be4824i5svolmnedijtjbalem8aam.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,5 +1,5 @@
 import { API_URL } from '@env';
-import { storage } from './MMKVStore';
+import { storage, clearUserSession } from './MMKVStore';
 
 const VITE_API_URL = API_URL;
 
@@ -19,11 +19,41 @@ const getHeaders = (token = null, contentType = "application/json") => {
 // Override global fetch locally to handle 401s and Refresh Tokens transparently
 const originalFetch = global.fetch || fetch;
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 const customFetch = async (url, options = {}) => {
     let response = await originalFetch(url, options);
 
     // If unauthorized, and it's not a login or refresh request
     if (response.status === 401 && !url.includes('/api/auth/login') && !url.includes('/api/auth/refresh-token')) {
+        
+        if (isRefreshing) {
+            // Queue this request and wait for the refresh token to arrive
+            return new Promise(function(resolve, reject) {
+                failedQueue.push({ resolve, reject });
+            }).then(token => {
+                const newHeaders = { ...options.headers };
+                newHeaders["Authorization"] = `Bearer ${token}`;
+                return originalFetch(url, { ...options, headers: newHeaders });
+            }).catch(err => {
+                return response; // Return original 401 if refresh failed
+            });
+        }
+
+        isRefreshing = true;
+
         try {
             // Attempt to refresh token
             const refreshRes = await originalFetch(`${VITE_API_URL}/api/auth/refresh-token`, {
@@ -50,10 +80,20 @@ const customFetch = async (url, options = {}) => {
                     const newOptions = { ...options, headers: newHeaders };
 
                     response = await originalFetch(url, newOptions);
+                    
+                    // Resolve queued requests with the new token
+                    processQueue(null, newToken);
+                } else {
+                    processQueue(new Error("No token returned"));
                 }
+            } else {
+                processQueue(new Error("Refresh failed"));
             }
         } catch (error) {
             console.log('Refresh token error:', error);
+            processQueue(error);
+        } finally {
+            isRefreshing = false;
         }
     }
 
@@ -65,7 +105,7 @@ const fetch = customFetch;
 
 const handleResponse = async (response) => {
     if (response.status === 401) {
-        storage.delete('accessToken');
+        clearUserSession();
         // Optional: you could also reload the app or navigate to login here
         // but since App.tsx reacts to accessToken change, it should work automatically.
         return { success: false, message: "Session expired. Please login again.", isUnauthorized: true };
@@ -382,6 +422,19 @@ export const getUserSuggestedHabitsFetch = async (token,pageIndex=0,pageSize=10)
     return data;
 };
 
+export const regenerateSuggestedHabitsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/SuggestedHabit/RegenerateForUser`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+    }
+    return { success: response.ok, status: response.status };
+};
+
 export const addUserHabitFetch = async (token, payload) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/CreateSharedHabit`, {
         method: "POST",
@@ -471,7 +524,20 @@ export const getUserTotalXPFetch=async(token)=>{
         headers:getHeaders(token),
         cache: "no-store",
     });
-    return handleResponse(response);
+    const res = await handleResponse(response);
+    if (res && res.success && typeof res.data === 'number') {
+        const currentPoints = res.data;
+        const currentLevel = Math.floor(Math.sqrt(currentPoints / 50)) + 1;
+        const lastKnownLevel = storage.getNumber('user.lastKnownLevel') || 0;
+        
+        if (lastKnownLevel > 0 && currentLevel > lastKnownLevel) {
+            // Level up detected!
+            storage.set('user.pendingLevelUp', currentLevel);
+        }
+        storage.set('user.lastKnownLevel', currentLevel);
+        storage.set('user.totalPoints', currentPoints);
+    }
+    return res;
 }
 
 export const getUserHabitByIdFetch = async (token, userHabitId, date = null) => {
@@ -494,11 +560,16 @@ export const completeUserHabitFetch = async (token, userHabitId, payload = {}) =
         body: JSON.stringify(payload),
     });
     
+    let result = { success: response.ok, status: response.status };
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
-        return await response.json();
+        result = await response.json();
     }
-    return { success: response.ok, status: response.status };
+    
+    if (result.success || result.ok) {
+        getUserTotalXPFetch(token).catch(e => console.log('Background XP fetch error:', e));
+    }
+    return result;
 };
 
 export const incrementUserHabitFetch = async (token, userHabitId, payload = {}) => {
@@ -624,7 +695,11 @@ export const completeUserTaskFetch = async (token, id) => {
         method: "PATCH",
         headers: getHeaders(token),
     });
-    return handleResponse(response);
+    const res = await handleResponse(response);
+    if (res && res.success) {
+        getUserTotalXPFetch(token).catch(e => console.log('Background XP fetch error:', e));
+    }
+    return res;
 };
 
 export const updateUserTaskFetch = async (token, id, payload) => {
@@ -763,6 +838,45 @@ export const sendSupportMessageFetch = async (token, payload) => {
 export const deleteAccountFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Account/DeleteAccount`, {
         method: "DELETE",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const submitGameScoreFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/Game/submit-score`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify(payload),
+    });
+    const res = await handleResponse(response);
+    if (res && res.success) {
+        getUserTotalXPFetch(token).catch(e => console.log('Background XP fetch error:', e));
+    }
+    return res;
+};
+
+export const getGameLeaderboardFetch = async (token, gameType, limit = 20) => {
+    const response = await fetch(`${VITE_API_URL}/api/Game/leaderboard?gameType=${gameType}&limit=${limit}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const getGamePersonalBestFetch = async (token, gameType) => {
+    const response = await fetch(`${VITE_API_URL}/api/Game/personal-best?gameType=${gameType}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+        cache: "no-store",
+    });
+    return handleResponse(response);
+};
+
+export const getUserGameScoreHistoryFetch = async (token, gameType) => {
+    const response = await fetch(`${VITE_API_URL}/api/Game/score-history?gameType=${gameType}`, {
+        method: "GET",
         headers: getHeaders(token),
     });
     return handleResponse(response);

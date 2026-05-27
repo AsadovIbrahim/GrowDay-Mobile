@@ -8,10 +8,13 @@ import { ICONS } from '../../constants/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sound from 'react-native-sound';
 import { useTranslation } from 'react-i18next';
+import { useInterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 
 Sound.setCategory('Playback');
 
 const { width } = Dimensions.get('window');
+
+const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : "ca-app-pub-8430015420939329/2948302979";
 
 const HabitCelebration = () => {
     const navigation = useNavigation();
@@ -19,6 +22,20 @@ const HabitCelebration = () => {
     const insets = useSafeAreaInsets();
     const { t } = useTranslation();
     const habit = route.params?.habit;
+
+    const { isLoaded, isClosed, load, show } = useInterstitialAd(interstitialAdUnitId, {
+        requestNonPersonalizedAdsOnly: true,
+    });
+
+    useEffect(() => {
+        load();
+    }, [load]);
+
+    useEffect(() => {
+        if (isClosed) {
+            navigation.goBack();
+        }
+    }, [isClosed, navigation]);
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -75,7 +92,11 @@ const HabitCelebration = () => {
     }, []);
 
     const handleContinue = () => {
-        navigation.goBack();
+        if (isLoaded) {
+            show();
+        } else {
+            navigation.goBack();
+        }
     };
 
     if (!habit) return null;

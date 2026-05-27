@@ -12,6 +12,9 @@ import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
 import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder, scheduleDailyMotivationalQuotes } from '../utils/NotificationService';
 import notifee, { EventType } from '@notifee/react-native';
 import BootSplash from 'react-native-bootsplash';
+import { storage } from '../utils/MMKVStore';
+import LevelUpModal from '../components/LevelUpModal';
+import mobileAds from 'react-native-google-mobile-ads';
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -23,6 +26,36 @@ const Navigation = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isSplashVisible, setIsSplashVisible] = useState(true);
     const [isNavReady, setIsNavReady] = useState(false);
+    const [pendingLevelUp, setPendingLevelUp] = useState(0);
+
+    useEffect(() => {
+        mobileAds()
+            .initialize()
+            .then(adapterStatuses => {
+                console.log('Mobile Ads SDK initialized successfully!', adapterStatuses);
+            })
+            .catch(err => {
+                console.log('Mobile Ads SDK initialization failed:', err);
+            });
+    }, []);
+
+    useEffect(() => {
+        const checkPendingLevel = () => {
+            const pending = storage.getNumber('user.pendingLevelUp') || 0;
+            if (pending > 0 && pending !== pendingLevelUp) {
+                setPendingLevelUp(pending);
+            }
+        };
+        checkPendingLevel();
+
+        const interval = setInterval(checkPendingLevel, 800);
+        return () => clearInterval(interval);
+    }, [pendingLevelUp]);
+
+    const handleCloseLevelUp = () => {
+        setPendingLevelUp(0);
+        storage.delete('user.pendingLevelUp');
+    };
 
     useEffect(() => {
         let unsubscribe = () => {};
@@ -196,6 +229,11 @@ const Navigation = () => {
                 {isNavReady && isSplashVisible && (
                     <AnimatedSplashScreen onAnimationEnd={() => setIsSplashVisible(false)} />
                 )}
+                <LevelUpModal
+                    visible={pendingLevelUp > 0}
+                    level={pendingLevelUp}
+                    onClose={handleCloseLevelUp}
+                />
             </MenuContext.Provider>
         </ThemeProvider>
     );

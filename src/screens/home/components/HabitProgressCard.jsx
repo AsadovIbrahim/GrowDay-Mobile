@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 
 
 // ── Design tokens ─────────────────────────────────────────────
-const STROKE      = 11;          // unified circle stroke
-const BAR_H       = 48;
-const BAR_W       = 12;
+const STROKE = 11;          // unified circle stroke
+const BAR_H = 48;
+const BAR_W = 12;
 
 // ── State enum ────────────────────────────────────────────────
 // completed            → filled green
@@ -21,14 +21,14 @@ const BAR_W       = 12;
 
 // ── Animated mini bar ─────────────────────────────────────────
 const AnimatedBar = ({ d, isPast, colors, isDark }) => {
-    const fillAnim  = useRef(new Animated.Value(0)).current;
+    const fillAnim = useRef(new Animated.Value(0)).current;
     const pulseAnim = useRef(new Animated.Value(1)).current;
     const { t } = useTranslation();
 
-    const isDone            = d.value >= 100;
-    const isTodayComplete   = d.isToday && isDone;
+    const isDone = d.value >= 100;
+    const isTodayComplete = d.isToday && isDone;
     const isTodayIncomplete = d.isToday && !isDone;
-    const isFuture          = !d.isToday && !isDone && !isPast;
+    const isFuture = !d.isToday && !isDone && !isPast;
 
     // Target fill ratio
     const targetFill = isDone ? 1 : 0;
@@ -57,16 +57,16 @@ const AnimatedBar = ({ d, isPast, colors, isDark }) => {
     }, [isTodayIncomplete]);
 
     const barH = fillAnim.interpolate({
-        inputRange:  [0, 1],
+        inputRange: [0, 1],
         outputRange: [4, BAR_H],
     });
 
     // Track style
     const trackStyle = [
         styles.barTrack,
-        isTodayComplete   && styles.trackTodayDone,
+        isTodayComplete && styles.trackTodayDone,
         isTodayIncomplete && styles.trackTodayPending,
-        isFuture          && styles.trackFuture,
+        isFuture && styles.trackFuture,
     ];
 
     // Fill color: completed → green, else transparent
@@ -89,12 +89,12 @@ const AnimatedBar = ({ d, isPast, colors, isDark }) => {
                 ]} />
             </Animated.View>
 
-            <Text 
+            <Text
                 className={d.isToday ? "font-redditsans-bold text-[10px] mt-1 tracking-wider" : "font-redditsans-semibold text-[10px] mt-1 tracking-wider"}
                 style={[
                     { color: colors.textSecondary },
                     d.isToday && { color: colors.primary },
-                    isFuture  && !d.isToday && styles.dayLabelFuture,
+                    isFuture && !d.isToday && styles.dayLabelFuture,
                 ]}
             >
                 {t(`habit_details.days_short.${["mon", "tue", "wed", "thu", "fri", "sat", "sun"][d._index ?? 0]}`)}
@@ -125,8 +125,8 @@ const WeeklyChart = ({ data, colors, isDark }) => {
 const HabitProgressCard = ({
     habit,
     weeklyData,
-    liveDelta   = 0,
-    title       = null,
+    liveDelta = 0,
+    title = null,
     weeklyStats = null,
 }) => {
     const { theme, isDark } = useTheme();
@@ -137,8 +137,8 @@ const HabitProgressCard = ({
 
     const isWeekly = weeklyStats != null;
 
-    const totalCurrent   = (habit.currentValue ?? 0) + liveDelta;
-    const dailyPercent   = Math.min(100, (totalCurrent / (habit.targetValue ?? 1)) * 100);
+    const totalCurrent = (habit.currentValue ?? 0) + liveDelta;
+    const dailyPercent = Math.min(100, (totalCurrent / (habit.targetValue ?? 1)) * 100);
     const displayPercent = isWeekly
         ? Math.round(weeklyStats.completionPercentage ?? 0)
         : Math.round(dailyPercent);
@@ -165,20 +165,30 @@ const HabitProgressCard = ({
 
                 <View style={styles.statsCol}>
                     {isWeekly ? (
-                        <View>
-                            <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }}>
-                                {t("habit_details.completed_count", { 
-                                    completed: weeklyStats.completedDays, 
+                        <View style={styles.weeklySummary}>
+                            <Text
+                                className='font-redditsans-bold'
+                                style={[styles.weeklyPrimary, { color: colors.text }]}
+                                numberOfLines={2}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.8}
+                            >
+                                {t("habit_details.completed_count", {
+                                    completed: weeklyStats.completedDays,
                                     total: weeklyStats.totalDays,
                                     unit: t("habit_details.days")
                                 })}
                             </Text>
-                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
+                            <Text
+                                className='font-redditsans-semibold'
+                                style={[styles.weeklySecondary, { color: colors.textSecondary }]}
+                                numberOfLines={1}
+                            >
                                 {t("habit_details.completed_this_week")}
                             </Text>
                         </View>
                     ) : (
-                        <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }}>
+                        <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }} numberOfLines={2}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
                             <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                         </Text>
@@ -186,7 +196,7 @@ const HabitProgressCard = ({
 
                     <View style={styles.metaGroup}>
                         <View style={styles.metaRow}>
-                            <FontAwesomeIcon icon={faFire}   color="#f59e0b" size={13} />
+                            <FontAwesomeIcon icon={faFire} color="#f59e0b" size={13} />
                             <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.streak")}:{" "}
                                 <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
@@ -253,7 +263,18 @@ const styles = StyleSheet.create({
     },
     statsCol: {
         flex: 1,
+        minWidth: 0,
         justifyContent: "center",
+    },
+    weeklySummary: {
+        gap: 4,
+    },
+    weeklyPrimary: {
+        fontSize: 20,
+        lineHeight: 26,
+    },
+    weeklySecondary: {
+        fontSize: 13,
     },
 
     primaryText: {

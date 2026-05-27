@@ -7,6 +7,7 @@ import GrowDayLogo from "../../../assets/images/main logo.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleExclamation, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { resetPasswordFetch } from "../../utils/fetch";
+import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
 import Toast from "../../components/common/Toast";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -53,8 +54,8 @@ const ResetPassword = () => {
         }, 2000);
       } else {
         const msgs = data.errors?.length > 0
-          ? data.errors
-          : [data.message || t("auth.messages.reset_failed")];
+          ? translateAuthErrors(data.errors, t)
+          : [translateAuthError(data.message, t) || t("auth.messages.reset_failed")];
         setServerErrors(msgs);
       }
     } catch (error) {
