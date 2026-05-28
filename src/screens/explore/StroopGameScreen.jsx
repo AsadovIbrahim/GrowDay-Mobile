@@ -377,31 +377,42 @@ export default function StroopGameScreen() {
               </Text>
 
               {/* The Word Card */}
-              <View
-                className="w-full py-10 rounded-3xl mb-8 items-center justify-center"
-                style={{
-                  backgroundColor: gameState === "feedback"
-                    ? (lastCorrect ? "#10B981" + "20" : "#EF4444" + "20")
-                    : colors.cardSecondary,
-                  borderWidth: 2,
-                  borderColor: gameState === "feedback"
-                    ? (lastCorrect ? "#10B981" : "#EF4444")
-                    : colors.border,
-                }}
-              >
-                <Text
-                  className="font-redditsans-bold"
-                  style={{ fontSize: 44, color: round.inkColor, letterSpacing: 2, transform: round.transform || [] }}
-                >
-                  {round.word}
-                </Text>
-                {gameState === "feedback" && (
-                  <Text className="mt-3 font-redditsans-bold text-lg"
-                    style={{ color: lastCorrect ? "#10B981" : "#EF4444" }}>
-                    {lastCorrect ? "✓ " + t("games.stroop_correct", "Düzgün!") : "✗ " + t("games.stroop_wrong", "Yanlış!")}
-                  </Text>
-                )}
-              </View>
+              {(() => {
+                const isRotated = round.transform && round.transform.some(t => t.rotate === "90deg" || t.rotate === "-90deg");
+                const fontSize = isRotated 
+                  ? (round.word.length > 8 ? 28 : 34) 
+                  : (round.word.length > 8 ? 36 : 44);
+                const cardHeight = activeDifficulty?.id === "expert" ? 220 : 180;
+
+                return (
+                  <View
+                    className="w-full rounded-3xl mb-8 items-center justify-center"
+                    style={{
+                      height: cardHeight,
+                      backgroundColor: gameState === "feedback"
+                        ? (lastCorrect ? "#10B981" + "20" : "#EF4444" + "20")
+                        : colors.cardSecondary,
+                      borderWidth: 2,
+                      borderColor: gameState === "feedback"
+                        ? (lastCorrect ? "#10B981" : "#EF4444")
+                        : colors.border,
+                    }}
+                  >
+                    <Text
+                      className="font-redditsans-bold"
+                      style={{ fontSize, color: round.inkColor, letterSpacing: 2, transform: round.transform || [] }}
+                    >
+                      {round.word}
+                    </Text>
+                    {gameState === "feedback" && (
+                      <Text className="mt-3 font-redditsans-bold text-lg"
+                        style={{ color: lastCorrect ? "#10B981" : "#EF4444" }}>
+                        {lastCorrect ? "✓ " + t("games.stroop_correct", "Düzgün!") : "✗ " + t("games.stroop_wrong", "Yanlış!")}
+                      </Text>
+                    )}
+                  </View>
+                );
+              })()}
 
               {/* Answer Choices */}
               <View className="flex-row flex-wrap justify-between w-full">
