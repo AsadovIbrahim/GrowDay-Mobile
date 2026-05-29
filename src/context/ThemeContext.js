@@ -6,42 +6,31 @@ const THEME_KEY = 'app_theme_mode';
 export const lightTheme = {
   isDark: false,
   colors: {
-    // Backgrounds
     background: '#e7f0df',
     backgroundGradient: ['#e7f0df', '#5a9e6f'],
     card: '#FFFFFF',
     cardSecondary: '#F3F4F6',
-    // Text
     text: '#111827',
     textSecondary: '#6B7280',
     textMuted: '#9CA3AF',
-    textGray:'#676666',
-    // Primary (green)
+    textGray: '#676666',
     primary: '#2f6f3f',
     primaryLight: '#4caf66',
     primarySurface: '#e7f5ec',
-    // Border
     border: '#E5E7EB',
-    // Section label
     sectionLabel: '#374151',
-    // Icons
     icon: '#111827',
     iconMuted: '#9CA3AF',
-    // Switch
     switchTrackOn: '#4caf66',
     switchTrackOff: '#D1D5DB',
-    // Danger
     danger: '#EF4444',
     dangerSurface: '#FEE2E2',
-    // Misc
     white: '#FFFFFF',
     overlay: 'rgba(0,0,0,0.5)',
-    // Input
     inputBackground: '#F9FAFB',
     inputBorder: '#D1D5DB',
     inputText: '#111827',
     placeholder: '#9CA3AF',
-    // Points badge
     pointsBadge: '#FFF4E6',
     pointsText: '#F5A623',
   },
@@ -50,77 +39,219 @@ export const lightTheme = {
 export const darkTheme = {
   isDark: true,
   colors: {
-    // Backgrounds
     background: '#0F172A',
     backgroundGradient: ['#0F172A', '#1a3a2a'],
     card: '#1E293B',
     cardSecondary: '#273549',
-    // Text
     text: '#F1F5F9',
     textSecondary: '#94A3B8',
     textMuted: '#64748B',
     textGray: '#CBD5E1',
-    // Primary (green)
     primary: '#4caf66',
     primaryLight: '#6fcf85',
     primarySurface: '#132b1c',
-    // Border
     border: '#334155',
-    // Section label
     sectionLabel: '#CBD5E1',
-    // Icons
     icon: '#E2E8F0',
     iconMuted: '#64748B',
-    // Switch
     switchTrackOn: '#4caf66',
     switchTrackOff: '#475569',
-    // Danger
     danger: '#F87171',
     dangerSurface: '#3b1414',
-    // Misc
     white: '#FFFFFF',
     overlay: 'rgba(0,0,0,0.7)',
-    // Input
     inputBackground: '#273549',
     inputBorder: '#334155',
     inputText: '#F1F5F9',
     placeholder: '#64748B',
-    // Points badge
     pointsBadge: '#2d1f06',
     pointsText: '#F5A623',
   },
 };
 
+export const sunsetTheme = {
+  isDark: false,
+  colors: {
+    background: '#fff7ed',
+    backgroundGradient: ['#fff7ed', '#fed7aa', '#fdba74', '#f97316'],
+    card: '#FFFFFF',
+    cardSecondary: '#FFF1F2',
+    text: '#431407',
+    textSecondary: '#9A3412',
+    textMuted: '#C2410C',
+    textGray: '#EA580C',
+    primary: '#ea580c',
+    primaryLight: '#f97316',
+    primarySurface: '#ffedd5',
+    border: '#FED7AA',
+    sectionLabel: '#431407',
+    icon: '#431407',
+    iconMuted: '#9A3412',
+    switchTrackOn: '#ea580c',
+    switchTrackOff: '#E5E7EB',
+    danger: '#EF4444',
+    dangerSurface: '#FEE2E2',
+    white: '#FFFFFF',
+    overlay: 'rgba(0,0,0,0.5)',
+    inputBackground: '#FFFDFB',
+    inputBorder: '#FED7AA',
+    inputText: '#431407',
+    placeholder: '#9A3412',
+    pointsBadge: '#FFF4E6',
+    pointsText: '#F5A623',
+  }
+};
+
+export const oceanTheme = {
+  isDark: false,
+  colors: {
+    background: '#ecfeff',
+    backgroundGradient: ['#ecfeff', '#a5f3fc', '#06b6d4', '#0891b2'],
+    card: '#FFFFFF',
+    cardSecondary: '#F6FEFF',
+    text: '#083344',
+    textSecondary: '#0891b2',
+    textMuted: '#0e7490',
+    textGray: '#06b6d4',
+    primary: '#0891b2',
+    primaryLight: '#22d3ee',
+    primarySurface: '#cffafe',
+    border: '#A5F3FC',
+    sectionLabel: '#083344',
+    icon: '#083344',
+    iconMuted: '#0891b2',
+    switchTrackOn: '#0891b2',
+    switchTrackOff: '#E5E7EB',
+    danger: '#EF4444',
+    dangerSurface: '#FEE2E2',
+    white: '#FFFFFF',
+    overlay: 'rgba(0,0,0,0.5)',
+    inputBackground: '#F6FEFF',
+    inputBorder: '#A5F3FC',
+    inputText: '#083344',
+    placeholder: '#0891b2',
+    pointsBadge: '#FFF4E6',
+    pointsText: '#F5A623',
+  }
+};
+
+export const cyberTheme = {
+  isDark: true,
+  colors: {
+    background: '#090514',
+    backgroundGradient: ['#090514', '#1e0b36', '#2d0b5a', '#180126'],
+    card: '#1b0e3a',
+    cardSecondary: '#291754',
+    text: '#F1F5F9',
+    textSecondary: '#F472B6',
+    textMuted: '#A78BFA',
+    textGray: '#D8B4FE',
+    primary: '#EC4899',
+    primaryLight: '#F472B6',
+    primarySurface: '#3c1236',
+    border: '#4c2b9a',
+    sectionLabel: '#F1F5F9',
+    icon: '#F1F5F9',
+    iconMuted: '#A78BFA',
+    switchTrackOn: '#EC4899',
+    switchTrackOff: '#3b2075',
+    danger: '#F87171',
+    dangerSurface: '#3b1414',
+    white: '#FFFFFF',
+    overlay: 'rgba(0,0,0,0.7)',
+    inputBackground: '#291754',
+    inputBorder: '#4c2b9a',
+    inputText: '#F1F5F9',
+    placeholder: '#A78BFA',
+    pointsBadge: '#2d1f06',
+    pointsText: '#F5A623',
+  }
+};
+
+export const roseTheme = {
+  isDark: false,
+  colors: {
+    background: '#fff5f5',
+    backgroundGradient: ['#fff5f5', '#fecaca', '#fca5a5', '#db2777'],
+    card: '#FFFFFF',
+    cardSecondary: '#FFF1F2',
+    text: '#500724',
+    textSecondary: '#db2777',
+    textMuted: '#be185d',
+    textGray: '#ec4899',
+    primary: '#db2777',
+    primaryLight: '#f43f5e',
+    primarySurface: '#ffe4e6',
+    border: '#FECACA',
+    sectionLabel: '#500724',
+    icon: '#500724',
+    iconMuted: '#db2777',
+    switchTrackOn: '#db2777',
+    switchTrackOff: '#E5E7EB',
+    danger: '#EF4444',
+    dangerSurface: '#FEE2E2',
+    white: '#FFFFFF',
+    overlay: 'rgba(0,0,0,0.5)',
+    inputBackground: '#FFFDFD',
+    inputBorder: '#FECACA',
+    inputText: '#500724',
+    placeholder: '#db2777',
+    pointsBadge: '#FFF4E6',
+    pointsText: '#F5A623',
+  }
+};
+
+const THEMES = {
+  light: lightTheme,
+  dark: darkTheme,
+  sunset: sunsetTheme,
+  ocean: oceanTheme,
+  cyber: cyberTheme,
+  rose: roseTheme,
+};
+
 export const ThemeContext = createContext({
   theme: lightTheme,
   isDark: false,
+  themeName: 'light',
   toggleTheme: () => {},
+  setThemeByName: (name) => {},
 });
 
 export const ThemeProvider = ({ children }) => {
-  // Load persisted preference synchronously from MMKV
-  const [isDark, setIsDark] = useState(() => {
+  const [themeName, setThemeName] = useState(() => {
     try {
-      return storage.getString(THEME_KEY) === 'dark';
+      const saved = storage.getString(THEME_KEY);
+      // Backwards compatibility for 'dark' and 'light' boolean representations
+      if (saved === 'dark') return 'dark';
+      if (saved === 'light') return 'light';
+      return saved || 'light';
     } catch {
-      return false;
+      return 'light';
     }
   });
 
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    try {
-      storage.set(THEME_KEY, next ? 'dark' : 'light');
-    } catch (e) {
-      console.warn('ThemeContext: failed to persist theme', e);
+  const setThemeByName = (name) => {
+    if (THEMES[name]) {
+      setThemeName(name);
+      try {
+        storage.set(THEME_KEY, name);
+      } catch (e) {
+        console.warn('ThemeContext: failed to persist theme name', e);
+      }
     }
   };
 
-  const theme = isDark ? darkTheme : lightTheme;
+  const toggleTheme = () => {
+    const next = themeName === 'dark' ? 'light' : 'dark';
+    setThemeByName(next);
+  };
+
+  const theme = THEMES[themeName] || lightTheme;
+  const isDark = theme.isDark;
 
   return (
-    <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, isDark, themeName, toggleTheme, setThemeByName }}>
       {children}
     </ThemeContext.Provider>
   );

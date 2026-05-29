@@ -149,7 +149,8 @@
       "thu": "GIO",
       "fri": "VEN",
       "sat": "SAB"
-    }
+    },
+    "quote_of_the_day": "✨ Citazione del Giorno"
   },
   "my_habits": {
     "header": "Le tue Abitudini",
@@ -313,7 +314,7 @@
     "on_scheduled_days": "Nei giorni programmati",
     "selected_days": "Giorni selezionati",
     "preview": "✨ Farai {{title}} {{targetValue}} {{unit}} ogni {{frequency}}",
-    "select_icon": "Seleziona icona",
+    "select_icon": "Seleziona Icona",
     "icon_subtitle": "Icona",
     "repeat_on": "Ripeti il",
     "repeat_interval": "Intervallo di ripetizione",
@@ -323,32 +324,50 @@
     "monthly_repeat_note": "Questa abitudine si ripeterà lo stesso giorno di ogni mese (Giorno {{day}}).",
     "track_duration": "Traccia durata",
     "duration_placeholder": "es. 10",
-    "minutes_per_session": "minuti per sessione"
+    "minutes_per_session": "minuti per sessione",
+    "standard_icons": "Icone Standard",
+    "premium_icons": "Icone Premium 🌟"
   },
   "icons": {
-    "run": "corsa",
-    "water": "acqua",
-    "gym": "palestra",
-    "book": "libro",
-    "code": "codice",
-    "sleep": "sonno",
-    "meditate": "meditare",
-    "diet": "dieta",
-    "walk": "camminare",
-    "write": "scrivere",
-    "music": "musica",
-    "study": "studiare",
-    "heart": "cuore",
-    "sun": "sole",
-    "moon": "luna",
-    "plant": "pianta",
-    "coffee": "caffè",
-    "work": "lavoro",
-    "female": "donna",
-    "woman": "donna",
-    "selfcare": "cura",
+    "run": "Corsa",
+    "water": "Acqua",
+    "gym": "Sport",
+    "book": "Libro",
+    "code": "Codice",
+    "sleep": "Dormire",
+    "meditate": "Meditare",
+    "diet": "Dieta",
+    "walk": "Camminare",
+    "write": "Scrivere",
+    "music": "Musica",
+    "study": "Studiare",
+    "heart": "Cuore",
+    "sun": "Sole",
+    "moon": "Luna",
+    "plant": "Pianta",
+    "coffee": "Caffè",
+    "work": "Lavoro",
+    "female": "Donna",
+    "woman": "Danza",
+    "selfcare": "Cura",
     "lock": "blocco",
-    "default": "predefinito"
+    "default": "predefinito",
+    "crown": "Corona",
+    "rocket": "Razzo",
+    "game": "Gioco",
+    "palette": "Tavolozza",
+    "trophy": "Trofeo",
+    "gem": "Gemma",
+    "unicorn": "Unicorno",
+    "eagle": "Aquila",
+    "magic": "Magia",
+    "fire": "Fuoco",
+    "star2": "Stella",
+    "heart2": "Cuore",
+    "gift": "Regalo",
+    "balloon": "Palloncino",
+    "money": "Soldi",
+    "key": "Chiave"
   },
   "units": {
     "header": "Seleziona unità",
@@ -593,7 +612,8 @@
       "contact_support": "Contatta il supporto",
       "rate_app": "Valuta l'app",
       "help_center": "Centro Assistenza",
-      "delete_account": "Elimina account"
+      "delete_account": "Elimina account",
+      "themes": "Temi dell'applicazione"
     },
     "edit_profile_screen": {
       "title": "Modifica profilo",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "Elimina account?",
     "delete_confirm_desc": "Sei sicuro di voler eliminare permanentemente il tuo account? Tutti i tuoi abitudini, progressi, compiti e cronologia verranno eliminati per sempre. Questa azione non può essere annullata.",
-    "delete_confirm_btn": "Elimina account"
+    "delete_confirm_btn": "Elimina account",
+    "level": "Livello"
   },
   "preferences": {
     "continue": "Continua",
@@ -979,7 +1000,15 @@
       "q6": "Come controllo i miei progressi?",
       "a6": "Apri un'abitudine per vedere le tue prestazioni di oggi, i progressi settimanali e le tue serie.",
       "q7": "Come contatto il supporto?",
-      "a7": "Vai su Profilo → Contatta Supporto o scrivici a growday.support@gmail.com."
+      "a7": "Vai su Profilo → Contatta Supporto o scrivici a growday.support@gmail.com.",
+      "q8": "Cos'è il Mentor IA e come funziona?",
+      "a8": "Il Mentor IA è un coach di produttività premium. Analizza i tuoi ultimi 14 giorni di abitudini, serie e obiettivi per fornirti consigli quotidiani personalizzati basati sui dati.",
+      "q9": "Perché il Mentor IA è bloccato o limitato?",
+      "a9": "Il Mentor IA si sblocca al Livello 3 (ottenuto tramite punti XP) per garantire che tu abbia abitudini attive da analizzare. Gli utenti gratuiti hanno un limite di 5 messaggi al giorno, mentre gli utenti Premium hanno messaggi illimitati.",
+      "q10": "Cos'è il Negozio XP?",
+      "a10": "Il Negozio XP ti consente di spendere i tuoi punti XP guadagnati per articoli premium como bordi del profilo, icone personalizzate delle abitudini, pacchetti di temi, booster XP e pacchetti di citazioni motivazionali.",
+      "q11": "Come guadagno XP da spendere nel Negozio?",
+      "a11": "Guadagni XP completando abitudini, finendo compiti, mantenendo serie e sbloccando obiettivi. Più sei costante, più XP guadagni!"
     },
     "features": {
       "habits_title": "Tracciamento Abitudini",
@@ -993,7 +1022,11 @@
       "explore_title": "Esplora & Impara",
       "explore_desc": "Scopri articoli e abitudini suggerite dall'intelligenza artificiale.",
       "reminders_title": "Promemoria",
-      "reminders_desc": "Imposta notifiche intelligenti per non perdere mai una sessione."
+      "reminders_desc": "Imposta notifiche intelligenti per non perdere mai una sessione.",
+      "store_title": "Negozio XP",
+      "store_desc": "Spendi i tuoi XP guadagnati per bordi premium, icone personalizzate, pacchetti di temi e citazioni motivazionali.",
+      "ai_mentor_title": "Mentore IA",
+      "ai_mentor_desc": "Ottieni coaching di produttività personalizzato basato sui tuoi dati reali di abitudini, serie e obiettivi."
     }
   },
   "games": {
@@ -1124,5 +1157,104 @@
     "generating_new_habits": "Generazione di nuove abitudini suggerite...",
     "locked_avatar_title": "Avatar Bloccato",
     "locked_avatar_desc": "Devi essere di Livello {{level}} per sbloccare questo avatar!\n(Il tuo Livello: {{userLevel}})"
+  },
+  "store": {
+    "header_title": "Negozio XP",
+    "profile_subtitle": "Acquista Streak Freeze, proteggi la tua catena",
+    "owned_shields": "I Tuoi Scudi",
+    "freezes_count": "{{count}} Streak Freeze",
+    "items_section": "PRODOTTI XP PREMIUM",
+    "my_perks": "I Tuoi Vantaggi Attivi",
+    "no_active_perks": "Nessun vantaggio attivo al momento.",
+    "owned": "attivo",
+    "owned_btn": "Posseduto ✓",
+    "buy_btn": "Acquista",
+    "buy_again": "Estendi Tempo",
+    "buy_btn_action": "Acquista",
+    "feedback_items": "Hai nuove idee o suggerimenti per altri entusiasmanti articoli del negozio XP? Inviaci un messaggio dalla sezione Supporto! 🚀",
+    "insufficient_xp_title": "XP Insufficienti",
+    "insufficient_xp_desc_custom": "Servono almeno {{cost}} XP per acquistare {{item}}. Completa le tue abitudini per guadagnare più punti! 🎯",
+    "confirm_buy_title": "Conferma Acquisto",
+    "confirm_buy_desc_custom": "{{cost}} XP saranno detratti dai tuoi punti per acquistare 1 {{item}}. Confermi?",
+    "buy_success_title": "Congratulazioni! 🎉",
+    "buy_success_desc_custom": "{{item}} acquistato con successo! Il vantaggio è stato immediatamente applicato al tuo profilo.",
+    "buy_failed": "Acquisto fallito. Riprova.",
+    "streak_freeze_limit_title": "Limite Raggiunto ❄️",
+    "streak_freeze_limit_desc": "Puoi possedere un maximum di 3 Streak Freeze contemporaneamente. Usa quelli esistenti prima di comprarne altri!",
+    "items": {
+      "streak_freeze": {
+        "title": "Streak Freeze",
+        "desc": "Uno scudo magico che protegge la tua serie di abitudini anche se dimentichi di completarla a fine giornata. Il sistema consuma automaticamente 1 congelamento per ogni giorno mancato."
+      },
+      "premium_border": {
+        "title": "Cornice Profilo Premium",
+        "desc": "Attiva un magnifico anello di gradiente multicolore luminoso attorno alla tua foto profilo. Mostra a tutti il tuo status di livello!"
+      },
+      "xp_booster": {
+        "title": "Potenziatore 2x XP (24h)",
+        "desc": "Concede il doppio dei punti esperienza (XP) per tutte le abitudini e attività completate nelle próximas 24 ore. Sali di livello alla velocità della luce!"
+      },
+      "custom_habit_icon": {
+        "title": "Icona Abitudine Personalizzata",
+        "desc": "Sblocca un pannello speciale che ti permette di selezionare emoji premium personalizzati e icone colorate quando crei o modifichi abitudini."
+      },
+      "profile_badge": {
+        "title": "Badge Profilo VIP",
+        "desc": "Mostra un'icona brillante di corona VIP (👑) accanto al tuo nome utente nel profilo, dando al tuo account un aspetto ultra-premium."
+      },
+      "theme_pack": {
+        "title": "Pacchetto Temi Premium",
+        "desc": "Aggiunge splendidi temi colore premium Sunset Glow, Ocean Wave, Cyber Neon e Rose Gold, ridisegnando completamente l'aspetto dell'app."
+      },
+      "motivation_pack": {
+        "title": "Pacchetto Motivazione",
+        "desc": "Aggiunge una raccolta personalizzata di citazioni motivazionali premium giornaliere e suggerimenti sugli obiettivi alla tua dashboard o notifiche."
+      }
+    },
+    "booster_limit_title": "Limite Potenziatore Raggiunto ⚡",
+    "booster_limit_desc": "La durata massima del Potenziatore 2x XP è di 72 ore. Attendi che il tempo rimanente diminuisca prima di acquistarne altri!",
+    "theme_locked_title": "Tema Bloccato 🔒",
+    "theme_locked_desc": "Per attivare questo tema premium, devi acquistare il 'Pacchetto Temi Premium' nel negozio XP!",
+    "themes": {
+      "header": "Temi dell'Applicazione",
+      "light": "Tema Chiaro",
+      "light_desc": "Toni classici verdi e chiari",
+      "dark": "Tema Scuro",
+      "dark_desc": "Modalità scura riposante per gli occhi",
+      "sunset": "Sunset Glow 🌅",
+      "sunset_desc": "Sfumature arancioni calde",
+      "ocean": "Ocean Wave 🌊",
+      "ocean_desc": "Toni blu oceano profondo",
+      "cyber": "Cyber Neon 🎆",
+      "cyber_desc": "Viola scuro futuristico neon",
+      "rose": "Rose Gold 🌸",
+      "rose_desc": "Eleganti toni oro rosa"
+    },
+    "perks": {
+      "border": "🎨 Bordo",
+      "icon": "🎯 Icona",
+      "themes": "🌈 Temi",
+      "motivation": "💬 Frasi"
+    }
+  },
+  "ai_mentor": {
+    "card_title": "Mentore IA",
+    "card_subtitle": "Chiedimi qualsiasi cosa sulle tue abitudini",
+    "card_locked": "Sblocca al livello 3",
+    "chat_header": "Mentore IA",
+    "input_placeholder": "Scrivi un messaggio...",
+    "daily_limit": "{{remaining}} messaggi rimasti oggi",
+    "limit_reached": "Limite giornaliero raggiunto. Torna domani!",
+    "quick_motivate": "Motivami",
+    "quick_habit": "Consiglio sulle abitudini",
+    "quick_plan": "Pianifica la mia giornata",
+    "error": "Impossibile ottenere una risposta. Riprova.",
+    "typing": "L'IA sta pensando...",
+    "clear_history": "Cancella",
+    "remaining_badge": "{{remaining}} Rimasti",
+    "select_prompt": "Seleziona uno per iniziare la conversazione:",
+    "prompt_motivate": "Motivami per oggi!",
+    "prompt_habit": "Quali abitudini mi consigli per aumentare la produttività?",
+    "prompt_plan": "Aiutami a preparare un ottimo piano giornaliero!"
   }
 }

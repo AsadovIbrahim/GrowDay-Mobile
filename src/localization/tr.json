@@ -149,7 +149,8 @@
       "thu": "PER",
       "fri": "CUM",
       "sat": "CMT"
-    }
+    },
+    "quote_of_the_day": "✨ Günün Sözü"
   },
   "my_habits": {
     "header": "Alışkanlıklarınız",
@@ -313,7 +314,7 @@
     "on_scheduled_days": "Planlanmış günlerde",
     "selected_days": "Seçili günlerde",
     "preview": "✨ {{frequency}} {{targetValue}} {{unit}} {{title}} yapacaksınız",
-    "select_icon": "Simge Seç",
+    "select_icon": "Simge Seçin",
     "icon_subtitle": "Simge",
     "repeat_on": "Tekrarla",
     "repeat_interval": "Tekrar aralığı",
@@ -323,32 +324,50 @@
     "monthly_repeat_note": "Bu alışkanlık her ayın aynı gününde tekrarlanacaktır (Gün {{day}}).",
     "track_duration": "Süreyi takip et",
     "duration_placeholder": "örn: 10",
-    "minutes_per_session": "seans başına dakika"
+    "minutes_per_session": "seans başına dakika",
+    "standard_icons": "Standart İkonlar",
+    "premium_icons": "Premium İkonlar 🌟"
   },
   "icons": {
-    "run": "koşu",
-    "water": "su",
-    "gym": "spor salonu",
-    "book": "kitap",
-    "code": "kod",
-    "sleep": "uyku",
-    "meditate": "meditasyon",
-    "diet": "diyet",
-    "walk": "yürüyüş",
-    "write": "yazı",
-    "music": "müzik",
-    "study": "ders",
-    "heart": "kalp",
-    "sun": "güneş",
-    "moon": "ay",
-    "plant": "bitki",
-    "coffee": "kahve",
-    "work": "iş",
-    "female": "kadın",
-    "woman": "kadın",
-    "selfcare": "öz bakım",
+    "run": "Koşu",
+    "water": "Su",
+    "gym": "Spor",
+    "book": "Kitap",
+    "code": "Kodlama",
+    "sleep": "Uyku",
+    "meditate": "Meditasyon",
+    "diet": "Diyet",
+    "walk": "Yürüyüş",
+    "write": "Yazı",
+    "music": "Müzik",
+    "study": "Ders",
+    "heart": "Kalp",
+    "sun": "Güneş",
+    "moon": "Ay",
+    "plant": "Bitki",
+    "coffee": "Kahve",
+    "work": "İş",
+    "female": "Kadın",
+    "woman": "Dans",
+    "selfcare": "Bakım",
     "lock": "kilit",
-    "default": "varsayılan"
+    "default": "varsayılan",
+    "crown": "Taç",
+    "rocket": "Roket",
+    "game": "Oyun",
+    "palette": "Palet",
+    "trophy": "Kupa",
+    "gem": "Elmas",
+    "unicorn": "Unicorn",
+    "eagle": "Kartal",
+    "magic": "Sihir",
+    "fire": "Ateş",
+    "star2": "Yıldız",
+    "heart2": "Kalp",
+    "gift": "Hediye",
+    "balloon": "Balon",
+    "money": "Para",
+    "key": "Anahtar"
   },
   "units": {
     "header": "Birim seçin",
@@ -593,7 +612,8 @@
       "contact_support": "Destekle İletişime Geç",
       "rate_app": "Uygulamayı Değerlendirin",
       "help_center": "Yardım Merkezi",
-      "delete_account": "Hesabı Sil"
+      "delete_account": "Hesabı Sil",
+      "themes": "Uygulama Temaları"
     },
     "edit_profile_screen": {
       "title": "Profili Düzenle",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "Hesabı Sil?",
     "delete_confirm_desc": "Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz? Tüm alışkanlıklarınız, ilerlemeniz, görevleriniz ve geçmişiniz sonsuza kadar silinecektir. Bu işlem geri alınamaz.",
-    "delete_confirm_btn": "Hesabı Sil"
+    "delete_confirm_btn": "Hesabı Sil",
+    "level": "Seviye"
   },
   "preferences": {
     "continue": "Devam et",
@@ -977,7 +998,15 @@
       "q6": "Alışkanlık ilerlemesini nasıl takip edebilirim?",
       "a6": "Herhangi bir alışkanlığı açın. Bugünkü performansınızı, haftalık ilerlemenizi, mevcut ve en iyi serinizi görebilirsiniz.",
       "q7": "Destek ekibiyle nasıl iletişime geçebilirim?",
-      "a7": "Profil → Destek ile İletişime Geç bölümüne gidin veya growday.support@gmail.com adresine e-posta gönderin."
+      "a7": "Profil → Destek ile İletişime Geç bölümüne gidin veya growday.support@gmail.com adresine e-posta gönderin.",
+      "q8": "Yapay Zeka Mentörü nedir ve nasıl çalışır?",
+      "a8": "Yapay Zeka Mentörü kişisel bir üretkenlik koçudur. Size özel tavsiyeler sunmak için son 14 gündeki alışkanlık tamamlama oranlarınızı, serilerinizi ve hedeflerinizi analiz eder.",
+      "q9": "Yapay Zeka Mentörü neden kilitli veya sınırlı?",
+      "a9": "Daha iyi bir koçluk için mentör en az 3. Seviyede (XP kazanarak) açılır. Ücretsiz kullanıcılar günde 5 mesaj gönderebilir, Premium kullanıcılar ise sınırsız mesajlaşabilir.",
+      "q10": "XP Mağazası nedir?",
+      "a10": "XP Mağazası, kazandığınız XP puanlarını profil çerçeveleri, özel alışkanlık simgeleri, tema paketleri, XP artırıcıları ve motivasyon alıntı paketleri gibi premium öğelere harcamanıza olanak tanır.",
+      "q11": "Mağazada harcamak için XP'yi nasıl kazanırım?",
+      "a11": "Alışkanlıkları tamamlayarak, görevleri bitirerek, serileri sürdürerek ve başarıları açarak XP kazanırsınız. Ne kadar tutarlı olursanız, o kadar çok XP kazanırsınız!"
     },
     "features": {
       "habits_title": "Alışkanlık Takibi",
@@ -991,7 +1020,11 @@
       "explore_title": "Keşfet ve Öğren",
       "explore_desc": "Hedeflerinize göre hazırlanmış, yapay zeka tarafından seçilen makaleleri keşfedin.",
       "reminders_title": "Hatırlatıcılar",
-      "reminders_desc": "Hiçbir seansı kaçırmamak için alışkanlıklarınız için akıllı bildirimler ayarlayın."
+      "reminders_desc": "Hiçbir seansı kaçırmamak için alışkanlıklarınız için akıllı bildirimler ayarlayın.",
+      "store_title": "XP Mağazası",
+      "store_desc": "Kazandığınız XP'yi premium çerçeveler, özel alışkanlık simgeleri, tema paketleri ve motivasyon alıntılarına harcayın.",
+      "ai_mentor_title": "Yapay Zeka Mentörü",
+      "ai_mentor_desc": "Gerçek alışkanlık verilerinize, serilerinize dev hedeflerinize dayalı kişisel verimlilik koçluğu alın."
     }
   },
   "games": {
@@ -1122,5 +1155,104 @@
     "generating_new_habits": "Yeni önerilen alışkanlıklar hazırlanıyor...",
     "locked_avatar_title": "Kilitli Avatar",
     "locked_avatar_desc": "Bu avatarı açmak için Level {{level}} olmalısınız!\n(Seviyeniz: {{userLevel}})"
+  },
+  "store": {
+    "header_title": "XP Mağazası",
+    "profile_subtitle": "Streak Freeze al, zincirini koru",
+    "owned_shields": "Kalkanlarınız",
+    "freezes_count": "{{count}} Streak Freeze",
+    "items_section": "PREMİUM XP ÜRÜNLERİ",
+    "my_perks": "Aktif Avantajlarınız",
+    "no_active_perks": "Henüz aktif avantaj yok.",
+    "owned": "aktif",
+    "owned_btn": "Sahipsiniz ✓",
+    "buy_btn": "Satın Al",
+    "buy_again": "Süreyi Uzat",
+    "buy_btn_action": "Satın Al",
+    "feedback_items": "Yeni fikirleriniz veya diğer heyecan verici XP mağazası ürünleri için önerileriniz mi var? Destek bölümünden bize mesaj gönderin! 🚀",
+    "insufficient_xp_title": "Yeterli XP Yok",
+    "insufficient_xp_desc_custom": "{{item}} satın almak için en az {{cost}} XP gerekiyor. Daha fazla puan kazanmak için alışkanlıklarınızı tamamlayın! 🎯",
+    "confirm_buy_title": "Satın Almayı Onayla",
+    "confirm_buy_desc_custom": "1 adet {{item}} satın almak için {{cost}} XP puanınızdan düşülecek. Onaylıyor musunuz?",
+    "buy_success_title": "Tebrikler! 🎉",
+    "buy_success_desc_custom": "{{item}} başarıyla satın alındı! Avantaj hemen profilinize uygulandı.",
+    "buy_failed": "Satın alma başarısız oldu. Lütfen tekrar deneyin.",
+    "streak_freeze_limit_title": "Limite Ulaşıldı ❄️",
+    "streak_freeze_limit_desc": "Aynı anda en fazla 3 Streak Freeze'e sahip olabilirsiniz. Yenisini almadan önce mevcut olanları kullanın!",
+    "items": {
+      "streak_freeze": {
+        "title": "Streak Freeze",
+        "desc": "Günün sonunda alışkanlığı tamamlamayı unutsanız bile serinizi koruyan sihirli kalkan. Sistem, kaçırılan her gün için otomatik olarak 1 adet tüketir."
+      },
+      "premium_border": {
+        "title": "Premium Profil Çerçevesi",
+        "desc": "Profil resminizin etrafında muhteşem, parlayan çok renkli sihirli gradyan halka etkinleştirir. Herkese seviye statünüzü gösterin!"
+      },
+      "xp_booster": {
+        "title": "2x XP Güçlendirici (24s)",
+        "desc": "Sonraki 24 saat içinde tamamlanan tüm alışkanlık ve görevler için iki kat deneyim puanı (XP) kazandırır. Işık hızında seviye atlayın!"
+      },
+      "custom_habit_icon": {
+        "title": "Özel Alışkanlık İkonu",
+        "desc": "Alışkanlık oluştururken veya düzenlerken özel premium emojiler ve renkli ikonlar seçmenize olanak tanıyan özel bir paneli açar."
+      },
+      "profile_badge": {
+        "title": "VIP Profil Rozeti",
+        "desc": "Profilinizdeki kullanıcı adınızın yanında parlayan bir VIP taç (👑) ikonu görüntüleyerek hesabınıza ultra-premium bir görünüm kazandırır."
+      },
+      "theme_pack": {
+        "title": "Premium Tema Paketi",
+        "desc": "Sunset Glow, Ocean Wave, Cyber Neon ve Rose Gold premium renk temalarını ekleyerek uygulamanın görünümünü tamamen yeniden tasarlar."
+      },
+      "motivation_pack": {
+        "title": "Motivasyon Paketi",
+        "desc": "Dashboard veya bildirimlerinize özelleştirilmiş günlük premium motivasyon alıntıları ve hedef önerileri koleksiyonu ekler."
+      }
+    },
+    "booster_limit_title": "Takviye Limiti Doldu ⚡",
+    "booster_limit_desc": "2x XP Takviyesinin maksimum süresi 72 saat olabilir. Yenisini almadan önce mevcut sürenin azalmasını bekleyin!",
+    "theme_locked_title": "Tema Kilitli 🔒",
+    "theme_locked_desc": "Bu premium temayı etkinleştirmek için XP Mağazasından 'Premium Tema Paketi' satın almalısınız!",
+    "themes": {
+      "header": "Uygulama Temaları",
+      "light": "Açık Tema",
+      "light_desc": "Klasik yeşil ve açık tonlar",
+      "dark": "Koyu Tema",
+      "dark_desc": "Gözleri yormayan koyu mod",
+      "sunset": "Sunset Glow 🌅",
+      "sunset_desc": "Sıcak turuncu gradyanlar",
+      "ocean": "Ocean Wave 🌊",
+      "ocean_desc": "Derin mavi okyanus tonları",
+      "cyber": "Cyber Neon 🎆",
+      "cyber_desc": "Neon fütüristik koyu mor",
+      "rose": "Rose Gold 🌸",
+      "rose_desc": "Zarif altın-pembe tonlar"
+    },
+    "perks": {
+      "border": "🎨 Çerçeve",
+      "icon": "🎯 İkon",
+      "themes": "🌈 Temalar",
+      "motivation": "💬 Motiv."
+    }
+  },
+  "ai_mentor": {
+    "card_title": "Yapay Zeka Mentörü",
+    "card_subtitle": "Alışkanlıklarınız hakkında her şeyi sorun",
+    "card_locked": "Seviye 3'te Açılır",
+    "chat_header": "AI Mentor",
+    "input_placeholder": "Mesajınızı yazın...",
+    "daily_limit": "Bugün {{remaining}} mesajınız kaldı",
+    "limit_reached": "Günlük limite ulaşıldı. Yarın tekrar gelin!",
+    "quick_motivate": "Beni motive et",
+    "quick_habit": "Alışkanlık tavsiyesi",
+    "quick_plan": "Günümü planla",
+    "error": "Yanıt alınamadı. Lütfen tekrar deneyin.",
+    "typing": "AI düşünüyor...",
+    "clear_history": "Temizle",
+    "remaining_badge": "{{remaining}} Kaldı",
+    "select_prompt": "Sohbete başlamak için birini seçin:",
+    "prompt_motivate": "Beni bugün için motive et!",
+    "prompt_habit": "Verimliliğimi artırmak için hangi alışkanlıkları önerirsin?",
+    "prompt_plan": "Harika bir gün planı hazırlamama yardım et!"
   }
 }

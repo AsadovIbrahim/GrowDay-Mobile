@@ -149,7 +149,8 @@
       "thu": "THU",
       "fri": "FRI",
       "sat": "SAT"
-    }
+    },
+    "quote_of_the_day": "✨ Quote of the Day"
   },
   "my_habits": {
     "header": "Your Habits",
@@ -323,32 +324,50 @@
     "monthly_repeat_note": "This habit will repeat on the same day of each month (Day {{day}}).",
     "track_duration": "Track duration",
     "duration_placeholder": "e.g. 10",
-    "minutes_per_session": "minutes per session"
+    "minutes_per_session": "minutes per session",
+    "standard_icons": "Standard Icons",
+    "premium_icons": "Premium Icons 🌟"
   },
   "icons": {
-    "run": "run",
-    "water": "water",
-    "gym": "gym",
-    "book": "book",
-    "code": "code",
-    "sleep": "sleep",
-    "meditate": "meditate",
-    "diet": "diet",
-    "walk": "walk",
-    "write": "write",
-    "music": "music",
-    "study": "study",
-    "heart": "heart",
-    "sun": "sun",
-    "moon": "moon",
-    "plant": "plant",
-    "coffee": "coffee",
-    "work": "work",
-    "female": "female",
-    "woman": "woman",
-    "selfcare": "self care",
+    "run": "Run",
+    "water": "Water",
+    "gym": "Gym",
+    "book": "Book",
+    "code": "Code",
+    "sleep": "Sleep",
+    "meditate": "Meditate",
+    "diet": "Diet",
+    "walk": "Walk",
+    "write": "Write",
+    "music": "Music",
+    "study": "Study",
+    "heart": "Heart",
+    "sun": "Sun",
+    "moon": "Moon",
+    "plant": "Plant",
+    "coffee": "Coffee",
+    "work": "Work",
+    "female": "Female",
+    "woman": "Woman",
+    "selfcare": "Selfcare",
     "lock": "lock",
-    "default": "default"
+    "default": "default",
+    "crown": "Crown",
+    "rocket": "Rocket",
+    "game": "Game",
+    "palette": "Palette",
+    "trophy": "Trophy",
+    "gem": "Gem",
+    "unicorn": "Unicorn",
+    "eagle": "Eagle",
+    "magic": "Magic",
+    "fire": "Fire",
+    "star2": "Star",
+    "heart2": "Heart",
+    "gift": "Gift",
+    "balloon": "Balloon",
+    "money": "Money",
+    "key": "Key"
   },
   "units": {
     "header": "Select Unit",
@@ -593,7 +612,8 @@
       "contact_support": "Contact Support",
       "rate_app": "Rate The App",
       "help_center": "Help Center",
-      "delete_account": "Delete Account"
+      "delete_account": "Delete Account",
+      "themes": "App Themes"
     },
     "edit_profile_screen": {
       "title": "Edit Profile",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "Delete Account?",
     "delete_confirm_desc": "Are you sure you want to permanently delete your account? All your habits, progress, tasks, and history will be deleted forever. This action cannot be undone.",
-    "delete_confirm_btn": "Delete Account"
+    "delete_confirm_btn": "Delete Account",
+    "level": "Level"
   },
   "preferences": {
     "continue": "Continue",
@@ -979,7 +1000,15 @@
       "q6": "How do I track habit progress?",
       "a6": "Open any habit from your home screen. You will see today's performance, your weekly progress, current streak, and best streak. You can also add notes for each day.",
       "q7": "How do I contact support?",
-      "a7": "Go to Profile → Contact Support and send us a message. You can also email us directly at growday.support@gmail.com. We respond within 24 hours."
+      "a7": "Go to Profile → Contact Support and send us a message. You can also email us directly at growday.support@gmail.com. We respond within 24 hours.",
+      "q8": "What is the AI Mentor and how does it work?",
+      "a8": "The AI Mentor is a premium productivity coach. It analyzes your last 14 days of habit streaks, completion rates, and goals to provide personalized, data-driven daily advice and feedback.",
+      "q9": "Why is the AI Mentor locked or limited?",
+      "a9": "The AI Mentor unlocks at Level 3 (earned via XP points) to ensure you have active habits to analyze. Free users have a limit of 5 messages per day, while Premium users get unlimited messages.",
+      "q10": "What is the XP Store?",
+      "a10": "The XP Store lets you spend your earned XP points on premium items like profile borders, custom habit icons, theme packs, XP boosters, and motivation quote packs.",
+      "q11": "How do I earn XP to spend in the Store?",
+      "a11": "You earn XP by completing habits, finishing tasks, maintaining streaks, and unlocking achievements. The more consistent you are, the more XP you earn!"
     },
     "features": {
       "habits_title": "Habit Tracking",
@@ -993,7 +1022,11 @@
       "explore_title": "Explore & Learn",
       "explore_desc": "Discover AI-curated learning articles and suggested habits tailored to your goals and preferences.",
       "reminders_title": "Reminders",
-      "reminders_desc": "Set smart notifications for your habits so you never miss a session. Customize reminder times per habit."
+      "reminders_desc": "Set smart notifications for your habits so you never miss a session. Customize reminder times per habit.",
+      "store_title": "XP Store",
+      "store_desc": "Spend your earned XP on premium borders, custom habit icons, theme packs, and motivation quotes.",
+      "ai_mentor_title": "AI Mentor",
+      "ai_mentor_desc": "Get personalized productivity coaching based on your real habit data, streaks, and goals."
     }
   },
   "games": {
@@ -1124,5 +1157,104 @@
     "generating_new_habits": "Generating new suggested habits...",
     "locked_avatar_title": "Locked Avatar",
     "locked_avatar_desc": "You must be Level {{level}} to unlock this avatar!\n(Your Level: {{userLevel}})"
+  },
+  "store": {
+    "header_title": "XP Store",
+    "profile_subtitle": "Buy Streak Freeze, protect your chain",
+    "owned_shields": "Your Shields",
+    "freezes_count": "{{count}} Streak Freeze",
+    "items_section": "PREMIUM XP PRODUCTS",
+    "my_perks": "Your Active Perks",
+    "no_active_perks": "No active perks yet.",
+    "owned": "active",
+    "owned_btn": "Owned ✓",
+    "buy_btn": "Buy",
+    "buy_again": "Extend Time",
+    "buy_btn_action": "Buy",
+    "feedback_items": "Have new ideas or suggestions for other exciting XP store items? Send us a message from the Support section! 🚀",
+    "insufficient_xp_title": "Not Enough XP",
+    "insufficient_xp_desc_custom": "You need at least {{cost}} XP to buy {{item}}. Complete your habits to earn more points! 🎯",
+    "confirm_buy_title": "Confirm Purchase",
+    "confirm_buy_desc_custom": "{{cost}} XP will be deducted from your points to buy 1 {{item}}. Confirm?",
+    "buy_success_title": "Congratulations! 🎉",
+    "buy_success_desc_custom": "{{item}} purchased successfully! The perk was immediately applied to your profile.",
+    "buy_failed": "Purchase failed. Please try again.",
+    "streak_freeze_limit_title": "Limit Reached ❄️",
+    "streak_freeze_limit_desc": "You can own a maximum of 3 Streak Freezes at a time. Use your existing ones before buying more!",
+    "items": {
+      "streak_freeze": {
+        "title": "Streak Freeze",
+        "desc": "A magical shield that protects your habit streak even if you forget to complete it at the end of the day. The system automatically consumes 1 freeze per missed day."
+      },
+      "premium_border": {
+        "title": "Premium Profile Border",
+        "desc": "Activates a gorgeous, glowing multi-color magical gradient ring around your profile picture. Show everyone your level status!"
+      },
+      "xp_booster": {
+        "title": "2x XP Booster (24h)",
+        "desc": "Grants double the experience points (XP) for all habits and tasks completed in the next 24 hours. Level up at lightning speed!"
+      },
+      "custom_habit_icon": {
+        "title": "Custom Habit Icon",
+        "desc": "Unlocks a special panel allowing you to select custom premium emojis and colorful icons when creating or editing habits."
+      },
+      "profile_badge": {
+        "title": "VIP Profile Badge",
+        "desc": "Displays a shiny VIP crown (👑) icon next to your username in your profile, giving your account an ultra-premium look."
+      },
+      "theme_pack": {
+        "title": "Premium Theme Pack",
+        "desc": "Adds stunning Sunset Glow, Ocean Wave, Cyber Neon, and Rose Gold premium color themes, completely redesigning the app's look."
+      },
+      "motivation_pack": {
+        "title": "Motivation Quote Pack",
+        "desc": "Adds a customized collection of daily premium motivation quotes and goal suggestions to your dashboard or notifications."
+      }
+    },
+    "booster_limit_title": "Booster Limit Reached ⚡",
+    "booster_limit_desc": "The maximum duration for 2x XP Booster is 72 hours. Please wait until your active booster time decreases before purchasing more!",
+    "theme_locked_title": "Theme Locked 🔒",
+    "theme_locked_desc": "To activate this premium theme, you must purchase the 'Premium Theme Pack' from the XP Store!",
+    "themes": {
+      "header": "App Themes",
+      "light": "Light Theme",
+      "light_desc": "Classic green and light tones",
+      "dark": "Dark Theme",
+      "dark_desc": "Eye-friendly dark mode",
+      "sunset": "Sunset Glow 🌅",
+      "sunset_desc": "Warm orange gradients",
+      "ocean": "Ocean Wave 🌊",
+      "ocean_desc": "Deep blue ocean tones",
+      "cyber": "Cyber Neon 🎆",
+      "cyber_desc": "Neon futuristic dark purple",
+      "rose": "Rose Gold 🌸",
+      "rose_desc": "Elegant gold-pink tones"
+    },
+    "perks": {
+      "border": "🎨 Border",
+      "icon": "🎯 Icon",
+      "themes": "🌈 Themes",
+      "motivation": "💬 Quotes"
+    }
+  },
+  "ai_mentor": {
+    "card_title": "AI Mentor",
+    "card_subtitle": "Ask me anything about your habits",
+    "card_locked": "Unlock at Level 3",
+    "chat_header": "AI Mentor",
+    "input_placeholder": "Type your message...",
+    "daily_limit": "{{remaining}} messages left today",
+    "limit_reached": "Daily limit reached. Come back tomorrow!",
+    "quick_motivate": "Motivate me",
+    "quick_habit": "Habit advice",
+    "quick_plan": "Plan my day",
+    "error": "Failed to get response. Please try again.",
+    "typing": "AI is thinking...",
+    "clear_history": "Clear",
+    "remaining_badge": "{{remaining}} Left",
+    "select_prompt": "Select one to start the conversation:",
+    "prompt_motivate": "Motivate me for today!",
+    "prompt_habit": "What habits do you suggest to increase my productivity?",
+    "prompt_plan": "Help me prepare a great day plan!"
   }
 }

@@ -25,3 +25,22 @@ export const ICONS = {
   lock: "🔒",
   default: "⭐"
 };
+
+export const PREMIUM_ICONS = {
+  crown: "👑",
+  rocket: "🚀",
+  game: "🎮",
+  palette: "🎨",
+  trophy: "🏆",
+  gem: "💎",
+  unicorn: "🦄",
+  eagle: "🦅",
+  magic: "🔮",
+  fire: "🔥",
+  star2: "🌟",
+  heart2: "💖",
+  gift: "🎁",
+  balloon: "🎈",
+  money: "💵",
+  key: "🔑",
+};

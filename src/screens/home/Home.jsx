@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image, StyleSheet as RNStyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getUserHabitFetch,getAccountDataFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
-import { useEffect, useState, useRef, useContext, useCallback } from "react";
+import { useEffect, useState, useRef, useContext, useCallback, useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { ICONS } from "../../constants/icons";
@@ -21,7 +21,9 @@ import {
   faQuestionCircle,
   faShieldAlt,
   faShareAlt,
-  faStar as faStarSolid
+  faStar as faStarSolid,
+  faQuoteRight,
+  faStore
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuContext } from '../../context/MenuContext';
 import HomeEmptyState from './HomeEmptyState';
@@ -32,6 +34,7 @@ import AdBanner from '../../components/AdBanner';
 import AvatarWithBorder from '../../components/AvatarWithBorder';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AIMentorCard from '../../components/AIMentorCard';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 const getLocalDateString = (d) => {
@@ -72,7 +75,26 @@ const Home = () => {
 
   const [accountData, setAccountData] = useState(null);
   const firstName=accountData?.firstName;  
-  const email=accountData?.email;  
+  const email=accountData?.email;
+
+  // Premium "Quote of the Day" — pick one quote per day using date as seed
+  const dailyQuote = useMemo(() => {
+    let quotes = t('notifications.motivation_quotes', { returnObjects: true });
+    if (!Array.isArray(quotes) || quotes.length === 0) {
+      quotes = [
+        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+        { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+        { text: "Action is the foundational key to all success.", author: "Pablo Picasso" },
+        { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+        { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+        { text: "Your attitude determines how well you do it.", author: "Lou Holtz" },
+        { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
+      ];
+    }
+    const now = new Date();
+    const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    return quotes[seed % quotes.length];
+  }, [t]);
   const handleDateSelect = (day, fullDate) => {
     setSelectedDate(day);
     setSelectedDateObject(fullDate);
@@ -221,9 +243,8 @@ const Home = () => {
     { id: 'habits', label: t('menu.habits'), icon: faWalking, route: 'UserHabits' },
     { id: 'statistics', label: t('statistics.header'), icon: faChartLine, route: 'Statistics' },
     { id: 'achievements', label: t('menu.achievements'), icon: faMedal, route: 'Achievements' },
-    { id: 'support', label: t('menu.support'), icon: faQuestionCircle, route: 'Profile', screen: 'ContactSupport' },
+    { id: 'store', label: t('store.header_title', 'XP Mağazası'), icon: faStore, route: 'Profile', screen: 'StoreScreen' },
     { id: 'settings', label: t('menu.settings'), icon: faGear, route: 'Profile' },
-    { id: 'legal', label: t('menu.legal'), icon: faShieldAlt, route: 'Profile', screen: 'PrivacyPolicy' },
   ];
 
   const handleMenuPress = (item) => {
@@ -303,7 +324,7 @@ const Home = () => {
           <View className="flex-row items-center px-2 mb-8 mt-2">
             <AvatarWithBorder
               avatarUrl={accountData?.profilePicture}
-              level={storage.getNumber('user.activeBorder') || 1}
+              level={accountData?.hasPremiumBorder ? 999 : (storage.getNumber('user.activeBorder') || 1)}
               size={50}
             />
             <View className="ml-4 flex-1">
@@ -413,6 +434,64 @@ const Home = () => {
         <Text style={{ color: colors.text }} className="text-base font-redditsans-regular px-4 mb-4">
           {t('home.subtitle')}
         </Text>
+
+          {/* Premium "Quote of the Day" Widget — only for Motivation Pack owners */}
+          {accountData?.hasMotivationPack && dailyQuote && (
+            <View style={{ marginHorizontal: 16, marginBottom: 14 }}>
+              <LinearGradient
+                colors={isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  borderRadius: 18,
+                  padding: 18,
+                  borderWidth: 1,
+                  borderColor: isDark ? '#334155' : '#bae6fd',
+                }}
+              >
+                {/* Header row */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                  <View style={{
+                    width: 32, height: 32, borderRadius: 10,
+                    backgroundColor: isDark ? '#6366f120' : '#818cf820',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <FontAwesomeIcon icon={faQuoteRight} size={14} color={isDark ? '#a5b4fc' : '#6366f1'} />
+                  </View>
+                  <Text style={{
+                    marginLeft: 10, fontSize: 13, fontFamily: 'RedditSans-Bold',
+                    color: isDark ? '#a5b4fc' : '#6366f1',
+                    letterSpacing: 0.5,
+                  }}>
+                    {t('home.quote_of_the_day', '✨ Günün Sitatı')}
+                  </Text>
+
+                </View>
+
+                {/* Quote text */}
+                <Text style={{
+                  fontSize: 15, lineHeight: 23,
+                  fontFamily: 'RedditSans-MediumItalic',
+                  color: isDark ? '#e2e8f0' : '#1e293b',
+                  marginBottom: 8,
+                }}>
+                  "{dailyQuote.text}"
+                </Text>
+
+                {/* Author */}
+                <Text style={{
+                  fontSize: 12, fontFamily: 'RedditSans-Bold',
+                  color: isDark ? '#94a3b8' : '#64748b',
+                  textAlign: 'right',
+                }}>
+                  — {dailyQuote.author}
+                </Text>
+              </LinearGradient>
+            </View>
+          )}
+
+          <AIMentorCard totalExperiencePoints={accountData?.totalExperiencePoints} />
+
           <CalendarSelector 
             selectedDate={selectedDate} 
             onDateSelect={handleDateSelect}

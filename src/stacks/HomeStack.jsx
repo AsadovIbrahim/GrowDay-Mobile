@@ -8,6 +8,8 @@ import HabitCelebration from "../screens/home/HabitCelebration";
 import CreateCustomHabit from "../screens/create/CreateCustomHabit";
 import HabitHistory from "../screens/home/HabitHistory";
 import Statistics from "../screens/statistics/Statistics";
+import AIMentorChatScreen from "../screens/home/AIMentorChatScreen";
+
 const Stack = createNativeStackNavigator();
 
 
@@ -23,6 +25,7 @@ const HomeStack = () => {
             <Stack.Screen name="CreateCustomHabit" component={CreateCustomHabit} />
             <Stack.Screen name="HabitHistory" component={HabitHistory} />
             <Stack.Screen name="Statistics" component={Statistics} />
+            <Stack.Screen name="AIMentorChat" component={AIMentorChatScreen} />
 
         </Stack.Navigator>
     )

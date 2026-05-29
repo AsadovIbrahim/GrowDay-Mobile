@@ -17,7 +17,14 @@ const AvatarWithBorder = ({ avatarUrl, level = 1, size = 50, style }) => {
   let shadowRadiusVal = 0;
   let shadowOpacityVal = 0;
 
-  if (level >= 50) {
+  if (level === 'premium' || level === 999) {
+    // Premium Purchased Border: Ultra-glowing rainbow gradient
+    colorsList = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
+    isGradient = true;
+    glowColor = '#ec4899';
+    shadowRadiusVal = 14;
+    shadowOpacityVal = 1.0;
+  } else if (level >= 50) {
     // Level 50+: Cosmic Emperor (Deep space portal)
     colorsList = ['#0f172a', '#a855f7', '#6366f1', '#090d16'];
     isGradient = true;
@@ -119,7 +126,13 @@ const AvatarWithBorder = ({ avatarUrl, level = 1, size = 50, style }) => {
       );
     };
 
-    if (level >= 50) {
+    if (level === 'premium' || level === 999) {
+      // Premium Purchased Border: diamonds, sparkles, and crowns
+      addItem('top-crown', '👑', { top: -size * 0.18, fontSize: size * 0.35 });
+      addItem('bottom-stars', '✨', { bottom: -size * 0.10, fontSize: size * 0.28 });
+      addItem('mid-l', '💎', { bottom: size * 0.15, left: -size * 0.10, fontSize: size * 0.22 });
+      addItem('mid-r', '💎', { bottom: size * 0.15, right: -size * 0.10, fontSize: size * 0.22 });
+    } else if (level >= 50) {
       // Level 50: Cosmic Emperor (Deep space with planet, rocket, ufo, galaxy)
       addItem('top-planet', '🪐', { top: -size * 0.18, fontSize: size * 0.35 });
       addItem('bottom-galaxy', '🌌', { bottom: -size * 0.12, fontSize: size * 0.28 });

@@ -149,7 +149,8 @@
       "thu": "C.A",
       "fri": "CÜM",
       "sat": "ŞƏN"
-    }
+    },
+    "quote_of_the_day": "✨ Günün Sitatı"
   },
   "my_habits": {
     "header": "Vərdişləriniz",
@@ -313,7 +314,7 @@
     "on_scheduled_days": "Təyin olunmuş günlərdə",
     "selected_days": "Seçilmiş günlərdə",
     "preview": "✨ Siz {{frequency}} {{targetValue}} {{unit}} {{title}} edəcəksiniz",
-    "select_icon": "İkonu Seç",
+    "select_icon": "İkon Seçin",
     "icon_subtitle": "İkon",
     "repeat_on": "Təkrarla",
     "repeat_interval": "Təkrar intervalı",
@@ -323,32 +324,50 @@
     "monthly_repeat_note": "Bu vərdiş hər ayın eyni günündə təkrar olunacaq (Gün {{day}}).",
     "track_duration": "Müddəti izlə",
     "duration_placeholder": "məs: 10",
-    "minutes_per_session": "seans başına dəqiqə"
+    "minutes_per_session": "seans başına dəqiqə",
+    "standard_icons": "Standart İkonlar",
+    "premium_icons": "Premium İkonlar 🌟"
   },
   "icons": {
-    "run": "qaçış",
-    "water": "su",
-    "gym": "idman zalı",
-    "book": "kitab",
-    "code": "kod",
-    "sleep": "yuxu",
-    "meditate": "meditasiya",
-    "diet": "pəhriz",
-    "walk": "gəzinti",
-    "write": "yazı",
-    "music": "musiqi",
-    "study": "dərs",
-    "heart": "ürək",
-    "sun": "günəş",
-    "moon": "ay",
-    "plant": "bitki",
-    "coffee": "qəhvə",
-    "work": "iş",
-    "female": "qadın",
-    "woman": "qadın",
-    "selfcare": "özünə qulluq",
+    "run": "Qaçış",
+    "water": "Su",
+    "gym": "İdman",
+    "book": "Kitab",
+    "code": "Kodlaşdırma",
+    "sleep": "Yuxu",
+    "meditate": "Meditasiya",
+    "diet": "Pəhriz",
+    "walk": "Gəzinti",
+    "write": "Yazı",
+    "music": "Musiqi",
+    "study": "Dərs",
+    "heart": "Ürək",
+    "sun": "Günəş",
+    "moon": "Ay",
+    "plant": "Bitki",
+    "coffee": "Qəhvə",
+    "work": "İş",
+    "female": "Qadın",
+    "woman": "Rəqs",
+    "selfcare": "Baxım",
     "lock": "kilid",
-    "default": "standart"
+    "default": "standart",
+    "crown": "Tac",
+    "rocket": "Raket",
+    "game": "Oyun",
+    "palette": "Palitra",
+    "trophy": "Kubok",
+    "gem": "Almaz",
+    "unicorn": "Təkbuynuz",
+    "eagle": "Qartal",
+    "magic": "Sehr",
+    "fire": "Alov",
+    "star2": "Ulduz",
+    "heart2": "Ürək",
+    "gift": "Hədiyyə",
+    "balloon": "Şar",
+    "money": "Pul",
+    "key": "Açar"
   },
   "units": {
     "header": "Vahidi seçin",
@@ -593,7 +612,8 @@
       "contact_support": "Dəstəklə Əlaqə",
       "rate_app": "Tətbiqi Qiymətləndirin",
       "help_center": "Kömək Mərkəzi",
-      "delete_account": "Hesabı sil"
+      "delete_account": "Hesabı sil",
+      "themes": "Tətbiq Temaları"
     },
     "edit_profile_screen": {
       "title": "Profili Redaktə Et",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "Hesab silinsin?",
     "delete_confirm_desc": "Hesabınızı birdəfəlik silmək istədiyinizdən əminsiniz? Bütün vərdişləriniz, nailiyyətləriniz, tapşırıqlarınız və tarixçəniz geri qaytarılmamaq üzrə silinəcək. Bu əməliyyat geri alına bilməz.",
-    "delete_confirm_btn": "Hesabı Sil"
+    "delete_confirm_btn": "Hesabı Sil",
+    "level": "Səviyyə"
   },
   "preferences": {
     "continue": "Davam et",
@@ -977,7 +998,14 @@
       "q6": "Vərdiş tərəqqisini necə izləyə bilərəm?",
       "a6": "Ana ekrandakı istənilən vərdişi açın. Bu günkü performansınızı, həftəlik tərəqqinizi, mövcud seriya və ən yaxşı seriya nəticənizi görəcəksiniz. Hər gün üçün qeydlər də əlavə edə bilərsiniz.",
       "q7": "Dəstəklə necə əlaqə saxlaya bilərəm?",
-      "a7": "Profil → Dəstəklə Əlaqə bölməsinə keçin və bizə mesaj göndərin. Həmçinin birbaşa growday.support@gmail.com ünvanına e-poçt göndərə bilərsiniz. 24 saat ərzində cavab veririk."
+      "a7": "Profil → Dəstəklə Əlaqə bölməsinə keçin və bizə mesaj göndərin. Həmçinin birbaşa growday.support@gmail.com ünvanına e-poçt göndərə bilərsiniz. 24 saat ərzində cavab veririk.",
+      "q8": "Süni İntellekt Mentoru nədir və necə işləyir?",
+      "a8": "Süni İntellekt Mentoru fərdi məhsuldarlıq məşqçisidir. O, sizə tam fərdiləşdirilmiş tövsiyələr vermək üçün son 14 gündəki real vərdiş statistikanızı, seriyalarınızı (streaks) və hədəflərinizi analiz edir.",
+      "a9": "Daha dolğun analiz üçün Mentor ən azı 3-cü Səviyyədə (XP toplayaraq) açılır. Pulsuz istifadəçilər gündə 5 mesaj göndərə bilər, Premium istifadəçilər isə limitsiz söhbət edir.",
+      "q10": "XP Mağazası nədir?",
+      "a10": "XP Mağazası qazandığınız XP xallarını premium profil çərçivələri, xüsusi vərdiş ikonları, tema paketləri, XP artırıcıları və motivasiya sitatları paketləri kimi əşyalara xərcləmək imkanı verir.",
+      "q11": "Mağazada xərcləmək üçün XP-ni necə qazanıram?",
+      "a11": "Vərdişləri tamamlayaraq, tapşırıqları bitirərək, seriyaları davam etdirərək və nailiyyətlər açaraq XP qazanırsınız. Nə qədər ardıcıl olsanız, bir o qədər çox XP qazanırsınız!"
     },
     "features": {
       "habits_title": "Vərdiş İzləmə",
@@ -991,7 +1019,11 @@
       "explore_title": "Kəşf et və Öyrən",
       "explore_desc": "Hədəflərinizə və üstünlüklərinizə uyğun olaraq AI tərəfindən seçilmiş öyrənmə məqalələrini və tövsiyə olunan vərdişləri kəşf edin.",
       "reminders_title": "Xatırlatmalar",
-      "reminders_desc": "Heç bir seansı qaçırmamaq üçün vərdişlər üçün ağıllı bildirişlər təyin edin. Hər vərdiş üçün xatırlatma vaxtlarını fərdiləşdirin."
+      "reminders_desc": "Heç bir seansı qaçırmamaq üçün vərdişlər üçün ağıllı bildirişlər təyin edin. Hər vərdiş üçün xatırlatma vaxtlarını fərdiləşdirin.",
+      "store_title": "XP Mağazası",
+      "store_desc": "Qazandığınız XP ilə premium çərçivələr, xüsusi vərdiş ikonları, tema paketləri və motivasiya sitatları alın.",
+      "ai_mentor_title": "Süni İntellekt Mentoru",
+      "ai_mentor_desc": "Real vərdiş datanıza, seriyalarınıza və hədəflərinizə əsaslanan fərdi məhsuldarlıq koçinqi alın."
     }
   },
   "games": {
@@ -1081,6 +1113,85 @@
     "history_moves": "{{count}} hərəkət",
     "history_time": "{{time}}"
   },
+  "store": {
+    "header_title": "XP Mağazası",
+    "profile_subtitle": "Streak Freeze al, zəncirini qoru",
+    "owned_shields": "Qoruyucu Qalxanlarınız",
+    "freezes_count": "{{count}} Zəncir Dondurucu",
+    "items_section": "PREMİUM XP MƏHSULLARI",
+    "my_perks": "Aktiv Üstünlükləriniz",
+    "no_active_perks": "Hələlik heç bir perk aktiv deyil.",
+    "owned": "aktivdir",
+    "owned_btn": "Sizə Məxsusdur ✓",
+    "buy_btn": "Satın Al",
+    "buy_again": "Vaxtı Artır",
+    "buy_btn_action": "Satın Al",
+    "feedback_items": "Yeni fikirləriniz və ya təklif etmək istədiyiniz digər maraqlı XP store məhsulları var? Dəstək bölməsindən bizə yazın! 🚀",
+    "insufficient_xp_title": "Kifayət qədər XP yoxdur",
+    "insufficient_xp_desc_custom": "{{item}} almaq üçün ən az {{cost}} XP lazımdır. Vərdişlərinizi yerinə yetirərək daha çox xal qazanın! 🎯",
+    "confirm_buy_title": "Satın almanı təsdiqləyin",
+    "confirm_buy_desc_custom": "1 ədəd {{item}} almaq üçün {{cost}} XP xalınızdan istifadə olunacaq. Təsdiq edirsiniz?",
+    "buy_success_title": "Təbriklər! 🎉",
+    "buy_success_desc_custom": "{{item}} uğurla alındı! Yenilik dərhal profilinizə tətbiq edildi.",
+    "buy_failed": "Satın alma uğursuz oldu. Yenidən cəhd edin.",
+    "streak_freeze_limit_title": "Limit Dolub ❄️",
+    "streak_freeze_limit_desc": "Eyni anda maksimum 3 Zəncir Dondurucuya sahib ola bilərsiniz. Yenisini almaq üçün əvvəlcə mövcud olanları istifadə etməlisiniz!",
+    "items": {
+      "streak_freeze": {
+        "title": "Zəncir Dondurucu",
+        "desc": "Günün sonunda vərdişi tamamlamağı unutsanız belə ardıcıllıq zəncirini (streak) qoruyan sehirli qalxan. Hər buraxılmış gün avtomatik 1 ədəd istifadə olunur."
+      },
+      "premium_border": {
+        "title": "Premium Profil Çərçivəsi",
+        "desc": "Profil şəklinizin ətrafında parıldayan və fırlanan çoxrəngli sehirli gradient halqa aktivləşdirir. Bütün istifadəçilərə fərqinizi göstərin!"
+      },
+      "xp_booster": {
+        "title": "2x XP Gücləndirici (24s)",
+        "desc": "Dəqiq 24 saat ərzində tamamlanan hər vərdişdən və tapşırıqdan tam 2 QAT daha çox təcrübə xalı (XP) qazandırır. Sürətlə Level atlayın!"
+      },
+      "custom_habit_icon": {
+        "title": "Xüsusi Vərdiş İkonu",
+        "desc": "Yeni vərdiş yaradarkən və ya redaktə edərkən xüsusi premium emojilər və rəngli ikonlar seçməyə imkan verən gizli paneli aktivləşdirir."
+      },
+      "profile_badge": {
+        "title": "VIP Profil Nişanı",
+        "desc": "Profilinizdə adınızın tam yanında xüsusi parıldayan VIP kral tacı (👑) ikonu göstərir və profilinizi ultra-premium edir."
+      },
+      "theme_pack": {
+        "title": "Premium Tema Paketi",
+        "desc": "Tətbiqə Sunset Glow, Ocean Wave, Cyber Neon və Rose Gold premium rəng temalarını əlavə edərək görünüşünü tamamilə dəyişir."
+      },
+      "motivation_pack": {
+        "title": "Motivasiya Paketi",
+        "desc": "Dashboard-a və ya bildirişlərə fərdiləşdirilmiş gündəlik premium motivasiya sitatları və hədəf tövsiyələri toplusunu əlavə edir."
+      }
+    },
+    "booster_limit_title": "Müddət Limiti Dolub ⚡",
+    "booster_limit_desc": "XP Gücləndiricinin maksimum aktiv müddəti 72 saat ola bilər. Mövcud müddət azalana qədər yenisini ala bilməzsiniz!",
+    "theme_locked_title": "Tema Kilidlidir 🔒",
+    "theme_locked_desc": "Bu premium temanı aktivləşdirmək üçün XP Mağazasından 'Premium Tema Paketi'ni satın almalısınız!",
+    "themes": {
+      "header": "Tətbiq Temaları",
+      "light": "Açıq Rəng",
+      "light_desc": "Klassik yaşıl və açıq tonlar",
+      "dark": "Qaranlıq Rəng",
+      "dark_desc": "Gözləri yormayan qaranlıq rejim",
+      "sunset": "Sunset Glow 🌅",
+      "sunset_desc": "İsti narıncı gradientlər",
+      "ocean": "Ocean Wave 🌊",
+      "ocean_desc": "Dərin mavi okean tonları",
+      "cyber": "Cyber Neon 🎆",
+      "cyber_desc": "Neon futuristik tünd bənövşəyi",
+      "rose": "Rose Gold 🌸",
+      "rose_desc": "Elegant qızılı-çəhrayı tonlar"
+    },
+    "perks": {
+      "border": "🎨 Çərçivə",
+      "icon": "🎯 İkon",
+      "themes": "🌈 Temalar",
+      "motivation": "💬 Motiv."
+    }
+  },
   "levelup": {
     "title": "SƏVİYYƏ ARTDI!",
     "subtitle": "Təbriklər! Sən {{level}}-ci səviyyəyə çatdın!",
@@ -1122,5 +1233,25 @@
     "generating_new_habits": "Yeni təklif olunan vərdişlər hazırlanır...",
     "locked_avatar_title": "Kilidli Avatar",
     "locked_avatar_desc": "Bu avatarı açmaq üçün Level {{level}} olmalısınız!\n(Sizin Leveliniz: {{userLevel}})"
+  },
+  "ai_mentor": {
+    "card_title": "Süni İntellekt Mentoru",
+    "card_subtitle": "Vərdişləriniz haqqında hər şeyi soruşun",
+    "card_locked": "Səviyyə 3-də açılır",
+    "chat_header": "AI Mentor",
+    "input_placeholder": "Mesajınızı yazın...",
+    "daily_limit": "Bu gün {{remaining}} mesajınız qaldı",
+    "limit_reached": "Gündəlik limit bitdi. Sabah yenidən cəhd edin!",
+    "quick_motivate": "Məni motivasiya et",
+    "quick_habit": "Vərdiş məsləhəti",
+    "quick_plan": "Günümü planla",
+    "error": "Cavab almaq mümkün olmadı. Yenidən cəhd edin.",
+    "typing": "AI düşünür...",
+    "clear_history": "Təmizlə",
+    "remaining_badge": "{{remaining}} Qaldı",
+    "select_prompt": "Söhbətə başlamaq üçün birini seçin:",
+    "prompt_motivate": "Məni bu gün üçün motivasiya et!",
+    "prompt_habit": "Məhsuldarlığımı artırmaq üçün hansı vərdişləri təklif edirsən?",
+    "prompt_plan": "Gözəl bir gün planlaması hazırlamağıma kömək et!"
   }
 }

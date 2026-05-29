@@ -116,9 +116,17 @@ const Register = () => {
           }
   
           showToast(t("auth.messages.google_signup_success"), "success");
+
+          // Extract email from Google user info for stable chat history scoping
+          const googleEmail = userInfo?.data?.user?.email || userInfo?.user?.email || '';
   
           setTimeout(() => {
             clearUserSession();
+            if (googleEmail) {
+              storage.set("UsernameOrEmail", googleEmail);
+              const scope = googleEmail.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
+              storage.set('userScope', scope);
+            }
             storage.set("hasCompletedPreferences", hasPrefs);
             storage.set("accessToken", token);
           }, 1100);

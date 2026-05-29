@@ -881,3 +881,36 @@ export const getUserGameScoreHistoryFetch = async (token, gameType) => {
     });
     return handleResponse(response);
 };
+
+export const buyStreakFreezeFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Store/BuyItem/streak_freeze`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const buyStoreItemFetch = async (token, itemType) => {
+    const response = await fetch(`${VITE_API_URL}/api/Store/BuyItem/${itemType}`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const aiMentorChatFetch = async (token, message, history) => {
+    const response = await fetch(`${VITE_API_URL}/api/AIMentor/Chat`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify({ message, history }),
+    });
+    return handleResponse(response);
+};
+
+export const aiMentorRemainingFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/AIMentor/RemainingMessages`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};

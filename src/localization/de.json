@@ -149,7 +149,8 @@
       "thu": "DO",
       "fri": "FR",
       "sat": "SA"
-    }
+    },
+    "quote_of_the_day": "✨ Zitat des Tages"
   },
   "my_habits": {
     "header": "Deine Gewohnheiten",
@@ -323,12 +324,14 @@
     "monthly_repeat_note": "Diese Gewohnheit wird an jedem gleichen Tag des Monats wiederholt (Tag {{day}}).",
     "track_duration": "Dauer verfolgen",
     "duration_placeholder": "z. B. 10",
-    "minutes_per_session": "Minuten pro Sitzung"
+    "minutes_per_session": "Minuten pro Sitzung",
+    "standard_icons": "Standard-Symbole",
+    "premium_icons": "Premium-Symbole 🌟"
   },
   "icons": {
     "run": "Laufen",
     "water": "Wasser",
-    "gym": "Fitnessstudio",
+    "gym": "Sport",
     "book": "Buch",
     "code": "Code",
     "sleep": "Schlafen",
@@ -345,10 +348,26 @@
     "coffee": "Kaffee",
     "work": "Arbeit",
     "female": "Frau",
-    "woman": "Frau",
-    "selfcare": "Selbstpflege",
+    "woman": "Tanz",
+    "selfcare": "Pflege",
     "lock": "Schloss",
-    "default": "Standard"
+    "default": "Standard",
+    "crown": "Krone",
+    "rocket": "Rakete",
+    "game": "Spiel",
+    "palette": "Palette",
+    "trophy": "Trophäe",
+    "gem": "Edelstein",
+    "unicorn": "Einhorn",
+    "eagle": "Adler",
+    "magic": "Magie",
+    "fire": "Feuer",
+    "star2": "Stern",
+    "heart2": "Herz",
+    "gift": "Geschenk",
+    "balloon": "Ballon",
+    "money": "Geld",
+    "key": "Schlüssel"
   },
   "units": {
     "header": "Einheit auswählen",
@@ -593,7 +612,8 @@
       "contact_support": "Support kontaktieren",
       "rate_app": "App bewerten",
       "help_center": "Hilfe-Center",
-      "delete_account": "Konto löschen"
+      "delete_account": "Konto löschen",
+      "themes": "App-Designs"
     },
     "edit_profile_screen": {
       "title": "Profil bearbeiten",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "Konto löschen?",
     "delete_confirm_desc": "Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Alle Ihre Gewohnheiten, Fortschritte, Aufgaben und Ihr Verlauf werden für immer gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
-    "delete_confirm_btn": "Konto löschen"
+    "delete_confirm_btn": "Konto löschen",
+    "level": "Level"
   },
   "preferences": {
     "continue": "Weiter",
@@ -979,7 +1000,15 @@
       "q6": "Wie verfolge ich den Fortschritt?",
       "a6": "Öffne eine Gewohnheit, um deine heutige Leistung, den Wochenfortschritt und deine Serien zu sehen.",
       "q7": "Wie kontaktiere ich den Support?",
-      "a7": "Gehe zu Profil → Support kontaktieren oder schreibe an growday.support@gmail.com."
+      "a7": "Gehe zu Profil → Support kontaktieren oder schreibe an growday.support@gmail.com.",
+      "q8": "Was ist der KI-Mentor und wie funktioniert er?",
+      "a8": "Der KI-Mentor ist ein Premium-Produktivitätscoach. Er analysiert Ihre Gewohnheiten, Streaks und Ziele der letzten 14 Tage, um personalisierte, datengesteuerte tägliche Ratschläge zu geben.",
+      "q9": "Warum ist der KI-Mentor gesperrt oder eingeschränkt?",
+      "a9": "Der KI-Mentor wird ab Stufe 3 (durch XP-Punkte verdient) freigeschaltet, um sicherzustellen, dass Sie aktive Gewohnheiten zum Analysieren haben. Kostenlose Benutzer können täglich 5 Nachrichten senden, während Premium-Benutzer unbegrenzt Nachrichten erhalten.",
+      "q10": "Was ist der XP-Shop?",
+      "a10": "Der XP-Shop ermöglicht es Ihnen, Ihre verdienten XP-Punkte für Premium-Profilrahmen, benutzerdefinierte Gewohnheitssymbole, Themenpakete, XP-Booster und Motivationszitat-Pakete auszugeben.",
+      "q11": "Wie verdiene ich XP, um sie im Shop auszugeben?",
+      "a11": "Sie verdienen XP, indem Sie Gewohnheiten abschließen, Aufgaben erledigen, Streaks aufrechterhalten und Erfolge freischalten. Je konsequenter Sie sind, desto mehr XP verdienen Sie!"
     },
     "features": {
       "habits_title": "Gewohnheiten tracken",
@@ -993,7 +1022,11 @@
       "explore_title": "Entdecken & Lernen",
       "explore_desc": "Entdecke von KI kuratierte Artikel und Gewohnheiten für deine Ziele.",
       "reminders_title": "Erinnerungen",
-      "reminders_desc": "Stelle clevere Benachrichtigungen ein, um keine Session zu verpassen."
+      "reminders_desc": "Stelle clevere Benachrichtigungen ein, um keine Session zu verpassen.",
+      "store_title": "XP-Shop",
+      "store_desc": "Geben Sie verdiente XP für Premium-Rahmen, benutzerdefinierte Gewohnheitssymbole, Themenpakete und Motivationszitate aus.",
+      "ai_mentor_title": "KI-Mentor",
+      "ai_mentor_desc": "Erhalten Sie personalisiertes Produktivitätscoaching basierend auf Ihren echten Gewohnheitsdaten, Streaks und Zielen."
     }
   },
   "games": {
@@ -1124,5 +1157,104 @@
     "generating_new_habits": "Neue vorgeschlagene Gewohnheiten werden generiert...",
     "locked_avatar_title": "Avatar Gesperrt",
     "locked_avatar_desc": "Sie müssen Level {{level}} sein, um diesen Avatar freizuschalten!\n(Ihr Level: {{userLevel}})"
+  },
+  "store": {
+    "header_title": "XP Shop",
+    "profile_subtitle": "Kaufe Streak Freeze, schütze deine Kette",
+    "owned_shields": "Deine Schilde",
+    "freezes_count": "{{count}} Streak Freeze",
+    "items_section": "PREMIUM XP PRODUKTE",
+    "my_perks": "Deine aktiven Vorteile",
+    "no_active_perks": "Noch keine aktiven Vorteile.",
+    "owned": "aktiv",
+    "owned_btn": "Im Besitz ✓",
+    "buy_btn": "Kaufen",
+    "buy_again": "Verlängern",
+    "buy_btn_action": "Kaufen",
+    "feedback_items": "Hast du neue Ideen oder Vorschläge für andere spannende XP-Shop-Artikel? Schreib uns über den Support-Bereich! 🚀",
+    "insufficient_xp_title": "Nicht genug XP",
+    "insufficient_xp_desc_custom": "Du brauchst mindestens {{cost}} XP, um {{item}} zu kaufen. Schließe deine Gewohnheiten ab, um mehr Punkte zu verdienen! 🎯",
+    "confirm_buy_title": "Kauf bestätigen",
+    "confirm_buy_desc_custom": "{{cost}} XP werden von deinen Punkten abgezogen, um 1 {{item}} zu kaufen. Bestätigen?",
+    "buy_success_title": "Herzlichen Glückwunsch! 🎉",
+    "buy_success_desc_custom": "{{item}} erfolgreich gekauft! Der Vorteil wurde sofort auf dein Profil angewendet.",
+    "buy_failed": "Kauf fehlgeschlagen. Bitte versuche es erneut.",
+    "streak_freeze_limit_title": "Limit erreicht ❄️",
+    "streak_freeze_limit_desc": "Du kannst maximal 3 Streak Freezes gleichzeitig besitzen. Verwende deine vorhandenen, bevor du weitere kaufst!",
+    "items": {
+      "streak_freeze": {
+        "title": "Streak Freeze",
+        "desc": "Ein magischer Schild, der deine Gewohnheitsserie schützt, selbst wenn du am Ende des Tages vergisst, sie abzuschließen. Das System verbraucht automatisch 1 Freeze pro versäumtem Tag."
+      },
+      "premium_border": {
+        "title": "Premium Profilrahmen",
+        "desc": "Aktiviert einen wunderschönen, leuchtenden mehrfarbigen magischen Gradientenring um dein Profilbild. Zeige allen deinen Level-Status!"
+      },
+      "xp_booster": {
+        "title": "2x XP Booster (24h)",
+        "desc": "Verdoppelt die Erfahrungspunkte (XP) für alle Gewohnheiten und Aufgaben, die in den nächsten 24 Stunden abgeschlossen werden. Steige blitzschnell auf!"
+      },
+      "custom_habit_icon": {
+        "title": "Benutzerdefiniertes Gewohnheits-Icon",
+        "desc": "Schaltet ein spezielles Panel frei, mit dem du beim Erstellen oder Bearbeiten von Gewohnheiten individuelle Premium-Emojis und farbige Icons auswählen kannst."
+      },
+      "profile_badge": {
+        "title": "VIP Profilabzeichen",
+        "desc": "Zeigt ein glänzendes VIP-Kronen-Symbol (👑) neben deinem Benutzernamen in deinem Profil an und verleiht deinem Konto einen ultra-premium Look."
+      },
+      "theme_pack": {
+        "title": "Premium Themenpaket",
+        "desc": "Fügt atemberaubende Sunset Glow, Ocean Wave, Cyber Neon und Rose Gold Premium-Farbthemen hinzu und gestaltet das Erscheinungsbild der App komplett um."
+      },
+      "motivation_pack": {
+        "title": "Motivationspaket",
+        "desc": "Fügt eine personalisierte Sammlung täglicher Premium-Motivationszitate und Zielvorschläge zu deinem Dashboard oder deinen Benachrichtigungen hinzu."
+      }
+    },
+    "booster_limit_title": "Booster-Limit erreicht ⚡",
+    "booster_limit_desc": "Die maximale Dauer für den 2x XP Booster beträgt 72 Stunden. Bitte warte, bis die verbleibende Zeit abnimmt, bevor du weitere kaufst!",
+    "theme_locked_title": "Design gesperrt 🔒",
+    "theme_locked_desc": "Um dieses Premium-Design zu aktivieren, musst du das 'Premium-Design-Paket' im XP-Shop kaufen!",
+    "themes": {
+      "header": "App-Designs",
+      "light": "Helles Design",
+      "light_desc": "Klassische grüne und helle Töne",
+      "dark": "Dunkles Design",
+      "dark_desc": "Augenfreundlicher Dunkelmodus",
+      "sunset": "Sunset Glow 🌅",
+      "sunset_desc": "Warme orangefarbene Verläufe",
+      "ocean": "Ocean Wave 🌊",
+      "ocean_desc": "Tiefblaue Ozeantöne",
+      "cyber": "Cyber Neon 🎆",
+      "cyber_desc": "Neon-futuristisches Dunkellila",
+      "rose": "Rose Gold 🌸",
+      "rose_desc": "Elegante Gold-Rosa-Töne"
+    },
+    "perks": {
+      "border": "🎨 Rahmen",
+      "icon": "🎯 Symbol",
+      "themes": "🌈 Designs",
+      "motivation": "💬 Zitate"
+    }
+  },
+  "ai_mentor": {
+    "card_title": "KI-Mentor",
+    "card_subtitle": "Frage mich alles über deine Gewohnheiten",
+    "card_locked": "Freischaltung auf Stufe 3",
+    "chat_header": "KI-Mentor",
+    "input_placeholder": "Schreibe eine Nachricht...",
+    "daily_limit": "Noch {{remaining}} Nachrichten heute übrig",
+    "limit_reached": "Tägliches Limit erreicht. Komm morgen wieder!",
+    "quick_motivate": "Motiviere mich",
+    "quick_habit": "Gewohnheits-Tipp",
+    "quick_plan": "Plane meinen Tag",
+    "error": "Keine Antwort erhalten. Bitte versuche es erneut.",
+    "typing": "KI denkt nach...",
+    "clear_history": "Löschen",
+    "remaining_badge": "{{remaining}} Übrig",
+    "select_prompt": "Wählen Sie eines aus, um das Gespräch zu beginnen:",
+    "prompt_motivate": "Motiere mich für heute!",
+    "prompt_habit": "Welche Gewohnheiten empfiehlst du zur Steigerung der Produktivität?",
+    "prompt_plan": "Hilf mir, einen tollen Tagesplan zu erstellen!"
   }
 }

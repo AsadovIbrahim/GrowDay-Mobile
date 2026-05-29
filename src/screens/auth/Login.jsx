@@ -7,7 +7,7 @@ import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { storage, clearUserSession } from "../../utils/MMKVStore";
+import { storage, clearUserSession, getStorageScope } from "../../utils/MMKVStore";
 import { View } from "react-native";
 import { loginfetch, getUserPreferencesFetch, googleLoginFetch } from "../../utils/fetch";
 import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
@@ -67,6 +67,9 @@ const Login = () => {
         setTimeout(() => {
           clearUserSession();
           storage.set("UsernameOrEmail", formData.UsernameOrEmail);
+          // Set stable user scope BEFORE setting the token so chat history keys resolve correctly
+          const scope = formData.UsernameOrEmail.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
+          storage.set('userScope', scope);
           storage.set("hasCompletedPreferences", hasPrefs);
           storage.set("accessToken", token);
         }, 1100);
@@ -135,10 +138,16 @@ const Login = () => {
 
         showToast(t("auth.messages.google_success"), "success");
 
+        // Extract email from Google user info for stable chat history scoping
+        const googleEmail = userInfo?.data?.user?.email || userInfo?.user?.email || '';
+
         setTimeout(() => {
-          // For google login, we might not have a UsernameOrEmail in formData,
-          // but we can set a flag or just the token and preferences.
           clearUserSession();
+          if (googleEmail) {
+            storage.set("UsernameOrEmail", googleEmail);
+            const scope = googleEmail.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
+            storage.set('userScope', scope);
+          }
           storage.set("hasCompletedPreferences", hasPrefs);
           storage.set("accessToken", token);
         }, 1100);

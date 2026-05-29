@@ -149,7 +149,8 @@
       "thu": "四",
       "fri": "五",
       "sat": "六"
-    }
+    },
+    "quote_of_the_day": "✨ 每日一言"
   },
   "my_habits": {
     "header": "我的习惯",
@@ -323,13 +324,15 @@
     "monthly_repeat_note": "习惯将在每月的同一天重复（第 {{day}} 天）。",
     "track_duration": "追踪时长",
     "duration_placeholder": "例如 10",
-    "minutes_per_session": "每次时长（分钟）"
+    "minutes_per_session": "每次时长（分钟）",
+    "standard_icons": "标准图标",
+    "premium_icons": "高级图标 🌟"
   },
   "icons": {
     "run": "跑步",
     "water": "喝水",
     "gym": "健身",
-    "book": "阅读",
+    "book": "读书",
     "code": "写代码",
     "sleep": "睡觉",
     "meditate": "冥想",
@@ -338,17 +341,33 @@
     "write": "写作",
     "music": "音乐",
     "study": "学习",
-    "heart": "爱心",
+    "heart": "心",
     "sun": "太阳",
     "moon": "月亮",
     "plant": "植物",
     "coffee": "咖啡",
     "work": "工作",
     "female": "女性",
-    "woman": "女人",
+    "woman": "舞蹈",
     "selfcare": "自我护理",
     "lock": "锁定",
-    "default": "默认"
+    "default": "默认",
+    "crown": "皇冠",
+    "rocket": "火箭",
+    "game": "游戏",
+    "palette": "调色板",
+    "trophy": "奖杯",
+    "gem": "宝石",
+    "unicorn": "独角兽",
+    "eagle": "老鹰",
+    "magic": "魔法",
+    "fire": "火焰",
+    "star2": "星星",
+    "heart2": "心形",
+    "gift": "礼物",
+    "balloon": "气球",
+    "money": "金钱",
+    "key": "钥匙"
   },
   "units": {
     "header": "选择单位",
@@ -593,7 +612,8 @@
       "contact_support": "联系支持",
       "rate_app": "给应用评分",
       "help_center": "帮助中心",
-      "delete_account": "删除账户"
+      "delete_account": "删除账户",
+      "themes": "应用主题"
     },
     "edit_profile_screen": {
       "title": "编辑个人资料",
@@ -650,7 +670,8 @@
     },
     "delete_confirm_title": "确定删除账户？",
     "delete_confirm_desc": "您确定要永久删除您的账户吗？您的所有习惯、进度、任务和历史记录都将被永久删除。此操作无法撤销。",
-    "delete_confirm_btn": "删除账户"
+    "delete_confirm_btn": "删除账户",
+    "level": "等级"
   },
   "preferences": {
     "continue": "继续",
@@ -980,7 +1001,15 @@
       "q6": "如何跟踪习惯的进度？",
       "a6": "打开任何习惯，您将看到今天的表现，每周进度，当前连续天数和最佳连续天数。",
       "q7": "如何联系支持人员？",
-      "a7": "转到 个人资料 → 联系支持人员，或发送电子邮件至 growday.support@gmail.com。"
+      "a7": "转到 个人资料 → 联系支持人员，或发送电子邮件至 growday.support@gmail.com。",
+      "q8": "什么是AI导师，它是如何工作的？",
+      "a8": "AI导师是高级生产力教练。它分析您过去14天的习惯完成率、连续天数和目标，以提供个性化的、基于数据的每日建议和反馈。",
+      "q9": "为什么AI导师被锁定或受限？",
+      "a9": "AI导师在达到3级（通过XP点数获得）时解锁，以确保您有活跃的习惯可供分析。免费用户每天限发送5条消息，而高级用户可获得无限消息。",
+      "q10": "什么是XP商店？",
+      "a10": "XP商店让您可以将赚取的XP点数兑换为高级个人资料边框、自定义习惯图标、主题包、XP加速器和励志名言包等高级物品。",
+      "q11": "如何赚取XP以在商店中消费？",
+      "a11": "您可以通过完成习惯、完成任务、保持连续天数和解锁成就来赚取XP。您越坚持，赚取的XP就越多！"
     },
     "features": {
       "habits_title": "习惯追踪",
@@ -994,7 +1023,11 @@
       "explore_title": "探索与学习",
       "explore_desc": "发现由人工智能精选的文章和建议的习惯。",
       "reminders_title": "提醒",
-      "reminders_desc": "设置智能通知，让您绝不错过任何一次进度。"
+      "reminders_desc": "设置智能通知，让您绝不错过任何一次进度。",
+      "store_title": "XP 商店",
+      "store_desc": "用赚取的XP兑换高级边框、自定义习惯图标、主题包和励志名言。",
+      "ai_mentor_title": "AI 导师",
+      "ai_mentor_desc": "根据您的真实习惯数据、连续天数和目标获取个性化的生产力指导。"
     }
   },
   "games": {
@@ -1125,5 +1158,104 @@
     "generating_new_habits": "正在生成全新推荐习惯...",
     "locked_avatar_title": "头像已锁定",
     "locked_avatar_desc": "您必须达到等级 {{level}} 才能解锁此头像！\n(您的等级: {{userLevel}})"
+  },
+  "store": {
+    "header_title": "XP 商店",
+    "profile_subtitle": "购买连续冻结，保护你的连续记录",
+    "owned_shields": "你的护盾",
+    "freezes_count": "{{count}} 个连续冻结",
+    "items_section": "高级 XP 商品",
+    "my_perks": "你的活跃特权",
+    "no_active_perks": "暂无活跃特权。",
+    "owned": "已激活",
+    "owned_btn": "已拥有 ✓",
+    "buy_btn": "购买",
+    "buy_again": "延长时间",
+    "buy_btn_action": "购买",
+    "feedback_items": "有新点子或对其他令人兴奋的 XP 商店商品有建议？请通过支持页面给我们发送消息！🚀",
+    "insufficient_xp_title": "XP 不足",
+    "insufficient_xp_desc_custom": "购买 {{item}} 至少需要 {{cost}} XP。完成习惯以赚取更多积分！🎯",
+    "confirm_buy_title": "确认购买",
+    "confirm_buy_desc_custom": "将从你的积分中扣除 {{cost}} XP 以购买 1 个 {{item}}。确认吗？",
+    "buy_success_title": "恭喜！🎉",
+    "buy_success_desc_custom": "{{item}} 购买成功！特权已立即应用到你的个人资料。",
+    "buy_failed": "购买失败，请重试。",
+    "streak_freeze_limit_title": "已达上限 ❄️",
+    "streak_freeze_limit_desc": "你同时最多只能拥有 3 个连续冻结。请先使用现有的再购买更多！",
+    "items": {
+      "streak_freeze": {
+        "title": "连续冻结",
+        "desc": "一面魔法护盾，即使你在一天结束时忘记完成习惯，也能保护你的连续记录。系统会自动为每个错过的日子消耗 1 个冻结。"
+      },
+      "premium_border": {
+        "title": "高级头像框",
+        "desc": "在你的头像周围激活一个华丽的、发光的多色魔法渐变光环。向所有人展示你的等级地位！"
+      },
+      "xp_booster": {
+        "title": "2x XP 加速器 (24小时)",
+        "desc": "在接下来的 24 小时内，所有完成的习惯和任务获得双倍经验值 (XP)。闪电般升级！"
+      },
+      "custom_habit_icon": {
+        "title": "自定义习惯图标",
+        "desc": "解锁一个特殊面板，允许你在创建或编辑习惯时选择专属高级表情符号和彩色图标。"
+      },
+      "profile_badge": {
+        "title": "VIP 个人徽章",
+        "desc": "在你的个人资料用户名旁边显示一个闪亮的 VIP 皇冠 (👑) 图标，让你的账号看起来超级高端。"
+      },
+      "theme_pack": {
+        "title": "高级主题包",
+        "desc": "添加令人惊叹的 Sunset Glow、Ocean Wave、Cyber Neon 和 Rose Gold 高级配色主题，彻底重新设计应用外观。"
+      },
+      "motivation_pack": {
+        "title": "励志语录包",
+        "desc": "在你的仪表盘或通知中添加一组个性化的每日高级励志名言和目标建议。"
+      }
+    },
+    "booster_limit_title": "加速器已达上限 ⚡",
+    "booster_limit_desc": "双倍经验值加速器的最长持续时间为 72 小时。请等待当前的加速器时间减少后再购买更多！",
+    "theme_locked_title": "主题已锁定 🔒",
+    "theme_locked_desc": "要激活此高级主题，您必须在 XP 商店购买“高级主题包”！",
+    "themes": {
+      "header": "应用主题",
+      "light": "浅色主题",
+      "light_desc": "经典绿色和淡雅色调",
+      "dark": "深色主题",
+      "dark_desc": "护眼的深色模式",
+      "sunset": "落日余晖 🌅",
+      "sunset_desc": "温暖的橙色渐变",
+      "ocean": "海洋波动 🌊",
+      "ocean_desc": "深邃的蓝色海洋色调",
+      "cyber": "赛博霓虹 🎆",
+      "cyber_desc": "霓虹科幻深紫色",
+      "rose": "玫瑰金 🌸",
+      "rose_desc": "优雅的金粉色调"
+    },
+    "perks": {
+      "border": "🎨 边框",
+      "icon": "🎯 图标",
+      "themes": "🌈 主题",
+      "motivation": "💬 每日一言"
+    }
+  },
+  "ai_mentor": {
+    "card_title": "AI 导师",
+    "card_subtitle": "向我询问关于你习惯的任何事情",
+    "card_locked": "在级别 3 解锁",
+    "chat_header": "AI 导师",
+    "input_placeholder": "输入消息...",
+    "daily_limit": "今天还剩 {{remaining}} 条消息",
+    "limit_reached": "已达到每日上限。明天再来吧！",
+    "quick_motivate": "激励我",
+    "quick_habit": "习惯建议",
+    "quick_plan": "规划我的一天",
+    "error": "获取回复失败。请再试一次。",
+    "typing": "AI 正在思考...",
+    "clear_history": "清除",
+    "remaining_badge": "剩余 {{remaining}}",
+    "select_prompt": "选择一个开始对话：",
+    "prompt_motivate": "激励我今天！",
+    "prompt_habit": "你有什么建议来提高我的工作效率？",
+    "prompt_plan": "帮我准备一个很棒的一天计划！"
   }
 }

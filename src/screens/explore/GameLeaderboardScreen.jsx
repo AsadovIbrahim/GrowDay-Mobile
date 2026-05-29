@@ -65,7 +65,7 @@ const PodiumPlayer = ({ player, rank, colors, gameType, currentUsername }) => {
       {name ? (
         <AvatarWithBorder
           avatarUrl={player?.profilePicture}
-          level={Math.floor(Math.sqrt((player?.experiencePoints || 0) / 50)) + 1}
+          level={player?.hasPremiumBorder ? 999 : (Math.floor(Math.sqrt((player?.experiencePoints || 0) / 50)) + 1)}
           size={avatarSize}
           style={{ marginBottom: 6 }}
         />
@@ -380,7 +380,7 @@ export default function GameLeaderboardScreen() {
               >
                 <RankBadge rank={item.rank} colors={colors} />
                 <View className="ml-3">
-                  <AvatarWithBorder avatarUrl={item.profilePicture} level={level} size={36} />
+                  <AvatarWithBorder avatarUrl={item.profilePicture} level={item.hasPremiumBorder ? 999 : level} size={36} />
                 </View>
                 <View className="flex-1 ml-3">
                   <Text

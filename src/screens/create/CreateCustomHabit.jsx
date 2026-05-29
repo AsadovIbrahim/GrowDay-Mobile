@@ -11,14 +11,15 @@ import {
   StyleSheet,
   Modal,
   FlatList,
+  Alert,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { useMMKVString } from "react-native-mmkv";
-import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch } from "../../utils/fetch";
-import { ICONS } from "../../constants/icons";
+import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch, getAccountDataFetch } from "../../utils/fetch";
+import { ICONS, PREMIUM_ICONS } from "../../constants/icons";
 import { useTheme as useThemeConstants } from "../../constants/theme";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -109,6 +110,24 @@ const CreateCustomHabit = () => {
   // Time Picker Temp State
   const [tempHours, setTempHours] = useState("09");
   const [tempMinutes, setTempMinutes] = useState("30");
+
+  const [hasCustomHabitIcon, setHasCustomHabitIcon] = useState(false);
+
+  useEffect(() => {
+    const checkPerks = async () => {
+      if (accessToken) {
+        try {
+          const res = await getAccountDataFetch(accessToken);
+          if (res?.success) {
+            setHasCustomHabitIcon(res.data?.hasCustomHabitIcon ?? false);
+          }
+        } catch (e) {
+          console.log("Error checking custom habit icon perk:", e);
+        }
+      }
+    };
+    checkPerks();
+  }, [accessToken]);
 
   useEffect(() => {
     if (habitData) {
@@ -362,7 +381,7 @@ const CreateCustomHabit = () => {
                 onPress={() => setShowIconModal(true)}
               >
                 <View style={[styles.iconCircle, { backgroundColor: colors.cardSecondary }]}>
-                  <Text style={{ fontSize: 20 }}>{ICONS[icon] || ICONS.default}</Text>
+                  <Text style={{ fontSize: 20 }}>{ICONS[icon] || PREMIUM_ICONS[icon] || ICONS.default}</Text>
                 </View>
                 <View>
                   <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>
@@ -736,11 +755,16 @@ const CreateCustomHabit = () => {
           activeOpacity={1}
           onPress={() => setShowIconModal(false)}
         >
-          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>{t("create_habit.select_icon")}</Text>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card, maxHeight: '80%' }]}>
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text, marginBottom: 8 }]}>{t("create_habit.select_icon", "İkon Seçin")}</Text>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+              
+              {/* Standard Icons Section */}
+              <Text className="font-redditsans-bold" style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 10, marginTop: 10 }}>
+                {t("create_habit.standard_icons", "Standart İkonlar")}
+              </Text>
               <View style={styles.iconGrid}>
-                {Object.keys(ICONS).map((key) => (
+                {Object.keys(ICONS).filter(k => k !== 'lock' && k !== 'default').map((key) => (
                   <TouchableOpacity
                     key={key}
                     style={[
@@ -754,12 +778,61 @@ const CreateCustomHabit = () => {
                     }}
                   >
                     <Text style={{ fontSize: 28 }}>{ICONS[key]}</Text>
-                    <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]}>
+                    <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]} numberOfLines={1}>
                       {t(`icons.${key}`, { defaultValue: key })}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
+
+              {/* Premium Icons Section */}
+              <Text className="font-redditsans-bold" style={{ fontSize: 13, color: colors.primary, marginBottom: 10, marginTop: 20 }}>
+                {t("create_habit.premium_icons", "Premium İkonlar 🌟")}
+              </Text>
+              <View style={styles.iconGrid}>
+                {Object.keys(PREMIUM_ICONS).map((key) => {
+                  const isLocked = !hasCustomHabitIcon;
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      style={[
+                        styles.gridIconBox,
+                        { backgroundColor: colors.cardSecondary, borderColor: colors.border },
+                        icon === key && { borderColor: colors.primary, backgroundColor: colors.primarySurface }
+                      ]}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        if (isLocked) {
+                          Alert.alert(
+                            t('store.icon_locked_title', 'İkon Kilidlidir 🔒'),
+                            t('store.icon_locked_desc', "Bu premium ikonu seçmək üçün XP Mağazasından 'Xüsusi Vərdiş İkonu' məhsulunu satın almalısınız!"),
+                            [
+                              { text: t('common.cancel', 'Ləğv et'), style: 'cancel' },
+                              { text: t('store.header_title', 'Mağazaya Get'), onPress: () => { setShowIconModal(false); navigation.navigate('StoreScreen'); } }
+                            ]
+                          );
+                        } else {
+                          setIcon(key);
+                          setShowIconModal(false);
+                        }
+                      }}
+                    >
+                      <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontSize: 28, opacity: isLocked ? 0.35 : 1 }}>{PREMIUM_ICONS[key]}</Text>
+                        {isLocked && (
+                          <View style={{ position: 'absolute', top: 4, right: -4, backgroundColor: '#f97316', borderRadius: 6, paddingHorizontal: 3, paddingVertical: 1 }}>
+                            <Text style={{ fontSize: 8, color: '#fff' }}>🔒</Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={[styles.gridIconLabel, { color: colors.textSecondary }]} numberOfLines={1}>
+                        {t(`icons.${key}`, { defaultValue: key })}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
             </ScrollView>
           </View>
         </TouchableOpacity>

@@ -11,6 +11,7 @@ import {
   Image,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage, clearUserSession } from '../../utils/MMKVStore';
@@ -36,7 +37,11 @@ import {
   faClock,
   faQuestionCircle,
   faTrash,
-  faUser
+  faUser,
+  faSnowflake,
+  faStore,
+  faChevronRight,
+  faPalette,
 } from '@fortawesome/free-solid-svg-icons';
 import SettingsItem from '../../components/SettingsItem';
 import { useTheme } from '../../context/ThemeContext';
@@ -64,17 +69,18 @@ const SectionLabel = ({ label, colors }) => (
 /* ------------------------------------------------------------------ */
 /*  Profile Card                                                         */
 /* ------------------------------------------------------------------ */
-const ProfileCard = ({ firstName, lastName, points, profilePicture, activeBorder, loading, error, colors, onEditPress }) => {
+const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture, activeBorder, hasPremiumBorder, hasProfileBadge, loading, error, colors, onEditPress }) => {
   const { t } = useTranslation();
-  const userLevel = Math.floor(Math.sqrt(points / 50)) + 1;
+  const calculationPoints = totalPoints !== undefined && totalPoints !== null ? totalPoints : points;
+  const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
   const levelTitle = getTitleForLevel(userLevel, t);
 
   // Level calculations for progress bar
-  const currentLvlPoints = points !== undefined ? 50 * Math.pow(userLevel - 1, 2) : 0;
-  const nextLvlPoints = points !== undefined ? 50 * Math.pow(userLevel, 2) : 0;
+  const currentLvlPoints = calculationPoints !== undefined ? 50 * Math.pow(userLevel - 1, 2) : 0;
+  const nextLvlPoints = calculationPoints !== undefined ? 50 * Math.pow(userLevel, 2) : 0;
   const totalLvlRange = nextLvlPoints - currentLvlPoints;
-  const pointsInCurrentLvl = points !== undefined ? points - currentLvlPoints : 0;
-  const xpRemaining = nextLvlPoints - points;
+  const pointsInCurrentLvl = calculationPoints !== undefined ? calculationPoints - currentLvlPoints : 0;
+  const xpRemaining = nextLvlPoints - calculationPoints;
   const progressRatio = totalLvlRange > 0 ? Math.min(Math.max(pointsInCurrentLvl / totalLvlRange, 0), 1) : 0;
 
   return (
@@ -83,7 +89,7 @@ const ProfileCard = ({ firstName, lastName, points, profilePicture, activeBorder
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
         <AvatarWithBorder
           avatarUrl={profilePicture}
-          level={activeBorder || userLevel}
+          level={hasPremiumBorder ? 999 : (activeBorder || userLevel)}
           size={64}
         />
         <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -96,14 +102,19 @@ const ProfileCard = ({ firstName, lastName, points, profilePicture, activeBorder
             </View>
           ) : (
             <>
-              <Text 
-                numberOfLines={1} 
-                ellipsizeMode="tail"
-                className='font-redditsans-bold' 
-                style={{ fontSize: 20, color: colors.text, marginBottom: 4 }}
-              >
-                {firstName ?? '—'} {lastName ?? ''}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, width: '90%' }}>
+                <Text 
+                  numberOfLines={1} 
+                  ellipsizeMode="tail"
+                  className='font-redditsans-bold' 
+                  style={{ fontSize: 20, color: colors.text, flexShrink: 1 }}
+                >
+                  {firstName ?? '—'} {lastName ?? ''}
+                </Text>
+                {hasProfileBadge && (
+                  <Text style={{ fontSize: 18 }}>👑</Text>
+                )}
+              </View>
               
               {levelTitle ? (
                 <Text className='font-redditsans-medium' style={{ fontSize: 11, color: colors.primary, marginBottom: 4 }}>
@@ -224,8 +235,9 @@ const DarkModeToggleRow = ({ isDark, onToggle, colors }) => {
 /*  Main Profile Screen                                                  */
 /* ------------------------------------------------------------------ */
 const Profile = ({ navigation }) => {
-  const { theme, isDark, toggleTheme } = useTheme();
+  const { theme, isDark, themeName, toggleTheme, setThemeByName } = useTheme();
   const { colors } = theme;
+  const [showThemeModal, setShowThemeModal] = useState(false);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -344,8 +356,11 @@ const Profile = ({ navigation }) => {
           firstName={accountData?.firstName}
           lastName={accountData?.lastName}
           points={points}
+          totalPoints={accountData?.totalExperiencePoints}
           profilePicture={accountData?.profilePicture}
           activeBorder={activeBorder}
+          hasPremiumBorder={accountData?.hasPremiumBorder}
+          hasProfileBadge={accountData?.hasProfileBadge}
           loading={profileLoading}
           error={profileError}
           colors={colors}
@@ -365,6 +380,11 @@ const Profile = ({ navigation }) => {
             icon={faGlobe}
             title={t("profile.menu.languages")}
             onPress={() => navigation.navigate('LanguageSettings')}
+          />
+          <SettingsItem
+            icon={faPalette}
+            title={t("profile.menu.themes", "Tətbiq Temaları")}
+            onPress={() => setShowThemeModal(true)}
           />
           <SettingsItem
             icon={faGear}
@@ -459,6 +479,91 @@ const Profile = ({ navigation }) => {
           <FontAwesomeIcon icon={faArrowRightFromBracket} size={18} color={colors.danger} />
           <Text style={[styles.logoutText, { color: colors.danger }]}>{t("profile.logout")}</Text>
         </TouchableOpacity>
+
+        {/* Theme Selector Modal */}
+        <Modal
+          visible={showThemeModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowThemeModal(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowThemeModal(false)}
+          >
+            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+              <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>
+                {t("store.themes.header", "Tətbiq Temaları")}
+              </Text>
+              
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+                {[
+                  { id: 'light', name: t('store.themes.light', 'Açıq Rəng'), desc: t('store.themes.light_desc', 'Klassik yaşıl və açıq tonlar'), icon: '☀️', isPremium: false },
+                  { id: 'dark', name: t('store.themes.dark', 'Qaranlıq Rəng'), desc: t('store.themes.dark_desc', 'Gözləri yormayan qaranlıq rejim'), icon: '🌙', isPremium: false },
+                  { id: 'sunset', name: t('store.themes.sunset', 'Sunset Glow 🌅'), desc: t('store.themes.sunset_desc', 'İsti narıncı gradientlər'), icon: '🌅', isPremium: true },
+                  { id: 'ocean', name: t('store.themes.ocean', 'Ocean Wave 🌊'), desc: t('store.themes.ocean_desc', 'Dərin mavi okean tonları'), icon: '🌊', isPremium: true },
+                  { id: 'cyber', name: t('store.themes.cyber', 'Cyber Neon 🎆'), desc: t('store.themes.cyber_desc', 'Neon futuristik tünd bənövşəyi'), icon: '🎆', isPremium: true },
+                  { id: 'rose', name: t('store.themes.rose', 'Rose Gold 🌸'), desc: t('store.themes.rose_desc', 'Elegant qızılı-çəhrayı tonlar'), icon: '🌸', isPremium: true },
+                ].map((item) => {
+                  const isLocked = item.isPremium && !accountData?.hasThemePack;
+                  const isSelected = themeName === item.id;
+                  
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[
+                        styles.themeOption,
+                        { borderColor: colors.border },
+                        isSelected && { backgroundColor: colors.primarySurface, borderColor: colors.primary }
+                      ]}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        if (isLocked) {
+                          Alert.alert(
+                            t('store.theme_locked_title', 'Tema Kilidlidir 🔒'),
+                            t('store.theme_locked_desc', "Bu premium temanı aktivləşdirmək üçün XP Mağazasından 'Premium Tema Paketi'ni satın almalısınız!"),
+                            [
+                              { text: t('common.cancel', 'Ləğv et'), style: 'cancel' },
+                              { text: t('store.header_title', 'Mağazaya Get'), onPress: () => { setShowThemeModal(false); navigation.navigate('StoreScreen'); } }
+                            ]
+                          );
+                        } else {
+                          setThemeByName(item.id);
+                          setShowThemeModal(false);
+                        }
+                      }}
+                    >
+                      <View style={[styles.themeIconCircle, { backgroundColor: isSelected ? colors.primary + '20' : colors.cardSecondary }]}>
+                        <Text style={{ fontSize: 24 }}>{item.icon}</Text>
+                      </View>
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                          <Text className="font-redditsans-bold" style={[styles.themeOptionName, { color: colors.text }]}>
+                            {item.name}
+                          </Text>
+                          {item.isPremium && (
+                            <View style={{ backgroundColor: isLocked ? '#f9731615' : '#10b98115', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
+                              <Text style={{ fontSize: 9, color: isLocked ? '#f97316' : '#10b981', fontFamily: 'RedditSans-Bold' }}>
+                                {isLocked ? 'PREMIUM 🔒' : 'UNLOCKED ✨'}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                        <Text className="font-redditsans-medium" style={[styles.themeOptionDesc, { color: colors.textSecondary }]}>
+                          {item.desc}
+                        </Text>
+                      </View>
+                      {isSelected && (
+                        <Text style={{ fontSize: 16, color: colors.primary }}>✓</Text>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </ScrollView>
     </LinearGradient>
   );
@@ -531,6 +636,51 @@ const styles = StyleSheet.create({
     gap: 10, borderWidth: 1,
   },
   logoutText: { fontSize: 16, fontFamily: 'RedditSans-Bold', fontWeight: '700' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '75%',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'RedditSans-Bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  themeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderWidth: 1.5,
+    borderRadius: 16,
+    marginBottom: 10,
+  },
+  themeIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeOptionName: {
+    fontSize: 15,
+  },
+  themeOptionDesc: {
+    fontSize: 11,
+    marginTop: 2,
+  },
 });
 
 export default Profile;

@@ -224,7 +224,7 @@ const EditProfile = ({ navigation, route }) => {
           <View style={{ position: 'relative' }}>
             <AvatarWithBorder
               avatarUrl={formData.profilePicture}
-              level={activeBorder}
+              level={initialData?.hasPremiumBorder ? 999 : activeBorder}
               size={80}
             />
             <View style={[styles.avatarEditBadge, { backgroundColor: colors.primary, zIndex: 10 }]}>

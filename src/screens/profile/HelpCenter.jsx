@@ -32,6 +32,7 @@ import {
   faRocket,
   faShieldHalved,
   faCircleInfo,
+  faBrain,
 } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -138,6 +139,18 @@ const HelpCenter = ({ navigation }) => {
       q: t('help.faq.q7'),
       a: t('help.faq.a7'),
     },
+    {
+      q: t('help.faq.q8'),
+      a: t('help.faq.a8'),
+    },
+    {
+      q: t('help.faq.q10'),
+      a: t('help.faq.a10'),
+    },
+    {
+      q: t('help.faq.q11'),
+      a: t('help.faq.a11'),
+    }
   ];
 
   const features = [
@@ -170,6 +183,16 @@ const HelpCenter = ({ navigation }) => {
       icon: faBell,
       title: t('help.features.reminders_title'),
       desc: t('help.features.reminders_desc'),
+    },
+    {
+      icon: faStar,
+      title: t('help.features.store_title'),
+      desc: t('help.features.store_desc'),
+    },
+    {
+      icon: faBrain,
+      title: t('help.features.ai_mentor_title'),
+      desc: t('help.features.ai_mentor_desc'),
     },
   ];
 
