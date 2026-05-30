@@ -9,12 +9,12 @@ import { useTranslation } from 'react-i18next';
 Sound.setCategory('Playback');
 
 const FOCUS_SOUNDS = [
-  { id: 'rain', emoji: '🌧️', url: 'https://www.gstatic.com/voice_delight/sounds/long/rain.mp3' },
-  { id: 'forest', emoji: '🌲', url: 'https://www.gstatic.com/voice_delight/sounds/long/forest.mp3' },
-  { id: 'ocean', emoji: '🌊', url: 'https://www.gstatic.com/voice_delight/sounds/long/ocean.mp3' },
-  { id: 'fireplace', emoji: '🔥', url: 'https://www.gstatic.com/voice_delight/sounds/long/fireplace.mp3' },
-  { id: 'night', emoji: '🌙', url: 'https://www.gstatic.com/voice_delight/sounds/long/country_night.mp3' },
-  { id: 'river', emoji: '💧', url: 'https://www.gstatic.com/voice_delight/sounds/long/river.mp3' },
+  { id: 'rain', emoji: '🌧️', url: 'focus_rain.mp3' },
+  { id: 'forest', emoji: '🌲', url: 'focus_forest.mp3' },
+  { id: 'ocean', emoji: '🌊', url: 'focus_ocean.mp3' },
+  { id: 'fireplace', emoji: '🔥', url: 'focus_fireplace.mp3' },
+  { id: 'night', emoji: '🌙', url: 'focus_night.mp3' },
+  { id: 'river', emoji: '💧', url: 'focus_river.mp3' },
 ];
 
 let activeSoundInstance = null;
@@ -133,7 +133,7 @@ const FocusSoundsPanel = ({ timerActive, habitId }) => {
     setIsLoading(true);
     notify();
 
-    const newSound = new Sound(sound.url, null, (error) => {
+    const newSound = new Sound(sound.url, Sound.MAIN_BUNDLE, (error) => {
       if (isMountedRef.current) {
         setIsLoading(false);
       }
