@@ -446,7 +446,8 @@ export const addUserHabitFetch = async (token, payload) => {
     if (contentType && contentType.includes("application/json")) {
         return await response.json();
     }
-    return { success: response.ok, status: response.status };
+    const textMessage = await response.text();
+    return { success: response.ok, status: response.status, message: textMessage };
 };
 
 export const addCustomUserHabitFetch = async (token, payload) => {
@@ -460,7 +461,8 @@ export const addCustomUserHabitFetch = async (token, payload) => {
     if (contentType && contentType.includes("application/json")) {
         return await response.json();
     }
-    return { success: response.ok, status: response.status };
+    const textMessage = await response.text();
+    return { success: response.ok, status: response.status, message: textMessage };
 };
 export const deleteUserHabitFetch = async (token,userHabitId) => {
     const response = await fetch(`${VITE_API_URL}/api/UserHabit/${userHabitId}`, {
@@ -773,7 +775,8 @@ export const addSuggestedHabitFetch = async (token, payload) => {
     if (contentType && contentType.includes("application/json")) {
         return await response.json();
     }
-    return { success: response.ok, status: response.status };
+    const textMessage = await response.text();
+    return { success: response.ok, status: response.status, message: textMessage };
 };
 
 export const getUserLearningContentFetch = async (token, pageIndex = 0, pageSize = 10) => {
@@ -810,7 +813,8 @@ export const updateUserHabitFetch = async (token, userHabitId, payload) => {
     if (contentType && contentType.includes("application/json")) {
         return await response.json();
     }
-    return { success: response.ok, status: response.status };
+    const textMessage = await response.text();
+    return { success: response.ok, status: response.status, message: textMessage };
 };
 
 export const removeUserHabitFetch = async (token, userHabitId) => {

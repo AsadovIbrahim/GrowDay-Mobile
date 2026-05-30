@@ -4,10 +4,11 @@ import { faClock, faChevronRight, faCheckSquare, faSquare, faCheck } from '@fort
 import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { getTranslatedHabit } from "../utils/habitTranslations";
 
 const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress, showStatus }) => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = theme;
   const formatTime = (timeValue) => {
     if (!timeValue) return '';
@@ -116,7 +117,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
       {/* Title and Type */}
       <View className="flex-1">
         <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
-          {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
+          {getTranslatedHabit(habit, i18n.language, t).title}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {isCompleted ? t('common.completed') : t(`my_habits.filters.${habitType.toLowerCase()}`)}

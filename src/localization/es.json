@@ -24,7 +24,8 @@
     "continue": "Continuar",
     "confirm": "Confirmar",
     "ad_loading": "Cargando anuncio...",
-    "level_short": "Nvl. {{level}}"
+    "level_short": "Nvl. {{level}}",
+    "oops": "¡Ups!"
   },
   "menu": {
     "home": "Inicio",
@@ -326,7 +327,8 @@
     "duration_placeholder": "ej. 10",
     "minutes_per_session": "minutos por sesión",
     "standard_icons": "Iconos Estándar",
-    "premium_icons": "Iconos Premium 🌟"
+    "premium_icons": "Iconos Premium 🌟",
+    "already_exists": "Este hábito ya existe en tu lista."
   },
   "icons": {
     "run": "Correr",
@@ -975,7 +977,18 @@
     "daily_average": "Promedio Diario",
     "best_day": "Mejor Día",
     "keep_going": "¡Sigue así! ¡Lo estás haciendo genial! 🚀",
-    "improve_hint": "¡Intenta completar más hábitos para aumentar tu tasa! 🔥"
+    "improve_hint": "¡Intenta completar más hábitos para aumentar tu tasa! 🔥",
+    "brain_insight_title": "Análisis de cerebro y hábitos",
+    "brain_insight_high": "Al completar el {{rate}}% de tus hábitos en este período, ¡tu enfoque y velocidad de memoria en los Juegos Cognitivos aumentaron un 15%! Tu cerebro está en excelente forma. 🧠",
+    "brain_insight_medium": "Realizaste el {{rate}}% de tus hábitos en este período. Se observa un aumento del 8% en el enfoque de la memoria en los resultados del juego. ¡Agudiza más tu cerebro aumentando la constancia! ⚡",
+    "brain_insight_low": "Tu tasa de finalización de hábitos fue del {{rate}}% en este período. Esto podría ralentizar tu velocidad de reacción en los juegos de memoria. ¡Despierta tu cerebro recuperando tus hábitos! 🔋",
+    "brain_speed_high": "Velocidad de memoria: +15%",
+    "brain_speed_medium": "Enfoque: +8%",
+    "brain_speed_low": "Actividad: Debilitada",
+    "habits_label": "Hábitos",
+    "brain_insight_high_past": "¡Completaste el {{rate}}% de tus hábitos en este período, manteniendo tu cerebro en excelente forma! Usa esto como guía para tus metas actuales. 🏆",
+    "brain_insight_medium_past": "Realizaste el {{rate}}% de tus hábitos en este período. Cada nuevo período es un nuevo comienzo: ¡puedes apuntar aún más alto esta vez! ⚡",
+    "brain_insight_low_past": "Tu tasa de finalización fue del {{rate}}% en este período. ¡El pasado quedó atrás! Empieza de cero en el período actual y despierta tu cerebro. 🌟"
   },
   "help": {
     "title": "Centro de Ayuda",
@@ -1256,5 +1269,16 @@
     "prompt_motivate": "¡Motívame para hoy!",
     "prompt_habit": "¿Qué hábitos sugieres para aumentar mi productividad?",
     "prompt_plan": "¡Ayúdame a preparar un gran plan para el día!"
+  },
+  "focus_sounds": {
+    "title": "Sonidos de enfoque",
+    "rain": "Lluvia",
+    "forest": "Bosque",
+    "ocean": "Océano",
+    "fireplace": "Chimenea",
+    "night": "Noche",
+    "river": "Río",
+    "now_playing": "Reproduciendo",
+    "ready": "Listo para reproducir"
   }
 }

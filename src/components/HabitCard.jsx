@@ -5,11 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import { ICONS } from "../constants/icons";
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedHabit } from '../utils/habitTranslations';
 
 const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const { theme } = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isFuture = (() => {
     if (!selectedDate) return false;
     const today = new Date();
@@ -87,7 +88,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
       
       <View className="flex-1">
         <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
-          {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
+          {getTranslatedHabit(habit, i18n.language, t).title}
         </Text>
         <View className="flex-row items-center">
           <Text 

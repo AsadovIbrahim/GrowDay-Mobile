@@ -8,6 +8,7 @@ import { ICONS } from '../../constants/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sound from 'react-native-sound';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedHabit } from '../../utils/habitTranslations';
 import { useInterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 
 Sound.setCategory('Playback');
@@ -20,7 +21,7 @@ const HabitCelebration = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const insets = useSafeAreaInsets();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const habit = route.params?.habit;
 
     const { isLoaded, isClosed, load, show } = useInterstitialAd(interstitialAdUnitId, {
@@ -117,7 +118,7 @@ const HabitCelebration = () => {
     
     const descText = isBoolean ? t("habit_celebration.completed_today") : t("habit_celebration.value_completed", { value: formatValue(targetValue), unit: translatedUnit });
 
-    const displayTitle = habit.title ? t(`habits.${habit.title.toLowerCase().replace(/ /g, '_')}`, { defaultValue: habit.title }) : "HABIT";
+    const displayTitle = getTranslatedHabit(habit, i18n.language, t).title || "HABIT";
     const titleUpper = displayTitle.toUpperCase();
 
     // Optimistically calculate new streak

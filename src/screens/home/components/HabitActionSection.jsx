@@ -11,6 +11,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { displayOngoingHabitNotification, cancelOngoingHabitNotification, scheduleIncompleteReminder, cancelIncompleteReminder, scheduleGoalReachedNotification, cancelGoalReachedNotification } from '../../../utils/NotificationService';
 import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
 import { useTranslation } from "react-i18next";
+import FocusSoundsPanel, { stopGlobalFocusSound } from './FocusSoundsPanel';
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -482,6 +483,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         cancelOngoingHabitNotification(hId);
         cancelGoalReachedNotification(hId);
         autoStopTriggered.current = false;
+        stopGlobalFocusSound();
     };
 
 
@@ -756,83 +758,88 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
         return (
             <View style={styles.durationContainer}>
+                {/* 1. Section Title */}
+                <Text 
+                    className="font-redditsans-bold text-xs uppercase tracking-[1.2px] self-start" 
+                    style={{ color: colors.textSecondary, marginBottom: -4, marginTop: 4 }}
+                >
+                    {t("habit_details.action.today_session")}
+                </Text>
+
+                {/* 2. Sessiya stats (timerDisplay) */}
                 <Animated.View style={[
-    styles.timerDisplay,
-    (isDistance || isSteps || isKcal) && styles.workoutDisplay,
-    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card }
-]}>
-    <Text className="font-redditsans-bold" style={[styles.sessionLabel, { color: colors.textSecondary }]}>
-        {t("habit_details.action.today_session")}
-    </Text>
+                    styles.timerDisplay,
+                    (isDistance || isSteps || isKcal) && styles.workoutDisplay,
+                    { transform: [{ scale: pulseAnim }], borderColor: timerActive ? colors.primary : colors.border, borderWidth: timerActive ? 1.5 : 1, backgroundColor: colors.card, marginTop: 4 }
+                ]}>
+                    <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
+                        {isKcal ? `${displayKcal.toFixed(1)} kcal`
+                            : isSteps ? `${displaySteps} ${t("units.steps")}`
+                            : isDistance ? formatDistance(displayDistance)
+                            : formatTime(displaySeconds)}
+                    </Text>
+                    <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
+                        {isKcal ? t("habit_details.action.live_calories")
+                            : isSteps ? t("habit_details.action.live_steps")
+                            : isDistance ? t("habit_details.action.live_distance")
+                            : ["hour", "hr", "hrs", "hours"].includes(unit)
+                                ? t("habit_details.action.duration_hms")
+                                : t("habit_details.action.duration_ms")}
+                    </Text>
 
-    {/* Əsas metrik */}
-    <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
-        {isKcal ? `${displayKcal.toFixed(1)} kcal`
-            : isSteps ? `${displaySteps} ${t("units.steps")}`
-            : isDistance ? formatDistance(displayDistance)
-            : formatTime(displaySeconds)}
-    </Text>
-    <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
-        {isKcal ? t("habit_details.action.live_calories")
-            : isSteps ? t("habit_details.action.live_steps")
-            : isDistance ? t("habit_details.action.live_distance")
-            : ["hour", "hr", "hrs", "hours"].includes(unit)
-                ? t("habit_details.action.duration_hms")
-                : t("habit_details.action.duration_ms")}
-    </Text>
+                    {(isDistance || isSteps || isKcal) && (() => {
+                        const chips = [];
+                        if (isDistance) {
+                            chips.push(
+                                { value: String(Math.round(displayDistance * 1250)), label: t("units.steps") },
+                                { value: (displayDistance * 60).toFixed(1), label: t("units.kcal") },
+                                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+                            );
+                        } else if (isSteps) {
+                            chips.push(
+                                { value: String(displaySteps), label: t("units.steps") },
+                                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
+                                { value: (displaySteps * 0.04).toFixed(1), label: t("units.kcal") },
+                                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+                            );
+                        } else if (isKcal) {
+                            chips.push(
+                                { value: String(displaySteps), label: t("units.steps") },
+                                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
+                                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
+                            );
+                        }
+                        return (
+                            <View style={styles.metricsGrid}>
+                                {chips.map((chip, index) => (
+                                    <View
+                                        key={`${chip.label}-${index}`}
+                                        style={[styles.metricChip, { backgroundColor: colors.background || colors.cardSecondary }]}
+                                    >
+                                        <Text
+                                            className="font-redditsans-bold"
+                                            style={[styles.metricValue, { color: colors.text }]}
+                                            numberOfLines={1}
+                                            adjustsFontSizeToFit
+                                            minimumFontScale={0.75}
+                                        >
+                                            {chip.value}
+                                        </Text>
+                                        <Text
+                                            className="font-redditsans-medium"
+                                            style={[styles.metricLabel, { color: colors.textSecondary }]}
+                                            numberOfLines={2}
+                                        >
+                                            {chip.label}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        );
+                    })()}
+                </Animated.View>
 
-    {(isDistance || isSteps || isKcal) && (() => {
-        const chips = [];
-        if (isDistance) {
-            chips.push(
-                { value: String(Math.round(displayDistance * 1250)), label: t("units.steps") },
-                { value: (displayDistance * 60).toFixed(1), label: t("units.kcal") },
-                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
-            );
-        } else if (isSteps) {
-            chips.push(
-                { value: String(displaySteps), label: t("units.steps") },
-                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
-                { value: (displaySteps * 0.04).toFixed(1), label: t("units.kcal") },
-                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
-            );
-        } else if (isKcal) {
-            chips.push(
-                { value: String(displaySteps), label: t("units.steps") },
-                { value: (displaySteps * 0.0008).toFixed(2), label: t("units.km") },
-                { value: formatTime(displaySeconds), label: t("habit_details.action.live_duration") },
-            );
-        }
-        return (
-            <View style={styles.metricsGrid}>
-                {chips.map((chip, index) => (
-                    <View
-                        key={`${chip.label}-${index}`}
-                        style={[styles.metricChip, { backgroundColor: colors.background || colors.cardSecondary }]}
-                    >
-                        <Text
-                            className="font-redditsans-bold"
-                            style={[styles.metricValue, { color: colors.text }]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.75}
-                        >
-                            {chip.value}
-                        </Text>
-                        <Text
-                            className="font-redditsans-medium"
-                            style={[styles.metricLabel, { color: colors.textSecondary }]}
-                            numberOfLines={2}
-                        >
-                            {chip.label}
-                        </Text>
-                    </View>
-                ))}
-            </View>
-        );
-    })()}
-
-</Animated.View>
+                {/* 3. Controls Row */}
                 <View style={styles.controlsRow}>
                     {!timerActive ? (
                         <TouchableOpacity onPress={handleStartResume} style={[styles.controlBtn, styles.startBtn, { backgroundColor: colors.primary }]}>
@@ -847,14 +854,18 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                         <FontAwesomeIcon icon={faStop} color="#fff" size={20} />
                     </TouchableOpacity>
                 </View>
+
                 {timerActive && (
-                    <Text className="font-redditsans-bold" style={[styles.activeHint, { color: colors.primary }]}>
+                    <Text className="font-redditsans-bold" style={[styles.activeHint, { color: colors.primary, marginTop: -4 }]}>
                         {isDistance ? t("habit_details.action.location_active") : ((isSteps || isKcal) ? t("habit_details.action.step_sensor_active") : t("habit_details.action.session_started"))}
                     </Text>
                 )}
+
+                {/* 4. Fokus Səsləri */}
+                {isDuration && <FocusSoundsPanel timerActive={timerActive} habitId={hId} />}
             </View>
         );
-    }
+    };
     return null;
 };
 
@@ -867,7 +878,7 @@ const styles = StyleSheet.create({
     cooldownFill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
     incText: { fontSize: 18, color: '#2f6f3f' },
     helperText: { fontSize: 13, color: '#6b7280', fontStyle: 'italic' },
-    durationContainer: { alignItems: 'center', gap: 24, marginBottom: 20 },
+    durationContainer: { alignItems: 'center', gap: 12, marginBottom: 20 },
     timerDisplay: {
         alignItems: 'center',
         backgroundColor: '#fff',
@@ -918,7 +929,7 @@ const styles = StyleSheet.create({
     timerValue: { fontSize: 40, color: '#111827', fontVariant: ['tabular-nums'], textAlign: 'center' },
     subTimer: { fontSize: 16, color: '#4b5563', marginTop: -2 },
     timerLabel: { fontSize: 10, color: '#6b7280', letterSpacing: 1, marginTop: 2 },
-    controlsRow: { flexDirection: 'row', gap: 20, width: '100%', justifyContent: 'center', marginTop: 12 },
+    controlsRow: { flexDirection: 'row', gap: 20, width: '100%', justifyContent: 'center', marginTop: 4 },
     controlBtn: { width: 68, height: 68, borderRadius: 34, alignItems: "center", justifyContent: "center", elevation: 6, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 4 },
     startBtn: { backgroundColor: "#2f6f3f" },
     pauseBtn: { backgroundColor: "#f59e0b" },

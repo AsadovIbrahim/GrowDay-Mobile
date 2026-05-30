@@ -3,14 +3,15 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { getTranslatedHabit } from "../utils/habitTranslations";
 
-const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
+const SuggestedHabitCard = ({ name, frequency, icon, onPress, habit }) => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = theme;
 
   const displayIcon = ICONS[icon] || ICONS.default;
-  const translationKey = name ? name.toLowerCase().replace(/\s+/g, '_') : '';
+  const displayTitle = getTranslatedHabit(habit || { title: name }, i18n.language, t).title;
 
   return (
     <TouchableOpacity
@@ -47,7 +48,7 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress }) => {
           style={{ color: colors.text }}
           numberOfLines={2}
         >
-          {t(`habits.${translationKey}`, { defaultValue: name })}
+          {displayTitle}
         </Text>
         <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
           {t(`my_habits.filters.${frequency.toLowerCase()}`)}

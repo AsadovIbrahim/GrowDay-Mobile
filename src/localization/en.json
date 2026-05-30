@@ -24,7 +24,8 @@
     "continue": "Continue",
     "confirm": "Confirm",
     "ad_loading": "Loading ad...",
-    "level_short": "Lv. {{level}}"
+    "level_short": "Lv. {{level}}",
+    "oops": "Oops!"
   },
   "menu": {
     "home": "Home",
@@ -326,7 +327,8 @@
     "duration_placeholder": "e.g. 10",
     "minutes_per_session": "minutes per session",
     "standard_icons": "Standard Icons",
-    "premium_icons": "Premium Icons 🌟"
+    "premium_icons": "Premium Icons 🌟",
+    "already_exists": "This habit already exists in your list."
   },
   "icons": {
     "run": "Run",
@@ -975,7 +977,18 @@
     "daily_average": "Daily Average",
     "best_day": "Best Day",
     "keep_going": "Keep going! You're doing great! 🚀",
-    "improve_hint": "Try to complete more habits to increase your rate! 🔥"
+    "improve_hint": "Try to complete more habits to increase your rate! 🔥",
+    "brain_insight_title": "Brain & Habit Analysis",
+    "brain_insight_high": "By completing {{rate}}% of your habits in this period, your focus and memory speed in Cognitive Games increased by 15%! Your brain is in excellent shape. 🧠",
+    "brain_insight_medium": "You carried out {{rate}}% of your habits in this period. A 8% increase in memory focus is visible in game results. Sharpen your brain further by boosting consistency! ⚡",
+    "brain_insight_low": "Your habit completion rate was {{rate}}% in this period. This might slow down your reaction speed in memory games. Wake up your brain by restoring your habits! 🔋",
+    "brain_speed_high": "Memory speed: +15%",
+    "brain_speed_medium": "Focus: +8%",
+    "brain_speed_low": "Activity: Weakened",
+    "habits_label": "Habits",
+    "brain_insight_high_past": "You completed {{rate}}% of your habits in this period, keeping your brain in excellent shape! Use this as a guide for your current goals. 🏆",
+    "brain_insight_medium_past": "You carried out {{rate}}% of your habits in this period. Every new period is a fresh start—you can aim even higher this time! ⚡",
+    "brain_insight_low_past": "Your completion rate was {{rate}}% in this period. The past is in the past! Start fresh in the current period and wake up your brain. 🌟"
   },
   "help": {
     "title": "Help Center",
@@ -1256,5 +1269,16 @@
     "prompt_motivate": "Motivate me for today!",
     "prompt_habit": "What habits do you suggest to increase my productivity?",
     "prompt_plan": "Help me prepare a great day plan!"
+  },
+  "focus_sounds": {
+    "title": "Focus Sounds",
+    "rain": "Rain",
+    "forest": "Forest",
+    "ocean": "Ocean",
+    "fireplace": "Fireplace",
+    "night": "Night",
+    "river": "River",
+    "now_playing": "Now Playing",
+    "ready": "Ready to Play"
   }
 }

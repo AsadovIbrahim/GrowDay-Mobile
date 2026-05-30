@@ -24,7 +24,8 @@
     "continue": "Weiter",
     "confirm": "Bestätigen",
     "ad_loading": "Werbung wird geladen...",
-    "level_short": "Lvl. {{level}}"
+    "level_short": "Lvl. {{level}}",
+    "oops": "Upps!"
   },
   "menu": {
     "home": "Startseite",
@@ -326,7 +327,8 @@
     "duration_placeholder": "z. B. 10",
     "minutes_per_session": "Minuten pro Sitzung",
     "standard_icons": "Standard-Symbole",
-    "premium_icons": "Premium-Symbole 🌟"
+    "premium_icons": "Premium-Symbole 🌟",
+    "already_exists": "Diese Gewohnheit existiert bereits in deiner Liste."
   },
   "icons": {
     "run": "Laufen",
@@ -975,7 +977,18 @@
     "daily_average": "Täglicher Durchschnitt",
     "best_day": "Bester Tag",
     "keep_going": "Mach weiter so! Du machst das großartig! 🚀",
-    "improve_hint": "Versuche mehr Gewohnheiten abzuschließen, um deine Rate zu erhöhen! 🔥"
+    "improve_hint": "Versuche mehr Gewohnheiten abzuschließen, um deine Rate zu erhöhen! 🔥",
+    "brain_insight_title": "Gehirn- & Gewohnheitsanalyse",
+    "brain_insight_high": "Indem Sie in diesem Zeitraum {{rate}}% Ihrer Gewohnheiten abgeschlossen haben, hat sich Ihre Konzentration und Gedächtnisgeschwindigkeit in kognitiven Spielen um 15% erhöht! Ihr Gehirn ist in Topform. 🧠",
+    "brain_insight_medium": "Sie haben in diesem Zeitraum {{rate}}% Ihrer Gewohnheiten umgesetzt. In den Spielergebnissen ist eine Steigerung des Gedächtnisfokus um 8% erkennbar. Schärfen Sie Ihr Gehirn weiter, indem Sie die Beständigkeit erhöhen! ⚡",
+    "brain_insight_low": "Ihre Gewohnheitsabschlussrate lag in diesem Zeitraum bei {{rate}}%. Dies könnte Ihre Reaktionsgeschwindigkeit in Gedächtnisspielen verlangsamen. Wecken Sie Ihr Gehirn auf, indem Sie Ihre Gewohnheiten wieder aufnehmen! 🔋",
+    "brain_speed_high": "Gedächtnistempo: +15%",
+    "brain_speed_medium": "Fokus: +8%",
+    "brain_speed_low": "Aktivität: Geschwächt",
+    "habits_label": "Gewohnheiten",
+    "brain_insight_high_past": "Sie haben in diesem Zeitraum {{rate}}% Ihrer Gewohnheiten abgeschlossen und Ihr Gehirn in Topform gehalten! Nutzen Sie dies als Maßstab für Ihre aktuellen Ziele. 🏆",
+    "brain_insight_medium_past": "Sie haben in diesem Zeitraum {{rate}}% Ihrer Gewohnheiten umgesetzt. Jeder neue Zeitraum ist ein Neuanfang – dieses Mal können Sie noch höher zielen! ⚡",
+    "brain_insight_low_past": "Ihre Abschlussrate lag in diesem Zeitraum bei {{rate}}%. Die Vergangenheit ist vorbei! Starten Sie im aktuellen Zeitraum neu durch und wecken Sie Ihr Gehirn auf. 🌟"
   },
   "help": {
     "title": "Hilfe-Center",
@@ -1256,5 +1269,16 @@
     "prompt_motivate": "Motiere mich für heute!",
     "prompt_habit": "Welche Gewohnheiten empfiehlst du zur Steigerung der Produktivität?",
     "prompt_plan": "Hilf mir, einen tollen Tagesplan zu erstellen!"
+  },
+  "focus_sounds": {
+    "title": "Fokus-Klänge",
+    "rain": "Regen",
+    "forest": "Wald",
+    "ocean": "Ozean",
+    "fireplace": "Kamin",
+    "night": "Nacht",
+    "river": "Fluss",
+    "now_playing": "Wird abgespielt",
+    "ready": "Bereit zum Abspielen"
   }
 }

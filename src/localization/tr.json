@@ -24,7 +24,8 @@
     "continue": "Devam et",
     "confirm": "Onayla",
     "ad_loading": "Reklam yükleniyor...",
-    "level_short": "Sv. {{level}}"
+    "level_short": "Sv. {{level}}",
+    "oops": "Ups!"
   },
   "menu": {
     "home": "Ana Sayfa",
@@ -326,7 +327,8 @@
     "duration_placeholder": "örn: 10",
     "minutes_per_session": "seans başına dakika",
     "standard_icons": "Standart İkonlar",
-    "premium_icons": "Premium İkonlar 🌟"
+    "premium_icons": "Premium İkonlar 🌟",
+    "already_exists": "Bu alışkanlık listenizde zaten var!"
   },
   "icons": {
     "run": "Koşu",
@@ -973,7 +975,18 @@
     "daily_average": "Günlük Ortalama",
     "best_day": "En İyi Gün",
     "keep_going": "Böyle devam et! Harika gidiyorsun! 🚀",
-    "improve_hint": "Oranını artırmak için daha fazla alışkanlık tamamlamaya çalış! 🔥"
+    "improve_hint": "Oranını artırmak için daha fazla alışkanlık tamamlamaya çalış! 🔥",
+    "brain_insight_title": "Beyin & Alışkanlık Analizi",
+    "brain_insight_high": "Bu dönemde alışkanlıklarınızı {{rate}}% oranında tamamladığınız üçün, Bilişsel Oyunlardaki odaklanma ve hafıza hızınız %15 arttı! Beyniniz harika durumda. 🧠",
+    "brain_insight_medium": "Bu dönemde alışkanlıklarınızı {{rate}}% oranında gerçekleştirdiniz. Oyun sonuçlarında hafıza odağının %8 arttığı görünür. Tutarlılığı artırarak beyninizi daha da keskinleştirin! ⚡",
+    "brain_insight_low": "Bu dönemde alışkanlık tamamlama oranınız {{rate}}% kaldı. Bu durum hafıza oyunlarındaki tepki hızınızı yavaşlatabilir. Alışkanlıklarınızı geri kazanarak beyninizi uyandırın! 🔋",
+    "brain_speed_high": "Hafıza hızı: +%15",
+    "brain_speed_medium": "Odaklanma: +%8",
+    "brain_speed_low": "Aktivite: Zayıfladı",
+    "habits_label": "Alışkanlıklar",
+    "brain_insight_high_past": "Bu dönemde alışkanlıklarınızı {{rate}}% oranında tamamlayarak beyninizi mükemmel formda tuttunuz! Bunu mevcut hedefleriniz için bir kılavuz olarak kullanın. 🏆",
+    "brain_insight_medium_past": "Bu dönemde alışkanlıklarınızın {{rate}}%-ini gerçekleştirdiniz. Her yeni dönem temiz bir sayfadır; bu sefer daha da yukarısını hedefleyebilirsiniz! ⚡",
+    "brain_insight_low_past": "Bu dönemde tamamlama oranınız {{rate}}% kaldı. Geçmiş geçmişte kaldı! Mevcut dönemde yeni bir başlangıç yapın ve beyninizi uyandırın. 🌟"
   },
   "help": {
     "title": "Yardım Merkezi",
@@ -1254,5 +1267,16 @@
     "prompt_motivate": "Beni bugün için motive et!",
     "prompt_habit": "Verimliliğimi artırmak için hangi alışkanlıkları önerirsin?",
     "prompt_plan": "Harika bir gün planı hazırlamama yardım et!"
+  },
+  "focus_sounds": {
+    "title": "Odaklanma Sesleri",
+    "rain": "Yağmur",
+    "forest": "Orman",
+    "ocean": "Okyanus",
+    "fireplace": "Şömine",
+    "night": "Gece",
+    "river": "Nehir",
+    "now_playing": "Şimdi Çalıyor",
+    "ready": "Çalmaya Hazır"
   }
 }

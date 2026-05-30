@@ -1,8 +1,8 @@
-import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert, Modal, KeyboardAvoidingView, Platform, Animated, Easing } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faEdit, faNoteSticky, faExclamationTriangle, faHistory, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faEdit, faNoteSticky, faExclamationTriangle, faHistory, faCheck, faFire, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { getUserHabitByIdFetch, getWeeklyProgressFetch, reportHabitProgressFetch } from "../../utils/fetch";
 
 import { useMMKVString } from "react-native-mmkv";
@@ -13,6 +13,7 @@ import HabitProgressCard from "./components/HabitProgressCard";
 import HabitActionSection from "./components/HabitActionSection";
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from "react-i18next";
+import { getTranslatedHabit } from "../../utils/habitTranslations";
 
 const weeklyDataPlaceholder = [
     { value: 0, active: false },
@@ -28,7 +29,7 @@ const UserHabitDetails = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const [userHabit, setUserHabit] = useState(null);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [weeklyProgress, setWeeklyProgress] = useState(null);
     const [weeklyStats, setWeeklyStats] = useState(null);
     const [note, setNote] = useState("");
@@ -38,39 +39,40 @@ const UserHabitDetails = () => {
     const [isFocused, setIsFocused] = useState(false);
     const { theme } = useTheme();
     const { colors } = theme;
+    const progressAnim = useRef(new Animated.Value(0)).current;
     const isFutureDate = route.params?.isFuture || (() => {
         const dateParam = route.params?.date;
         if (!dateParam) return false;
-        
+
         // Use local date strings for comparison to avoid timezone issues
         const today = new Date();
-        const todayStr = today.getFullYear() + '-' + 
-                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                        String(today.getDate()).padStart(2, '0');
-        
+        const todayStr = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+
         const targetStr = dateParam.includes('T') ? dateParam.split('T')[0] : dateParam;
-        
+
         return targetStr > todayStr;
     })();
 
     const isLockedPastDate = (() => {
         const dateParam = route.params?.date;
         if (!dateParam) return false;
-        
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        
+
         const targetDate = new Date(dateParam.includes('T') ? dateParam.split('T')[0] : dateParam);
         targetDate.setHours(0, 0, 0, 0);
-        
+
         return targetDate < yesterday;
     })();
 
     const targetDateObj = route.params?.date ? new Date(route.params.date) : new Date();
-    const isAlreadyDone = userHabit?.lastCompletedDate && 
+    const isAlreadyDone = userHabit?.lastCompletedDate &&
         new Date(userHabit.lastCompletedDate).toDateString() === targetDateObj.toDateString();
 
     const isProgressCompleted = userHabit && (userHabit.progressPercentage >= 100);
@@ -87,6 +89,18 @@ const UserHabitDetails = () => {
         }
     }, [route.params?.habitId, route.params?.date]);
 
+    const totalCurrent = userHabit ? ((userHabit.currentValue ?? 0) + liveDelta) : 0;
+    const dailyPercent = userHabit ? Math.min(100, (totalCurrent / (userHabit.targetValue ?? 1)) * 100) : 0;
+
+    useEffect(() => {
+        Animated.timing(progressAnim, {
+            toValue: dailyPercent,
+            duration: 800,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: false,
+        }).start();
+    }, [dailyPercent]);
+
 
     const getUserHabitById = async (habitId, date = null) => {
         try {
@@ -94,13 +108,13 @@ const UserHabitDetails = () => {
             const response = await getUserHabitByIdFetch(token, habitId, date);
             if (response?.data) {
                 const newData = response.data;
-                
+
                 // Calculate how much the server has actually advanced since our last baseline
                 const confirmedAmount = Math.max(0, (newData.currentValue ?? 0) - (userHabit?.currentValue ?? 0));
-                
+
                 // Subtract that confirmed amount from our "live" (unconfirmed) delta
                 setLiveDelta(prev => Math.max(0, prev - confirmedAmount));
-                
+
                 setUserHabit(newData);
                 setNote(newData.note || "");
             }
@@ -144,15 +158,15 @@ const UserHabitDetails = () => {
             const hId = userHabit?.userHabitId || userHabit?.UserHabitId || userHabit?.id;
             if (!hId || !token) return;
 
-            const payload = { 
-                userHabitId: hId, 
-                deltaValue: 0, 
-                source: 'manual', 
-                note: note, 
+            const payload = {
+                userHabitId: hId,
+                deltaValue: 0,
+                source: 'manual',
+                note: note,
                 timestamp: new Date().toISOString(),
                 date: route.params?.date
             };
-            
+
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
                 Alert.alert(t("common.success"), t("habit_details.note_saved"));
@@ -172,163 +186,209 @@ const UserHabitDetails = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
-        <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
+            <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
 
-            <View style={styles.header}>
-                <Pressable onPress={() => navigation.goBack()} style={[styles.iconCircle, { backgroundColor: colors.card }]} hitSlop={10}>
-                    <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
-                </Pressable>
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                    <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text }]}>{t("habit_details.header")}</Text>
-                    <Text className="font-redditsans-medium" style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t("habit_details.sub_header")}</Text>
-                </View>
-                <View style={styles.headerActions}>
-                    {!isFutureDate && (
-                        <>
-                             <Pressable 
-                                onPress={() => navigation.navigate("HabitHistory", { 
-                                    habitId: userHabit?.userHabitId,
-                                    habitTitle: userHabit?.title,
-                                    habitIcon: userHabit?.icon
-                                })}
-                                style={[styles.iconCircle, { backgroundColor: colors.card }]} 
-                                hitSlop={10}
-                            >
-                                <FontAwesomeIcon icon={faHistory} color={colors.primary} size={16} />
-                            </Pressable>
-                            <Pressable 
-                                onPress={() => navigation.navigate("CreateCustomHabit", { 
-                                    habitData: userHabit, 
-                                    isEditMode: true,
-                                    isCustom: !userHabit?.habitId && !userHabit?.suggestedHabitId
-                                })}
-                                style={[styles.iconCircle, { backgroundColor: colors.card }]} 
-                                hitSlop={10}
-                            >
-                                <FontAwesomeIcon icon={faEdit} color={colors.textSecondary} size={16} />
-                            </Pressable>
-                        </>
-                    )}
-                </View>
-            </View>
-
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                <View style={styles.titleSection}>
-                    <Text className="font-redditsans-bold" style={[styles.habitTitle, { color: colors.text }]}>
-                        {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: userHabit?.title ?? "Loading..." })}{" "}
-                        {ICONS[userHabit?.icon]}
-                    </Text>
-                    <Text className="font-redditsans-medium" style={[styles.habitDesc, { color: colors.textSecondary }]}>
-                        {t(`habits.${userHabit?.title?.toLowerCase().replace(/\s+/g, '_')}_desc`, { defaultValue: userHabit?.description })}
-                    </Text>
-
-                    <View style={styles.tagRow}>
-                        <View style={[styles.tag, { backgroundColor: colors.cardSecondary }]}>
-                            <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
-                                {t(`my_habits.filters.${(userHabit?.frequency ?? "Daily").toLowerCase()}`, { defaultValue: userHabit?.frequency ?? "Daily" })}
-                            </Text>
-                        </View>
+                <View style={styles.header}>
+                    <Pressable onPress={() => navigation.goBack()} style={[styles.iconCircle, { backgroundColor: colors.card }]} hitSlop={10}>
+                        <FontAwesomeIcon icon={faArrowLeft} color={colors.text} size={18} />
+                    </Pressable>
+                    <View style={{ flex: 1, marginLeft: 16 }}>
+                        <Text className="font-redditsans-bold" style={[styles.headerTitle, { color: colors.text }]}>{t("habit_details.header")}</Text>
+                        <Text className="font-redditsans-medium" style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t("habit_details.sub_header")}</Text>
+                    </View>
+                    <View style={styles.headerActions}>
+                        {!isFutureDate && (
+                            <>
+                                <Pressable
+                                    onPress={() => navigation.navigate("HabitHistory", {
+                                        habitId: userHabit?.userHabitId,
+                                        habitTitle: userHabit?.title,
+                                        habitIcon: userHabit?.icon
+                                    })}
+                                    style={[styles.iconCircle, { backgroundColor: colors.card }]}
+                                    hitSlop={10}
+                                >
+                                    <FontAwesomeIcon icon={faHistory} color={colors.primary} size={16} />
+                                </Pressable>
+                                <Pressable
+                                    onPress={() => navigation.navigate("CreateCustomHabit", {
+                                        habitData: userHabit,
+                                        isEditMode: true,
+                                        isCustom: !userHabit?.habitId && !userHabit?.suggestedHabitId
+                                    })}
+                                    style={[styles.iconCircle, { backgroundColor: colors.card }]}
+                                    hitSlop={10}
+                                >
+                                    <FontAwesomeIcon icon={faEdit} color={colors.textSecondary} size={16} />
+                                </Pressable>
+                            </>
+                        )}
                     </View>
                 </View>
 
-                <HabitProgressCard 
-                    habit={userHabit} 
-                    weeklyData={weeklyDataPlaceholder} 
-                    liveDelta={liveDelta}
-                    title={isFutureDate ? t("home.upcoming_habits") : t("habit_details.todays_performance")}
-                />
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                >
+                    <View style={styles.titleSection}>
+                        <Text className="font-redditsans-bold" style={[styles.habitTitle, { color: colors.text }]}>
+                            {getTranslatedHabit(userHabit || { title: "Loading..." }, i18n.language, t).title}{" "}
+                            {ICONS[userHabit?.icon]}
+                        </Text>
+                        <Text className="font-redditsans-medium" style={[styles.habitDesc, { color: colors.textSecondary }]}>
+                            {getTranslatedHabit(userHabit, i18n.language, t).description}
+                        </Text>
+ 
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+                            <View style={[styles.tag, { backgroundColor: colors.cardSecondary, marginTop: 0 }]}>
+                                <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
+                                    {t(`my_habits.filters.${(userHabit?.frequency ?? "Daily").toLowerCase()}`, { defaultValue: userHabit?.frequency ?? "Daily" })}
+                                </Text>
+                            </View>
+                            {userHabit?.currentStreak !== undefined && (
+                                <View style={[styles.tag, { backgroundColor: colors.cardSecondary, marginTop: 0, flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                                    <FontAwesomeIcon icon={faFire} color="#f59e0b" size={12} />
+                                    <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
+                                        {userHabit.currentStreak} {t("habit_details.days")}
+                                    </Text>
+                                </View>
+                            )}
+                            {userHabit?.longestStreak !== undefined && (
+                                <View style={[styles.tag, { backgroundColor: colors.cardSecondary, marginTop: 0, flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                                    <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={11} />
+                                    <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
+                                        {userHabit.longestStreak} {t("habit_details.days")}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+ 
+                        {/* Bugünkü Tərəqqi / Today's Progress Horizontal Bar */}
+                        {userHabit && (
+                            <View style={{ marginTop: 20 }}>
+                                <Text className="font-redditsans-bold text-[12px] uppercase tracking-[0.8px] mb-2" style={{ color: colors.textSecondary }}>
+                                    {t("habit_details.todays_performance")}
+                                </Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                                    <Text className="font-redditsans-bold text-[16px]" style={{ color: colors.text }}>
+                                        {(() => {
+                                            const formatValue = (val) => {
+                                                if (Number.isInteger(val)) return val.toString();
+                                                const withDec = ["km", "m", "hour", "hr", "hrs", "min", "minutes"];
+                                                return val.toFixed(withDec.includes(userHabit.unit?.toLowerCase()) ? 2 : 1);
+                                            };
+                                            return `${formatValue(totalCurrent)} / ${userHabit.targetValue}`;
+                                        })()}
+                                        <Text className="font-redditsans-semibold text-[13px]" style={{ color: colors.textSecondary }}>
+                                            {" "}{t(`units.${userHabit.unit?.toLowerCase()}`, { defaultValue: userHabit.unit })}
+                                        </Text>
+                                    </Text>
+                                    <Text className="font-redditsans-bold text-[16px]" style={{ color: colors.primary }}>
+                                        {Math.round(dailyPercent)}%
+                                    </Text>
+                                </View>
+                                <View style={{ height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden', width: '100%' }}>
+                                    <Animated.View 
+                                        style={{ 
+                                            height: '100%', 
+                                            backgroundColor: colors.primary, 
+                                            borderRadius: 3,
+                                            width: progressAnim.interpolate({
+                                                inputRange: [0, 100],
+                                                outputRange: ['0%', '100%']
+                                            })
+                                        }} 
+                                    />
+                                </View>
+                            </View>
+                        )}
+                    </View>
+ 
+                    {/* Separator Line */}
+                    <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 14 }} />
 
-                {weeklyProgress && (
-                    <>
-                        <HabitProgressCard 
-                            habit={userHabit} 
-                            weeklyData={weeklyProgress} 
+                    {isFutureDate ? (
+                        <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
+                            <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
+                                {t("home.upcoming_habits")}
+                            </Text>
+                        </View>
+                    ) : isLockedPastDate && !isFullyCompleted ? (
+                        <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
+                            <Text style={{ fontSize: 24, marginBottom: 8, textAlign: 'center' }}>🔒</Text>
+                            <Text className="font-redditsans-bold" style={[{ fontSize: 16, textAlign: 'center', marginBottom: 4, color: colors.text }]}>
+                                {t("habit_details.locked_past_title", { defaultValue: "Time Expired" })}
+                            </Text>
+                            <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
+                                {t("habit_details.locked_past_desc", { defaultValue: "You can only log progress for today and yesterday." })}
+                            </Text>
+                        </View>
+                    ) : userHabit && !isFullyCompleted && (
+                        <HabitActionSection
+                            habit={userHabit}
+                            token={token}
+                            note={note}
+                            date={route.params?.date}
+                            isFuture={isFutureDate}
+                            onActionComplete={() => {
+                                if (route.params?.habitId) {
+                                    getUserHabitById(route.params.habitId, route.params?.date);
+                                    getWeeklyProgress(route.params.habitId);
+                                }
+                            }}
+                            onLiveUpdate={setLiveDelta}
+                        />
+                    )}
+
+                    {!isFutureDate && !isLockedPastDate && (
+                        <Pressable
+                            onPress={() => noteInputRef.current?.focus()}
+                            style={[
+                                styles.notesCard,
+                                { backgroundColor: colors.card },
+                                isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }
+                            ]}
+                        >
+                            <View style={styles.notesHeader}>
+                                <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
+                                <Text className="font-redditsans-bold" style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
+                                {(note !== (userHabit?.note || "")) && (
+                                    <TouchableOpacity
+                                        onPress={handleSaveNote}
+                                        style={[styles.saveNoteBtn, { backgroundColor: colors.primary + '15', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 }]}
+                                    >
+                                        <Text className="font-redditsans-bold" style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+
+                            <TextInput
+                                ref={noteInputRef}
+                                value={note}
+                                onChangeText={setNote}
+                                placeholder={t("habit_details.notes_placeholder")}
+                                placeholderTextColor={colors.textMuted}
+                                multiline
+                                style={[styles.notesInput, { color: colors.text }]}
+                                className="font-redditsans-medium"
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                            />
+                        </Pressable>
+                    )}
+
+                    {weeklyProgress && (
+                        <HabitProgressCard
+                            habit={userHabit}
+                            weeklyData={weeklyProgress}
                             title={t("habit_details.weekly_performance")}
                             weeklyStats={weeklyStats}
                         />
-                       
-                    </>
-                )}
+                    )}
 
+                </ScrollView>
 
-
-
-                {isFutureDate ? (
-                    <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
-                        <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
-                            {t("home.upcoming_habits")}
-                        </Text>
-                    </View>
-                ) : isLockedPastDate && !isFullyCompleted ? (
-                    <View style={[styles.futureNotice, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
-                        <Text style={{fontSize: 24, marginBottom: 8, textAlign: 'center'}}>🔒</Text>
-                        <Text className="font-redditsans-bold" style={[{ fontSize: 16, textAlign: 'center', marginBottom: 4, color: colors.text }]}>
-                            {t("habit_details.locked_past_title", { defaultValue: "Time Expired" })}
-                        </Text>
-                        <Text className="font-redditsans-medium" style={[styles.futureNoticeText, { color: colors.textSecondary }]}>
-                            {t("habit_details.locked_past_desc", { defaultValue: "You can only log progress for today and yesterday." })}
-                        </Text>
-                    </View>
-                ) : userHabit && !isFullyCompleted && (
-                    <HabitActionSection 
-                        habit={userHabit}
-                        token={token}
-                        note={note}
-                        date={route.params?.date}
-                        isFuture={isFutureDate}
-                        onActionComplete={() => {
-                            if (route.params?.habitId) {
-                                getUserHabitById(route.params.habitId, route.params?.date);
-                                getWeeklyProgress(route.params.habitId);
-                            }
-                        }}
-                        onLiveUpdate={setLiveDelta}
-                    />
-                )}
-
-                {!isFutureDate && !isLockedPastDate && (
-                    <Pressable 
-                        onPress={() => noteInputRef.current?.focus()}
-                        style={[
-                            styles.notesCard, 
-                            { backgroundColor: colors.card }, 
-                            isFocused && { borderColor: colors.primary, shadowOpacity: 0.15, shadowRadius: 6 }
-                        ]}
-                    >
-                        <View style={styles.notesHeader}>
-                            <FontAwesomeIcon icon={faNoteSticky} color={isFocused ? colors.primary : colors.textMuted} size={16} />
-                            <Text className="font-redditsans-bold" style={[styles.notesLabel, { color: colors.textSecondary }, isFocused && { color: colors.primary }]}>{t("habit_details.notes_label")}</Text>
-                            {(note !== (userHabit?.note || "")) && (
-                                <TouchableOpacity 
-                                    onPress={handleSaveNote} 
-                                    style={[styles.saveNoteBtn, { backgroundColor: colors.primary + '15', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 }]}
-                                >
-                                    <Text className="font-redditsans-bold" style={[styles.saveNoteText, { color: colors.primary }]}>{t("common.save")}</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-
-                        <TextInput
-                            ref={noteInputRef}
-                            value={note}
-                            onChangeText={setNote}
-                            placeholder={t("habit_details.notes_placeholder")}
-                            placeholderTextColor={colors.textMuted}
-                            multiline
-                            style={[styles.notesInput, { color: colors.text }]}
-                            className="font-redditsans-medium"
-                            onFocus={() => setIsFocused(true)}
-                            onBlur={() => setIsFocused(false)}
-                        />
-                    </Pressable>
-                )}
-                
-            </ScrollView>
-
-        </LinearGradient>
+            </LinearGradient>
         </KeyboardAvoidingView>
     );
 };
@@ -387,8 +447,13 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20, paddingBottom: 80
     },
+    statsRowSideBySide: {
+        flexDirection: "row",
+        gap: 12,
+        marginBottom: 4,
+    },
     titleSection: {
-        marginTop: 12, marginBottom: 28
+        marginTop: 12, marginBottom: 16
     },
     habitTitle: {
         fontSize: 32, color: "#111827", letterSpacing: -0.5

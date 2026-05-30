@@ -24,7 +24,8 @@
     "continue": "Continuer",
     "confirm": "Confirmer",
     "ad_loading": "Chargement de la publicité...",
-    "level_short": "Niv. {{level}}"
+    "level_short": "Niv. {{level}}",
+    "oops": "Oups !"
   },
   "menu": {
     "home": "Accueil",
@@ -326,7 +327,8 @@
     "duration_placeholder": "ex. 10",
     "minutes_per_session": "minutes par séance",
     "standard_icons": "Icônes Standards",
-    "premium_icons": "Icônes Premium 🌟"
+    "premium_icons": "Icônes Premium 🌟",
+    "already_exists": "Cette habitude existe déjà dans votre liste."
   },
   "icons": {
     "run": "Courir",
@@ -975,7 +977,18 @@
     "daily_average": "Moyenne Quotidienne",
     "best_day": "Meilleur Jour",
     "keep_going": "Continuez comme ça ! Vous vous en sortez très bien ! 🚀",
-    "improve_hint": "Essayez de terminer plus d'habitudes pour augmenter votre taux ! 🔥"
+    "improve_hint": "Essayez de terminer plus d'habitudes pour augmenter votre taux ! 🔥",
+    "brain_insight_title": "Analyse du cerveau & des habitudes",
+    "brain_insight_high": "En complétant {{rate}}% de vos habitudes sur cette période, votre concentration et votre vitesse de mémoire dans les jeux cognitifs ont augmenté de 15% ! Votre cerveau est en excellente forme. 🧠",
+    "brain_insight_medium": "Vous avez réalisé {{rate}}% de vos habitudes sur cette période. Une augmentation de 8% de la concentration de la mémoire est visible dans les résultats des jeux. Aiguisez encore plus votre cerveau en augmentant votre régularité ! ⚡",
+    "brain_insight_low": "Votre taux de réussite des habitudes était de {{rate}}% sur cette période. Cela pourrait ralentir votre vitesse de réaction dans les jeux de mémoire. Réveillez votre cerveau en reprenant vos habitudes ! 🔋",
+    "brain_speed_high": "Vitesse de mémoire : +15%",
+    "brain_speed_medium": "Concentration : +8%",
+    "brain_speed_low": "Activité : Affaiblie",
+    "habits_label": "Habitudes",
+    "brain_insight_high_past": "Vous avez complété {{rate}}% de vos habitudes sur cette période, gardant votre cerveau en excellente forme ! Utilisez cela comme repère pour vos objectifs actuels. 🏆",
+    "brain_insight_medium_past": "Vous avez réalisé {{rate}}% de vos habitudes sur cette période. Chaque nouvelle période est un nouveau départ, vous pouvez viser encore plus haut cette fois-ci ! ⚡",
+    "brain_insight_low_past": "Votre taux de réussite était de {{rate}}% sur cette période. Le passé est derrière vous ! Prenez un nouveau départ sur la période en cours et réveillez votre cerveau. 🌟"
   },
   "help": {
     "title": "Centre d'aide",
@@ -1256,5 +1269,16 @@
     "prompt_motivate": "Motive-moi pour aujourd'hui !",
     "prompt_habit": "Quelles habitudes suggères-tu pour augmenter ma productivité ?",
     "prompt_plan": "Aide-moi à préparer un excellent plan de journée !"
+  },
+  "focus_sounds": {
+    "title": "Sons de concentration",
+    "rain": "Pluie",
+    "forest": "Forêt",
+    "ocean": "Océan",
+    "fireplace": "Cheminée",
+    "night": "Nuit",
+    "river": "Rivière",
+    "now_playing": "En cours de lecture",
+    "ready": "Prêt à jouer"
   }
 }

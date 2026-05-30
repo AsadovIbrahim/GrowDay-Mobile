@@ -78,10 +78,10 @@ const AIMentorChatScreen = () => {
         const parsed = JSON.parse(savedHistory);
         const normalized = Array.isArray(parsed)
           ? parsed.map((m) =>
-              m?.id === "welcome-1"
-                ? { ...m, text: t("ai_mentor.card_subtitle", "Ask me anything about your habits") }
-                : m
-            )
+            m?.id === "welcome-1"
+              ? { ...m, text: t("ai_mentor.card_subtitle", "Ask me anything about your habits") }
+              : m
+          )
           : [];
         setMessages(normalized);
         storage.set(getAiMentorChatHistoryKey(token), JSON.stringify(normalized));
@@ -112,7 +112,7 @@ const AIMentorChatScreen = () => {
       );
       try {
         storage.set(getAiMentorChatHistoryKey(token), JSON.stringify(next));
-      } catch {}
+      } catch { }
       return next;
     });
   }, [i18n.language, t, token]);

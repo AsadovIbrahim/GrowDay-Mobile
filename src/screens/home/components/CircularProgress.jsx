@@ -89,7 +89,7 @@ const CircularProgress = ({
             <Text
                 className="font-redditsans-bold"
                 style={{
-                    fontSize: 22,
+                    fontSize: Math.round(size * 0.18) + 2,
                     color: textColor,
                     textAlign: "center",
                 }}

@@ -24,7 +24,8 @@
     "continue": "Continua",
     "confirm": "Conferma",
     "ad_loading": "Caricamento annuncio...",
-    "level_short": "Liv. {{level}}"
+    "level_short": "Liv. {{level}}",
+    "oops": "Ops!"
   },
   "menu": {
     "home": "Home",
@@ -326,7 +327,8 @@
     "duration_placeholder": "es. 10",
     "minutes_per_session": "minuti per sessione",
     "standard_icons": "Icone Standard",
-    "premium_icons": "Icone Premium 🌟"
+    "premium_icons": "Icone Premium 🌟",
+    "already_exists": "Questa abitudine esiste già nella tua lista."
   },
   "icons": {
     "run": "Corsa",
@@ -975,7 +977,18 @@
     "daily_average": "Media Giornaliera",
     "best_day": "Miglior Giorno",
     "keep_going": "Continua così! Stai andando alla grande! 🚀",
-    "improve_hint": "Prova a completare più abitudini per aumentare il tuo tasso! 🔥"
+    "improve_hint": "Prova a completare più abitudini per aumentare il tuo tasso! 🔥",
+    "brain_insight_title": "Analisi di cervello e abitudini",
+    "brain_insight_high": "Completando il {{rate}}% delle tue abitudini in questo periodo, la tua concentrazione e la velocità della memoria nei Giochi Cognitivi sono aumentate del 15%! Il tuo cervello è in ottima forma. 🧠",
+    "brain_insight_medium": "Hai completato il {{rate}}% delle tue abitudini in questo periodo. Nei risultati dei giochi si nota un aumento dell'8% nella concentrazione della memoria. Allena ancora di più il tuo cervello migliorando la costanza! ⚡",
+    "brain_insight_low": "La tua percentuale di completamento delle abitudini è stata del {{rate}}% in questo periodo. Ciò potrebbe rallentare la tua velocità di reazione nei giochi di memoria. Risveglia il tuo cervello riprendendo le tue abitudini! 🔋",
+    "brain_speed_high": "Velocità memoria: +15%",
+    "brain_speed_medium": "Concentrazione: +8%",
+    "brain_speed_low": "Attività: Indebolita",
+    "habits_label": "Abitudini",
+    "brain_insight_high_past": "Hai completato il {{rate}}% delle tue abitudini in questo periodo, mantenendo il cervello in ottima forma! Usalo come guida per i tuoi obiettivi attuali. 🏆",
+    "brain_insight_medium_past": "Hai completato il {{rate}}% delle tue abitudini in questo periodo. Ogni nuovo periodo è un nuovo inizio: questa volta puoi mirare ancora più in alto! ⚡",
+    "brain_insight_low_past": "La tua percentuale di completamento è stata del {{rate}}% in questo periodo. Il passato è passato! Ricomincia da capo nel periodo corrente e risveglia il tuo cervello. 🌟"
   },
   "help": {
     "title": "Centro Assistenza",
@@ -1256,5 +1269,16 @@
     "prompt_motivate": "Motivami per oggi!",
     "prompt_habit": "Quali abitudini mi consigli per aumentare la produttività?",
     "prompt_plan": "Aiutami a preparare un ottimo piano giornaliero!"
+  },
+  "focus_sounds": {
+    "title": "Suoni di concentrazione",
+    "rain": "Pioggia",
+    "forest": "Foresta",
+    "ocean": "Oceano",
+    "fireplace": "Camino",
+    "night": "Notte",
+    "river": "Fiume",
+    "now_playing": "In riproduzione",
+    "ready": "Pronto per la riproduzione"
   }
 }

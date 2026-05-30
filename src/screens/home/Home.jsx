@@ -1,14 +1,14 @@
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image, StyleSheet as RNStyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getUserHabitFetch,getAccountDataFetch,getTodaysUserHabitFetch,getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
+import { getUserHabitFetch, getAccountDataFetch, getTodaysUserHabitFetch, getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch } from "../../utils/fetch";
 import { useEffect, useState, useRef, useContext, useCallback, useMemo } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { ICONS } from "../../constants/icons";
-import { 
-  faBars, 
-  faBell, 
+import {
+  faBars,
+  faBell,
   faSearch,
   faWalking,
   faHome,
@@ -60,8 +60,8 @@ const Home = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [dailyStatistics, setDailyStatistics] = useState(null);
   const [pageSize, setPageSize] = useState(10);
-  const [totalItems, setTotalItems] = useState(0); 
-  const [totalPages, setTotalPages] = useState(0); 
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
@@ -74,8 +74,8 @@ const Home = () => {
   const { t } = useTranslation();
 
   const [accountData, setAccountData] = useState(null);
-  const firstName=accountData?.firstName;  
-  const email=accountData?.email;
+  const firstName = accountData?.firstName;
+  const email = accountData?.email;
 
   // Premium "Quote of the Day" — pick one quote per day using date as seed
   const dailyQuote = useMemo(() => {
@@ -102,13 +102,13 @@ const Home = () => {
 
   const fetchAccountData = async () => {
     try {
-        const token = storage.getString("accessToken");
-        const accountData = await getAccountDataFetch(token);
-        setAccountData(accountData.data);
+      const token = storage.getString("accessToken");
+      const accountData = await getAccountDataFetch(token);
+      setAccountData(accountData.data);
     } catch (error) {
-        console.error("Failed to fetch account data", error);
+      console.error("Failed to fetch account data", error);
     }
-};
+  };
   const fetchAllData = async () => {
     if (!token) return;
     setError(null);
@@ -131,10 +131,10 @@ const Home = () => {
     }, [token, selectedDateObject])
   );
 
-  const getTodaysUserHabit = async (pageIndex=0,pageSize=4) => {
+  const getTodaysUserHabit = async (pageIndex = 0, pageSize = 4) => {
     try {
       const dateStr = getLocalDateString(selectedDateObject);
-      const response = await getTodaysUserHabitFetch(token, dateStr,pageIndex,pageSize);
+      const response = await getTodaysUserHabitFetch(token, dateStr, pageIndex, pageSize);
       console.log('Todays user habit response:', response);
       setTodaysUserHabit(response.data);
     } catch (error) {
@@ -151,7 +151,7 @@ const Home = () => {
       setError(error);
     }
   }
-  
+
   const getUserHabitCount = async () => {
     try {
       if (userHabitCount === 0) {
@@ -250,11 +250,11 @@ const Home = () => {
   const handleMenuPress = (item) => {
     closeMenu();
     if (item.route) {
-        if (item.screen) {
-            navigation.navigate(item.route, { screen: item.screen });
-        } else {
-            navigation.navigate(item.route);
-        }
+      if (item.screen) {
+        navigation.navigate(item.route, { screen: item.screen });
+      } else {
+        navigation.navigate(item.route);
+      }
     }
   };
 
@@ -265,13 +265,13 @@ const Home = () => {
       t('common.logout_confirm'),
       [
         { text: t('common.cancel'), style: "cancel" },
-        { 
-          text: t('common.logout'), 
+        {
+          text: t('common.logout'),
           style: "destructive",
           onPress: () => {
             clearUserSession();
             // Navigation will automatically switch to AuthStack via Navigation.tsx
-          } 
+          }
         }
       ]
     );
@@ -328,12 +328,12 @@ const Home = () => {
               size={50}
             />
             <View className="ml-4 flex-1">
-                <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
-                    {firstName || 'User'}
-                </Text>
-                <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular">
-                    {email || ''}
-                </Text>
+              <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
+                {firstName || 'User'}
+              </Text>
+              <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular">
+                {email || ''}
+              </Text>
             </View>
           </View>
 
@@ -356,17 +356,16 @@ const Home = () => {
                   }}
                 >
                   <View className="w-8 h-8 items-center justify-center rounded-lg">
-                      <FontAwesomeIcon
-                        icon={item.icon}
-                        color={isActive ? colors.primary : colors.textSecondary}
-                        size={18}
-                      />
+                    <FontAwesomeIcon
+                      icon={item.icon}
+                      color={isActive ? colors.primary : colors.textSecondary}
+                      size={18}
+                    />
                   </View>
                   <Text
                     style={{ color: isActive ? colors.primary : colors.textSecondary }}
-                    className={`ml-3 text-base ${
-                      isActive ? 'font-redditsans-bold' : 'font-redditsans-medium'
-                    }`}
+                    className={`ml-3 text-base ${isActive ? 'font-redditsans-bold' : 'font-redditsans-medium'
+                      }`}
                   >
                     {item.label}
                   </Text>
@@ -377,126 +376,126 @@ const Home = () => {
 
           <View className="mt-auto pb-6">
             <TouchableOpacity
-                onPress={handleLogout}
-                className="flex-row items-center py-4 px-4 rounded-2xl mb-4 bg-red-500/10"
+              onPress={handleLogout}
+              className="flex-row items-center py-4 px-4 rounded-2xl mb-4 bg-red-500/10"
             >
-                <FontAwesomeIcon icon={faRightFromBracket} color={colors.danger} size={18} />
-                <Text style={{ color: colors.danger }} className="ml-4 text-base font-redditsans-bold">
-                    {t('common.logout')}
-                </Text>
+              <FontAwesomeIcon icon={faRightFromBracket} color={colors.danger} size={18} />
+              <Text style={{ color: colors.danger }} className="ml-4 text-base font-redditsans-bold">
+                {t('common.logout')}
+              </Text>
             </TouchableOpacity>
-            
+
             <Text style={{ color: colors.textMuted }} className="text-center text-xs font-redditsans-light opacity-50">
-                GrowDay v1.0.0
+              GrowDay v1.0.0
             </Text>
           </View>
         </View>
       </Animated.View>
 
-     
-        <View className="flex-row justify-between items-center mb-4 px-4">
-          <TouchableOpacity
-            onPress={toggleMenu}
-            style={{ backgroundColor: colors.card }}
-            className="w-10 h-10 rounded-lg items-center justify-center"
-          >
-            <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
-          </TouchableOpacity>
-          
-          <View className="flex-row items-center gap-3">
-            <View className="relative">
-              <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
-                <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
-              </TouchableOpacity>
-              {unreadNotificationCount > 0 && (
-                <View style={{ backgroundColor: colors.danger, borderColor: colors.card }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center border-2">
-                  <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
-                </View>
-              )}
-            </View>
-            
-          </View>
-        </View>
 
-      <ScrollView 
-        className="flex-1" 
+      <View className="flex-row justify-between items-center mb-4 px-4">
+        <TouchableOpacity
+          onPress={toggleMenu}
+          style={{ backgroundColor: colors.card }}
+          className="w-10 h-10 rounded-lg items-center justify-center"
+        >
+          <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
+        </TouchableOpacity>
+
+        <View className="flex-row items-center gap-3">
+          <View className="relative">
+            <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
+              <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
+            </TouchableOpacity>
+            {unreadNotificationCount > 0 && (
+              <View style={{ backgroundColor: colors.danger, borderColor: colors.card }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center border-2">
+                <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
+              </View>
+            )}
+          </View>
+
+        </View>
+      </View>
+
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View className="pt-12 flex-row justify-between items-center gap-2 px-4">
-            <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">
-              {t('home.greeting', { name: firstName || 'User' })}
-            </Text>
-            <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center">
-                <Text className="text-white text-lg">😇</Text>
-            </View>
+          <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">
+            {t('home.greeting', { name: firstName || 'User' })}
+          </Text>
+          <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center">
+            <Text className="text-white text-lg">😇</Text>
+          </View>
         </View>
         <Text style={{ color: colors.text }} className="text-base font-redditsans-regular px-4 mb-4">
           {t('home.subtitle')}
         </Text>
 
-          {/* Premium "Quote of the Day" Widget — only for Motivation Pack owners */}
-          {accountData?.hasMotivationPack && dailyQuote && (
-            <View style={{ marginHorizontal: 16, marginBottom: 14 }}>
-              <LinearGradient
-                colors={isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  borderRadius: 18,
-                  padding: 18,
-                  borderWidth: 1,
-                  borderColor: isDark ? '#334155' : '#bae6fd',
-                }}
-              >
-                {/* Header row */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                  <View style={{
-                    width: 32, height: 32, borderRadius: 10,
-                    backgroundColor: isDark ? '#6366f120' : '#818cf820',
-                    alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <FontAwesomeIcon icon={faQuoteRight} size={14} color={isDark ? '#a5b4fc' : '#6366f1'} />
-                  </View>
-                  <Text style={{
-                    marginLeft: 10, fontSize: 13, fontFamily: 'RedditSans-Bold',
-                    color: isDark ? '#a5b4fc' : '#6366f1',
-                    letterSpacing: 0.5,
-                  }}>
-                    {t('home.quote_of_the_day', '✨ Günün Sitatı')}
-                  </Text>
-
+        {/* Premium "Quote of the Day" Widget — only for Motivation Pack owners */}
+        {accountData?.hasMotivationPack && dailyQuote && (
+          <View style={{ marginHorizontal: 16, marginBottom: 14 }}>
+            <LinearGradient
+              colors={isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                borderRadius: 18,
+                padding: 18,
+                borderWidth: 1,
+                borderColor: isDark ? '#334155' : '#bae6fd',
+              }}
+            >
+              {/* Header row */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <View style={{
+                  width: 32, height: 32, borderRadius: 10,
+                  backgroundColor: isDark ? '#6366f120' : '#818cf820',
+                  alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <FontAwesomeIcon icon={faQuoteRight} size={14} color={isDark ? '#a5b4fc' : '#6366f1'} />
                 </View>
-
-                {/* Quote text */}
                 <Text style={{
-                  fontSize: 15, lineHeight: 23,
-                  fontFamily: 'RedditSans-MediumItalic',
-                  color: isDark ? '#e2e8f0' : '#1e293b',
-                  marginBottom: 8,
+                  marginLeft: 10, fontSize: 13, fontFamily: 'RedditSans-Bold',
+                  color: isDark ? '#a5b4fc' : '#6366f1',
+                  letterSpacing: 0.5,
                 }}>
-                  "{dailyQuote.text}"
+                  {t('home.quote_of_the_day', '✨ Günün Sitatı')}
                 </Text>
 
-                {/* Author */}
-                <Text style={{
-                  fontSize: 12, fontFamily: 'RedditSans-Bold',
-                  color: isDark ? '#94a3b8' : '#64748b',
-                  textAlign: 'right',
-                }}>
-                  — {dailyQuote.author}
-                </Text>
-              </LinearGradient>
-            </View>
-          )}
+              </View>
 
-          <AIMentorCard totalExperiencePoints={accountData?.totalExperiencePoints} />
+              {/* Quote text */}
+              <Text style={{
+                fontSize: 15, lineHeight: 23,
+                fontFamily: 'RedditSans-MediumItalic',
+                color: isDark ? '#e2e8f0' : '#1e293b',
+                marginBottom: 8,
+              }}>
+                "{dailyQuote.text}"
+              </Text>
 
-          <CalendarSelector 
-            selectedDate={selectedDate} 
-            onDateSelect={handleDateSelect}
-          />
-        
+              {/* Author */}
+              <Text style={{
+                fontSize: 12, fontFamily: 'RedditSans-Bold',
+                color: isDark ? '#94a3b8' : '#64748b',
+                textAlign: 'right',
+              }}>
+                — {dailyQuote.author}
+              </Text>
+            </LinearGradient>
+          </View>
+        )}
+
+        <AIMentorCard totalExperiencePoints={accountData?.totalExperiencePoints} />
+
+        <CalendarSelector
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
+
         {isInitialLoading ? (
           <View className="px-4 py-12 items-center justify-center">
             <ActivityIndicator size="large" color={colors.primary} />
@@ -506,23 +505,23 @@ const Home = () => {
           </View>
         ) : error ? (
           <View className="px-4 py-12 items-center justify-center">
-             <Text style={{ color: colors.danger }} className="text-center font-redditsans-medium mb-6">
-                {t('common.failed_load')}
-             </Text>
-             <TouchableOpacity 
-               onPress={fetchAllData} 
-               className="px-8 py-3 rounded-full" 
-               style={{ backgroundColor: colors.primary }}
-             >
-               <Text className="text-white font-redditsans-bold">{t('common.retry')}</Text>
-             </TouchableOpacity>
-           </View>
+            <Text style={{ color: colors.danger }} className="text-center font-redditsans-medium mb-6">
+              {t('common.failed_load')}
+            </Text>
+            <TouchableOpacity
+              onPress={fetchAllData}
+              className="px-8 py-3 rounded-full"
+              style={{ backgroundColor: colors.primary }}
+            >
+              <Text className="text-white font-redditsans-bold">{t('common.retry')}</Text>
+            </TouchableOpacity>
+          </View>
         ) : (userHabitCount === 0) ? (
           <HomeEmptyState />
         ) : (
           <>
 
-            
+
             <View className="px-4 mb-4 ">
               <View className="flex-row justify-between items-center mb-3">
                 <View>
@@ -533,7 +532,7 @@ const Home = () => {
                       const selected = selectedDateObject ? new Date(selectedDateObject) : today;
                       selected.setHours(0, 0, 0, 0);
                       const isToday = selected.getTime() === today.getTime();
-                      
+
                       if (isToday) return t('home.todays_habits');
                       const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
                       return t('home.days_habits', { day: t(`home.day_names.${dayKeys[selected.getDay()]}`) });
@@ -554,7 +553,7 @@ const Home = () => {
                     return null;
                   })()}
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => navigation.navigate('UserHabits', { initialFilter: 'Today' })}
                   className="flex-row items-center gap-1"
                 >
@@ -566,14 +565,14 @@ const Home = () => {
               </View>
 
               {todaysUserHabit && Array.isArray(todaysUserHabit) && todaysUserHabit.map((habit, index) => (
-                <HabitCard 
+                <HabitCard
                   key={habit.userHabitId || `habit-${index}`}
-                  habit={habit} 
+                  habit={habit}
                   index={index}
                   selectedDate={getLocalDateString(selectedDateObject)}
                 />
               ))}
-            </View> 
+            </View>
 
             <View className="px-4 mb-4 flex-row justify-between items-center">
               <Text style={{ color: colors.text }} className="text-xl font-redditsans-bold">
@@ -583,14 +582,14 @@ const Home = () => {
                   const selected = selectedDateObject ? new Date(selectedDateObject) : today;
                   selected.setHours(0, 0, 0, 0);
                   const isToday = selected.getTime() === today.getTime();
-                  
+
                   if (isToday) return t('home.progress_today');
                   const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
                   const dayName = t(`home.day_names.${dayKeys[selected.getDay()]}`);
                   return `${dayName} - ${t('common.progress', { defaultValue: 'Progress' })}`;
                 })()}
               </Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => navigation.navigate('Statistics')}
                 className="flex-row items-center gap-1"
               >

@@ -23,6 +23,7 @@ import AdBanner from "../../components/AdBanner";
 
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { getTranslatedHabit } from "../../utils/habitTranslations";
 
 const AI_COACH_MIN_LEVEL = 3;
 const AI_COACH_DAILY_LIMIT = 3;
@@ -31,7 +32,7 @@ const Explore = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [loading, setLoading] = useState(false);
   const [suggestedHabits, setSuggestedHabits] = useState([]);
@@ -244,7 +245,9 @@ const Explore = () => {
         targetValue: habit.targetValue || 1,
         unit: habit.unit || "times",
         incrementValue: habit.incrementValue || 1,
-        durationInMinutes: habit.durationInMinutes
+        durationInMinutes: habit.durationInMinutes,
+        titleTranslations: habit.titleTranslations || habit.TitleTranslations,
+        descriptionTranslations: habit.descriptionTranslations || habit.DescriptionTranslations,
       },
       isCustom: false,
       isSuggested: true
@@ -392,7 +395,7 @@ const Explore = () => {
                {t("levelup.generating_new_habits", "Generating new suggested habits...")}
              </Text>
           </View>
-        ) : (suggestedHabits.filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
+        ) : (suggestedHabits.filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
           <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
              <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
                {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
@@ -408,7 +411,7 @@ const Explore = () => {
             scrollEventThrottle={16}
           >
             {suggestedHabits
-              .filter(h => h.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+              .filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((habit, index) => (
               <SuggestedHabitCard
                 key={habit.id || `suggested-${index}`}
@@ -416,6 +419,7 @@ const Explore = () => {
                 frequency={habit.frequency || "Daily"}
                 icon={habit.icon || "🎯"}
                 onPress={() => handleSuggestedHabitPress(habit)}
+                habit={habit}
               />
             ))}
             {loading && pageIndex !== 0 && (

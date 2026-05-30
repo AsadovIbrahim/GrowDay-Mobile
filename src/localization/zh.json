@@ -24,7 +24,8 @@
     "continue": "继续",
     "confirm": "确认",
     "ad_loading": "正在加载广告...",
-    "level_short": "{{level}} 级"
+    "level_short": "{{level}} 级",
+    "oops": "哎呀！"
   },
   "menu": {
     "home": "首页",
@@ -326,7 +327,8 @@
     "duration_placeholder": "例如 10",
     "minutes_per_session": "每次时长（分钟）",
     "standard_icons": "标准图标",
-    "premium_icons": "高级图标 🌟"
+    "premium_icons": "高级图标 🌟",
+    "already_exists": "此习惯已存在于您的列表中。"
   },
   "icons": {
     "run": "跑步",
@@ -976,7 +978,18 @@
     "daily_average": "每日平均",
     "best_day": "最佳表现日",
     "keep_going": "继续加油！你表现得太棒了！ 🚀",
-    "improve_hint": "尝试完成更多习惯以提高完成率！ 🔥"
+    "improve_hint": "尝试完成更多习惯以提高完成率！ 🔥",
+    "brain_insight_title": "大脑与习惯分析",
+    "brain_insight_high": "通过在此期间完成 {{rate}}% 的习惯，您在认知游戏中的专注力和记忆速度提升了 15%！您的大脑处于极佳状态。 🧠",
+    "brain_insight_medium": "您在此期间执行了 {{rate}}% 的习惯。游戏结果显示记忆专注力提升了 8%。通过提高坚持度，让您的大脑更加敏锐吧！ ⚡",
+    "brain_insight_low": "您在此期间的习惯完成率仅为 {{rate}}%。这可能会减慢您在记忆游戏中的反应速度。重新培养习惯，唤醒您的大脑吧！ 🔋",
+    "brain_speed_high": "记忆速度: +15%",
+    "brain_speed_medium": "专注力: +8%",
+    "brain_speed_low": "活跃度: 已减弱",
+    "habits_label": "习惯",
+    "brain_insight_high_past": "您在此期间完成了 {{rate}}% 的习惯，让大脑保持在极佳状态！将此作为您当前目标的向导吧。 🏆",
+    "brain_insight_medium_past": "您在此期间执行了 {{rate}}% 的习惯。每个新阶段都是一个全新的开始——这次您可以挑战更高的目标！ ⚡",
+    "brain_insight_low_past": "您在此期间的习惯完成率为 {{rate}}%。过去已成过去！在当前阶段重新开始，唤醒您的大脑吧。 🌟"
   },
   "help": {
     "title": "帮助中心",
@@ -1257,5 +1270,16 @@
     "prompt_motivate": "激励我今天！",
     "prompt_habit": "你有什么建议来提高我的工作效率？",
     "prompt_plan": "帮我准备一个很棒的一天计划！"
+  },
+  "focus_sounds": {
+    "title": "专注音效",
+    "rain": "雨声",
+    "forest": "森林",
+    "ocean": "海洋",
+    "fireplace": "壁炉",
+    "night": "夜晚",
+    "river": "河流",
+    "now_playing": "正在播放",
+    "ready": "准备播放"
   }
 }

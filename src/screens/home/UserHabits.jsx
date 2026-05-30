@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch } from '../../utils/fetch';
+import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch, getUserHabitFetch } from '../../utils/fetch';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
@@ -13,6 +13,7 @@ import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedHabit } from '../../utils/habitTranslations';
 
 
 const UserHabits = ({ route }) => {
@@ -38,7 +39,7 @@ const UserHabits = ({ route }) => {
     const navigation = useNavigation();
     const { theme } = useTheme();
     const { colors } = theme;
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const getUserHabitsByFrequency = async () => {
         if (!token) return;
@@ -58,19 +59,8 @@ const UserHabits = ({ route }) => {
                 const response = await getTodaysUserHabitFetch(token, dateStr, 0, 100);
                 habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : [];
             } else if (selectedFrequency === 'All') {
-                const allPromises = frequencyList.map(frequency =>
-                    getUserHabitByFrequencyFetch(token, frequency)
-                );
-                const responses = await Promise.all(allPromises);
-                habits = responses.reduce((acc, response) => {
-                    let h = [];
-                    if (response && response.data) {
-                        h = Array.isArray(response.data) ? response.data : [];
-                    } else if (Array.isArray(response)) {
-                        h = response;
-                    }
-                    return acc.concat(h);
-                }, []);
+                const response = await getUserHabitFetch(token, 0, 100);
+                habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : [];
             } else {
                 const response = await getUserHabitByFrequencyFetch(token, selectedFrequency);
                 habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : 
@@ -232,15 +222,13 @@ const UserHabits = ({ route }) => {
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             habits = habits.filter(habit => {
-                const titleKey = habit.title ? habit.title.toLowerCase().replace(/\s+/g, '_') : '';
-                const title = t(`habits.${titleKey}`, { defaultValue: habit.title || '' }).toLowerCase();
-                const description = t(`habits.${titleKey}_desc`, { defaultValue: habit.description || '' }).toLowerCase();
-                return title.includes(query) || description.includes(query);
+                const { title, description } = getTranslatedHabit(habit, i18n.language, t);
+                return title.toLowerCase().includes(query) || description.toLowerCase().includes(query);
             });
         }
 
         return habits;
-    }, [userHabitsByFrequency, searchQuery, selectedFrequency]);
+    }, [userHabitsByFrequency, searchQuery, selectedFrequency, i18n.language, t]);
 
     // Apply pagination to filtered habits
     const filteredHabits = useMemo(() => {

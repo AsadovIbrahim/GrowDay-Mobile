@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 
 
 // ── Design tokens ─────────────────────────────────────────────
-const STROKE = 11;          // unified circle stroke
-const BAR_H = 48;
-const BAR_W = 12;
+const STROKE = 8;          // unified circle stroke
+const BAR_H = 32;
+const BAR_W = 8;
 
 // ── State enum ────────────────────────────────────────────────
 // completed            → filled green
@@ -128,10 +128,19 @@ const HabitProgressCard = ({
     liveDelta = 0,
     title = null,
     weeklyStats = null,
+    layout = null,
 }) => {
     const { theme, isDark } = useTheme();
     const { colors } = theme;
     const { t } = useTranslation();
+
+    if (layout === "chart") {
+        return (
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
+                <WeeklyChart data={weeklyData} colors={colors} isDark={isDark} />
+            </View>
+        );
+    }
 
     if (!habit) return <View />;
 
@@ -149,14 +158,68 @@ const HabitProgressCard = ({
         return val.toFixed(withDec.includes(habit.unit?.toLowerCase()) ? 2 : 1);
     };
 
+    if (layout === "today" || layout === "weekly") {
+        const isWeeklyLayout = layout === "weekly";
+        return (
+            <View style={[styles.cardSideBySide, { backgroundColor: colors.card }]}>
+                {title && (
+                    <Text
+                        className="font-redditsans-bold text-[10px] uppercase tracking-[1px] mb-2 text-center"
+                        style={{ color: colors.textSecondary }}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                    >
+                        {title}
+                    </Text>
+                )}
+
+                <View style={styles.colCentered}>
+                    <CircularProgress
+                        percent={displayPercent}
+                        size={64}
+                        strokeWidth={6}
+                        color={colors.primary}
+                        textColor={colors.text}
+                        trackColor={colors.border}
+                    />
+
+                    {isWeeklyLayout ? (
+                        <Text
+                            className='font-redditsans-bold text-[12px] text-center mt-2'
+                            style={{ color: colors.text }}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                        >
+                            {t("habit_details.completed_count", {
+                                completed: weeklyStats?.completedDays ?? 0,
+                                total: weeklyStats?.totalDays ?? 7,
+                                unit: t("habit_details.days")
+                            })}
+                        </Text>
+                    ) : (
+                        <Text
+                            className='font-redditsans-bold text-[12px] text-center mt-2'
+                            style={{ color: colors.text }}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                        >
+                            {formatValue(totalCurrent)}/{habit.targetValue}
+                            <Text className='font-redditsans-semibold text-[10px]' style={{ color: colors.textSecondary }}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
+                        </Text>
+                    )}
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
-            {title && <Text className="font-redditsans-bold text-xs uppercase tracking-[1.2px] mb-4" style={{ color: colors.textSecondary }}>{title}</Text>}
+            {title && <Text className="font-redditsans-bold text-xs uppercase tracking-[1.2px] mb-2" style={{ color: colors.textSecondary }}>{title}</Text>}
 
             <View style={styles.row}>
                 <CircularProgress
                     percent={displayPercent}
-                    size={120}
+                    size={80}
                     strokeWidth={STROKE}
                     color={colors.primary}
                     textColor={colors.text}
@@ -188,28 +251,28 @@ const HabitProgressCard = ({
                             </Text>
                         </View>
                     ) : (
-                        <Text className='font-redditsans-bold text-xl' style={{ color: colors.text }} numberOfLines={2}>
+                        <Text className='font-redditsans-bold text-lg' style={{ color: colors.text }} numberOfLines={2}>
                             {formatValue(totalCurrent)} / {habit.targetValue}
-                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
+                            <Text className='font-redditsans-semibold text-xs' style={{ color: colors.textSecondary }}> {t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit })}</Text>
                         </Text>
                     )}
 
                     <View style={styles.metaGroup}>
                         <View style={styles.metaRow}>
-                            <FontAwesomeIcon icon={faFire} color="#f59e0b" size={13} />
-                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
+                            <FontAwesomeIcon icon={faFire} color="#f59e0b" size={11} />
+                            <Text className='font-redditsans-semibold text-[11px]' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.streak")}:{" "}
-                                <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
+                                <Text className='font-redditsans-bold text-[11px]' style={{ color: colors.text }}>
                                     {habit.currentStreak ?? 0}{" "}
                                     {t("habit_details.days")}
                                 </Text>
                             </Text>
                         </View>
                         <View style={styles.metaRow}>
-                            <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={13} />
-                            <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
+                            <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={11} />
+                            <Text className='font-redditsans-semibold text-[11px]' style={{ color: colors.textSecondary }}>
                                 {t("habit_details.best")}:{" "}
-                                <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
+                                <Text className='font-redditsans-bold text-[11px]' style={{ color: colors.text }}>
                                     {habit.longestStreak ?? 0}{" "}
                                     {t("habit_details.days")}
                                 </Text>
@@ -217,10 +280,10 @@ const HabitProgressCard = ({
                         </View>
                         {habit.todayActualDuration > 0 && (
                             <View style={styles.metaRow}>
-                                <FontAwesomeIcon icon={faClock} color={colors.primary} size={13} />
-                                <Text className='font-redditsans-semibold text-sm' style={{ color: colors.textSecondary }}>
+                                <FontAwesomeIcon icon={faClock} color={colors.primary} size={11} />
+                                <Text className='font-redditsans-semibold text-[11px]' style={{ color: colors.textSecondary }}>
                                     {t("habit_details.time")}:{" "}
-                                    <Text className='font-redditsans-medium text-sm' style={{ color: colors.text }}>
+                                    <Text className='font-redditsans-bold text-[11px]' style={{ color: colors.text }}>
                                         {habit.todayActualDuration} {t("habit_details.min_spent")}
                                     </Text>
                                 </Text>
@@ -238,10 +301,30 @@ const HabitProgressCard = ({
 HabitProgressCard.displayName = "HabitProgressCard";
 
 const styles = StyleSheet.create({
+    cardSideBySide: {
+        borderRadius: 14,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        marginBottom: 12,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    colCentered: {
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+    },
     card: {
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 20,
+        borderRadius: 14,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginBottom: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
@@ -249,17 +332,17 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     cardTitle: {
-        fontSize: 13,
+        fontSize: 11,
         fontWeight: "800",
         textTransform: "uppercase",
         letterSpacing: 1.2,
-        marginBottom: 16,
+        marginBottom: 8,
     },
 
     row: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 20,
+        gap: 16,
     },
     statsCol: {
         flex: 1,
@@ -267,41 +350,43 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     weeklySummary: {
-        gap: 4,
+        gap: 2,
     },
     weeklyPrimary: {
-        fontSize: 20,
-        lineHeight: 26,
+        fontSize: 16,
+        lineHeight: 22,
     },
     weeklySecondary: {
-        fontSize: 13,
+        fontSize: 12,
     },
 
     primaryText: {
-        fontSize: 19,
+        fontSize: 16,
         fontWeight: "800",
-        lineHeight: 26,
+        lineHeight: 22,
     },
     primarySub: {
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: "500",
     },
     contextLabel: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: "500",
     },
 
     metaGroup: {
-        marginTop: 10,
-        gap: 5,
+        marginTop: 6,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 10,
     },
     metaRow: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 6,
+        gap: 4,
     },
     metaLabel: {
-        fontSize: 13,
+        fontSize: 11,
     },
     metaValue: {
         fontWeight: "700",
@@ -311,8 +396,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         justifyContent: "space-between",
-        marginTop: 22,
-        gap: 4,               // +breathing space between bars
+        marginTop: 14,
+        gap: 2,
     },
     barWrapper: {
         alignItems: "center",
@@ -321,7 +406,7 @@ const styles = StyleSheet.create({
     barTrack: {
         width: BAR_W,
         height: BAR_H,
-        borderRadius: 6,
+        borderRadius: 4,
         justifyContent: "flex-end",
         overflow: "hidden",
     },
@@ -345,7 +430,7 @@ const styles = StyleSheet.create({
 
     barFill: {
         width: "100%",
-        borderRadius: 6,
+        borderRadius: 4,
     },
 
     dayLabel: {

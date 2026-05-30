@@ -24,7 +24,8 @@
     "continue": "Davam et",
     "confirm": "Təsdiq et",
     "ad_loading": "Reklam yüklənir...",
-    "level_short": "Sv. {{level}}"
+    "level_short": "Sv. {{level}}",
+    "oops": "Ups!"
   },
   "menu": {
     "home": "Ana Səhifə",
@@ -326,7 +327,8 @@
     "duration_placeholder": "məs: 10",
     "minutes_per_session": "seans başına dəqiqə",
     "standard_icons": "Standart İkonlar",
-    "premium_icons": "Premium İkonlar 🌟"
+    "premium_icons": "Premium İkonlar 🌟",
+    "already_exists": "Bu vərdiş sizdə artıq mövcuddur!"
   },
   "icons": {
     "run": "Qaçış",
@@ -973,7 +975,18 @@
     "daily_average": "Günlük Orta",
     "best_day": "Ən Yaxşı Gün",
     "keep_going": "Davam edin! Əla gedirsiniz! 🚀",
-    "improve_hint": "Faizi artırmaq üçün daha çox vərdiş tamamlamağa çalışın! 🔥"
+    "improve_hint": "Faizi artırmaq üçün daha çox vərdiş tamamlamağa çalışın! 🔥",
+    "brain_insight_title": "Beyin & Vərdiş Analizi",
+    "brain_insight_high": "Bu dövrdə vərdişlərinizi {{rate}}% tamamladığınız üçün Koqnitiv Oyunlarda fokus və yaddaş sürətiniz 15% yüksəlib! Beyniniz əla formadadır. 🧠",
+    "brain_insight_medium": "Bu dövrdə vərdişlərinizi {{rate}}% icra etmisiniz. Oyun nəticələrində yaddaş fokusunun 8% artdığı görünür. Davamlılığı artıraraq beyninizi daha da itiləyin! ⚡",
+    "brain_insight_low": "Bu dövrdə vərdişlərin tamamlanma faizi {{rate}}% olub. Bu, yaddaş oyunlarında reaksiya sürətinizi yavaşlada bilər. Vərdişləri bərpa etməklə beyninizi oyadın! 🔋",
+    "brain_speed_high": "Yaddaş sürəti: +15%",
+    "brain_speed_medium": "Fokuslanma: +8%",
+    "brain_speed_low": "Aktivlik: Zəifləyib",
+    "habits_label": "Vərdişlər",
+    "brain_insight_high_past": "Bu dövrdə vərdişlərinizi {{rate}}% tamamlayaraq beyninizi əla formada saxlamısınız! Bunu cari hədəfləriniz üçün nümunə götürün. 🏆",
+    "brain_insight_medium_past": "Bu dövrdə vərdişlərinizin {{rate}}%-ni icra etmisiniz. Hər yeni dövr yeni bir başlanğıcdır — bu dəfə daha da yüksəyə hədəfləyə bilərsiniz! ⚡",
+    "brain_insight_low_past": "Bu dövrdə tamamlanma faiziniz {{rate}}% olub. Keçmiş keçmişdə qaldı! Cari dövrdə yeni bir səhifə açaraq beyninizi fəallaşdırın. 🌟"
   },
   "help": {
     "title": "Kömək Mərkəzi",
@@ -1253,5 +1266,16 @@
     "prompt_motivate": "Məni bu gün üçün motivasiya et!",
     "prompt_habit": "Məhsuldarlığımı artırmaq üçün hansı vərdişləri təklif edirsən?",
     "prompt_plan": "Gözəl bir gün planlaması hazırlamağıma kömək et!"
+  },
+  "focus_sounds": {
+    "title": "Fokus Səsləri",
+    "rain": "Yağış",
+    "forest": "Meşə",
+    "ocean": "Okean",
+    "fireplace": "Kamin",
+    "night": "Gecə",
+    "river": "Çay",
+    "now_playing": "İndi Çalır",
+    "ready": "Çalmağa Hazır"
   }
 }

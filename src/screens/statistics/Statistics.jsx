@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal, Alert, Share, Linking } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faChartLine, faCalendarAlt, faCalendarCheck, faChevronLeft, faChevronRight, faTrophy, faFire, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChartLine, faCalendarAlt, faCalendarCheck, faChevronLeft, faChevronRight, faTrophy, faFire, faChartBar, faBrain } from '@fortawesome/free-solid-svg-icons';
 import { API_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import { useMMKVString } from "react-native-mmkv";
@@ -19,7 +19,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const Statistics = () => {
   const navigation = useNavigation();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
   const [token] = useMMKVString('accessToken');
@@ -79,7 +79,7 @@ const Statistics = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [token, activeTab, selectedDate]);
+  }, [token, activeTab, selectedDate, progressValue]);
 
   useEffect(() => {
     fetchStats();
@@ -88,6 +88,65 @@ const Statistics = () => {
   const onRefresh = () => {
     setRefreshing(true);
     fetchStats();
+  };
+
+  const getBrainInsight = () => {
+    if (!stats || typeof stats.completionRate !== 'number') return null;
+    const rate = Math.round(stats.completionRate);
+
+    const getIsCurrentPeriod = () => {
+      const today = new Date();
+      if (activeTab === 'daily') {
+        return selectedDate.toDateString() === today.toDateString();
+      } else if (activeTab === 'weekly') {
+        const getMonday = (d) => {
+          const date = new Date(d);
+          const day = date.getDay();
+          const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+          return new Date(date.setDate(diff)).toDateString();
+        };
+        return getMonday(selectedDate) === getMonday(today);
+      } else if (activeTab === 'monthly') {
+        return selectedDate.getMonth() === today.getMonth() && selectedDate.getFullYear() === today.getFullYear();
+      } else if (activeTab === 'yearly') {
+        return selectedDate.getFullYear() === today.getFullYear();
+      }
+      return true;
+    };
+
+    const isCurrent = getIsCurrentPeriod();
+
+    if (rate >= 80) {
+      return {
+        text: isCurrent
+          ? t('statistics.brain_insight_high', 'Bu dövrdə vərdişlərinizi {{rate}}% tamamladığınız üçün Koqnitiv Oyunlarda fokus və yaddaş sürətiniz 15% yüksəlib! Beyniniz əla formadadır. 🧠', { rate })
+          : t('statistics.brain_insight_high_past', 'Bu dövrdə vərdişlərinizi {{rate}}% tamamlayaraq beyninizi əla formada saxlamısınız! Bunu cari hədəfləriniz üçün nümunə götürün. 🏆', { rate }),
+        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: +${rate}%`,
+        brainText: t('statistics.brain_speed_high', 'Yaddaş sürəti: +15%'),
+        colors: isDark ? ['#1e1b4b', '#311042'] : ['#f5f3ff', '#fae8ff'],
+        borderColor: '#d8b4fe50',
+      };
+    } else if (rate >= 50) {
+      return {
+        text: isCurrent
+          ? t('statistics.brain_insight_medium', 'Bu dövrdə vərdişlərinizi {{rate}}% icra etmisiniz. Oyun nəticələrində yaddaş fokusunun 8% artdığı görünür. Davamlılığı artıraraq beyninizi daha da itiləyin! ⚡', { rate })
+          : t('statistics.brain_insight_medium_past', 'Bu dövrdə vərdişlərinizin {{rate}}%-ni icra etmisiniz. Hər yeni dövr yeni bir başlanğıcdır — bu dəfə daha da yüksəyə hədəfləyə bilərsiniz! ⚡', { rate }),
+        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: +${rate}%`,
+        brainText: t('statistics.brain_speed_medium', 'Fokuslanma: +8%'),
+        colors: isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe'],
+        borderColor: '#bae6fd50',
+      };
+    } else {
+      return {
+        text: isCurrent
+          ? t('statistics.brain_insight_low', 'Bu dövrdə vərdişlərin tamamlanma faizi {{rate}}% olub. Bu, yaddaş oyunlarında reaksiya sürətinizi yavaşlada bilər. Vərdişləri bərpa etməklə beyninizi oyadın! 🔋', { rate })
+          : t('statistics.brain_insight_low_past', 'Bu dövrdə tamamlanma faiziniz {{rate}}% olub. Keçmiş keçmişdə qaldı! Cari dövrdə yeni bir səhifə açaraq beyninizi fəallaşdırın. 🌟', { rate }),
+        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: ${rate}%`,
+        brainText: t('statistics.brain_speed_low', 'Aktivlik: Zəifləyib'),
+        colors: isDark ? ['#2d1212', '#1f0d0d'] : ['#fff5f5', '#fee2e2'],
+        borderColor: '#fecaca50',
+      };
+    }
   };
 
   const handlePrev = () => {
@@ -359,6 +418,47 @@ const Statistics = () => {
                   </View>
                 </View>
               </View>
+
+              {/* Brain-Habit AI Insights Card */}
+              {getBrainInsight() && (() => {
+                const insight = getBrainInsight();
+                return (
+                  <View className="p-6 rounded-3xl mb-6 shadow-sm border" style={{ backgroundColor: colors.card, borderColor: colors.primary + '20' }}>
+                    <View className="flex-row items-center mb-4">
+                      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#a855f720' }}>
+                        <FontAwesomeIcon icon={faBrain} color="#a855f7" size={16} />
+                      </View>
+                      <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                        {t('statistics.brain_insight_title', 'Beyin & Vərdiş Analizi')}
+                      </Text>
+                    </View>
+
+                    <LinearGradient
+                      colors={insight.colors}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      className="p-5 rounded-2xl border"
+                      style={{ borderColor: insight.borderColor }}
+                    >
+                      <Text style={{ color: isDark ? '#e9d5ff' : '#581c87' }} className="text-sm font-redditsans-medium leading-6">
+                        {insight.text}
+                      </Text>
+
+                      {/* Small stats badge row */}
+                      <View className="flex-row justify-between items-center mt-4 pt-3 border-t border-purple-500/10">
+                        <View className="flex-row items-center">
+                          <View className="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2" />
+                          <Text className="text-xs" style={{ color: colors.textSecondary }}>{insight.habitText}</Text>
+                        </View>
+                        <View className="flex-row items-center">
+                          <View className="w-2.5 h-2.5 rounded-full bg-purple-500 mr-2" />
+                          <Text className="text-xs" style={{ color: colors.textSecondary }}>{insight.brainText}</Text>
+                        </View>
+                      </View>
+                    </LinearGradient>
+                  </View>
+                );
+              })()}
 
               {/* Extra Summary Row */}
               <View className="flex-row gap-4 mb-6">
