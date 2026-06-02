@@ -103,8 +103,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
       
       <View className="flex-1">
         <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
-          {getTranslatedHabit(habit, i18n.language, t).title}
-        </Text>
+            {habit.title || getTranslatedHabit(habit, i18n.language, t).title}        </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
           <Text 
             style={{ color: colors.textSecondary }}

@@ -449,7 +449,7 @@ const CreateCustomHabit = () => {
                 {
                   color: colors.text,
                   borderBottomColor: colors.textGray,
-                  minHeight: 80,
+                  minHeight: 60,
                   textAlignVertical: "top",
                 }
               ]}

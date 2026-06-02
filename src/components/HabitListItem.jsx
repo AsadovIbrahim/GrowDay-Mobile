@@ -199,8 +199,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
             }} 
             numberOfLines={1}
           >
-            {getTranslatedHabit(habit, i18n.language, t).title}
-          </Text>
+            {habit.title || getTranslatedHabit(habit, i18n.language, t).title}          </Text>
           
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 8, rowGap: 4 }}>
             {/* Status / Frequency Pill */}
