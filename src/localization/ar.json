@@ -24,7 +24,8 @@
     "continue": "استمرار",
     "ad_loading": "جاري تحميل الإعلان...",
     "level_short": "م. {{level}}",
-    "oops": "عذراً!"
+    "oops": "عذراً!",
+    "create": "إنشاء"
   },
   "menu": {
     "home": "الرئيسية",
@@ -171,8 +172,17 @@
       "daily": "يومي",
       "weekly": "أسبوعي",
       "monthly": "شهري",
-      "custom": "مخصص"
-    }
+      "custom": "مخصص",
+      "all_categories": "جميع الفئات",
+      "due_today": "اليوم"
+    },
+    "filters_title": "الفلاتر",
+    "reset": "إعادة تعيين",
+    "frequency": "التكرار",
+    "category": "الفئة",
+    "apply_filters": "تطبيق الفلاتر",
+    "clear_all": "مسح الكل",
+    "active_filters": "الفلاتر النشطة:"
   },
   "habit_details": {
     "header": "تفاصيل العادة",
@@ -251,7 +261,9 @@
     "read_time": "{{count}} دقيقة قراءة",
     "unread": "غير مقروء",
     "read": "مقروء",
-    "ai_disclaimer": "✨ تم إنشاء محتوى التعلم المخصص هذا بواسطة الذكاء الاصطناعي بناءً على أهدافك وتفضيلاتك لمساعدتك على النمو اليوم."
+    "ai_disclaimer": "✨ تم إنشاء محتوى التعلم المخصص هذا بواسطة الذكاء الاصطناعي بناءً على أهدافك وتفضيلاتك لمساعدتك على النمو اليوم.",
+    "suggested_habits_desc": "عادات مختارة بواسطة الذكاء الاصطناعي لتناسب حياتك اليومية",
+    "tasks_desc": "أكمل المهام لزيادة مستواك وكسب نقاط الخبرة"
   },
   "tasks": {
     "header": "مهامي",
@@ -281,11 +293,16 @@
     "delete_confirm": "هل أنت متأكد من أنك تريد حذف هذه المهمة؟",
     "could_not_delete": "لم نتمكن من حذف المهمة.",
     "failed_to_delete": "فشل في حذف المهمة.",
-    "delete_action": "حذف"
+    "delete_action": "حذف",
+    "completed_stack": "المهام المكتملة",
+    "collapse_stack": "تصغير المكدس",
+    "completed_count": "مكتمل",
+    "tip_title": "نصيحة مفيدة",
+    "tip_desc": "اكسب نقاط الخبرة بإكمال المهام، وارفع مستواك، وافتح ميزات مدرب الذكاء الاصطناعي الجديدة!"
   },
   "create_habit": {
     "header": "إنشاء عادة مخصصة",
-    "new_good_habit": "عادة جيدة جديدة",
+    "new_good_habit": "العادات الشخصية",
     "popular_habits": "العادات الشائعة",
     "create_custom": "إنشاء عادة مخصصة",
     "setup_suggested_habit": "إعداد عادة مقترحة",
@@ -317,7 +334,13 @@
     "standard_icons": "الأيقونات القياسية",
     "premium_icons": "الأيقونات المميزة 🌟",
     "select_icon": "اختر أيقونة",
-    "already_exists": "هذه العادة موجودة بالفعل في قائمتك."
+    "already_exists": "هذه العادة موجودة بالفعل في قائمتك.",
+    "create_category_title": "فئة جديدة",
+    "category_name": "اسم الفئة",
+    "category_name_placeholder": "مثال: القراءة",
+    "category_icon": "أيقونة / إيموجي",
+    "category_color": "لون السمة",
+    "new_category": "جديد"
   },
   "units": {
     "header": "اختر الوحدة",

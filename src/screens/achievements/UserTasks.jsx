@@ -123,10 +123,10 @@ const UserTasks = () => {
         if (res?.success) {
           // Play haptic feedback for success
           Vibration.vibrate(100);
-          
+
           setCompletedTaskData(task);
           setCelebrationVisible(true);
-          
+
           setTasks((prev) =>
             prev.map((t) =>
               t.id === taskId ? { ...t, status: "Completed", isOverdue: false } : t
@@ -147,7 +147,7 @@ const UserTasks = () => {
           Alert.alert(t("common.error"), res?.message || t("tasks.could_not_uncheck"));
         }
       }
-      
+
       // Always refresh stats
       getUserTaskStatsFetch(token).then((r) => {
         if (r?.success && r?.data) setStats(r.data);
@@ -192,12 +192,12 @@ const UserTasks = () => {
       if (t.status === "Expired") {
         return true;
       }
-      
+
       // Cancelled or Completed are not missed
       if (t.status === "Cancelled" || t.status === "Completed") {
         return false;
       }
-      
+
       // Pending/InProgress with past due date are missed
       if (t.dueDate) {
         const today = new Date();
@@ -210,7 +210,7 @@ const UserTasks = () => {
           return true;
         }
       }
-      
+
       return false;
     }
 
@@ -273,7 +273,7 @@ const UserTasks = () => {
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={colors.primary} />
             <Text className="mt-3 font-redditsans-regular text-base" style={{ color: colors.text }}>
-                {t("common.loading")}
+              {t("common.loading")}
             </Text>
           </View>
         ) : (
@@ -358,20 +358,19 @@ const UserTasks = () => {
                     {f === "InProgress"
                       ? t("tasks.filters.in_progress", { defaultValue: "In Progress" })
                       : f === "Missed"
-                      ? t("common.missed", { defaultValue: "Missed" })
-                      : t(`tasks.filters.${f.toLowerCase()}`, { defaultValue: f })}
+                        ? t("common.missed", { defaultValue: "Missed" })
+                        : t(`tasks.filters.${f.toLowerCase()}`, { defaultValue: f })}
                     {f !== "All" && stats
-                      ? ` (${
-                          f === "Pending"
-                            ? stats.pendingTasks
-                            : f === "InProgress"
-                            ? stats.inProgressTasks
-                            : f === "Completed"
+                      ? ` (${f === "Pending"
+                        ? stats.pendingTasks
+                        : f === "InProgress"
+                          ? stats.inProgressTasks
+                          : f === "Completed"
                             ? stats.completedTasks
                             : f === "Missed"
-                            ? stats.overdueTasks
-                            : ""
-                        })`
+                              ? stats.overdueTasks
+                              : ""
+                      })`
                       : ""}
                   </Text>
                 </TouchableOpacity>
@@ -382,8 +381,8 @@ const UserTasks = () => {
             {error && (
               <View className="bg-red-100 rounded-2xl p-4 mb-4">
                 <Text className="text-red-600 font-redditsans-medium text-center">
-                  {error.includes("tasks.failed_to_load") || error === "Failed to load tasks." 
-                    ? t("tasks.failed_to_load", { defaultValue: "Failed to load tasks" }) 
+                  {error.includes("tasks.failed_to_load") || error === "Failed to load tasks."
+                    ? t("tasks.failed_to_load", { defaultValue: "Failed to load tasks" })
                     : error}
                 </Text>
               </View>
@@ -397,10 +396,10 @@ const UserTasks = () => {
                   {filter === "Completed"
                     ? t("explore.status.completed")
                     : filter === "Pending"
-                    ? t("explore.status.pending")
-                    : filter === "Missed"
-                    ? t("common.missed")
-                    : t("tasks.empty")}
+                      ? t("explore.status.pending")
+                      : filter === "Missed"
+                        ? t("common.missed")
+                        : t("tasks.empty")}
                 </Text>
                 <Text className="font-redditsans-regular text-sm mt-1 text-center" style={{ color: colors.textSecondary }}>
                   {t("tasks.assigned_by_admins")}
@@ -421,7 +420,7 @@ const UserTasks = () => {
       </SafeAreaView>
 
       {/* Celebration Modal */}
-      <CelebrationModal 
+      <CelebrationModal
         visible={celebrationVisible}
         taskData={completedTaskData}
         onClose={() => setCelebrationVisible(false)}

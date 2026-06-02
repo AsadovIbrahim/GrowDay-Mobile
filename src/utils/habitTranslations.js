@@ -31,3 +31,33 @@ export const getTranslatedHabit = (habit, currentLanguage, t) => {
 
   return { title, description };
 };
+
+export const getTranslatedCategory = (category, currentLanguage, t) => {
+  if (!category) return '';
+
+  // If category is a string
+  if (typeof category === 'string') {
+    const nameKey = category.toLowerCase().trim().replace(/[\s&]+/g, '_');
+    if (t) {
+      return t(`categories.${nameKey}`, { defaultValue: category });
+    }
+    return category;
+  }
+
+  // If category is an object
+  const langKey = currentLanguage ? currentLanguage.split('-')[0].split('_')[0].toLowerCase() : 'en';
+  const nameTrans = category.nameTranslations || category.NameTranslations;
+
+  let name = category.name || '';
+  if (nameTrans && typeof nameTrans === 'object') {
+    name = nameTrans[langKey] || nameTrans['en'] || name;
+  } else if (name) {
+    const nameKey = name.toLowerCase().trim().replace(/[\s&]+/g, '_');
+    if (t) {
+      name = t(`categories.${nameKey}`, { defaultValue: name });
+    }
+  }
+
+  return name;
+};
+

@@ -25,7 +25,8 @@
     "confirm": "Confirmar",
     "ad_loading": "Cargando anuncio...",
     "level_short": "Nvl. {{level}}",
-    "oops": "¡Ups!"
+    "oops": "¡Ups!",
+    "create": "Crear"
   },
   "menu": {
     "home": "Inicio",
@@ -172,8 +173,17 @@
       "daily": "Diario",
       "weekly": "Semanal",
       "monthly": "Mensual",
-      "custom": "Personalizado"
-    }
+      "custom": "Personalizado",
+      "all_categories": "Todas las categorías",
+      "due_today": "Para hoy"
+    },
+    "filters_title": "Filtros",
+    "reset": "Restablecer",
+    "frequency": "Frecuencia",
+    "category": "Categoría",
+    "apply_filters": "Aplicar filtros",
+    "clear_all": "Borrar todo",
+    "active_filters": "Filtros activos:"
   },
   "habit_details": {
     "header": "Detalles del hábito",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} min de lectura",
     "unread": "No leído",
     "read": "Leído",
-    "ai_disclaimer": "✨ Este contenido de aprendizaje personalizado fue generado por IA en función de tus objetivos y preferencias para ayudarte a crecer hoy."
+    "ai_disclaimer": "✨ Este contenido de aprendizaje personalizado fue generado por IA en función de tus objetivos y preferencias para ayudarte a crecer hoy.",
+    "suggested_habits_desc": "Hábitos seleccionados por IA que se adaptan a tu vida diaria",
+    "tasks_desc": "Completa tareas para aumentar tu nivel y ganar XP"
   },
   "tasks": {
     "header": "Mis Tareas",
@@ -282,11 +294,16 @@
     "delete_confirm": "¿Está seguro de que desea eliminar esta tarea?",
     "could_not_delete": "No se pudo eliminar la tarea.",
     "failed_to_delete": "Error al eliminar la tarea.",
-    "delete_action": "Eliminar"
+    "delete_action": "Eliminar",
+    "completed_stack": "Tareas Completadas",
+    "collapse_stack": "Contraer Pila",
+    "completed_count": "Completada",
+    "tip_title": "Consejo útil",
+    "tip_desc": "¡Gana XP completando tareas, aumenta tu nivel y desbloquea nuevas funciones del Entrenador IA!"
   },
   "create_habit": {
     "header": "Crear hábito personalizado",
-    "new_good_habit": "NUEVO BUEN HÁBITO",
+    "new_good_habit": "HÁBITOS PERSONALES",
     "popular_habits": "HÁBITOS POPULARES",
     "create_custom": "Crear hábito personalizado",
     "setup_suggested_habit": "Configurar hábito sugerido",
@@ -328,7 +345,13 @@
     "minutes_per_session": "minutos por sesión",
     "standard_icons": "Iconos Estándar",
     "premium_icons": "Iconos Premium 🌟",
-    "already_exists": "Este hábito ya existe en tu lista."
+    "already_exists": "Este hábito ya existe en tu lista.",
+    "create_category_title": "Nueva categoría",
+    "category_name": "Nombre de la categoría",
+    "category_name_placeholder": "p. ej. Lectura",
+    "category_icon": "Icono / Emoji",
+    "category_color": "Color del tema",
+    "new_category": "Nueva"
   },
   "icons": {
     "run": "Correr",

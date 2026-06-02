@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faSearch, faChevronDown, faChevronUp, faTrash, faCheckSquare, faSquare, faCheck, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch, getUserHabitFetch } from '../../utils/fetch';
+import { getUnreadNotificationCountFetch, getUserHabitByFrequencyFetch, removeUserHabitFetch, getTodaysUserHabitFetch, getUserHabitFetch, getCategoriesFetch } from '../../utils/fetch';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
@@ -13,8 +13,21 @@ import HabitListItem from '../../components/HabitListItem';
 import NotificationIcon from '../../components/NotificationIcon';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { getTranslatedHabit } from '../../utils/habitTranslations';
+import { getTranslatedHabit, getTranslatedCategory } from '../../utils/habitTranslations';
 
+const CATEGORY_ICON_MAP = {
+  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+};
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+};
 
 const UserHabits = ({ route }) => {
     const [token] = useMMKVString('accessToken');
@@ -33,6 +46,12 @@ const UserHabits = ({ route }) => {
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [selectedHabits, setSelectedHabits] = useState(new Set());
     const [isSelectionMode, setIsSelectionMode] = useState(false);
+
+    const [categories, setCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('All');
+    const [tempCategoryId, setTempCategoryId] = useState('All');
+    const [tempFrequency, setTempFrequency] = useState('All');
+    const [filterModalVisible, setFilterModalVisible] = useState(false);
 
     const frequencyOptions = ['Today', 'All', 'Daily', 'Weekly', 'Monthly', 'Custom'];
 
@@ -95,11 +114,25 @@ const UserHabits = ({ route }) => {
         }
     };
 
+    const fetchCategories = async () => {
+        if (!token) return;
+        try {
+            const response = await getCategoriesFetch(token);
+            if (response) {
+                const list = Array.isArray(response) ? response : (response.data || []);
+                setCategories(list);
+            }
+        } catch (error) {
+            console.log('Error fetching categories:', error);
+        }
+    };
+
     useFocusEffect(
         useCallback(() => {
             if (token) {
                 getUserHabitsByFrequency();
                 getUnreadNotificationCount();
+                fetchCategories();
             }
         }, [token, selectedFrequency])
     );
@@ -218,6 +251,13 @@ const UserHabits = ({ route }) => {
             });
         }
 
+        // Filter by dynamic category id
+        if (selectedCategoryId && selectedCategoryId !== 'All') {
+            habits = habits.filter(habit => {
+                return habit.categoryId === selectedCategoryId;
+            });
+        }
+
         // Filter by search query
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
@@ -228,7 +268,7 @@ const UserHabits = ({ route }) => {
         }
 
         return habits;
-    }, [userHabitsByFrequency, searchQuery, selectedFrequency, i18n.language, t]);
+    }, [userHabitsByFrequency, searchQuery, selectedFrequency, selectedCategoryId, i18n.language, t]);
 
     // Apply pagination to filtered habits
     const filteredHabits = useMemo(() => {
@@ -280,9 +320,9 @@ const UserHabits = ({ route }) => {
                     <NotificationIcon count={unreadNotificationCount} />
                 </View>
 
-                {/* Search Bar */}
-                <View className="px-4 mb-4">
-                    <View className="rounded-xl px-4 py-3 flex-row items-center" style={{ backgroundColor: colors.card }}>
+                {/* Search Bar & Filter Button */}
+                <View className="px-4 mb-4 flex-row items-center gap-3">
+                    <View className="flex-1 rounded-xl px-4 py-3 flex-row items-center" style={{ backgroundColor: colors.card }}>
                         <FontAwesomeIcon icon={faSearch} color={colors.textSecondary} size={16} />
                         <TextInput
                             placeholder={t('my_habits.search_habits')}
@@ -293,9 +333,29 @@ const UserHabits = ({ route }) => {
                             style={{ color: colors.text }}
                         />
                     </View>
+                    <TouchableOpacity
+                        onPress={() => {
+                            setTempCategoryId(selectedCategoryId);
+                            setTempFrequency(selectedFrequency);
+                            setFilterModalVisible(true);
+                        }}
+                        className="p-3.5 rounded-xl justify-center items-center"
+                        style={{ 
+                            backgroundColor: (selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? colors.primary : colors.card,
+                            borderWidth: 1,
+                            borderColor: (selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? colors.primary : colors.border
+                        }}
+                        activeOpacity={0.8}
+                    >
+                        <FontAwesomeIcon 
+                            icon={faFilter} 
+                            color={(selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? '#FFFFFF' : colors.text} 
+                            size={18} 
+                        />
+                    </TouchableOpacity>
                 </View>
 
-                {/* Filter Chips Section or Selection Actions */}
+                {/* Active Filter Chips or Selection Actions */}
                 <View className="px-4 mb-3">
                     {isSelectionMode ? (
                         <View className="flex-row items-center justify-between">
@@ -344,40 +404,78 @@ const UserHabits = ({ route }) => {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    ) : (
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingBottom: 4 }}
-                        >
-                            {frequencyOptions.map((option) => (
+                    ) : (selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                            <Text className="font-redditsans-medium" style={{ fontSize: 13, color: colors.textSecondary, fontWeight: '600' }}>
+                                {t('my_habits.active_filters', 'Active Filters:')}
+                            </Text>
+                            {selectedFrequency !== 'All' && (
                                 <TouchableOpacity
-                                    key={option}
                                     onPress={() => {
-                                        setSelectedFrequency(option);
+                                        setSelectedFrequency('All');
                                         setDisplayLimit(pageSize);
-                                        setSelectedHabits(new Set());
-                                        setIsSelectionMode(false);
                                     }}
-                                    className="px-5 py-2.5 rounded-full mr-2 shadow-sm border"
-                                    style={{
-                                        backgroundColor: selectedFrequency === option ? colors.primary : colors.card,
-                                        borderColor: selectedFrequency === option ? colors.primary : colors.border
+                                    style={{ 
+                                        flexDirection: 'row', 
+                                        alignItems: 'center', 
+                                        gap: 6, 
+                                        backgroundColor: colors.primary + '15', 
+                                        borderWidth: 1, 
+                                        borderColor: colors.primary,
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 5,
+                                        borderRadius: 15
                                     }}
-                                    activeOpacity={0.8}
                                 >
-                                    <Text
-                                        className="text-sm font-redditsans-medium"
-                                        style={{
-                                            color: selectedFrequency === option ? '#FFFFFF' : colors.textSecondary
-                                        }}
-                                    >
-                                        {t(`my_habits.filters.${option.toLowerCase()}`)}
+                                    <Text className="font-redditsans-medium" style={{ color: colors.primary, fontSize: 12, fontWeight: '600' }}>
+                                        {t(`my_habits.filters.${selectedFrequency.toLowerCase()}`)}
                                     </Text>
+                                    <Text className="font-redditsans-medium" style={{ color: colors.primary, fontSize: 10 }}>✕</Text>
                                 </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    )}
+                            )}
+                            {selectedCategoryId !== 'All' && (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setSelectedCategoryId('All');
+                                        setDisplayLimit(pageSize);
+                                    }}
+                                    style={{ 
+                                        flexDirection: 'row', 
+                                        alignItems: 'center', 
+                                        gap: 6, 
+                                        backgroundColor: colors.primary + '15', 
+                                        borderWidth: 1, 
+                                        borderColor: colors.primary,
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 5,
+                                        borderRadius: 15
+                                    }}
+                                >
+                                    <Text className="font-redditsans-medium" style={{ color: colors.primary, fontSize: 12, fontWeight: '600' }}>
+                                        {getTranslatedCategory(categories.find(c => c.id === selectedCategoryId), i18n.language, t) || t('my_habits.category', 'Category')}
+                                    </Text>
+                                    <Text className="font-redditsans-medium" style={{ color: colors.primary, fontSize: 10 }}>✕</Text>
+                                </TouchableOpacity>
+                            )}
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setSelectedFrequency('All');
+                                    setSelectedCategoryId('All');
+                                    setDisplayLimit(pageSize);
+                                }}
+                                style={{
+                                    backgroundColor: colors.cardSecondary,
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 5,
+                                    borderRadius: 15
+                                }}
+                            >
+                                <Text className="font-redditsans-medium" style={{ color: colors.textSecondary, fontSize: 12, fontWeight: '500' }}>
+                                    {t('my_habits.clear_all', 'Clear All')}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : null}
                 </View>
 
                 {/* Content */}
@@ -479,6 +577,156 @@ const UserHabits = ({ route }) => {
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
+                                    </View>
+                                </View>
+                            </Modal>
+
+                            {/* Filter Bottom Sheet */}
+                            <Modal
+                                visible={filterModalVisible}
+                                transparent={true}
+                                animationType="slide"
+                                onRequestClose={() => setFilterModalVisible(false)}
+                            >
+                                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                                    <TouchableOpacity 
+                                        style={{ flex: 1 }} 
+                                        activeOpacity={1} 
+                                        onPress={() => setFilterModalVisible(false)} 
+                                    />
+                                    <View 
+                                        style={{ 
+                                            backgroundColor: colors.card, 
+                                            borderTopLeftRadius: 30, 
+                                            borderTopRightRadius: 30, 
+                                            paddingHorizontal: 24, 
+                                            paddingTop: 16, 
+                                            paddingBottom: 40,
+                                            maxHeight: '80%'
+                                        }}
+                                    >
+                                        {/* Handle bar */}
+                                        <View style={{ alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border, marginBottom: 20 }} />
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                                            <Text className="font-redditsans-bold" style={{ color: colors.text, fontSize: 20 }}>
+                                                {t('my_habits.filters_title', 'Filters')}
+                                            </Text>
+                                            <TouchableOpacity 
+                                                onPress={() => {
+                                                    setTempFrequency('All');
+                                                    setTempCategoryId('All');
+                                                }}
+                                            >
+                                                <Text className="font-redditsans-medium" style={{ color: colors.primary, fontSize: 14 }}>
+                                                    {t('my_habits.reset', 'Reset')}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        {/* Section: Frequency */}
+                                        <Text className="font-redditsans-medium" style={{ color: colors.textSecondary, fontSize: 14, marginBottom: 12 }}>
+                                            {t('my_habits.frequency', 'Frequency')}
+                                        </Text>
+                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+                                            {frequencyOptions.map((opt) => {
+                                                const isSel = tempFrequency === opt;
+                                                return (
+                                                    <TouchableOpacity
+                                                        key={opt}
+                                                        onPress={() => setTempFrequency(opt)}
+                                                        style={{
+                                                            paddingHorizontal: 16,
+                                                            paddingVertical: 8,
+                                                            borderRadius: 20,
+                                                            backgroundColor: isSel ? colors.primary : colors.cardSecondary,
+                                                            borderWidth: 1,
+                                                            borderColor: isSel ? colors.primary : colors.border
+                                                        }}
+                                                    >
+                                                        <Text className="font-redditsans-medium" style={{ color: isSel ? '#FFFFFF' : colors.text, fontSize: 14 }}>
+                                                            {t(`my_habits.filters.${opt.toLowerCase()}`)}
+                                                        </Text>
+                                                    </TouchableOpacity>
+                                                );
+                                            })}
+                                        </View>
+
+                                        {/* Section: Category */}
+                                        <Text className="font-redditsans-medium" style={{ color: colors.textSecondary, fontSize: 14, marginBottom: 12 }}>
+                                            {t('my_habits.category', 'Category')}
+                                        </Text>
+                                        <ScrollView 
+                                            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }} 
+                                            style={{ maxHeight: 200, marginBottom: 24 }}
+                                            showsVerticalScrollIndicator={false}
+                                        >
+                                            <TouchableOpacity
+                                                onPress={() => setTempCategoryId('All')}
+                                                style={{
+                                                    paddingHorizontal: 16,
+                                                    paddingVertical: 8,
+                                                    borderRadius: 20,
+                                                    backgroundColor: tempCategoryId === 'All' ? colors.primary : colors.cardSecondary,
+                                                    borderWidth: 1,
+                                                    borderColor: tempCategoryId === 'All' ? colors.primary : colors.border
+                                                }}
+                                            >
+                                                <Text className="font-redditsans-medium" style={{ color: tempCategoryId === 'All' ? '#FFFFFF' : colors.text, fontSize: 14 }}>
+                                                    {t('my_habits.filters.all_categories', 'All Categories')}
+                                                </Text>
+                                            </TouchableOpacity>
+                                            {categories.map((cat) => {
+                                                const isSel = tempCategoryId === cat.id;
+                                                return (
+                                                    <TouchableOpacity
+                                                        key={cat.id}
+                                                        onPress={() => setTempCategoryId(cat.id)}
+                                                        style={{
+                                                            paddingHorizontal: 16,
+                                                            paddingVertical: 8,
+                                                            borderRadius: 20,
+                                                            backgroundColor: isSel ? colors.primary : colors.cardSecondary,
+                                                            borderWidth: 1,
+                                                            borderColor: isSel ? colors.primary : colors.border,
+                                                            flexDirection: 'row',
+                                                            alignItems: 'center',
+                                                            gap: 6
+                                                        }}
+                                                    >
+                                                        <Text style={{ fontSize: 14 }}>{getCategoryIcon(cat.icon)}</Text>
+                                                        <Text className="font-redditsans-medium" style={{ color: isSel ? '#FFFFFF' : colors.text, fontSize: 14 }}>
+                                                            {getTranslatedCategory(cat, i18n.language, t)}
+                                                        </Text>
+                                                    </TouchableOpacity>
+                                                );
+                                            })}
+                                        </ScrollView>
+
+                                        {/* Apply Button */}
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setSelectedFrequency(tempFrequency);
+                                                setSelectedCategoryId(tempCategoryId);
+                                                setFilterModalVisible(false);
+                                                setDisplayLimit(pageSize);
+                                            }}
+                                            style={{
+                                                backgroundColor: colors.primary,
+                                                paddingVertical: 14,
+                                                borderRadius: 25,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                shadowColor: colors.primary,
+                                                shadowOffset: { width: 0, height: 4 },
+                                                shadowOpacity: 0.2,
+                                                shadowRadius: 8,
+                                                elevation: 4
+                                            }}
+                                        >
+                                            <Text className="font-redditsans-bold" style={{ color: '#FFFFFF', fontSize: 16 }}>
+                                                {t('my_habits.apply_filters', 'Apply Filters')}
+                                            </Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                             </Modal>

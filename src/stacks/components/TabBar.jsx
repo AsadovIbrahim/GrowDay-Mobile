@@ -97,10 +97,32 @@ const TabBar = ({ state, navigation }) => {
                     </TouchableOpacity>
                 );
 
+                const handleTabPress = () => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: route.key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!isFocused && !event.defaultPrevented) {
+                        navigation.navigate({ name: route.name, merge: true });
+                    } else if (isFocused) {
+                        if (route.name === 'Home') {
+                            navigation.navigate('Home', { screen: 'HomeScreen' });
+                        } else if (route.name === 'Explore') {
+                            navigation.navigate('Explore', { screen: 'Explore' });
+                        } else if (route.name === 'Achievements') {
+                            navigation.navigate('Achievements', { screen: 'Achievements' });
+                        } else if (route.name === 'Profile') {
+                            navigation.navigate('Profile', { screen: 'Profile' });
+                        }
+                    }
+                };
+
                 const tabBtn = (
                     <TouchableOpacity
                         key={route.key}
-                        onPress={() => navigation.navigate(route.name)}
+                        onPress={handleTabPress}
                         style={styles.tabBtn}
                         activeOpacity={0.7}
                     >

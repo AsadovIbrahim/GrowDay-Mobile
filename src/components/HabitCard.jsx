@@ -7,6 +7,21 @@ import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../utils/habitTranslations';
 
+const CATEGORY_ICON_MAP = {
+  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+};
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+};
+
+
 const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const { theme } = useTheme();
   const { colors } = theme;
@@ -90,7 +105,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
         <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
           {getTranslatedHabit(habit, i18n.language, t).title}
         </Text>
-        <View className="flex-row items-center">
+        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
           <Text 
             style={{ color: colors.textSecondary }}
             className="text-sm font-redditsans-regular"
@@ -107,6 +122,31 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
                 {formattedTime}
               </Text>
             </>
+          )}
+          {habit.categoryDetails && (
+            <View 
+              style={{
+                backgroundColor: (habit.categoryDetails.color || '#3b82f6') + '20',
+                paddingHorizontal: 8,
+                paddingVertical: 2,
+                borderRadius: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                marginLeft: 4
+              }}
+            >
+              <Text style={{ fontSize: 11 }}>{getCategoryIcon(habit.categoryDetails.icon)}</Text>
+              <Text 
+                style={{ 
+                  color: habit.categoryDetails.color || '#3b82f6', 
+                  fontSize: 11,
+                  fontWeight: '600'
+                }}
+              >
+                {habit.categoryDetails.name}
+              </Text>
+            </View>
           )}
         </View>
       </View>

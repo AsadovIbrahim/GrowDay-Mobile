@@ -115,7 +115,15 @@ const handleResponse = async (response) => {
         const data = await response.json();
         return data;
     }
-    return { success: response.ok, status: response.status };
+    let text = "";
+    try {
+        text = await response.text();
+    } catch (e) {}
+    
+    if (!response.ok) {
+        return { success: false, status: response.status, message: text || "An error occurred." };
+    }
+    return { success: response.ok, status: response.status, text };
 };
 
 export const loginfetch = async (formData) => {
@@ -914,6 +922,31 @@ export const aiMentorChatFetch = async (token, message, history) => {
 export const aiMentorRemainingFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/AIMentor/RemainingMessages`, {
         method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const getCategoriesFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Category`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const createCategoryFetch = async (token, payload) => {
+    const response = await fetch(`${VITE_API_URL}/api/Category`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
+};
+
+export const deleteCategoryFetch = async (token, id) => {
+    const response = await fetch(`${VITE_API_URL}/api/Category/${id}`, {
+        method: "DELETE",
         headers: getHeaders(token),
     });
     return handleResponse(response);

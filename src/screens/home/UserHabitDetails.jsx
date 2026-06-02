@@ -15,6 +15,21 @@ import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from "react-i18next";
 import { getTranslatedHabit } from "../../utils/habitTranslations";
 
+
+const CATEGORY_ICON_MAP = {
+  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+};
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+};
+
 const weeklyDataPlaceholder = [
     { value: 0, active: false },
     { value: 0, active: false },
@@ -235,11 +250,44 @@ const UserHabitDetails = () => {
                             {getTranslatedHabit(userHabit || { title: "Loading..." }, i18n.language, t).title}{" "}
                             {ICONS[userHabit?.icon]}
                         </Text>
-                        <Text className="font-redditsans-medium" style={[styles.habitDesc, { color: colors.textSecondary }]}>
-                            {getTranslatedHabit(userHabit, i18n.language, t).description}
+                        <Text
+                            className="font-redditsans-medium"
+                            style={[styles.habitDesc, { color: colors.textSecondary }]}
+                        >
+                            {userHabit?.description ||
+                                getTranslatedHabit(userHabit, i18n.language, t).description}
                         </Text>
  
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+                            {userHabit?.categoryDetails && (
+                                <View 
+                                    style={[
+                                        styles.tag, 
+                                        { 
+                                            backgroundColor: (userHabit.categoryDetails.color || colors.primary) + '20', 
+                                            marginTop: 0, 
+                                            flexDirection: 'row', 
+                                            alignItems: 'center', 
+                                            gap: 4 
+                                        }
+                                    ]}
+                                >
+                                    <Text style={{ fontSize: 13 }}>{getCategoryIcon(userHabit.categoryDetails.icon)}</Text>
+
+                                    <Text 
+                                        className="font-redditsans-bold" 
+                                        style={[
+                                            styles.tagText, 
+                                            { 
+                                                color: userHabit.categoryDetails.color || colors.primary,
+                                                fontWeight: '700'
+                                            }
+                                        ]}
+                                    >
+                                        {userHabit.categoryDetails.name}
+                                    </Text>
+                                </View>
+                            )}
                             <View style={[styles.tag, { backgroundColor: colors.cardSecondary, marginTop: 0 }]}>
                                 <Text className="font-redditsans-bold" style={[styles.tagText, { color: colors.textSecondary }]}>
                                     {t(`my_habits.filters.${(userHabit?.frequency ?? "Daily").toLowerCase()}`, { defaultValue: userHabit?.frequency ?? "Daily" })}

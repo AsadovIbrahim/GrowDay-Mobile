@@ -60,7 +60,7 @@ const StoreScreen = ({ navigation }) => {
           getUserTotalXPFetch(token),
           getAccountDataFetch(token),
         ]);
-        
+
         if (pointsRes?.success) {
           setPoints(pointsRes.data ?? 0);
         }
@@ -105,7 +105,7 @@ const StoreScreen = ({ navigation }) => {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
+
         const lang = i18n.language || 'en';
         if (lang === 'az') {
           setBoosterTimeRemaining(`${hours}saat ${minutes}dəq ${seconds}san`);
@@ -187,7 +187,7 @@ const StoreScreen = ({ navigation }) => {
 
                 if (isSuccess) {
                   Vibration.vibrate([0, 10, 50, 100]); // Play success haptic
-                  
+
                   // Read both camelCase and PascalCase variants
                   setPoints(
                     res?.experiencePoints ?? res?.ExperiencePoints ?? (points - cost)
@@ -196,12 +196,12 @@ const StoreScreen = ({ navigation }) => {
                     res?.streakFreezes ?? res?.StreakFreezes ?? freezes
                   );
                   setInventory({
-                    hasPremiumBorder:     res?.hasPremiumBorder     ?? res?.HasPremiumBorder     ?? inventory.hasPremiumBorder,
+                    hasPremiumBorder: res?.hasPremiumBorder ?? res?.HasPremiumBorder ?? inventory.hasPremiumBorder,
                     xpBoosterActiveUntil: res?.xpBoosterActiveUntil ?? res?.XpBoosterActiveUntil ?? inventory.xpBoosterActiveUntil,
-                    hasCustomHabitIcon:   res?.hasCustomHabitIcon   ?? res?.HasCustomHabitIcon   ?? inventory.hasCustomHabitIcon,
-                    hasProfileBadge:      res?.hasProfileBadge      ?? res?.HasProfileBadge      ?? inventory.hasProfileBadge,
-                    hasThemePack:         res?.hasThemePack         ?? res?.HasThemePack         ?? inventory.hasThemePack,
-                    hasMotivationPack:    res?.hasMotivationPack    ?? res?.HasMotivationPack    ?? inventory.hasMotivationPack,
+                    hasCustomHabitIcon: res?.hasCustomHabitIcon ?? res?.HasCustomHabitIcon ?? inventory.hasCustomHabitIcon,
+                    hasProfileBadge: res?.hasProfileBadge ?? res?.HasProfileBadge ?? inventory.hasProfileBadge,
+                    hasThemePack: res?.hasThemePack ?? res?.HasThemePack ?? inventory.hasThemePack,
+                    hasMotivationPack: res?.hasMotivationPack ?? res?.HasMotivationPack ?? inventory.hasMotivationPack,
                   });
 
                   Alert.alert(
@@ -426,16 +426,16 @@ const StoreScreen = ({ navigation }) => {
                     </View>
                   )}
                   {!freezes &&
-                   !inventory.hasPremiumBorder &&
-                   !boosterTimeRemaining &&
-                   !inventory.hasCustomHabitIcon &&
-                   !inventory.hasProfileBadge &&
-                   !inventory.hasThemePack &&
-                   !inventory.hasMotivationPack && (
-                    <Text style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Italic' }}>
-                      {t('store.no_active_perks', 'Hələlik heç bir perk yoxdur.')}
-                    </Text>
-                  )}
+                    !inventory.hasPremiumBorder &&
+                    !boosterTimeRemaining &&
+                    !inventory.hasCustomHabitIcon &&
+                    !inventory.hasProfileBadge &&
+                    !inventory.hasThemePack &&
+                    !inventory.hasMotivationPack && (
+                      <Text style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Italic' }}>
+                        {t('store.no_active_perks', 'Hələlik heç bir perk yoxdur.')}
+                      </Text>
+                    )}
                 </View>
               </View>
             </View>
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
   xpText: { fontSize: 14, fontFamily: 'RedditSans-Bold' },
   progressSection: { marginTop: 14 },
   divider: { height: 1, marginVertical: 18 },
-  
+
   inventoryRow: { gap: 10 },
   inventoryTitle: { fontSize: 13, fontFamily: 'RedditSans-Bold' },
   badgesContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   priceText: { fontSize: 12, fontFamily: 'RedditSans-Bold' },
-  
+
   perkActiveBadge: {
     backgroundColor: 'rgba(59,130,246,0.1)',
     paddingHorizontal: 8, paddingVertical: 2,

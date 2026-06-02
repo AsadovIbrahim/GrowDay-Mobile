@@ -16,12 +16,42 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { MenuContext } from '../context/MenuContext';
-import { getAllHabitsFetch } from '../utils/fetch';
+import { getAllHabitsFetch, getCategoriesFetch } from '../utils/fetch';
 import { ICONS } from '../constants/icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const CATEGORY_ICONS = [
+  { key: 'default', icon: '⭐' },
+  { key: 'health', icon: '❤️' },
+  { key: 'fitness', icon: '💪' },
+  { key: 'mindfulness', icon: '🧘' },
+  { key: 'productivity', icon: '📈' },
+  { key: 'learning', icon: '📚' },
+  { key: 'social', icon: '👥' },
+  { key: 'finance', icon: '💰' },
+  { key: 'nutrition', icon: '🍎' },
+  { key: 'sleep', icon: '😴' },
+  { key: 'creativity', icon: '🎨' },
+  { key: 'selfcare', icon: '💅' },
+  { key: 'hydration', icon: '💧' },
+  { key: 'work', icon: '💼' },
+  { key: 'music', icon: '🎵' },
+  { key: 'sports', icon: '⚽' },
+  { key: 'nature', icon: '🌱' },
+  { key: 'meditation', icon: '🕊️' },
+  { key: 'coding', icon: '💻' },
+  { key: 'travel', icon: '✈️' },
+];
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  const found = CATEGORY_ICONS.find(i => i.key === iconKey.toLowerCase());
+  return found ? found.icon : '⭐';
+};
 
 const CreateHabitBottomSheet = () => {
   const { isCreateModalOpen, setIsCreateModalOpen } = useContext(MenuContext);
@@ -30,6 +60,7 @@ const CreateHabitBottomSheet = () => {
   const opacity = useRef(new Animated.Value(0)).current;
    const [accessToken] = useMMKVString('accessToken');
    const [popularHabits, setPopularHabits] = useState([]);
+   const [categories, setCategories] = useState([]);
    const [pageIndex, setPageIndex] = useState(0);
    const [isLoading, setIsLoading] = useState(false);
    const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -37,7 +68,7 @@ const CreateHabitBottomSheet = () => {
    const [pageSize, setPageSize] = useState(3);
    const { theme } = useTheme();
    const { colors } = theme;
-   const { t } = useTranslation();
+   const { t, i18n } = useTranslation();
 
   const fetchPopularHabits = async (isLoadMore = false) => {
     if (!accessToken || (!hasMore && isLoadMore) || (isLoading || isLoadingMore)) return;
@@ -82,11 +113,25 @@ const CreateHabitBottomSheet = () => {
       fetchPopularHabits(true);
     }
   };
+
+  const fetchCategories = async () => {
+    if (!accessToken) return;
+    try {
+      const response = await getCategoriesFetch(accessToken);
+      if (response) {
+        const list = Array.isArray(response) ? response : (response.data || []);
+        setCategories(list);
+      }
+    } catch (error) {
+      console.log("Error fetching categories in bottom sheet:", error);
+    }
+  };
       
       
   useEffect(() => {
     if (isCreateModalOpen) {
       fetchPopularHabits();
+      fetchCategories();
       Animated.parallel([
         Animated.spring(translateY, {
           toValue: 0,
@@ -198,30 +243,36 @@ const CreateHabitBottomSheet = () => {
                   </View>
                 )
               )}
-              renderItem={({ item: habit }) => (
-                <TouchableOpacity
-                  key={habit.id}
-                  activeOpacity={0.8}
-                  style={[styles.habitCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                  onPress={() => {
-                    closeModal();
-                    navigation.navigate('Home', { 
-                      screen: 'CreateCustomHabit',
-                      params: { habitData: habit, isCustom: false, isSuggested: false } 
-                    });
-                  }}
-                >
-                  <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
-                    <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
-                  </View>
-                  <View>
-                    <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]}>
-                      {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
-                    </Text>
-                    <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]}>{t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item: habit }) => {
+                const habitCategory = categories.find(c => c.id === habit.categoryId);
+                const categoryIcon = habitCategory ? getCategoryIcon(habitCategory.icon) : '';
+                return (
+                  <TouchableOpacity
+                    key={habit.id}
+                    activeOpacity={0.8}
+                    style={[styles.habitCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    onPress={() => {
+                      closeModal();
+                      navigation.navigate('Home', { 
+                        screen: 'CreateCustomHabit',
+                        params: { habitData: habit, isCustom: false, isSuggested: false } 
+                      });
+                    }}
+                  >
+                    <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
+                      <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
+                    </View>
+                    <View>
+                      <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]} numberOfLines={1}>
+                        {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
+                      </Text>
+                      <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+                        {categoryIcon ? `${categoryIcon} ` : ''}{t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
           

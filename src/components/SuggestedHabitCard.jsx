@@ -5,6 +5,20 @@ import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getTranslatedHabit } from "../utils/habitTranslations";
 
+const CATEGORY_ICON_MAP = {
+  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+};
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '';
+};
+
 const SuggestedHabitCard = ({ name, frequency, icon, onPress, habit }) => {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
@@ -12,6 +26,9 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress, habit }) => {
 
   const displayIcon = ICONS[icon] || ICONS.default;
   const displayTitle = getTranslatedHabit(habit || { title: name }, i18n.language, t).title;
+
+  const categoryIconKey = habit?.categoryDetails?.icon || habit?.category || '';
+  const categoryIcon = getCategoryIcon(categoryIconKey);
 
   return (
     <TouchableOpacity
@@ -50,8 +67,8 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress, habit }) => {
         >
           {displayTitle}
         </Text>
-        <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
-          {t(`my_habits.filters.${frequency.toLowerCase()}`)}
+        <Text className="text-[12px] font-redditsans-regular" style={{ color: colors.textSecondary }} numberOfLines={1}>
+          {categoryIcon ? `${categoryIcon} ` : ''}{t(`my_habits.filters.${(frequency || 'Daily').toLowerCase()}`)}
         </Text>
       </View>
     </TouchableOpacity>

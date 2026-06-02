@@ -131,13 +131,13 @@ const Explore = () => {
       } else {
         // Fallback to static items if API fails or returns no data
         setLearningContent([
-          { 
-            id: 1, 
+          {
+            id: 1,
             title: "Why should we drink water often?",
             image: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400"
           },
-          { 
-            id: 2, 
+          {
+            id: 2,
             title: "Benefits of regular walking",
             image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"
           },
@@ -149,7 +149,7 @@ const Explore = () => {
       setLearningLoading(false);
     }
   };
-  
+
 
   const getUserSuggestedHabits = async () => {
     if (!token) return;
@@ -225,7 +225,7 @@ const Explore = () => {
 
 
 
-  
+
   const handleSuggestedHabitPress = (habit) => {
     // Remove immediately from UI for better feedback
     setSuggestedHabits(prev => {
@@ -233,14 +233,15 @@ const Explore = () => {
       saveSuggestedHabitsCache(next);
       return next;
     });
-    
-    navigation.navigate('CreateCustomHabit', { 
+
+    navigation.navigate('CreateCustomHabit', {
       habitData: {
         id: habit.id,
         title: habit.title,
         description: habit.description || habit.title,
         icon: habit.icon || "star",
         category: habit.category || "General",
+        categoryId: habit.categoryId || null,
         frequency: habit.frequency || "Daily",
         targetValue: habit.targetValue || 1,
         unit: habit.unit || "times",
@@ -254,11 +255,11 @@ const Explore = () => {
     });
   };
 
-  
+
   return (
     <LinearGradient colors={colors.backgroundGradient} className="flex-1">
       <SafeAreaView className="flex-1">
-        <ScrollView 
+        <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
@@ -266,12 +267,12 @@ const Explore = () => {
           {/* Header Section */}
           <View className="flex-row items-center justify-between px-4 pt-4 mb-6">
             {isSearching ? (
-              <View 
-                className="flex-1 flex-row items-center rounded-2xl px-4 h-12 mr-2" 
+              <View
+                className="flex-1 flex-row items-center rounded-2xl px-4 h-12 mr-2"
                 style={{ backgroundColor: colors.cardSecondary }}
               >
                 <FontAwesomeIcon icon={faSearch} size={16} color={colors.textSecondary} />
-                <TextInput 
+                <TextInput
                   className="flex-1 ml-3 font-redditsans-medium text-base"
                   style={{ color: colors.text }}
                   placeholder={t("explore.search_placeholder")}
@@ -285,7 +286,7 @@ const Explore = () => {
                     <FontAwesomeIcon icon={faTimes} size={16} color={colors.textSecondary} />
                   </TouchableOpacity>
                 )}
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => { setIsSearching(false); setSearchQuery(""); }}
                   className="ml-4"
                 >
@@ -295,7 +296,7 @@ const Explore = () => {
             ) : (
               <>
                 <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.header")}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => setIsSearching(true)}
                   className="w-10 h-10 rounded-full items-center justify-center"
                   style={{ backgroundColor: colors.cardSecondary }}
@@ -347,14 +348,14 @@ const Explore = () => {
             activeOpacity={0.8}
           >
             <View className="flex-row items-center flex-1">
-              <View 
+              <View
                 className="w-10 h-10 rounded-2xl items-center justify-center mr-3"
                 style={{ backgroundColor: userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger + '15' : colors.primary + '15') : '#d9770615' }}
               >
-                <FontAwesomeIcon 
-                  icon={userLevel >= AI_COACH_MIN_LEVEL ? faBrain : faLock} 
-                  color={userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger : colors.primary) : '#d97706'} 
-                  size={18} 
+                <FontAwesomeIcon
+                  icon={userLevel >= AI_COACH_MIN_LEVEL ? faBrain : faLock}
+                  color={userLevel >= AI_COACH_MIN_LEVEL ? (aiCount >= AI_COACH_DAILY_LIMIT ? colors.danger : colors.primary) : '#d97706'}
+                  size={18}
                 />
               </View>
               <View className="flex-1 pr-2">
@@ -383,52 +384,52 @@ const Explore = () => {
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
             </View>
-            
+
             {loading && pageIndex === 0 ? (
-          <View className="py-10 items-center justify-center">
-            <ActivityIndicator size="small" color={colors.primary} />
-          </View>
-        ) : isGeneratingHabits ? (
-          <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
-             <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
-             <Text style={{ color: colors.textSecondary }} className="font-redditsans-medium">
-               {t("levelup.generating_new_habits", "Generating new suggested habits...")}
-             </Text>
-          </View>
-        ) : (suggestedHabits.filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
-          <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
-             <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
-               {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
-             </Text>
-          </View>
-        ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="px-4 mb-6"
-            contentContainerStyle={{ paddingRight: 40 }}
-            onScroll={handleHorizontalScroll}
-            scrollEventThrottle={16}
-          >
-            {suggestedHabits
-              .filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase()))
-              .map((habit, index) => (
-              <SuggestedHabitCard
-                key={habit.id || `suggested-${index}`}
-                name={habit.title}
-                frequency={habit.frequency || "Daily"}
-                icon={habit.icon || "🎯"}
-                onPress={() => handleSuggestedHabitPress(habit)}
-                habit={habit}
-              />
-            ))}
-            {loading && pageIndex !== 0 && (
-              <View className="justify-center items-center px-4">
+              <View className="py-10 items-center justify-center">
                 <ActivityIndicator size="small" color={colors.primary} />
               </View>
+            ) : isGeneratingHabits ? (
+              <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
+                <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
+                <Text style={{ color: colors.textSecondary }} className="font-redditsans-medium">
+                  {t("levelup.generating_new_habits", "Generating new suggested habits...")}
+                </Text>
+              </View>
+            ) : (suggestedHabits.filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
+              <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
+                <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
+                  {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
+                </Text>
+              </View>
+            ) : (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="px-4 mb-6"
+                contentContainerStyle={{ paddingRight: 40 }}
+                onScroll={handleHorizontalScroll}
+                scrollEventThrottle={16}
+              >
+                {suggestedHabits
+                  .filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((habit, index) => (
+                    <SuggestedHabitCard
+                      key={habit.id || `suggested-${index}`}
+                      name={habit.title}
+                      frequency={habit.frequency || "Daily"}
+                      icon={habit.icon || "🎯"}
+                      onPress={() => handleSuggestedHabitPress(habit)}
+                      habit={habit}
+                    />
+                  ))}
+                {loading && pageIndex !== 0 && (
+                  <View className="justify-center items-center px-4">
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  </View>
+                )}
+              </ScrollView>
             )}
-          </ScrollView>
-        )}
           </View>
 
           {/* Tasks Section */}
@@ -438,7 +439,7 @@ const Explore = () => {
                 <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.tasks")}</Text>
                 <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => navigation.navigate('UserTasks')}
                 className="flex-row items-center gap-1"
               >
@@ -447,8 +448,8 @@ const Explore = () => {
               </TouchableOpacity>
             </View>
             <UserTasksList searchQuery={searchQuery} t={t} />
-            
-            
+
+
           </View>
 
           {/* Brain Games Section */}
@@ -456,7 +457,7 @@ const Explore = () => {
             <View className="px-4 mb-4">
               <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>🧠 {t("games.title")}</Text>
             </View>
-            
+
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -464,13 +465,13 @@ const Explore = () => {
               contentContainerStyle={{ paddingRight: 40 }}
             >
               {/* Memory Game Card */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate('MemoryGame')}
                 className="mr-3 rounded-2xl p-4 justify-between"
-                style={{ 
-                  width: 250, 
-                  height: 160, 
+                style={{
+                  width: 250,
+                  height: 160,
                   backgroundColor: colors.cardSecondary,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
@@ -492,8 +493,8 @@ const Explore = () => {
                     {t("games.memory_match_desc")}
                   </Text>
                 </View>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'MemoryMatch' })}
                   className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
                 >
@@ -502,13 +503,13 @@ const Explore = () => {
               </TouchableOpacity>
 
               {/* Sequence Game Card */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate('SequenceGame')}
                 className="mr-3 rounded-2xl p-4 justify-between"
-                style={{ 
-                  width: 250, 
-                  height: 160, 
+                style={{
+                  width: 250,
+                  height: 160,
                   backgroundColor: colors.cardSecondary,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
@@ -530,8 +531,8 @@ const Explore = () => {
                     {t("games.sequence_memory_desc")}
                   </Text>
                 </View>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'SequenceMemory' })}
                   className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
                 >
@@ -540,13 +541,13 @@ const Explore = () => {
               </TouchableOpacity>
 
               {/* Stroop Game Card */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate('StroopGame')}
                 className="mr-3 rounded-2xl p-4 justify-between"
-                style={{ 
-                  width: 250, 
-                  height: 160, 
+                style={{
+                  width: 250,
+                  height: 160,
                   backgroundColor: colors.cardSecondary,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
@@ -568,8 +569,8 @@ const Explore = () => {
                     {t("games.stroop_test_desc")}
                   </Text>
                 </View>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'StroopTest' })}
                   className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
                 >
@@ -578,13 +579,13 @@ const Explore = () => {
               </TouchableOpacity>
 
               {/* Reaction Game Card */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate('ReactionGame')}
                 className="mr-3 rounded-2xl p-4 justify-between"
-                style={{ 
-                  width: 250, 
-                  height: 160, 
+                style={{
+                  width: 250,
+                  height: 160,
                   backgroundColor: colors.cardSecondary,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
@@ -606,8 +607,8 @@ const Explore = () => {
                     {t("games.reaction_game_desc")}
                   </Text>
                 </View>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'ReactionTime' })}
                   className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
                 >
@@ -622,9 +623,9 @@ const Explore = () => {
             <View className="px-4 mb-4">
               <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.learning")}</Text>
             </View>
-            
-            <ScrollView 
-              horizontal 
+
+            <ScrollView
+              horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
             >
@@ -647,8 +648,8 @@ const Explore = () => {
                   ))
               )}
             </ScrollView>
-         </View>
-         <AdBanner />
+          </View>
+          <AdBanner />
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

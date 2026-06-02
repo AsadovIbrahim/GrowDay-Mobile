@@ -12,6 +12,7 @@ import {
   Modal,
   FlatList,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,23 +20,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import LinearGradient from "react-native-linear-gradient";
 import { useMMKVString } from "react-native-mmkv";
-import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch, getAccountDataFetch } from "../../utils/fetch";
+import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch, getAccountDataFetch, getCategoriesFetch, createCategoryFetch } from "../../utils/fetch";
 import { ICONS, PREMIUM_ICONS } from "../../constants/icons";
 import { useTheme as useThemeConstants } from "../../constants/theme";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { getTranslatedHabit } from "../../utils/habitTranslations";
+import { getTranslatedHabit, getTranslatedCategory } from "../../utils/habitTranslations";
 
-const CATEGORIES = [
-  "General",
-  "Health",
-  "Fitness",
-  "Mindset",
-  "Productivity",
-  "Finance",
-  "Wellness",
-  "Social",
-];
+
 
 const UNITS = [
   "times",
@@ -55,6 +47,46 @@ const UNITS = [
   "tasks",
   "Other",
 ];
+
+
+const CATEGORY_ICONS = [
+  { key: 'default', icon: '⭐' },
+  { key: 'health', icon: '❤️' },
+  { key: 'fitness', icon: '💪' },
+  { key: 'mindfulness', icon: '🧘' },
+  { key: 'productivity', icon: '📈' },
+  { key: 'learning', icon: '📚' },
+  { key: 'social', icon: '👥' },
+  { key: 'finance', icon: '💰' },
+  { key: 'nutrition', icon: '🍎' },
+  { key: 'sleep', icon: '😴' },
+  { key: 'creativity', icon: '🎨' },
+  { key: 'selfcare', icon: '💅' },
+  { key: 'hydration', icon: '💧' },
+  { key: 'work', icon: '💼' },
+  { key: 'music', icon: '🎵' },
+  { key: 'sports', icon: '⚽' },
+  { key: 'nature', icon: '🌱' },
+  { key: 'meditation', icon: '🕊️' },
+  { key: 'coding', icon: '💻' },
+  { key: 'travel', icon: '✈️' },
+];
+// CATEGORY_ICONS array-inin altına bu funksiyanı əlavə edin
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  // User-in seçdiyi birbaşa emoji-dirsə (📦, 💧 kimi)
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  // Key-ə görə tap
+  const found = CATEGORY_ICONS.find(i => i.key === iconKey.toLowerCase());
+  return found ? found.icon : '⭐';
+};
+
+const PRESET_COLORS = [
+  '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7',
+  '#ec4899', '#ef4444', '#f97316', '#eab308',
+  '#22c55e', '#14b8a6', '#06b6d4', '#0ea5e9',
+];
+
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
@@ -83,9 +115,16 @@ const CreateCustomHabit = () => {
 
   // Core Fields
   const [title, setTitle] = useState(habitData?.title || "");
-  const [description, setDescription] = useState(habitData?.description || (habitData?.title || ""));
+  const [description, setDescription] = useState(habitData?.description || "");
   const [icon, setIcon] = useState(habitData?.icon || "star");
   const [category, setCategory] = useState("General");
+  const [categoryId, setCategoryId] = useState(habitData?.categoryId || null);
+  const [categories, setCategories] = useState([]);
+  const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryIcon, setNewCategoryIcon] = useState("📦");
+  const [newCategoryColor, setNewCategoryColor] = useState("#3b82f6");
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [showCustomUnitInput, setShowCustomUnitInput] = useState(false);
   const [tempCustomUnit, setTempCustomUnit] = useState("");
 
@@ -94,20 +133,14 @@ const CreateCustomHabit = () => {
   const [unit, setUnit] = useState(habitData?.unit || "times");
   const [frequency, setFrequency] = useState(habitData?.frequency || "Daily");
   const [selectedDays, setSelectedDays] = useState(["Mon"]);
-  const [trackDuration, setTrackDuration] = useState(habitData?.durationInMinutes > 0);
-  const [durationInMinutes, setDurationInMinutes] = useState(habitData?.durationInMinutes?.toString() || "10");
 
   // Schedule
-  const [startDate, setStartDate] = useState(
-    isEditMode && habitData?.startDate
-      ? habitData.startDate.split('T')[0]
-      : getLocalDateString()
-  );
-  const [endDate, setEndDate] = useState(
-    isEditMode && habitData?.endDate
-      ? habitData.endDate.split('T')[0]
-      : ""
-  );
+  const startDate = isEditMode && habitData?.startDate
+    ? habitData.startDate.split('T')[0]
+    : getLocalDateString();
+  const endDate = isEditMode && habitData?.endDate
+    ? habitData.endDate.split('T')[0]
+    : "";
 
   // Reminders
   const [reminderEnabled, setReminderEnabled] = useState(!!habitData?.notificationTime);
@@ -117,8 +150,6 @@ const CreateCustomHabit = () => {
   const [showIconModal, setShowIconModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showUnitModal, setShowUnitModal] = useState(false);
-  const [showStartDateModal, setShowStartDateModal] = useState(false);
-  const [showEndDateModal, setShowEndDateModal] = useState(false);
 
   const [tempDay, setTempDay] = useState(new Date().getDate().toString().padStart(2, '0'));
   const [tempMonth, setTempMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
@@ -149,13 +180,85 @@ const CreateCustomHabit = () => {
     checkPerks();
   }, [accessToken]);
 
+  const fetchCategories = async () => {
+    if (!accessToken) return;
+    try {
+      const response = await getCategoriesFetch(accessToken);
+      if (response) {
+        const list = Array.isArray(response) ? response : (response.data || []);
+        setCategories(list);
+
+        // Auto-match categoryId if editing/suggested with only category name
+        if (habitData && !categoryId) {
+          const matched = list.find(c => {
+            const translatedName = getTranslatedCategory(c, i18n.language, t).toLowerCase();
+            const originalName = c.name.toLowerCase();
+            const habitCat = habitData.category?.toLowerCase();
+            return translatedName === habitCat || originalName === habitCat;
+          });
+          if (matched) {
+            setCategoryId(matched.id);
+            setCategory(matched.name);
+          }
+        } else if (!categoryId && list.length > 0) {
+          const general = list.find(c => c.name.toLowerCase() === "general" || getTranslatedCategory(c, i18n.language, t).toLowerCase() === "general") || list[0];
+          setCategoryId(general.id);
+          setCategory(general.name);
+        }
+      }
+    } catch (e) {
+      console.log("Error loading categories:", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [accessToken]);
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      Alert.alert(t("common.error"), "Category name is required.");
+      return;
+    }
+
+    setIsCreatingCategory(true);
+    try {
+      const payload = {
+        name: newCategoryName.trim(),
+        icon: newCategoryIcon,
+        color: newCategoryColor
+      };
+
+      const response = await createCategoryFetch(accessToken, payload);
+      const newCat = response && response.data ? response.data : response;
+
+      if (newCat && newCat.id) {
+        setCategories(prev => [...prev, newCat]);
+        setCategoryId(newCat.id);
+        setCategory(newCat.name);
+        setNewCategoryName("");
+        setNewCategoryIcon("📦");
+        setNewCategoryColor("#3b82f6");
+        setShowNewCategoryModal(false);
+      } else {
+        const errorMsg = response?.message || "Failed to create category.";
+        Alert.alert(t("common.error"), errorMsg);
+      }
+    } catch (error) {
+      console.log("Error creating category:", error);
+      Alert.alert(t("common.error"), "An error occurred while creating category.");
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
+
   useEffect(() => {
     if (habitData) {
-      const { title: translatedTitle, description: translatedDesc } = getTranslatedHabit(habitData, i18n.language, t);
+      const { title: translatedTitle } = getTranslatedHabit(habitData, i18n.language, t);
 
       setTitle(translatedTitle);
-      setDescription(translatedDesc);
       setIcon(habitData.icon || "star");
+      if (habitData.categoryId) setCategoryId(habitData.categoryId);
       if (habitData.category) setCategory(habitData.category);
       if (habitData.targetValue) setTargetValue(habitData.targetValue.toString());
       if (habitData.unit) setUnit(habitData.unit);
@@ -164,18 +267,12 @@ const CreateCustomHabit = () => {
         setReminderTime(habitData.notificationTime.substring(0, 5));
         setReminderEnabled(true);
       }
-      if (habitData.durationInMinutes) {
-        setDurationInMinutes(habitData.durationInMinutes.toString());
-        setTrackDuration(true);
-      }
       if (habitData.frequency === "Weekly" && habitData.selectedDays) {
         setSelectedDays(habitData.selectedDays.split(",").map(d => d.trim()));
       }
       if (habitData.frequency === "Custom" && habitData.selectedDays) {
         setCustomInterval(habitData.selectedDays);
       }
-      if (isEditMode && habitData.startDate) setStartDate(habitData.startDate.split('T')[0]);
-      if (isEditMode && habitData.endDate) setEndDate(habitData.endDate.split('T')[0]);
     }
   }, [habitData, t, isEditMode, i18n.language]);
 
@@ -221,14 +318,15 @@ const CreateCustomHabit = () => {
           const payload = {
             suggestedHabitId: resolvedId,
             category,
+            categoryId,
             title: title, // Use customized title
-            description: description, // Use customized description
+            description: description,
             targetValue: parseFloat(targetValue) || 1,
             unit,
             incrementValue: 1,
             frequency,
             notificationTime: reminderEnabled ? reminderTime : "",
-            durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
+            durationInMinutes: 0,
             startDate: new Date(startDate).toISOString(),
             endDate: endDate ? new Date(endDate).toISOString() : null,
             selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
@@ -239,14 +337,15 @@ const CreateCustomHabit = () => {
           const payload = {
             habitId: resolvedId,
             category,
+            categoryId,
             title: title, // Use customized title
-            description: description, // Use customized description
+            description: description,
             targetValue: parseFloat(targetValue) || 1,
             unit,
             incrementValue: 1,
             frequency,
             notificationTime: reminderEnabled ? reminderTime : "",
-            durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
+            durationInMinutes: 0,
             startDate: new Date(startDate).toISOString(),
             endDate: endDate ? new Date(endDate).toISOString() : null,
             selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
@@ -256,9 +355,10 @@ const CreateCustomHabit = () => {
       } else {
         const payload = {
           title,
-          description,
+          description: description,
           icon,
           category,
+          categoryId,
           frequency,
           startDate: new Date(startDate).toISOString(),
           endDate: endDate ? new Date(endDate).toISOString() : null,
@@ -266,7 +366,7 @@ const CreateCustomHabit = () => {
           incrementValue: 1, // Default to 1 as requested
           unit,
           notificationTime: reminderEnabled ? reminderTime : "",
-          durationInMinutes: trackDuration ? (parseInt(durationInMinutes) || 0) : 0,
+          durationInMinutes: 0,
           selectedDays: frequency === "Weekly" ? selectedDays.join(",") : (frequency === "Custom" ? customInterval : null),
         };
 
@@ -301,27 +401,6 @@ const CreateCustomHabit = () => {
       setIsLoading(false);
     }
   };
-
-  const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.categoryChip,
-        { backgroundColor: colors.card, borderColor: colors.border },
-        category === item && { backgroundColor: colors.primarySurface, borderColor: colors.primary },
-      ]}
-      onPress={() => setCategory(item)}
-    >
-      <Text
-        style={[
-          styles.categoryText,
-          { color: colors.textSecondary },
-          category === item && { color: colors.primary, fontWeight: "bold" },
-        ]}
-      >
-        {t(`categories.${item.toLowerCase()}`)}
-      </Text>
-    </TouchableOpacity>
-  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -370,32 +449,71 @@ const CreateCustomHabit = () => {
                 {
                   color: colors.text,
                   borderBottomColor: colors.textGray,
-                  minHeight: 40,
-                  paddingTop: 10
+                  minHeight: 80,
+                  textAlignVertical: "top",
                 }
               ]}
-              className="font-redditsans-medium"
               value={description}
               onChangeText={setDescription}
               placeholder={t("create_habit.desc_placeholder")}
               placeholderTextColor={colors.textSecondary}
               multiline={true}
-              textAlignVertical="top"
             />
           </View>
+
 
           {/* Category Section */}
           <View style={styles.fieldSection}>
             <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.category_label")}</Text>
-            <View>
-              <FlatList
-                data={CATEGORIES}
-                renderItem={renderCategoryItem}
-                keyExtractor={(item) => item}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.categoryList}
-              />
+            <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => setShowNewCategoryModal(true)}
+                style={[
+                  styles.categoryChip,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: colors.border,
+                    borderStyle: "dashed",
+                    borderWidth: 1.5,
+                    marginRight: 8,
+                    marginBottom: 8,
+                    paddingHorizontal: 12
+                  }
+                ]}
+              >
+                <Text style={{ color: colors.primary, fontWeight: "bold", fontSize: 15 }}>+ {t("create_habit.new_category", "New")}</Text>
+              </TouchableOpacity>
+              {categories.map((item) => {
+                const isSelected = categoryId === item.id;
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[
+                      styles.categoryChip,
+                      { backgroundColor: colors.card, borderColor: colors.border, marginRight: 8, marginBottom: 8 },
+                      isSelected && { backgroundColor: (item.color || colors.primary) + '15', borderColor: item.color || colors.primary, borderWidth: 1.5 },
+                    ]}
+                    onPress={() => {
+                      setCategoryId(item.id);
+                      setCategory(item.name);
+                    }}
+                  >
+                    <Text style={{ fontSize: 14, marginRight: 6 }}>
+                      {getCategoryIcon(item.icon)}
+                    </Text>
+
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        { color: colors.textSecondary },
+                        isSelected && { color: item.color || colors.primary, fontWeight: "bold" },
+                      ]}
+                    >
+                      {getTranslatedCategory(item, i18n.language, t)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
@@ -532,102 +650,8 @@ const CreateCustomHabit = () => {
                   </View>
                 )}
               </>
-
-              {/* Duration Toggle */}
-              <View style={styles.durationSection}>
-                <View style={styles.durationHeader}>
-                  <Text className="font-redditsans-medium" style={[styles.sentenceLabel, { color: colors.text }]}>{t("create_habit.track_duration")}</Text>
-                  <Switch
-                    value={trackDuration}
-                    onValueChange={setTrackDuration}
-                    trackColor={{ false: "#e2e8f0", true: colors.primary }}
-                  />
-                </View>
-                {trackDuration && (
-                  <View style={styles.durationInputRow}>
-                    <TextInput
-                      style={[styles.compactInput, { flex: 1, marginRight: 10, color: colors.text, borderBottomColor: colors.textGray }]}
-                      value={durationInMinutes}
-                      onChangeText={setDurationInMinutes}
-                      keyboardType="numeric"
-                      placeholder={t("create_habit.duration_placeholder")}
-                      placeholderTextColor={colors.textSecondary}
-                    />
-                    <Text style={{ color: colors.textSecondary }}>{t("create_habit.minutes_per_session")}</Text>
-                  </View>
-                )}
-              </View>
             </View>
 
-            {/* Natural Language Preview */}
-            <View style={styles.previewContainer}>
-              <View style={[styles.previewBadge, { backgroundColor: colors.primarySurface, borderColor: colors.primary }]}>
-                <Text className="font-redditsans-medium" style={[styles.previewText, { color: colors.primary }]}>
-                  {t("create_habit.preview", {
-                    title: title || t("create_habit.name_placeholder").toLowerCase(),
-                    targetValue: targetValue,
-                    unit: t(`units.${unit.toLowerCase()}`, { defaultValue: unit }),
-                    frequency: frequency === 'Daily' ? t('common.day').toLowerCase() : (frequency === 'Weekly' ? t('common.week').toLowerCase() : (frequency === 'Monthly' ? t('common.month').toLowerCase() : t('common.custom').toLowerCase()))
-                  })}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Schedule Section */}
-          <View style={styles.fieldSection}>
-            <Text className="font-redditsans-bold" style={[styles.label, { color: colors.textSecondary }]}>{t("create_habit.schedule_label")}</Text>
-            <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <TouchableOpacity
-                style={styles.cardRow}
-                onPress={() => {
-                  const d = new Date(startDate);
-                  setTempDay(d.getDate().toString().padStart(2, '0'));
-                  setTempMonth((d.getMonth() + 1).toString().padStart(2, '0'));
-                  setTempYear(d.getFullYear().toString());
-                  setShowStartDateModal(true);
-                }}
-              >
-                <View style={[styles.iconBox, { backgroundColor: colors.primarySurface }]}>
-                  <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.primary} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.start_date")}</Text>
-                  <Text className="font-redditsans-medium" style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{startDate}</Text>
-                </View>
-                <TouchableOpacity
-                  style={[styles.miniButton, { backgroundColor: colors.background }]}
-                  onPress={() => setStartDate(getLocalDateString())}
-                >
-                  <Text className="font-redditsans-bold" style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.today_btn")}</Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.cardRow, { marginTop: 15, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 15 }]}
-                onPress={() => {
-                  const d = endDate ? new Date(endDate) : new Date();
-                  setTempDay(d.getDate().toString().padStart(2, '0'));
-                  setTempMonth((d.getMonth() + 1).toString().padStart(2, '0'));
-                  setTempYear(d.getFullYear().toString());
-                  setShowEndDateModal(true);
-                }}
-              >
-                <View style={[styles.iconBox, { backgroundColor: colors.dangerSurface }]}>
-                  <FontAwesomeIcon icon={faCalendarAlt} size={16} color={colors.danger} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text className="font-redditsans-bold" style={[styles.selectionTitle, { color: colors.text }]}>{t("create_habit.end_date")}</Text>
-                  <Text className="font-redditsans-medium" style={[styles.selectionSubtitle, { color: colors.textSecondary }]}>{endDate || t("create_habit.no_end_date")}</Text>
-                </View>
-                <TouchableOpacity
-                  style={[styles.miniButton, { backgroundColor: colors.background }]}
-                  onPress={() => setEndDate("")}
-                >
-                  <Text className="font-redditsans-bold" style={[styles.miniButtonText, { color: colors.textSecondary }]}>{t("create_habit.clear_btn")}</Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-            </View>
           </View>
 
           {/* Reminders Section */}
@@ -945,163 +969,7 @@ const CreateCustomHabit = () => {
         </TouchableOpacity>
       </Modal>
       {/* Start Date Picker Modal */}
-      <Modal
-        visible={showStartDateModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowStartDateModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowStartDateModal(false)}
-        >
-          <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
-            <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
-            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Select Start Date</Text>
 
-            <View style={styles.timePickerContainer}>
-              {/* Day Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>DAY</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => (
-                    <TouchableOpacity
-                      key={d}
-                      style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempDay(d)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-
-              {/* Month Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>MONTH</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => (
-                    <TouchableOpacity
-                      key={m}
-                      style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempMonth(m)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-
-              {/* Year Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>YEAR</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {["2025", "2026", "2027", "2028", "2029", "2030"].map(y => (
-                    <TouchableOpacity
-                      key={y}
-                      style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempYear(y)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
-              onPress={() => {
-                setStartDate(`${tempYear}-${tempMonth}-${tempDay}`);
-                setShowStartDateModal(false);
-              }}
-            >
-              <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* End Date Picker Modal */}
-      <Modal
-        visible={showEndDateModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowEndDateModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowEndDateModal(false)}
-        >
-          <View style={[styles.bottomSheetContent, { backgroundColor: colors.card }]}>
-            <View style={[styles.bottomSheetHandle, { backgroundColor: colors.border }]} />
-            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Select End Date</Text>
-
-            <View style={styles.timePickerContainer}>
-              {/* Day Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>DAY</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => (
-                    <TouchableOpacity
-                      key={d}
-                      style={[styles.timeSlot, tempDay === d && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempDay(d)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempDay === d && styles.timeSlotTextSelected]}>{d}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-
-              {/* Month Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>MONTH</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => (
-                    <TouchableOpacity
-                      key={m}
-                      style={[styles.timeSlot, tempMonth === m && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempMonth(m)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempMonth === m && styles.timeSlotTextSelected]}>{m}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-
-              {/* Year Column */}
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>YEAR</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {["2025", "2026", "2027", "2028", "2029", "2030"].map(y => (
-                    <TouchableOpacity
-                      key={y}
-                      style={[styles.timeSlot, tempYear === y && { backgroundColor: colors.primarySurface }]}
-                      onPress={() => setTempYear(y)}
-                    >
-                      <Text className="font-redditsans-medium" style={[styles.timeSlotText, { color: colors.textSecondary }, tempYear === y && styles.timeSlotTextSelected]}>{y}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            </View>
-
-            <TouchableOpacity
-
-              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
-              onPress={() => {
-                setEndDate(`${tempYear}-${tempMonth}-${tempDay}`);
-                setShowEndDateModal(false);
-              }}
-            >
-              <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
 
       {/* Custom Error Alert Modal */}
       <Modal
@@ -1145,6 +1013,134 @@ const CreateCustomHabit = () => {
             </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>
+      </Modal>
+
+      {/* Create Custom Category Modal */}
+      <Modal
+        visible={showNewCategoryModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowNewCategoryModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: colors.card, borderRadius: 24, width: '100%', maxWidth: 360, padding: 24 }}>
+            <Text style={{ color: colors.text, fontSize: 20, fontWeight: '700', marginBottom: 16 }}>
+              {t("create_habit.create_category_title", "New Category")}
+            </Text>
+
+            {/* Input Name */}
+            <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
+              {t("create_habit.category_name", "Category Name")}
+            </Text>
+            <TextInput
+              style={{
+                backgroundColor: colors.cardSecondary,
+                color: colors.text,
+                borderRadius: 12,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 16,
+                marginBottom: 16,
+                borderWidth: 1,
+                borderColor: colors.border
+              }}
+              placeholder={t("create_habit.category_name_placeholder", "e.g. Reading")}
+              placeholderTextColor={colors.textSecondary}
+              value={newCategoryName}
+              onChangeText={setNewCategoryName}
+            />
+
+            {/* Select Emoji/Icon */}
+            <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
+              {t("create_habit.category_icon", "Icon / Emoji")}
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
+              {["📦", "💧", "💪", "🧠", "⚡", "💰", "🧘", "🤝", "🎨", "📚", "✍️", "🏡", "🍎", "⏰"].map(emoji => (
+                <TouchableOpacity
+                  key={emoji}
+                  onPress={() => setNewCategoryIcon(emoji)}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: newCategoryIcon === emoji ? colors.primary + '30' : colors.cardSecondary,
+                    borderWidth: 1.5,
+                    borderColor: newCategoryIcon === emoji ? colors.primary : 'transparent'
+                  }}
+                >
+                  <Text style={{ fontSize: 20 }}>{emoji}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Select Color */}
+            <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
+              {t("create_habit.category_color", "Theme Color")}
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
+              {["#64748b", "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#a855f7", "#ec4899", "#6366f1"].map(color => (
+                <TouchableOpacity
+                  key={color}
+                  onPress={() => setNewCategoryColor(color)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: color,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 2,
+                    borderColor: newCategoryColor === color ? colors.text : 'transparent'
+                  }}
+                >
+                  {newCategoryColor === color && (
+                    <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF' }} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Action Buttons */}
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <TouchableOpacity
+                onPress={() => setShowNewCategoryModal(false)}
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.cardSecondary,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  alignItems: 'center'
+                }}
+              >
+                <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
+                  {t("common.cancel")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCreateCategory}
+                disabled={isCreatingCategory}
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.primary,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  opacity: isCreatingCategory ? 0.7 : 1
+                }}
+              >
+                {isCreatingCategory ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '600' }}>
+                    {t("common.create", "Create")}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -1204,6 +1200,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
   },
   categoryText: {
     fontSize: 14,

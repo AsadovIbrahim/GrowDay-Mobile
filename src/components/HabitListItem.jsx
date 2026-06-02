@@ -1,15 +1,50 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useRef } from "react";
+import { View, Text, TouchableOpacity, Pressable, Animated } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClock, faChevronRight, faCheckSquare, faSquare, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faCheck, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { getTranslatedHabit } from "../utils/habitTranslations";
+import { getTranslatedHabit, getTranslatedCategory } from "../utils/habitTranslations";
+
+const CATEGORY_ICON_MAP = {
+  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+};
+
+const getCategoryIcon = (iconKey) => {
+  if (!iconKey) return '⭐';
+  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+};
 
 const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelectionMode, onLongPress, showStatus }) => {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const { colors } = theme;
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleValue, {
+      toValue: 0.985,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 10,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 10,
+    }).start();
+  };
+
   const formatTime = (timeValue) => {
     if (!timeValue) return '';
     try {
@@ -52,95 +87,232 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
   // Get habit frequency/type
   const habitType = habit.frequency || habit.frequencyType || habit.type || 'Daily';
-  const displayType = habitType.charAt(0).toUpperCase() + habitType.slice(1).toLowerCase();
   
   const isCompleted = showStatus && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
   
-  // Get icon based on habit title or icon property
-  
-
   const handlePress = () => {
     if (isSelectionMode) {
-      // In selection mode, toggle selection
       onToggleSelect && onToggleSelect();
     } else {
-      // Normal mode, handle normal press
       onPress && onPress();
     }
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       onPress={handlePress}
       onLongPress={onLongPress}
-      className={`rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2' : ''} ${isCompleted ? 'opacity-80' : ''}`}
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: isCompleted ? 0 : 2 },
-        shadowOpacity: isCompleted ? 0 : 0.1,
-        shadowRadius: 4,
-        elevation: isCompleted ? 0 : 3,
-        backgroundColor: isCompleted ? colors.primarySurface : colors.card,
-        borderColor: isSelected ? colors.primary : 'transparent'
-      }}
     >
-      {/* Checkbox - Only visible in selection mode */}
-      {isSelectionMode && (
-        <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation();
-            onToggleSelect && onToggleSelect();
-          }}
-          className="mr-3"
-          activeOpacity={0.7}
-        >
-          <FontAwesomeIcon
-            icon={isSelected ? faCheckSquare : faSquare}
-            color={isSelected ? colors.primary : colors.textSecondary}
-            size={24}
-          />
-        </TouchableOpacity>
-      )}
-
-      {/* Icon */}
-      <View 
-        className="w-12 h-12 rounded-full items-center justify-center mr-4"
-        style={{ backgroundColor: isCompleted ? colors.primarySurface : colors.cardSecondary }}
+      <Animated.View
+        className={`rounded-xl p-4 mb-3 flex-row items-center ${isSelected ? 'border-2' : ''} ${isCompleted ? 'opacity-80' : ''}`}
+        style={{
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: isCompleted ? 0 : 2 },
+          shadowOpacity: isCompleted ? 0 : 0.1,
+          shadowRadius: 4,
+          elevation: isCompleted ? 0 : 3,
+          backgroundColor: isCompleted ? colors.primarySurface : colors.card,
+          borderColor: isSelected 
+            ? colors.primary 
+            : (isCompleted ? colors.primary + '30' : colors.border + '15'),
+          borderWidth: isSelected ? 2 : 1,
+          transform: [{ scale: scaleValue }],
+        }}
       >
-        {isCompleted ? (
-          <FontAwesomeIcon icon={faCheck} color={colors.primary} size={20} />
-        ) : (
-          <Text className="text-2xl">{ICONS[habit.icon]}</Text>
+        {/* Selection Checkbox (Circular, Custom-designed for Play Store level look) */}
+        {isSelectionMode && (
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              onToggleSelect && onToggleSelect();
+            }}
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: 11,
+              borderWidth: isSelected ? 0 : 2,
+              borderColor: isSelected ? 'transparent' : colors.textSecondary + '60',
+              backgroundColor: isSelected ? colors.primary : 'transparent',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 12,
+            }}
+            activeOpacity={0.7}
+          >
+            {isSelected && (
+              <FontAwesomeIcon
+                icon={faCheck}
+                color="#FFFFFF"
+                size={11}
+              />
+            )}
+          </TouchableOpacity>
         )}
-      </View>
 
-      {/* Title and Type */}
-      <View className="flex-1">
-        <Text className="text-base font-redditsans-medium mb-1" style={{ color: colors.text }}>
-          {getTranslatedHabit(habit, i18n.language, t).title}
-        </Text>
-        <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
-          {isCompleted ? t('common.completed') : t(`my_habits.filters.${habitType.toLowerCase()}`)}
-        </Text>
-      </View>
+        {/* Icon (With Absolute Corner Checkmark Badge if Completed) */}
+        <View 
+          style={{ 
+            width: 46,
+            height: 46,
+            borderRadius: 23,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 14,
+            backgroundColor: isCompleted ? (colors.primary + '15') : colors.cardSecondary,
+            borderWidth: isCompleted ? 1.5 : 1,
+            borderColor: isCompleted ? colors.primary + '40' : colors.border + '10',
+            position: 'relative'
+          }}
+        >
+          <Text style={{ fontSize: 22 }}>{ICONS[habit.icon] || '⭐'}</Text>
+          
+          {isCompleted && (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: -2,
+                right: -2,
+                width: 18,
+                height: 18,
+                borderRadius: 9,
+                backgroundColor: colors.primary,
+                borderWidth: 1.5,
+                borderColor: isCompleted ? colors.primarySurface : colors.card,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <FontAwesomeIcon icon={faCheck} color="#FFFFFF" size={9} />
+            </View>
+          )}
+        </View>
 
-      {/* Time and Arrow */}
-      <View className="flex-row items-center gap-2">
-        {formattedTime && (
-          <View className="flex-row items-center gap-1">
-            <FontAwesomeIcon icon={faClock} color={colors.textSecondary} size={14} />
-            <Text className="text-sm font-redditsans-regular" style={{ color: colors.textSecondary }}>
-              {formattedTime}
-            </Text>
+        {/* Title and Metadata */}
+        <View style={{ flex: 1 }}>
+          <Text 
+            className="text-[16px] font-redditsans-bold mb-1" 
+            style={{ 
+              color: isCompleted ? colors.textSecondary : colors.text, 
+              lineHeight: 20 
+            }} 
+            numberOfLines={1}
+          >
+            {getTranslatedHabit(habit, i18n.language, t).title}
+          </Text>
+          
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 8, rowGap: 4 }}>
+            {/* Status / Frequency Pill */}
+            <View
+              style={{
+                backgroundColor: isCompleted 
+                  ? colors.primary + '15' 
+                  : (showStatus ? '#eab30815' : colors.cardSecondary),
+                paddingHorizontal: 6,
+                paddingVertical: 1,
+                borderRadius: 6,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text 
+                className="font-redditsans-bold"
+                style={{ 
+                  fontSize: 11,
+                  color: isCompleted 
+                    ? colors.primary 
+                    : (showStatus ? '#eab308' : colors.textSecondary) 
+                }}
+              >
+                {isCompleted 
+                  ? `✓ ${t('common.completed', 'Completed')}` 
+                  : (showStatus 
+                      ? `⏳ ${t('my_habits.filters.due_today', 'Due Today')}` 
+                      : t(`my_habits.filters.${habitType.toLowerCase()}`)
+                    )
+                }
+              </Text>
+            </View>
+            
+            {/* Category Pill */}
+            {habit.categoryDetails && (
+              <View 
+                style={{
+                  backgroundColor: (habit.categoryDetails.color || '#3b82f6') + '15',
+                  paddingHorizontal: 6,
+                  paddingVertical: 1,
+                  borderRadius: 6,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 3
+                }}
+              >
+                <Text style={{ fontSize: 11 }}>{getCategoryIcon(habit.categoryDetails.icon)}</Text>
+                <Text 
+                  className="font-redditsans-bold"
+                  style={{ 
+                    color: habit.categoryDetails.color || '#3b82f6', 
+                    fontSize: 11
+                  }}
+                  numberOfLines={1}
+                >
+                  {getTranslatedCategory(habit.categoryDetails, i18n.language, t)}
+                </Text>
+              </View>
+            )}
+
+            {/* Streak Pill */}
+            {habit.currentStreak > 0 && (
+              <View 
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  backgroundColor: '#f59e0b15', 
+                  paddingHorizontal: 6, 
+                  paddingVertical: 1, 
+                  borderRadius: 6,
+                  gap: 3 
+                }}
+              >
+                <Text style={{ fontSize: 11 }}>🔥</Text>
+                <Text className="font-redditsans-bold" style={{ fontSize: 11, color: '#f59e0b' }}>
+                  {habit.currentStreak}
+                </Text>
+              </View>
+            )}
+
+            {/* Time Pill */}
+            {formattedTime && (
+              <View 
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  backgroundColor: colors.cardSecondary,
+                  paddingHorizontal: 6,
+                  paddingVertical: 1,
+                  borderRadius: 6,
+                  gap: 3 
+                }}
+              >
+                <FontAwesomeIcon icon={faClock} color={colors.textSecondary} size={9} />
+                <Text className="font-redditsans-medium" style={{ fontSize: 11, color: colors.textSecondary }}>
+                  {formattedTime}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Right side: Chevron */}
+        {!isSelectionMode && (
+          <View style={{ marginLeft: 8 }}>
+            <FontAwesomeIcon icon={faChevronRight} color={colors.textSecondary} size={13} style={{ opacity: 0.4 }} />
           </View>
         )}
-        {!isSelectionMode && (
-          <FontAwesomeIcon icon={faChevronRight} color={colors.textSecondary} size={14} />
-        )}
-      </View>
-    </TouchableOpacity>
+      </Animated.View>
+    </Pressable>
   );
 };
 
 export default HabitListItem;
-

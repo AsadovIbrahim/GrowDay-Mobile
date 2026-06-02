@@ -24,7 +24,7 @@ const Statistics = () => {
   const { t, i18n } = useTranslation();
   const [token] = useMMKVString('accessToken');
 
-  const [activeTab, setActiveTab] = useState('weekly'); 
+  const [activeTab, setActiveTab] = useState('weekly');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState(null);
@@ -32,11 +32,11 @@ const Statistics = () => {
   const [isYearPickerVisible, setYearPickerVisible] = useState(false);
   const [points, setPoints] = useState(0);
 
-  
+
   // Production best practice: Show years from app launch year (e.g. 2024) up to current year
   const currentYear = new Date().getFullYear();
   const startYear = 2024; // You can change this to the user's registration year if available
-  const yearsList = Array.from({length: Math.max(1, currentYear - startYear + 1)}, (_, i) => currentYear - i);
+  const yearsList = Array.from({ length: Math.max(1, currentYear - startYear + 1) }, (_, i) => currentYear - i);
 
   // Animation shared values
   const progressValue = useSharedValue(0);
@@ -164,7 +164,7 @@ const Statistics = () => {
     else if (activeTab === 'weekly') newDate.setDate(selectedDate.getDate() + 7);
     else if (activeTab === 'monthly') newDate.setMonth(selectedDate.getMonth() + 1);
     else newDate.setFullYear(selectedDate.getFullYear() + 1);
-    
+
     if (newDate > new Date()) return;
     setSelectedDate(newDate);
   };
@@ -234,7 +234,7 @@ const Statistics = () => {
           </Svg>
           <View className="absolute items-center">
             <Animated.Text style={{ color: colors.text }} className="text-4xl font-redditsans-bold">
-               {Math.round(stats?.completionRate || 0)}%
+              {Math.round(stats?.completionRate || 0)}%
             </Animated.Text>
             <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-medium">
               {label}
@@ -251,7 +251,7 @@ const Statistics = () => {
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 pt-2 mb-6">
           <View className="flex-row items-center">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigation.goBack()}
               className="w-10 h-10 rounded-full items-center justify-center mr-4 shadow-sm"
               style={{ backgroundColor: colors.card }}
@@ -277,7 +277,7 @@ const Statistics = () => {
                 setSelectedDate(new Date());
               }}
               className="flex-1 py-3 items-center rounded-xl"
-              style={{ 
+              style={{
                 backgroundColor: activeTab === tab ? colors.primary : 'transparent',
                 elevation: activeTab === tab ? 4 : 0,
                 shadowColor: colors.primary,
@@ -286,7 +286,7 @@ const Statistics = () => {
                 shadowRadius: 4
               }}
             >
-              <Text 
+              <Text
                 className={`font-redditsans-bold text-xs ${activeTab === tab ? 'text-white' : ''}`}
                 style={{ color: activeTab === tab ? '#FFF' : colors.textSecondary }}
               >
@@ -296,7 +296,7 @@ const Statistics = () => {
           ))}
         </View>
 
-        <ScrollView 
+        <ScrollView
           className="flex-1 px-5"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
@@ -309,7 +309,7 @@ const Statistics = () => {
             <TouchableOpacity onPress={handlePrev} className="w-10 h-10 items-center justify-center rounded-full" style={{ backgroundColor: colors.backgroundGradient[0] }}>
               <FontAwesomeIcon icon={faChevronLeft} color={colors.primary} size={16} />
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 if (activeTab === 'yearly' || activeTab === 'monthly') {
                   setYearPickerVisible(true);
@@ -321,16 +321,16 @@ const Statistics = () => {
                 {getHeaderText()}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={handleNext} 
+            <TouchableOpacity
+              onPress={handleNext}
               className="w-10 h-10 items-center justify-center rounded-full"
               style={{ backgroundColor: selectedDate < new Date() ? colors.backgroundGradient[0] : 'transparent' }}
               disabled={selectedDate.toDateString() === new Date().toDateString()}
             >
-              <FontAwesomeIcon 
-                icon={faChevronRight} 
-                color={selectedDate < new Date() ? colors.primary : colors.textMuted} 
-                size={16} 
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                color={selectedDate < new Date() ? colors.primary : colors.textMuted}
+                size={16}
               />
             </TouchableOpacity>
           </View>
@@ -361,7 +361,7 @@ const Statistics = () => {
                 </View>
 
                 <View className="flex-1 p-5 rounded-3xl shadow-sm" style={{ backgroundColor: colors.card }}>
-                   <View className="flex-row justify-between items-start mb-4">
+                  <View className="flex-row justify-between items-start mb-4">
                     <View className="w-10 h-10 rounded-2xl items-center justify-center" style={{ backgroundColor: '#ef444420' }}>
                       <FontAwesomeIcon icon={faCalendarAlt} color="#ef4444" size={20} />
                     </View>
@@ -375,14 +375,14 @@ const Statistics = () => {
               {/* Advanced Insights */}
               <View className="p-6 rounded-3xl mb-6 shadow-sm" style={{ backgroundColor: colors.card }}>
                 <View className="flex-row items-center mb-6">
-                   <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#f59e0b20' }}>
-                      <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={16} />
-                   </View>
-                   <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                  <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#f59e0b20' }}>
+                    <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={16} />
+                  </View>
+                  <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
                     {t('statistics.performance_overview')}
                   </Text>
                 </View>
-                
+
                 <View className="space-y-6">
                   {/* Progress Bar Item */}
                   <View className="mb-6">
@@ -398,19 +398,19 @@ const Statistics = () => {
                       </Text>
                     </View>
                     <View className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <Animated.View 
-                        style={{ 
-                          width: `${stats.completionRate}%`, 
+                      <Animated.View
+                        style={{
+                          width: `${stats.completionRate}%`,
                           backgroundColor: colors.primary,
-                          height: '100%' 
-                        }} 
+                          height: '100%'
+                        }}
                       />
                     </View>
                   </View>
 
                   <View style={{ backgroundColor: colors.primary + '08' }} className="p-4 rounded-2xl border border-primary/10">
                     <Text style={{ color: colors.textSecondary }} className="text-sm italic font-redditsans-regular leading-6 text-center">
-                      {stats.completionRate >= 80 
+                      {stats.completionRate >= 80
                         ? t('statistics.keep_going')
                         : t('statistics.improve_hint')
                       }
@@ -462,17 +462,17 @@ const Statistics = () => {
 
               {/* Extra Summary Row */}
               <View className="flex-row gap-4 mb-6">
-                 <View className="flex-1 p-5 rounded-3xl flex-row items-center shadow-sm" style={{ backgroundColor: colors.card }}>
-                    <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: colors.primary + '15' }}>
-                       <FontAwesomeIcon icon={faChartBar} color={colors.primary} size={18} />
-                    </View>
-                    <View>
-                       <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider">{t('statistics.daily_average')}</Text>
-                       <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                          {activeTab === 'daily' ? '1.0' : (stats.completedCount / (activeTab === 'weekly' ? 7 : (activeTab === 'monthly' ? 30 : 365))).toFixed(1)}
-                       </Text>
-                    </View>
-                 </View>
+                <View className="flex-1 p-5 rounded-3xl flex-row items-center shadow-sm" style={{ backgroundColor: colors.card }}>
+                  <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: colors.primary + '15' }}>
+                    <FontAwesomeIcon icon={faChartBar} color={colors.primary} size={18} />
+                  </View>
+                  <View>
+                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider">{t('statistics.daily_average')}</Text>
+                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                      {activeTab === 'daily' ? '1.0' : (stats.completedCount / (activeTab === 'weekly' ? 7 : (activeTab === 'monthly' ? 30 : 365))).toFixed(1)}
+                    </Text>
+                  </View>
+                </View>
               </View>
 
             </>
@@ -493,58 +493,58 @@ const Statistics = () => {
         animationType="fade"
         onRequestClose={() => setYearPickerVisible(false)}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           className="flex-1 justify-center items-center bg-black/50"
           activeOpacity={1}
           onPress={() => setYearPickerVisible(false)}
         >
           <View className="rounded-3xl p-4 shadow-lg" style={{ backgroundColor: colors.card, width: activeTab === 'monthly' ? 260 : 256 }}>
             <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-4 text-center">
-              {activeTab === 'monthly' 
-                ? t('statistics.select_month', 'Ay seçin') 
+              {activeTab === 'monthly'
+                ? t('statistics.select_month', 'Ay seçin')
                 : t('statistics.select_year', 'İli seçin')}
             </Text>
-            
+
             <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>
               {activeTab === 'monthly'
                 ? t('calendar.monthNames', { returnObjects: true })?.map((monthName, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      className="py-3 items-center border-b border-gray-500/5"
-                      onPress={() => {
-                        const newDate = new Date(selectedDate);
-                        newDate.setMonth(index);
-                        setSelectedDate(newDate);
-                        setYearPickerVisible(false);
-                      }}
+                  <TouchableOpacity
+                    key={index}
+                    className="py-3 items-center border-b border-gray-500/5"
+                    onPress={() => {
+                      const newDate = new Date(selectedDate);
+                      newDate.setMonth(index);
+                      setSelectedDate(newDate);
+                      setYearPickerVisible(false);
+                    }}
+                  >
+                    <Text
+                      style={{ color: selectedDate.getMonth() === index ? colors.primary : colors.text }}
+                      className={`text-base ${selectedDate.getMonth() === index ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
                     >
-                      <Text 
-                        style={{ color: selectedDate.getMonth() === index ? colors.primary : colors.text }} 
-                        className={`text-base ${selectedDate.getMonth() === index ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
-                      >
-                        {monthName}
-                      </Text>
-                    </TouchableOpacity>
-                  ))
+                      {monthName}
+                    </Text>
+                  </TouchableOpacity>
+                ))
                 : yearsList.map((year) => (
-                    <TouchableOpacity
-                      key={year}
-                      className="py-3 items-center border-b border-gray-500/5"
-                      onPress={() => {
-                        const newDate = new Date(selectedDate);
-                        newDate.setFullYear(year);
-                        setSelectedDate(newDate);
-                        setYearPickerVisible(false);
-                      }}
+                  <TouchableOpacity
+                    key={year}
+                    className="py-3 items-center border-b border-gray-500/5"
+                    onPress={() => {
+                      const newDate = new Date(selectedDate);
+                      newDate.setFullYear(year);
+                      setSelectedDate(newDate);
+                      setYearPickerVisible(false);
+                    }}
+                  >
+                    <Text
+                      style={{ color: selectedDate.getFullYear() === year ? colors.primary : colors.text }}
+                      className={`text-base ${selectedDate.getFullYear() === year ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
                     >
-                      <Text 
-                        style={{ color: selectedDate.getFullYear() === year ? colors.primary : colors.text }} 
-                        className={`text-base ${selectedDate.getFullYear() === year ? 'font-redditsans-bold' : 'font-redditsans-medium'}`}
-                      >
-                        {year}
-                      </Text>
-                    </TouchableOpacity>
-                  ))
+                      {year}
+                    </Text>
+                  </TouchableOpacity>
+                ))
               }
             </ScrollView>
           </View>

@@ -25,7 +25,8 @@
     "confirm": "Bestätigen",
     "ad_loading": "Werbung wird geladen...",
     "level_short": "Lvl. {{level}}",
-    "oops": "Upps!"
+    "oops": "Upps!",
+    "create": "Erstellen"
   },
   "menu": {
     "home": "Startseite",
@@ -172,8 +173,17 @@
       "daily": "Täglich",
       "weekly": "Wöchentlich",
       "monthly": "Monatlich",
-      "custom": "Benutzerdefiniert"
-    }
+      "custom": "Benutzerdefiniert",
+      "all_categories": "Alle Kategorien",
+      "due_today": "Heute fällig"
+    },
+    "filters_title": "Filter",
+    "reset": "Zurücksetzen",
+    "frequency": "Häufigkeit",
+    "category": "Kategorie",
+    "apply_filters": "Filter anwenden",
+    "clear_all": "Alles löschen",
+    "active_filters": "Aktive Filter:"
   },
   "habit_details": {
     "header": "Gewohnheitsdetails",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} Min. Lesezeit",
     "unread": "Ungelesen",
     "read": "Gelesen",
-    "ai_disclaimer": "✨ Dieser personalisierte Lerninhalt wurde von einer KI basierend auf deinen Zielen und Vorlieben erstellt, um dir beim Wachsen zu helfen."
+    "ai_disclaimer": "✨ Dieser personalisierte Lerninhalt wurde von einer KI basierend auf deinen Zielen und Vorlieben erstellt, um dir beim Wachsen zu helfen.",
+    "suggested_habits_desc": "Von KI ausgewählte Gewohnheiten, die zu Ihrem Alltag passen",
+    "tasks_desc": "Erledigen Sie Aufgaben, um Ihr Level zu erhöhen und XP zu verdienen"
   },
   "tasks": {
     "header": "Meine Aufgaben",
@@ -282,11 +294,16 @@
     "delete_confirm": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?",
     "could_not_delete": "Aufgabe konnte nicht gelöscht werden.",
     "failed_to_delete": "Aufgabe konnte nicht gelöscht werden.",
-    "delete_action": "Löschen"
+    "delete_action": "Löschen",
+    "completed_stack": "Erledigte Aufgaben",
+    "collapse_stack": "Stapel verkleinern",
+    "completed_count": "Erledigt",
+    "tip_title": "Nützlicher Tipp",
+    "tip_desc": "Verdienen Sie XP durch das Erledigen von Aufgaben, erhöhen Sie Ihr Level und schalten Sie neue KI-Coach-Funktionen frei!"
   },
   "create_habit": {
     "header": "Benutzerdefinierte Gewohnheit erstellen",
-    "new_good_habit": "NEUE GUTE GEWOHNHEIT",
+    "new_good_habit": "PERSÖNLICHE GEWOHNHEITEN",
     "popular_habits": "BELIEBTE GEWOHNHEITEN",
     "create_custom": "Benutzerdefinierte Gewohnheit erstellen",
     "setup_suggested_habit": "Vorgeschlagene Gewohnheit einrichten",
@@ -328,7 +345,13 @@
     "minutes_per_session": "Minuten pro Sitzung",
     "standard_icons": "Standard-Symbole",
     "premium_icons": "Premium-Symbole 🌟",
-    "already_exists": "Diese Gewohnheit existiert bereits in deiner Liste."
+    "already_exists": "Diese Gewohnheit existiert bereits in deiner Liste.",
+    "create_category_title": "Neue Kategorie",
+    "category_name": "Kategoriename",
+    "category_name_placeholder": "z.B. Lesen",
+    "category_icon": "Symbol / Emoji",
+    "category_color": "Themenfarbe",
+    "new_category": "Neu"
   },
   "icons": {
     "run": "Laufen",

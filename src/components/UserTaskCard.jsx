@@ -42,15 +42,21 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
 
   const dueDateStr = task.dueDate
     ? new Date(task.dueDate).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+    })
     : null;
 
   const { title: displayTitle, desc: displayDesc } = getTranslatedTask(task, t);
 
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={isCompleted || isExpired || task.triggerType === 1 ? 1 : 0.8}
+      onPress={() => {
+        if (isCompleted || isExpired) return;
+        if (task.triggerType === 1) return; // Automated tasks cannot be manually completed
+        if (onComplete) onComplete(task.id);
+      }}
       className="rounded-[20px] p-5 mb-4"
       style={{
         backgroundColor: colors.card,
@@ -67,14 +73,8 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
       {/* Top Row */}
       <View className="flex-row items-start justify-between mb-3">
         {/* Complete button + title */}
-        <TouchableOpacity
-          onPress={() => {
-            if (isCompleted || isExpired) return;
-            if (task.triggerType === 1) return; // Automated tasks cannot be manually completed
-            if (onComplete) onComplete(task.id);
-          }}
+        <View
           className="flex-row items-start flex-1 mr-3"
-          activeOpacity={isCompleted || isExpired || task.triggerType === 1 ? 1 : 0.7}
         >
           <FontAwesomeIcon
             icon={isCompleted ? faCheckCircle : faCircle}
@@ -91,7 +91,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
           >
             {displayTitle}
           </Text>
-        </TouchableOpacity>
+        </View>
 
       </View>
 
@@ -141,7 +141,7 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
           </View>
         )}
 
-      {/* Due date */}
+        {/* Due date */}
         {dueDateStr && (
           <View
             className="flex-row items-center px-2.5 py-1 rounded-full"
@@ -174,18 +174,18 @@ const UserTaskCard = ({ task, onComplete, onDelete }) => {
             </Text>
           </View>
           <View className="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden" style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}>
-            <View 
-              className="h-full rounded-full" 
-              style={{ 
+            <View
+              className="h-full rounded-full"
+              style={{
                 width: `${Math.min(100, (task.currentValue / task.triggerValue) * 100)}%`,
-                backgroundColor: (task.currentValue / task.triggerValue) >= 1 ? '#22c55e' : colors.primary 
-              }} 
+                backgroundColor: (task.currentValue / task.triggerValue) >= 1 ? '#22c55e' : colors.primary
+              }}
             />
           </View>
-          
+
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 

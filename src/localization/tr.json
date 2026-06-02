@@ -25,7 +25,8 @@
     "confirm": "Onayla",
     "ad_loading": "Reklam yükleniyor...",
     "level_short": "Sv. {{level}}",
-    "oops": "Ups!"
+    "oops": "Ups!",
+    "create": "Oluştur"
   },
   "menu": {
     "home": "Ana Sayfa",
@@ -172,8 +173,17 @@
       "daily": "Günlük",
       "weekly": "Haftalık",
       "monthly": "Aylık",
-      "custom": "Özel"
-    }
+      "custom": "Özel",
+      "all_categories": "Tüm Kategoriler",
+      "due_today": "Bugün yapılacak"
+    },
+    "filters_title": "Filtreler",
+    "reset": "Sıfırla",
+    "frequency": "Sıklık",
+    "category": "Kategori",
+    "apply_filters": "Filtreleri Uygula",
+    "clear_all": "Hepsini Temizle",
+    "active_filters": "Aktif Filtreler:"
   },
   "habit_details": {
     "header": "Alışkanlık Detayı",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} dak okuma",
     "unread": "Okunmadı",
     "read": "Okundu",
-    "ai_disclaimer": "✨ Bu kişiselleştirilmiş öğrenme içeriği, gelişiminize yardımcı olmak için hedef ve tercihlerinize göre yapay zeka tarafından oluşturulmuştur."
+    "ai_disclaimer": "✨ Bu kişiselleştirilmiş öğrenme içeriği, gelişiminize yardımcı olmak için hedef ve tercihlerinize göre yapay zeka tarafından oluşturulmuştur.",
+    "suggested_habits_desc": "Yapay zeka tarafından günlük hayatınıza uyacak şekilde seçilen alışkanlıklar",
+    "tasks_desc": "Seviyenizi yükseltmek ve XP kazanmak için görevleri tamamlayın"
   },
   "tasks": {
     "header": "Görevlerim",
@@ -282,11 +294,16 @@
     "delete_confirm": "Bu görevi silmek istediğinize emin misiniz?",
     "could_not_delete": "Görev silinemedi.",
     "failed_to_delete": "Görev silinirken hata oluştu.",
-    "delete_action": "Sil"
+    "delete_action": "Sil",
+    "completed_stack": "Tamamlanan Görevler",
+    "collapse_stack": "Yığını Kapat",
+    "completed_count": "Tamamlandı",
+    "tip_title": "Faydalı İpucu",
+    "tip_desc": "Görevleri tamamlayarak XP kazanın, seviyenizi yükseltin ve yeni Yapay Zeka Koçu özelliklerinin kilidini açın!"
   },
   "create_habit": {
     "header": "Özel Alışkanlık Oluştur",
-    "new_good_habit": "YENİ İYİ ALIŞKANLIK",
+    "new_good_habit": "KİŞİSEL ALIŞKANLIKLAR",
     "popular_habits": "POPÜLER ALIŞKANLIKLAR",
     "create_custom": "Özel Alışkanlık Oluştur",
     "setup_suggested_habit": "Önerilen Alışkanlığı Kur",
@@ -328,7 +345,13 @@
     "minutes_per_session": "seans başına dakika",
     "standard_icons": "Standart İkonlar",
     "premium_icons": "Premium İkonlar 🌟",
-    "already_exists": "Bu alışkanlık listenizde zaten var!"
+    "already_exists": "Bu alışkanlık listenizde zaten var!",
+    "create_category_title": "Yeni Kategori",
+    "category_name": "Kategori Adı",
+    "category_name_placeholder": "örn. Kitap Okuma",
+    "category_icon": "Simge / Emoji",
+    "category_color": "Tema Rengi",
+    "new_category": "Yeni"
   },
   "icons": {
     "run": "Koşu",

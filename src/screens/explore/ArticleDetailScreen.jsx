@@ -11,6 +11,7 @@ import {
   Dimensions
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedCategory } from '../../utils/habitTranslations';
 import { useMMKVString } from 'react-native-mmkv';
 import { markLearningContentAsReadFetch } from '../../utils/fetch';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -26,7 +27,7 @@ const ArticleDetailScreen = () => {
   
   // Extract article data passed from Explore screen
   const { article } = route.params || {};
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { height } = Dimensions.get('window');
 
@@ -93,7 +94,7 @@ const ArticleDetailScreen = () => {
           />
           <View style={styles.imageOverlay}>
             <View style={[styles.categoryBadge, { backgroundColor: colors.primary }]}>
-              <Text style={styles.categoryText}>{article.category || 'General'}</Text>
+              <Text style={styles.categoryText}>{getTranslatedCategory(article.category || 'General', i18n.language, t)}</Text>
             </View>
           </View>
         </View>

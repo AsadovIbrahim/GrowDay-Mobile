@@ -85,7 +85,7 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "", t }) => {
             if (!task) return;
 
             const isCurrentlyCompleted = task.status === "Completed";
-            
+
             if (!isCurrentlyCompleted) {
                 // Mark as completed
                 const res = await completeUserTaskFetch(token, taskId);
@@ -156,8 +156,8 @@ const UserTasksList = ({ maxItems = 3, searchQuery = "", t }) => {
                     onComplete={handleToggleStatus}
                 />
             ))}
-            
-            <CelebrationModal 
+
+            <CelebrationModal
                 visible={celebrationVisible}
                 taskData={completedTaskData}
                 onClose={() => setCelebrationVisible(false)}

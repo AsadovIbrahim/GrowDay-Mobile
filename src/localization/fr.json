@@ -25,7 +25,8 @@
     "confirm": "Confirmer",
     "ad_loading": "Chargement de la publicité...",
     "level_short": "Niv. {{level}}",
-    "oops": "Oups !"
+    "oops": "Oups !",
+    "create": "Créer"
   },
   "menu": {
     "home": "Accueil",
@@ -172,8 +173,17 @@
       "daily": "Quotidien",
       "weekly": "Hebdomadaire",
       "monthly": "Mensuel",
-      "custom": "Personnalisé"
-    }
+      "custom": "Personnalisé",
+      "all_categories": "Toutes les catégories",
+      "due_today": "À faire aujourd'hui"
+    },
+    "filters_title": "Filtres",
+    "reset": "Réinitialiser",
+    "frequency": "Fréquence",
+    "category": "Catégorie",
+    "apply_filters": "Appliquer les filtres",
+    "clear_all": "Tout effacer",
+    "active_filters": "Filtres actifs :"
   },
   "habit_details": {
     "header": "Détails de l'habitude",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} min de lecture",
     "unread": "Non lu",
     "read": "Lu",
-    "ai_disclaimer": "✨ Ce contenu d'apprentissage personnalisé a été généré par l'IA en fonction de vos objectifs et préférences pour vous aider à progresser aujourd'hui."
+    "ai_disclaimer": "✨ Ce contenu d'apprentissage personnalisé a été généré par l'IA en fonction de vos objectifs et préférences pour vous aider à progresser aujourd'hui.",
+    "suggested_habits_desc": "Habitudes sélectionnées par l'IA adaptées à votre vie quotidienne",
+    "tasks_desc": "Complétez des tâches pour augmenter votre niveau et gagner des XP"
   },
   "tasks": {
     "header": "Mes Tâches",
@@ -282,11 +294,16 @@
     "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
     "could_not_delete": "Impossible de supprimer la tâche.",
     "failed_to_delete": "Échec de la suppression de la tâche.",
-    "delete_action": "Supprimer"
+    "delete_action": "Supprimer",
+    "completed_stack": "Tâches Terminées",
+    "collapse_stack": "Réduire la Pile",
+    "completed_count": "Terminée",
+    "tip_title": "Conseil utile",
+    "tip_desc": "Gagnez des XP en accomplissant des tâches, augmentez votre niveau et débloquez de nouvelles fonctionnalités du Coach IA !"
   },
   "create_habit": {
     "header": "Créer une habitude personnalisée",
-    "new_good_habit": "NOUVELLE BONNE HABITUDE",
+    "new_good_habit": "HABITUDES PERSONNELLES",
     "popular_habits": "HABITUDES POPULAIRES",
     "create_custom": "Créer une habitude personnalisée",
     "setup_suggested_habit": "Configurer une habitude suggérée",
@@ -328,7 +345,13 @@
     "minutes_per_session": "minutes par séance",
     "standard_icons": "Icônes Standards",
     "premium_icons": "Icônes Premium 🌟",
-    "already_exists": "Cette habitude existe déjà dans votre liste."
+    "already_exists": "Cette habitude existe déjà dans votre liste.",
+    "create_category_title": "Nouvelle catégorie",
+    "category_name": "Nom de la catégorie",
+    "category_name_placeholder": "ex: Lecture",
+    "category_icon": "Icône / Émoticône",
+    "category_color": "Couleur du thème",
+    "new_category": "Nouveau"
   },
   "icons": {
     "run": "Courir",

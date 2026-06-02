@@ -25,7 +25,8 @@
     "confirm": "Təsdiq et",
     "ad_loading": "Reklam yüklənir...",
     "level_short": "Sv. {{level}}",
-    "oops": "Ups!"
+    "oops": "Ups!",
+    "create": "Yarat"
   },
   "menu": {
     "home": "Ana Səhifə",
@@ -172,8 +173,17 @@
       "daily": "Gündəlik",
       "weekly": "Həftəlik",
       "monthly": "Aylıq",
-      "custom": "Xüsusi"
-    }
+      "custom": "Xüsusi",
+      "all_categories": "Bütün kateqoriyalar",
+      "due_today": "Bu gün edilməli"
+    },
+    "filters_title": "Filtrlər",
+    "reset": "Sıfırla",
+    "frequency": "Tezlik",
+    "category": "Kateqoriya",
+    "apply_filters": "Filtrləri tətbiq et",
+    "clear_all": "Hamısını təmizlə",
+    "active_filters": "Aktiv filtrlər:"
   },
   "habit_details": {
     "header": "Vərdiş Detalı",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} dəq oxuma",
     "unread": "Oxunmayıb",
     "read": "Oxunub",
-    "ai_disclaimer": "✨ Bu fərdiləşdirilmiş öyrənmə məzmunu inkişafınıza kömək etmək üçün məqsəd və üstünlüklərinizə əsasən süni intellekt tərəfindən yaradılmışdır."
+    "ai_disclaimer": "✨ Bu fərdiləşdirilmiş öyrənmə məzmunu inkişafınıza kömək etmək üçün məqsəd və üstünlüklərinizə əsasən süni intellekt tərəfindən yaradılmışdır.",
+    "suggested_habits_desc": "Süni intellekt tərəfindən gündəlik həyatınıza uyğun seçilmiş vərdişlər",
+    "tasks_desc": "Səviyyənizi artırmaq və XP qazanmaq üçün tapşırıqları tamamlayın"
   },
   "tasks": {
     "header": "Tapşırıqlarım",
@@ -282,11 +294,16 @@
     "delete_confirm": "Bu tapşırığı silmək istədiyinizdən əminsiniz?",
     "could_not_delete": "Tapşırığı silmək mümkün olmadı.",
     "failed_to_delete": "Tapşırığın silinməsi zamanı xəta baş verdi.",
-    "delete_action": "Sil"
+    "delete_action": "Sil",
+    "completed_stack": "Tamamlanmış Tapşırıqlar",
+    "collapse_stack": "Yığcamlaşdır",
+    "completed_count": "Tamamlandı",
+    "tip_title": "Faydalı məsləhət",
+    "tip_desc": "Tapşırıqları tamamlayaraq XP qazanın, səviyyənizi (Level) artırın və AI Məşqçisinin yeni xüsusiyyətlərini açın!"
   },
   "create_habit": {
     "header": "Xüsusi Vərdiş Yarat",
-    "new_good_habit": "YENİ YAXŞI VƏRDİŞ",
+    "new_good_habit": "ŞƏXSİ VƏRDİŞLƏR",
     "popular_habits": "POPULYAR VƏRDİŞLƏR",
     "create_custom": "Xüsusi Vərdiş Yarat",
     "setup_suggested_habit": "Təklif Olunan Vərdişi Qur",
@@ -328,7 +345,13 @@
     "minutes_per_session": "seans başına dəqiqə",
     "standard_icons": "Standart İkonlar",
     "premium_icons": "Premium İkonlar 🌟",
-    "already_exists": "Bu vərdiş sizdə artıq mövcuddur!"
+    "already_exists": "Bu vərdiş sizdə artıq mövcuddur!",
+    "create_category_title": "Yeni Kateqoriya",
+    "category_name": "Kateqoriya Adı",
+    "category_name_placeholder": "məs: Mütaliə",
+    "category_icon": "İkon / Emoji",
+    "category_color": "Tema Rəngi",
+    "new_category": "Yeni"
   },
   "icons": {
     "run": "Qaçış",

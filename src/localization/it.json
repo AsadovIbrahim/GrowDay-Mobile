@@ -25,7 +25,8 @@
     "confirm": "Conferma",
     "ad_loading": "Caricamento annuncio...",
     "level_short": "Liv. {{level}}",
-    "oops": "Ops!"
+    "oops": "Ops!",
+    "create": "Crea"
   },
   "menu": {
     "home": "Home",
@@ -172,8 +173,17 @@
       "daily": "Giornaliero",
       "weekly": "Settimanale",
       "monthly": "Mensile",
-      "custom": "Personalizzato"
-    }
+      "custom": "Personalizzato",
+      "all_categories": "Tutte le categorie",
+      "due_today": "Da fare oggi"
+    },
+    "filters_title": "Filtri",
+    "reset": "Reimposta",
+    "frequency": "Frequenza",
+    "category": "Categoria",
+    "apply_filters": "Applica filtri",
+    "clear_all": "Cancella tutto",
+    "active_filters": "Filtri attivi:"
   },
   "habit_details": {
     "header": "Dettagli abitudine",
@@ -252,7 +262,9 @@
     "read_time": "{{count}} min di lettura",
     "unread": "Non letto",
     "read": "Letto",
-    "ai_disclaimer": "✨ Questo contenuto di apprendimento personalizzato è stato generato dall'IA in base ai tuoi obiettivi e preferenze per aiutarti a crescere oggi."
+    "ai_disclaimer": "✨ Questo contenuto di apprendimento personalizzato è stato generato dall'IA in base ai tuoi obiettivi e preferenze per aiutarti a crescere oggi.",
+    "suggested_habits_desc": "Abitudini selezionate dall'IA su misura per la tua vita quotidiana",
+    "tasks_desc": "Completa le attività per aumentare il tuo livello e guadagnare XP"
   },
   "tasks": {
     "header": "Le mie Attività",
@@ -282,11 +294,16 @@
     "delete_confirm": "Sei sicuro de voler eliminare questa attività?",
     "could_not_delete": "Impossibile eliminare l'attività.",
     "failed_to_delete": "Impossibile eliminare l'attività.",
-    "delete_action": "Elimina"
+    "delete_action": "Elimina",
+    "completed_stack": "Attività Completate",
+    "collapse_stack": "Riduci pila",
+    "completed_count": "Completata",
+    "tip_title": "Consiglio utile",
+    "tip_desc": "Guadagna XP completando le attività, aumenta il tuo livello e sblocca nuove funzionalità del Coach IA!"
   },
   "create_habit": {
     "header": "Crea abitudine personalizzata",
-    "new_good_habit": "NUOVA BUONA ABITUDINE",
+    "new_good_habit": "ABITUDINI PERSONALI",
     "popular_habits": "ABITUDINI POPOLARI",
     "create_custom": "Crea abitudine personalizzata",
     "setup_suggested_habit": "Configura abitudine suggerita",
@@ -328,7 +345,13 @@
     "minutes_per_session": "minuti per sessione",
     "standard_icons": "Icone Standard",
     "premium_icons": "Icone Premium 🌟",
-    "already_exists": "Questa abitudine esiste già nella tua lista."
+    "already_exists": "Questa abitudine esiste già nella tua lista.",
+    "create_category_title": "Nuova categoria",
+    "category_name": "Nome della categoria",
+    "category_name_placeholder": "es. Lettura",
+    "category_icon": "Icona / Emoji",
+    "category_color": "Colore del tema",
+    "new_category": "Nuova"
   },
   "icons": {
     "run": "Corsa",

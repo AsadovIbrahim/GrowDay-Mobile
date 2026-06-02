@@ -128,6 +128,7 @@ const Home = () => {
   useFocusEffect(
     useCallback(() => {
       fetchAllData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, selectedDateObject])
   );
 
@@ -402,18 +403,15 @@ const Home = () => {
           <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
         </TouchableOpacity>
 
-        <View className="flex-row items-center gap-3">
-          <View className="relative">
-            <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
-              <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
-            </TouchableOpacity>
-            {unreadNotificationCount > 0 && (
-              <View style={{ backgroundColor: colors.danger, borderColor: colors.card }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center border-2">
-                <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
-              </View>
-            )}
-          </View>
-
+        <View className="relative">
+          <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
+            <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
+          </TouchableOpacity>
+          {unreadNotificationCount > 0 && (
+            <View style={{ backgroundColor: colors.danger, borderColor: colors.card }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center border-2">
+              <Text className="text-white text-xs font-redditsans-bold">{unreadNotificationCount}</Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -604,7 +602,7 @@ const Home = () => {
           </>
         )}
       </ScrollView>
-    </LinearGradient>
+    </LinearGradient >
   );
 };
 

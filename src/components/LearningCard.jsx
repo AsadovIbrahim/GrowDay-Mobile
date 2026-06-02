@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedCategory } from '../utils/habitTranslations';
 import categoryMapping from '../constants/categoryMapping.json';
 
 // Verified fallback images per category — used when remote image fails
@@ -19,7 +20,7 @@ const FALLBACKS = {
 const LearningCard = ({ title, image, category, onPress }) => {
   const { theme } = useTheme();
   const { colors } = theme;
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError,   setImageError]   = useState(false);
@@ -69,7 +70,7 @@ const LearningCard = ({ title, image, category, onPress }) => {
         {/* Subtle category badge */}
         {category && (
           <View style={[styles.badge, { backgroundColor: colors.primary + 'CC' }]}>
-            <Text style={styles.badgeText}>{category}</Text>
+            <Text style={styles.badgeText}>{getTranslatedCategory(category, i18n.language, t)}</Text>
           </View>
         )}
       </View>
