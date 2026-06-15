@@ -114,7 +114,7 @@ export default function StroopGameScreen() {
   const [lastCorrect, setLastCorrect] = useState(null); // true | false
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  
+
   const [difficultyModalVisible, setDifficultyModalVisible] = useState(false);
   const [activeDifficulty, setActiveDifficulty] = useState({ id: 'medium', mult: 1 });
 
@@ -166,10 +166,10 @@ export default function StroopGameScreen() {
 
   const startGame = (diff) => {
     setActiveDifficulty(diff);
-    
+
     let startLives = 3;
     let startTime = 30;
-    
+
     if (diff.id === 'easy') { startTime = 45; startLives = 5; }
     else if (diff.id === 'medium') { startTime = 30; startLives = 3; }
     else if (diff.id === 'hard') { startTime = 20; startLives = 1; }
@@ -220,7 +220,7 @@ export default function StroopGameScreen() {
       if (newStreak === 3) triggerToast("🔥 " + t("games.toast_start", "Yaxşı başlanğıc! 🎯"));
       if (newStreak === 5) triggerToast("⚡ " + t("games.toast_doing_great", "Əla gedirsən! 🔥"));
       if (newStreak === 10) triggerToast("🧠 " + t("games.toast_genius", "Sən dahisən! 🏆"));
-      
+
       setGameState("feedback");
       setTimeout(() => {
         setLastCorrect(null);
@@ -231,7 +231,7 @@ export default function StroopGameScreen() {
       setStreak(0);
       const remainingLives = lives - 1;
       setLives(remainingLives);
-      
+
       setGameState("feedback");
       setTimeout(() => {
         setLastCorrect(null);
@@ -286,8 +286,8 @@ export default function StroopGameScreen() {
           >
             <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
           </TouchableOpacity>
-          <Text 
-            className="flex-1 text-center mx-2 text-lg font-redditsans-bold" 
+          <Text
+            className="flex-1 text-center mx-2 text-lg font-redditsans-bold"
             style={{ color: colors.text }}
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -299,10 +299,10 @@ export default function StroopGameScreen() {
             className="w-10 h-10 rounded-full items-center justify-center"
             style={{ backgroundColor: colors.cardSecondary }}
           >
-            <FontAwesomeIcon 
-              icon={isSoundEnabled ? faVolumeHigh : faVolumeMute} 
-              size={18} 
-              color={isSoundEnabled ? colors.primary : colors.textSecondary} 
+            <FontAwesomeIcon
+              icon={isSoundEnabled ? faVolumeHigh : faVolumeMute}
+              size={18}
+              color={isSoundEnabled ? colors.primary : colors.textSecondary}
             />
           </TouchableOpacity>
         </View>
@@ -379,8 +379,8 @@ export default function StroopGameScreen() {
               {/* The Word Card */}
               {(() => {
                 const isRotated = round.transform && round.transform.some(t => t.rotate === "90deg" || t.rotate === "-90deg");
-                const fontSize = isRotated 
-                  ? (round.word.length > 8 ? 28 : 34) 
+                const fontSize = isRotated
+                  ? (round.word.length > 8 ? 28 : 34)
                   : (round.word.length > 8 ? 36 : 44);
                 const cardHeight = activeDifficulty?.id === "expert" ? 220 : 180;
 
@@ -509,10 +509,10 @@ export default function StroopGameScreen() {
           </Animated.View>
         ) : null}
       </SafeAreaView>
-      <GameDifficultyModal 
-        visible={difficultyModalVisible} 
-        onClose={() => setDifficultyModalVisible(false)} 
-        onSelect={startGame} 
+      <GameDifficultyModal
+        visible={difficultyModalVisible}
+        onClose={() => setDifficultyModalVisible(false)}
+        onSelect={startGame}
       />
     </LinearGradient>
   );

@@ -75,7 +75,7 @@ export default function SequenceGameScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  
+
   const [difficultyModalVisible, setDifficultyModalVisible] = useState(false);
   const [activeDifficulty, setActiveDifficulty] = useState({ id: 'medium', mult: 1 });
   const [gridSize, setGridSize] = useState(9); // Default 3x3
@@ -132,7 +132,7 @@ export default function SequenceGameScreen() {
           activeSoundsRef.current = activeSoundsRef.current.filter(s => s !== sfx);
         });
       } else {
-        try { sfx.release(); } catch (_) {}
+        try { sfx.release(); } catch (_) { }
         activeSoundsRef.current = activeSoundsRef.current.filter(s => s !== sfx);
       }
     });
@@ -144,7 +144,7 @@ export default function SequenceGameScreen() {
     return () => {
       isMountedRef.current = false;
       activeSoundsRef.current.forEach(s => {
-        try { s.stop(); s.release(); } catch (_) {}
+        try { s.stop(); s.release(); } catch (_) { }
       });
       activeSoundsRef.current = [];
       if (activeTimeoutRef.current) clearTimeout(activeTimeoutRef.current);
@@ -158,7 +158,7 @@ export default function SequenceGameScreen() {
       newGridSize = 16;
     }
     setGridSize(newGridSize);
-    
+
     setLevel(1);
     setScore(0);
     setSubmitted(false);
@@ -195,7 +195,7 @@ export default function SequenceGameScreen() {
   const flashTile = (tileIndex, duration = 500) => {
     return new Promise((resolve) => {
       setActiveTile(tileIndex);
-      playSound('click.mp3');
+      playSound('tap.mp3');
       activeTimeoutRef.current = setTimeout(() => {
         setActiveTile(null);
         resolve();
@@ -217,15 +217,15 @@ export default function SequenceGameScreen() {
     const isCorrect = index === sequence[userIndex];
 
     if (isCorrect) {
-      playSound('click.mp3');
+      playSound('tap.mp3');
       const nextIdx = userIndex + 1;
       setUserIndex(nextIdx);
 
       if (nextIdx === sequence.length) {
         setGameState("playingPattern");
-        
+
         setScore(prev => prev + Math.floor((level * 10) * activeDifficulty.mult));
-        
+
         if (level === 3) triggerMotivation("🔥 " + t("games.toast_start", "Yaxşı başlanğıc! 🎯"));
         if (level === 5) triggerMotivation("⚡ " + t("games.toast_doing_great", "Əla gedirsən! 🔥"));
         if (level === 10) triggerMotivation("🧠 " + t("games.toast_genius", "Sən dahisən! 🏆"));
@@ -273,15 +273,15 @@ export default function SequenceGameScreen() {
       <SafeAreaView className="flex-1 px-4">
         {/* Header */}
         <View className="flex-row items-center justify-between py-4">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
             className="w-10 h-10 rounded-full items-center justify-center"
             style={{ backgroundColor: colors.cardSecondary }}
           >
             <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
           </TouchableOpacity>
-          <Text 
-            className="flex-1 text-center mx-2 text-lg font-redditsans-bold" 
+          <Text
+            className="flex-1 text-center mx-2 text-lg font-redditsans-bold"
             style={{ color: colors.text }}
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -289,18 +289,18 @@ export default function SequenceGameScreen() {
             {t("games.sequence_memory")}
           </Text>
           <View className="flex-row gap-2">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setSoundEnabled(!isSoundEnabled)}
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: colors.cardSecondary }}
             >
-              <FontAwesomeIcon 
-                icon={isSoundEnabled ? faVolumeHigh : faVolumeMute} 
-                size={16} 
-                color={isSoundEnabled ? colors.primary : colors.textSecondary} 
+              <FontAwesomeIcon
+                icon={isSoundEnabled ? faVolumeHigh : faVolumeMute}
+                size={16}
+                color={isSoundEnabled ? colors.primary : colors.textSecondary}
               />
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setDifficultyModalVisible(true)}
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: colors.cardSecondary }}
@@ -313,7 +313,7 @@ export default function SequenceGameScreen() {
         {/* Level & Status Card */}
         <View className="py-5 px-6 rounded-2xl mb-8 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
           {gameState === "idle" ? (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setDifficultyModalVisible(true)}
               className="py-3 px-8 rounded-full"
               style={{ backgroundColor: colors.primary }}
@@ -358,7 +358,7 @@ export default function SequenceGameScreen() {
         >
           <View className="flex-1 items-center justify-center px-6" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
             <View className="w-full max-w-sm rounded-3xl p-6 items-center shadow-lg relative" style={{ backgroundColor: colors.card }}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => {
                   setGameState("idle");
                   navigation.goBack();
@@ -435,9 +435,9 @@ export default function SequenceGameScreen() {
         </Modal>
 
         {toastMsg ? (
-          <Animated.View 
+          <Animated.View
             className="absolute top-1/3 left-[10%] right-[10%] bg-black/85 py-3 px-6 rounded-full items-center justify-center border shadow-xl z-50 pointer-events-none"
-            style={{ 
+            style={{
               opacity: fadeAnim,
               transform: [{ scale: scaleAnim }],
               borderColor: colors.primary + "40",
@@ -449,10 +449,10 @@ export default function SequenceGameScreen() {
           </Animated.View>
         ) : null}
       </SafeAreaView>
-      <GameDifficultyModal 
-        visible={difficultyModalVisible} 
-        onClose={() => setDifficultyModalVisible(false)} 
-        onSelect={startGame} 
+      <GameDifficultyModal
+        visible={difficultyModalVisible}
+        onClose={() => setDifficultyModalVisible(false)}
+        onSelect={startGame}
       />
     </LinearGradient>
   );

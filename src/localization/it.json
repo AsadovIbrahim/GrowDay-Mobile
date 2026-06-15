@@ -117,6 +117,23 @@
     "Time to complete your habit ⏰": "È ora di completare la tua abitudine ⏰"
   },
   "home": {
+    "mood_title": "Come ti senti oggi?",
+    "mood_saved": "Umore salvato! Continua a crescere! 🌟",
+    "mood_xp_earned": "+5 XP Bonus umore giornaliero!",
+    "mood_toast_saved": "Umore registrato! 🎉",
+    "mood_toast_xp": "+5 XP guadagnati",
+    "mood_title_distribution": "Distribuzione dell'umore (Ultimi 30 giorni)",
+    "mood_title_history": "Cronologia dell'umore (Ultimi 7 giorni)",
+    "mood_no_data": "Nessun umore registrato",
+    "mood_labels": {
+      "peaceful": "Sereno",
+      "energetic": "Energico",
+      "tired": "Stanco",
+      "sad": "Triste",
+      "stressed": "Stressato",
+      "happy": "Felice",
+      "neutral": "Neutrale"
+    },
     "greeting": "Ciao, {{name}}!",
     "subtitle": "Costruiamo abitudini insieme!",
     "todays_habits": "Abitudini di oggi",
@@ -132,7 +149,7 @@
     "add_first_habit": "Aggiungi la tua prima abitudine",
     "empty_hint": "Puoi monitorare le abitudini ogni giorno\ne vedere i tuoi progressi crescere",
     "progress_today": "Progressi Di Oggi",
-    "add_habits_tracking": "Aggiungi abitudini per iniziare il monitoraggio",
+    "add_habits_tracking": "Crea la tua prima abitudine per sbloccare le statistiche giornaliere",
     "days_habits": "Abitudini di {{day}}",
     "day_names": {
       "sunday": "Domenica",
@@ -152,7 +169,44 @@
       "fri": "VEN",
       "sat": "SAB"
     },
-    "quote_of_the_day": "✨ Citazione del Giorno"
+    "quote_of_the_day": "✨ Citazione del Giorno",
+    "suggested_habits_title": "💡 Abitudini Consigliate",
+    "suggestions": {
+      "read": {
+        "title": "Leggere un libro",
+        "desc": "Leggi 10 pagine per la tua crescita"
+      },
+      "water": {
+        "title": "Bere acqua",
+        "desc": "Rimani idratato durante il giorno"
+      },
+      "meditate": {
+        "title": "Meditazione",
+        "desc": "Calma la mente per 10 minuti"
+      },
+      "walk": {
+        "title": "Passeggiata",
+        "desc": "Cammina 10.000 passi per restare in forma"
+      },
+      "sleep": {
+        "title": "Sonno sano",
+        "desc": "Dormi 8 ore per un recupero completo"
+      }
+    },
+    "checklist_title": "🚀 Primi Passi",
+    "checklist_subtitle": "Completa le attività di onboarding e raggiungi il Livello 3 per sbloccare il tuo Mentor IA.",
+    "checklist_log_mood": "😊 Registra il tuo umore",
+    "checklist_log_mood_desc": "Guadagna +5 XP e traccia come ti senti",
+    "checklist_create_habit": "➕ Crea la tua prima abitudine",
+    "checklist_create_habit_desc": "Guadagna +15 XP e inizia il tuo percorso",
+    "checklist_play_game": "🧠 Prova un gioco cerebrale",
+    "checklist_play_game_desc": "Guadagna +10 XP allenando concentrazione e memoria",
+    "checklist_complete_habit": "✅ Completa la tua prima abitudine",
+    "checklist_complete_habit_desc": "Guadagna +20 XP completando la tua prima abitudine",
+    "checklist_success_title": "🎉 Onboarding completato!",
+    "checklist_success_desc": "🎉 Tutto pronto! Il tuo viaggio di crescita inizia ora.",
+    "checklist_success_btn": "Fantastico! Iniziamo",
+    "checklist_bonus_awarded": "Bonus completamento checklist"
   },
   "my_habits": {
     "header": "Le tue Abitudini",
@@ -238,6 +292,9 @@
     "locked_past_desc": "Puoi registrare i progressi solo per oggi e ieri."
   },
   "explore": {
+    "games_intro_title": "Scopri i giochi per la mente! 🧠",
+    "games_intro_desc": "Benvenuto nella sezione Esplora! Sebbene l'obiettivo principale di GrowDay sia costruire sane abitudini, qui puoi anche fare giochi cognitivi. Allena concentrazione, memoria e velocità di reazione per guadagnare XP extra e salire di livello più velocemente!",
+    "games_intro_button": "Giochiamo!",
     "header": "Esplora",
     "search_placeholder": "Cerca abitudini, compiti...",
     "suggested_habits": "Abitudini suggerite",
@@ -328,6 +385,9 @@
     "clear_btn": "Cancella",
     "reminders_label": "PROMEMORIA",
     "reminders_sub": "Inviami una notifica per rimanere in carreggiata.",
+    "set_reminder_time": "Imposta ora del promemoria",
+    "hour": "Ora",
+    "minute": "Minuto",
     "every_day": "Ogni giorno",
     "on_scheduled_days": "Nei giorni programmati",
     "selected_days": "Giorni selezionati",
@@ -425,7 +485,11 @@
     "finance": "Finanze",
     "social": "Sociale",
     "wellness": "Benessere",
-    "other": "Altro"
+    "other": "Altro",
+    "learning": "Apprendimento",
+    "hydration": "Idratazione",
+    "mindfulness": "Consapevolezza",
+    "sleep": "Sonno"
   },
   "achievements": {
     "header": "Obiettivi",
@@ -716,7 +780,7 @@
       "question": "Qual è il tuo genere?",
       "male": "Uomo",
       "female": "Donna",
-      "other": "Altro"
+      "other": "Preferisco non rispondere"
     },
     "step1": {
       "title1": "Quanti anni",
@@ -800,9 +864,12 @@
   },
   "auth": {
     "welcome_back": "Bentornato!",
+    "welcome_subtitle": "Accedi al tuo account per continuare a crescere",
     "lets_start": "Iniziamo!",
+    "register_subtitle": "Crea un account per gestire le tue abitudini",
     "google_continue": "CONTINUA CON GOOGLE",
     "or_login_email": "O ACCEDI CON EMAIL",
+    "or_register_email": "O REGISTRATI CON EMAIL",
     "email_username": "Email o nome utente",
     "email": "Email",
     "password": "Password",
@@ -867,6 +934,7 @@
       "password_wrong": "Password errata.",
       "user_not_found": "Utente non trovato.",
       "invalid_credentials": "Nome utente o password non validi.",
+      "username_or_email_wrong": "Il nome utente o l'e-mail sono errati.",
       "account_locked": "L'account è temporaneamente bloccato. Riprova più tardi.",
       "email_not_confirmed": "Il tuo indirizzo e-mail non è confermato."
     }
@@ -1011,7 +1079,22 @@
     "habits_label": "Abitudini",
     "brain_insight_high_past": "Hai completato il {{rate}}% delle tue abitudini in questo periodo, mantenendo il cervello in ottima forma! Usalo come guida per i tuoi obiettivi attuali. 🏆",
     "brain_insight_medium_past": "Hai completato il {{rate}}% delle tue abitudini in questo periodo. Ogni nuovo periodo è un nuovo inizio: questa volta puoi mirare ancora più in alto! ⚡",
-    "brain_insight_low_past": "La tua percentuale di completamento è stata del {{rate}}% in questo periodo. Il passato è passato! Ricomincia da capo nel periodo corrente e risveglia il tuo cervello. 🌟"
+    "brain_insight_low_past": "La tua percentuale di completamento è stata del {{rate}}% in questo periodo. Il passato è passato! Ricomincia da capo nel periodo corrente e risveglia il tuo cervello. 🌟",
+    "ai_insight_title": "Analisi del Mentor IA",
+    "total_xp": "XP totali guadagnati",
+    "avg_completion": "Completamento medio",
+    "most_consistent": "Abitudine più costante",
+    "mood_trend_coming_soon": "Prossimamente: Andamento e punteggio dell'umore",
+    "insight_most_common_mood": "Umore più comune: {{mood}}",
+    "insight_completion_improved": "Il tasso di completamento è migliorato del {{change}}% in questo periodo",
+    "insight_completion_decreased": "Il tasso di completamento è diminuito del {{change}}% in questo periodo",
+    "insight_completion_stable": "Il tasso di completamento è rimasto stabile in questo periodo",
+    "insight_completion_rate": "Tasso di completamento delle abitudini: {{rate}}%",
+    "insight_best_streak": "Miglior serie di abitudini: {{streak}} giorni",
+    "insight_positive_mood_completion": "I giorni con umore positivo ({{emoji}} {{mood}}) hanno un tasso di completamento superiore del 25%",
+    "insight_mood_stable_consistency": "La costanza aumenta quando il tuo umore rimane stabile",
+    "insight_longest_streak_positive_mood": "La tua serie più lunga si è verificata durante il tuo periodo di umore più positivo",
+    "insight_harder_on_difficult_days": "Completare le abitudini è più difficile nei giorni stanchi o stressati"
   },
   "help": {
     "title": "Centro Assistenza",
@@ -1066,7 +1149,7 @@
     }
   },
   "games": {
-    "title": "Giochi cognitivi",
+    "title": "Giochi per la mente",
     "memory_match": "Abbina le coppie",
     "memory_match_desc": "Trova le coppie di icone corrispondenti. Migliora la memoria visiva e la concentrazione.",
     "select_difficulty": "Seleziona il livello di difficoltà e la dimensione per iniziare il gioco.",
@@ -1276,6 +1359,7 @@
   "ai_mentor": {
     "card_title": "Mentore IA",
     "card_subtitle": "Chiedimi qualsiasi cosa sulle tue abitudini",
+    "compact_desc": "Ricevi consigli personalizzati su misura per i tuoi obiettivi.",
     "card_locked": "Sblocca al livello 3",
     "chat_header": "Mentore IA",
     "input_placeholder": "Scrivi un messaggio...",
@@ -1291,7 +1375,8 @@
     "select_prompt": "Seleziona uno per iniziare la conversazione:",
     "prompt_motivate": "Motivami per oggi!",
     "prompt_habit": "Quali abitudini mi consigli per aumentare la produttività?",
-    "prompt_plan": "Aiutami a preparare un ottimo piano giornaliero!"
+    "prompt_plan": "Aiutami a preparare un ottimo piano giornaliero!",
+    "demo_habit_response": "🧠 Analisi Attuale\n\n• Abitudine alla Lettura: 100% 🔥\n• Umore: Sereno 😊\n\n⚡ Piano Suggerito\n\n• Passeggiata Mattutina - 07:30\n• Meditazione - 12:00\n• Leggere un Libro - 17:00\n\n🎯 Suggerimento Rapido\n\nMantieni la tua serie di lettura oggi."
   },
   "focus_sounds": {
     "title": "Suoni di concentrazione",
@@ -1303,5 +1388,44 @@
     "river": "Fiume",
     "now_playing": "In riproduzione",
     "ready": "Pronto per la riproduzione"
+  },
+  "virtual_plant": {
+    "title": "Amico delle abitudini: Growy",
+    "wateringLevel": "Livello irrigazione",
+    "stageName": "Fase",
+    "waterMe": "Bagnami",
+    "nextStage": "Alla prossima fase",
+    "stages": [
+      "Seme / Germoglio 🌱",
+      "Pianta in vaso 🪴",
+      "Pianta fiorita 🌸",
+      "Giovane fogliame 🌿",
+      "Albero maestoso 🌳"
+    ],
+    "thirsty": [
+      "Ho così tanta sete... Completa le tue abitudini per bagnarmi! 🥺💧",
+      "Non hai ancora completato abitudini oggi. Non dimenticarmi! 🥀",
+      "Una goccia d'acqua ci vorrebbe proprio adesso! 🥤",
+      "Ottimo momento per iniziare i tuoi obiettivi! Andiamo! 🚀"
+    ],
+    "growing": [
+      "Grazie per l'acqua! Completiamo le abitudini rimanenti! 💧🍃",
+      "Un passo alla volta! Continua così! 🏃‍♂️",
+      "Sto crescendo! La tua autodisciplina mi tiene in vita! 💪",
+      "Siamo una grande squadra! Avanti così! 🌟"
+    ],
+    "blooming": [
+      "Fantastico! Hai completato tutte le abitudini oggi! Sono così felice! 🎉🌟",
+      "Sei un vero eroe delle abitudini! 100% completato oggi! 🏆",
+      "I miei fiori sono i frutti della tua disciplina! Grazie! 🌸✨",
+      "Un giorno perfetto! Continuiamo con la stessa energia domani! 🌿❤️"
+    ],
+    "general": [
+      "Ogni abitudine è una goccia d'acqua per me! 💧",
+      "Insieme siamo forti! Hai fatto le tue abitudini oggi? 💪",
+      "Guadagna XP per aiutarmi a crescere! 🌱",
+      "Grazie per il tocco! Fa piacere! 😊",
+      "Ricorda, piccoli passi portano a grandi risultati! 🚀"
+    ]
   }
 }

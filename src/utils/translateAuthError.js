@@ -16,6 +16,7 @@ export const translateAuthError = (err, t) => {
     "Password is wrong.": t("auth.validation.password_wrong"),
     "User not found.": t("auth.validation.user_not_found"),
     "Invalid username or password.": t("auth.validation.invalid_credentials"),
+    "Username or email is wrong.": t("auth.validation.username_or_email_wrong"),
     "Account is locked.": t("auth.validation.account_locked"),
     "Email not confirmed.": t("auth.validation.email_not_confirmed"),
     "Passwords must have at least one non alphanumeric character.": t("auth.validation.password_non_alphanumeric"),
@@ -51,6 +52,9 @@ export const translateAuthError = (err, t) => {
   }
   if (lower.includes("user not found")) {
     return t("auth.validation.user_not_found");
+  }
+  if (lower.includes("username or email is wrong")) {
+    return t("auth.validation.username_or_email_wrong");
   }
   if (lower.includes("invalid") && (lower.includes("username") || lower.includes("password"))) {
     return t("auth.validation.invalid_credentials");

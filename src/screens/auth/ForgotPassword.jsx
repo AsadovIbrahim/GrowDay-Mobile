@@ -24,6 +24,7 @@ const ForgotPassword = () => {
   const [serverErrors, setServerErrors] = useState([]);
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+  const [focusedInput, setFocusedInput] = useState(null);
 
   const showToast = (message, type = "success") => {
     setToast({ visible: true, message, type });
@@ -86,30 +87,33 @@ const ForgotPassword = () => {
         >
 
             {/* Back */}
-            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start' }}>
+            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
               <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
-            <View className="items-center mt-4 mb-4">
+            <View className="items-center mt-4 mb-2">
               <View style={{
-                borderRadius: 30,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.25,
-                shadowRadius: 12,
+                borderRadius: 28,
+                padding: 4,
+                backgroundColor: colors.card,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 10 },
+                shadowOpacity: 0.12,
+                shadowRadius: 15,
                 elevation: 8,
-                backgroundColor: '#000',
+                borderWidth: 1,
+                borderColor: colors.border,
               }}>
-                <Image source={GrowDayLogo} style={{ width: 120, height: 120, borderRadius: 30 }} resizeMode="cover" />
+                <Image source={GrowDayLogo} style={{ width: 90, height: 90, borderRadius: 24 }} resizeMode="cover" />
               </View>
             </View>
 
             {/* Title */}
-            <Text className="text-center text-4xl font-redditsans-bold mb-4" style={{ color: colors.text }}>
+            <Text className="text-center text-3xl font-redditsans-bold mt-2 mb-1" style={{ color: colors.text }}>
               {t("auth.forgot_password_title")}
             </Text>
 
-            <Text className="text-lg text-center font-redditsans-medium mb-6" style={{ color: colors.textSecondary }}>
+            <Text className="text-sm text-center font-redditsans-medium mb-8" style={{ color: colors.textSecondary }}>
               {t("auth.forgot_password_desc")}
             </Text>
 
@@ -162,28 +166,56 @@ const ForgotPassword = () => {
             {/* Email input */}
             {!success && (
               <>
-                <TextInput
-                  placeholder={t("auth.enter_email")}
-                  placeholderTextColor={colors.textSecondary}
-                  value={email}
-                  onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  className="font-redditsans-medium rounded-xl p-4 mb-6"
-                  style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
-                />
+                <View
+                  className="flex-row items-center rounded-2xl px-4 mb-6 border"
+                  style={{
+                    backgroundColor: colors.card,
+                    borderColor: focusedInput === 'email' ? colors.primary : colors.border,
+                    shadowColor: colors.primary,
+                    shadowOffset: { width: 0, height: focusedInput === 'email' ? 6 : 1 },
+                    shadowOpacity: focusedInput === 'email' ? 0.12 : 0.02,
+                    shadowRadius: focusedInput === 'email' ? 8 : 2,
+                    elevation: focusedInput === 'email' ? 4 : 1,
+                  }}
+                >
+                  <View style={{ width: 24, alignItems: 'center' }}>
+                    <FontAwesomeIcon
+                      icon={faEnvelope}
+                      color={focusedInput === 'email' ? colors.primary : colors.textSecondary}
+                      size={18}
+                    />
+                  </View>
+                  <TextInput
+                    placeholder={t("auth.enter_email")}
+                    placeholderTextColor={colors.textSecondary}
+                    value={email}
+                    onChangeText={(t) => { setEmail(t); setServerErrors([]); }}
+                    onFocus={() => setFocusedInput('email')}
+                    onBlur={() => setFocusedInput(null)}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    className="flex-1 py-3.5 pl-3 font-redditsans-medium text-base"
+                    style={{ color: colors.text }}
+                  />
+                </View>
 
                 {/* Button */}
                 <TouchableOpacity
-                  className="p-3 rounded-full"
                   onPress={handleForgotPassword}
                   disabled={loading}
-                  style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
                   activeOpacity={0.8}
                 >
-                  <Text className="text-white text-center font-redditsans-bold text-lg">
-                    {loading ? t("auth.sending") : t("auth.send_reset")}
-                  </Text>
+                  <LinearGradient
+                    colors={[colors.primaryLight || '#4caf66', colors.primary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    className="py-3.5"
+                    style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+                  >
+                    <Text className="text-white text-center font-redditsans-bold text-lg">
+                      {loading ? t("auth.sending") : t("auth.send_reset")}
+                    </Text>
+                  </LinearGradient>
                 </TouchableOpacity>
               </>
             )}
@@ -204,19 +236,13 @@ const ForgotPassword = () => {
 }
 
 const styles = StyleSheet.create({
-  modernInput: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   modernButton: {
-    shadowColor: "#78C67E",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    borderRadius: 20,
+    shadowColor: "#2f6f3f",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
   }
 });
 

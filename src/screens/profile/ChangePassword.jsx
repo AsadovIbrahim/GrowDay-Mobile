@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,10 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +23,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { changePasswordFetch } from '../../utils/fetch';
 import { useMMKVString } from 'react-native-mmkv';
 
-const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, placeholder, colors }) => (
+const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, placeholder, colors, onFocus }) => (
   <View style={styles.fieldWrap}>
     <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{label}</Text>
     <View style={[
@@ -35,6 +39,7 @@ const PasswordField = ({ label, value, onChangeText, show, onToggleShow, error, 
         value={value}
         onChangeText={onChangeText}
         autoCapitalize="none"
+        onFocus={onFocus}
       />
       <TouchableOpacity onPress={onToggleShow} style={styles.eyeBtn}>
         <FontAwesomeIcon icon={show ? faEye : faEyeSlash} size={16} color={colors.textMuted} />
@@ -73,6 +78,34 @@ const ChangePassword = ({ navigation, route }) => {
   const { colors } = theme;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const screenHeight = Dimensions.get("screen").height;
+  const windowHeight = Dimensions.get("window").height;
+  const navBarHeight = screenHeight - windowHeight;
+
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const scrollViewRef = useRef(null);
+
+  const handleInputFocus = (offset) => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: offset, animated: true });
+    }, 150);
+  };
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -137,11 +170,16 @@ const ChangePassword = ({ navigation, route }) => {
 
   return (
     <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={[styles.container, { paddingTop: insets.top + 16 }]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
       >
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={[styles.container, { paddingTop: insets.top + 16 }]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
@@ -168,6 +206,7 @@ const ChangePassword = ({ navigation, route }) => {
                 onToggleShow={() => setShowCurrent(p => !p)}
                 error={errors.currentPassword}
                 colors={colors}
+                onFocus={() => handleInputFocus(100)}
               />
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
             </>
@@ -181,6 +220,7 @@ const ChangePassword = ({ navigation, route }) => {
             onToggleShow={() => setShowNew(p => !p)}
             error={errors.newPassword}
             colors={colors}
+            onFocus={() => handleInputFocus(180)}
           />
           
           <View style={styles.requirementsWrap}>
@@ -188,9 +228,9 @@ const ChangePassword = ({ navigation, route }) => {
               <RequirementItem key={i} label={req.label} met={req.met} colors={colors} />
             ))}
           </View>
-
+ 
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
+ 
           <PasswordField
             label={t("profile.change_password_screen.confirm_password")}
             placeholder={t("profile.change_password_screen.confirm_password_placeholder")}
@@ -200,6 +240,7 @@ const ChangePassword = ({ navigation, route }) => {
             onToggleShow={() => setShowConfirm(p => !p)}
             error={errors.confirmPassword}
             colors={colors}
+            onFocus={() => handleInputFocus(360)}
           />
         </View>
 
@@ -215,7 +256,11 @@ const ChangePassword = ({ navigation, route }) => {
             <Text style={styles.submitText}>{t("profile.change_password_screen.save_changes")}</Text>
           )}
         </TouchableOpacity>
+        {Platform.OS === "android" && (
+          <View style={{ height: keyboardHeight > 0 ? keyboardHeight - insets.bottom + navBarHeight : 0 }} />
+        )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };

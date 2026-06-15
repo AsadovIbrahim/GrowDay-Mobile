@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation, faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { registerfetch, googleLoginFetch, getUserPreferencesFetch } from "../../utils/fetch";
@@ -28,6 +28,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [serverErrors, setServerErrors] = useState([]);
     const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+    const [focusedInput, setFocusedInput] = useState(null);
 
     const scrollViewRef = useRef(null);
     const firstNameRef = useRef(null);
@@ -83,14 +84,12 @@ const Register = () => {
     }
 
     const handleGoogleLogin = async () => {
-      // 1. Configure GoogleSignin
       GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
       
       try {
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         
-        // In @react-native-google-signin/google-signin v14+, the structure is userInfo.data.idToken
         const idToken = userInfo?.data?.idToken || userInfo?.idToken;
         
         if (!idToken) {
@@ -102,7 +101,6 @@ const Register = () => {
         
         setLoading(true);
         const data = await googleLoginFetch(idToken);
-        console.log("SERVER RESPONSE FROM GOOGLE LOGIN:", data);
         
         if (data && data.success) {
           const token = data.data.accessToken.token;
@@ -117,7 +115,6 @@ const Register = () => {
   
           showToast(t("auth.messages.google_signup_success"), "success");
 
-          // Extract email from Google user info for stable chat history scoping
           const googleEmail = userInfo?.data?.user?.email || userInfo?.user?.email || '';
   
           setTimeout(() => {
@@ -175,44 +172,54 @@ const Register = () => {
             }}
           >
 
-            {/* BACK */}
-            <TouchableOpacity onPress={handleGoBack} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start' }}>
+            <TouchableOpacity onPress={handleGoBack} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
               <FontAwesomeIcon icon={faArrowLeft} size={20} color={colors.text} />
             </TouchableOpacity>
 
             <View className="items-center mt-4 mb-2">
               <View style={{
-                borderRadius: 24,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.25,
-                shadowRadius: 12,
+                borderRadius: 28,
+                padding: 4,
+                backgroundColor: colors.card,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 10 },
+                shadowOpacity: 0.12,
+                shadowRadius: 15,
                 elevation: 8,
-                backgroundColor: '#000',
+                borderWidth: 1,
+                borderColor: colors.border,
               }}>
-                <Image source={GrowDayLogo} style={{ width: 100, height: 100, borderRadius: 24 }} resizeMode="cover" />
+                <Image source={GrowDayLogo} style={{ width: 90, height: 90, borderRadius: 24 }} resizeMode="cover" />
               </View>
             </View>
 
-            {/* Title */}
-            <Text className="text-center text-3xl font-redditsans-bold mb-4 mt-2" style={{ color: colors.text }}>
+            <Text className="text-center text-3xl font-redditsans-bold mt-2 mb-1" style={{ color: colors.text }}>
               {t("auth.lets_start")}
             </Text>
+            <Text className="text-center text-sm font-redditsans-medium mb-8" style={{ color: colors.textSecondary }}>
+              {t("auth.register_subtitle", "Create an account to manage your habits")}
+            </Text>
 
-            {/* GOOGLE */}
             <TouchableOpacity 
-              className="flex-row justify-center rounded-full p-3 mb-6"
-              style={[styles.googleButton, { backgroundColor: colors.card }]}
+              className="flex-row justify-center items-center rounded-2xl py-3.5 mb-6 border"
+              style={[styles.googleButton, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={handleGoogleLogin}
               disabled={loading}
             >
-              <GoogleIcon width={22} height={22} />
-              <Text className="font-redditsans-medium text-lg ml-4" style={{ color: colors.text }}>
+              <GoogleIcon width={20} height={20} />
+              <Text className="font-redditsans-bold text-base ml-3" style={{ color: colors.text }}>
                 {t("auth.google_continue")}
               </Text>
             </TouchableOpacity>
 
-            {/* Server Errors */}
+            <View className="flex-row items-center mb-6">
+              <View className="flex-1 h-[1.5px]" style={{ backgroundColor: colors.border, opacity: 0.8 }} />
+              <Text className="mx-4 text-xs font-redditsans-bold uppercase tracking-wider" style={{ color: colors.textSecondary, opacity: 0.7 }}>
+                {t("auth.or_register_email", "OR REGISTER WITH EMAIL")}
+              </Text>
+              <View className="flex-1 h-[1.5px]" style={{ backgroundColor: colors.border, opacity: 0.8 }} />
+            </View>
+
             {serverErrors.length > 0 && (
               <View style={{
                 backgroundColor: "rgba(255,107,107,0.15)",
@@ -237,120 +244,244 @@ const Register = () => {
               </View>
             )}
 
-            {/* First + Last */}
             <View className="flex-row gap-3">
+              <View
+                className="flex-1 flex-row items-center rounded-2xl px-4 mb-4 border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: focusedInput === 'firstname' ? colors.primary : colors.border,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: focusedInput === 'firstname' ? 6 : 1 },
+                  shadowOpacity: focusedInput === 'firstname' ? 0.12 : 0.02,
+                  shadowRadius: focusedInput === 'firstname' ? 8 : 2,
+                  elevation: focusedInput === 'firstname' ? 4 : 1,
+                }}
+              >
+                <View style={{ width: 18, alignItems: 'center' }}>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    color={focusedInput === 'firstname' ? colors.primary : colors.textSecondary}
+                    size={15}
+                  />
+                </View>
+                <TextInput
+                  ref={firstNameRef}
+                  placeholder={t("auth.first_name")}
+                  placeholderTextColor={colors.textSecondary}
+                  onChangeText={(text) => handleInputChange("firstname", text)}
+                  onFocus={() => { setFocusedInput('firstname'); scrollToInput(firstNameRef); }}
+                  onBlur={() => setFocusedInput(null)}
+                  returnKeyType="next"
+                  onSubmitEditing={() => lastNameRef.current?.focus()}
+                  className="flex-1 py-3.5 pl-2 font-redditsans-medium text-base"
+                  style={{ color: colors.text }}
+                />
+              </View>
+              <View
+                className="flex-1 flex-row items-center rounded-2xl px-4 mb-4 border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: focusedInput === 'lastname' ? colors.primary : colors.border,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: focusedInput === 'lastname' ? 6 : 1 },
+                  shadowOpacity: focusedInput === 'lastname' ? 0.12 : 0.02,
+                  shadowRadius: focusedInput === 'lastname' ? 8 : 2,
+                  elevation: focusedInput === 'lastname' ? 4 : 1,
+                }}
+              >
+                <View style={{ width: 18, alignItems: 'center' }}>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    color={focusedInput === 'lastname' ? colors.primary : colors.textSecondary}
+                    size={15}
+                  />
+                </View>
+                <TextInput
+                  ref={lastNameRef}
+                  placeholder={t("auth.last_name")}
+                  placeholderTextColor={colors.textSecondary}
+                  onChangeText={(text) => handleInputChange("lastname", text)}
+                  onFocus={() => { setFocusedInput('lastname'); scrollToInput(lastNameRef); }}
+                  onBlur={() => setFocusedInput(null)}
+                  returnKeyType="next"
+                  onSubmitEditing={() => usernameRef.current?.focus()}
+                  className="flex-1 py-3.5 pl-2 font-redditsans-medium text-base"
+                  style={{ color: colors.text }}
+                />
+              </View>
+            </View>
+
+            <View
+              className="flex-row items-center rounded-2xl px-4 mb-4 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: focusedInput === 'username' ? colors.primary : colors.border,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: focusedInput === 'username' ? 6 : 1 },
+                shadowOpacity: focusedInput === 'username' ? 0.12 : 0.02,
+                shadowRadius: focusedInput === 'username' ? 8 : 2,
+                elevation: focusedInput === 'username' ? 4 : 1,
+              }}
+            >
+              <View style={{ width: 24, alignItems: 'center' }}>
+                <FontAwesomeIcon
+                  icon={faUser}
+                  color={focusedInput === 'username' ? colors.primary : colors.textSecondary}
+                  size={18}
+                />
+              </View>
               <TextInput
-                ref={firstNameRef}
-                placeholder={t("auth.first_name")}
+                ref={usernameRef}
+                placeholder={t("auth.username")}
                 placeholderTextColor={colors.textSecondary}
-                onChangeText={(text) => handleInputChange("firstname", text)}
-                onFocus={() => scrollToInput(firstNameRef)}
+                onChangeText={(text) => handleInputChange("username", text)}
+                onFocus={() => { setFocusedInput('username'); scrollToInput(usernameRef); }}
+                onBlur={() => setFocusedInput(null)}
                 returnKeyType="next"
-                onSubmitEditing={() => lastNameRef.current?.focus()}
-                className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
-                style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
-              />
-              <TextInput
-                ref={lastNameRef}
-                placeholder={t("auth.last_name")}
-                placeholderTextColor={colors.textSecondary}
-                onChangeText={(text) => handleInputChange("lastname", text)}
-                onFocus={() => scrollToInput(lastNameRef)}
-                returnKeyType="next"
-                onSubmitEditing={() => usernameRef.current?.focus()}
-                className="flex-1 font-redditsans-medium rounded-xl p-4 mb-4"
-                style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
+                onSubmitEditing={() => emailRef.current?.focus()}
+                className="flex-1 py-3.5 pl-3 font-redditsans-medium text-base"
+                style={{ color: colors.text }}
+                autoCapitalize="none"
               />
             </View>
 
-            {/* Username */}
-            <TextInput
-              ref={usernameRef}
-              placeholder={t("auth.username")}
-              placeholderTextColor={colors.textSecondary}
-              onChangeText={(text) => handleInputChange("username", text)}
-              onFocus={() => scrollToInput(usernameRef)}
-              returnKeyType="next"
-              onSubmitEditing={() => emailRef.current?.focus()}
-              className="font-redditsans-medium rounded-xl p-4 mb-4"
-              style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
-            />
+            <View
+              className="flex-row items-center rounded-2xl px-4 mb-4 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: focusedInput === 'email' ? colors.primary : colors.border,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: focusedInput === 'email' ? 6 : 1 },
+                shadowOpacity: focusedInput === 'email' ? 0.12 : 0.02,
+                shadowRadius: focusedInput === 'email' ? 8 : 2,
+                elevation: focusedInput === 'email' ? 4 : 1,
+              }}
+            >
+              <View style={{ width: 24, alignItems: 'center' }}>
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  color={focusedInput === 'email' ? colors.primary : colors.textSecondary}
+                  size={18}
+                />
+              </View>
+              <TextInput
+                ref={emailRef}
+                placeholder={t("auth.email")}
+                placeholderTextColor={colors.textSecondary}
+                onChangeText={(text) => handleInputChange("email", text)}
+                onFocus={() => { setFocusedInput('email'); scrollToInput(emailRef); }}
+                onBlur={() => setFocusedInput(null)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                className="flex-1 py-3.5 pl-3 font-redditsans-medium text-base"
+                style={{ color: colors.text }}
+              />
+            </View>
 
-            {/* Email */}
-            <TextInput
-              ref={emailRef}
-              placeholder={t("auth.email")}
-              placeholderTextColor={colors.textSecondary}
-              onChangeText={(text) => handleInputChange("email", text)}
-              onFocus={() => scrollToInput(emailRef)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              returnKeyType="next"
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              className="font-redditsans-medium rounded-xl p-4 mb-4"
-              style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
-            />
-
-            {/* Password */}
-            <View className="relative">
+            <View
+              className="flex-row items-center rounded-2xl px-4 mb-4 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: focusedInput === 'password' ? colors.primary : colors.border,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: focusedInput === 'password' ? 6 : 1 },
+                shadowOpacity: focusedInput === 'password' ? 0.12 : 0.02,
+                shadowRadius: focusedInput === 'password' ? 8 : 2,
+                elevation: focusedInput === 'password' ? 4 : 1,
+              }}
+            >
+              <View style={{ width: 24, alignItems: 'center' }}>
+                <FontAwesomeIcon
+                  icon={faLock}
+                  color={focusedInput === 'password' ? colors.primary : colors.textSecondary}
+                  size={18}
+                />
+              </View>
               <TextInput
                 ref={passwordRef}
                 placeholder={t("auth.password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 onChangeText={(text) => handleInputChange("password", text)}
-                onFocus={() => scrollToInput(passwordRef)}
+                onFocus={() => { setFocusedInput('password'); scrollToInput(passwordRef); }}
+                onBlur={() => setFocusedInput(null)}
                 returnKeyType="next"
                 onSubmitEditing={() => confirmPasswordRef.current?.focus()}
-                className="font-redditsans-medium rounded-xl p-4 mb-4"
-                style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
+                className="flex-1 py-3.5 pl-3 pr-10 font-redditsans-medium text-base"
+                style={{ color: colors.text }}
+                autoCapitalize="none"
               />
               <TouchableOpacity 
-                className="absolute right-4 top-4"
+                className="absolute right-4"
                 onPress={() => setShowPassword(!showPassword)}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
-                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={20} color={colors.textSecondary} />
+                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
-            {/* Confirm Password */}
-            <View className="relative">
+            <View
+              className="flex-row items-center rounded-2xl px-4 mb-6 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: focusedInput === 'confirmPassword' ? colors.primary : colors.border,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: focusedInput === 'confirmPassword' ? 6 : 1 },
+                shadowOpacity: focusedInput === 'confirmPassword' ? 0.12 : 0.02,
+                shadowRadius: focusedInput === 'confirmPassword' ? 8 : 2,
+                elevation: focusedInput === 'confirmPassword' ? 4 : 1,
+              }}
+            >
+              <View style={{ width: 24, alignItems: 'center' }}>
+                <FontAwesomeIcon
+                  icon={faLock}
+                  color={focusedInput === 'confirmPassword' ? colors.primary : colors.textSecondary}
+                  size={18}
+                />
+              </View>
               <TextInput
                 ref={confirmPasswordRef}
                 placeholder={t("auth.confirm_password")}
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showConfirmPassword}
                 onChangeText={(text) => handleInputChange("confirmPassword", text)}
-                onFocus={() => scrollToInput(confirmPasswordRef)}
+                onFocus={() => { setFocusedInput('confirmPassword'); scrollToInput(confirmPasswordRef); }}
+                onBlur={() => setFocusedInput(null)}
                 returnKeyType="done"
                 onSubmitEditing={handleRegister}
-                className="font-redditsans-medium rounded-xl p-4 mb-6"
-                style={[styles.modernInput, { backgroundColor: colors.card, color: colors.text }]}
+                className="flex-1 py-3.5 pl-3 pr-10 font-redditsans-medium text-base"
+                style={{ color: colors.text }}
+                autoCapitalize="none"
               />
               <TouchableOpacity 
-                className="absolute right-4 top-4"
+                className="absolute right-4"
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
-                <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={20} color={colors.textSecondary} />
+                <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
-            {/* BUTTON */}
             <TouchableOpacity 
-              className="p-3 rounded-full"
               onPress={handleRegister}
               disabled={loading}
-              style={[styles.modernButton, { backgroundColor: colors.primary, opacity: loading ? 0.75 : 1 }]}
               activeOpacity={0.8}
             >
-              <Text className="text-white text-center font-redditsans-bold text-lg">
-                {loading ? t("auth.creating_account") : t("auth.sign_up")}
-              </Text>
+              <LinearGradient
+                colors={[colors.primaryLight || '#4caf66', colors.primary]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="py-3.5"
+                style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
+              >
+                <Text className="text-white text-center font-redditsans-bold text-lg">
+                  {loading ? t("auth.creating_account") : t("auth.sign_up")}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
 
-            {/* LOGIN */}
             <View className="flex-row justify-center mt-6">
               <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>{t("auth.have_account")} </Text>
               <TouchableOpacity onPress={()=>navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -366,26 +497,20 @@ const Register = () => {
 };
 
 const styles = StyleSheet.create({
-  modernInput: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   modernButton: {
-    shadowColor: "#78C67E",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    borderRadius: 20,
+    shadowColor: "#2f6f3f",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
   },
   googleButton: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   }
 });
 

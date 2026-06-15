@@ -273,7 +273,7 @@ export default function MemoryGameScreen() {
       return;
     }
 
-    playSound('click.mp3');
+    playSound('card.mp3');
 
     if (!gameStarted) {
       setGameStarted(true);

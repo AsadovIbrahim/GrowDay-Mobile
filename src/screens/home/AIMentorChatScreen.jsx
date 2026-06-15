@@ -10,8 +10,10 @@ import {
   ActivityIndicator,
   SafeAreaView,
   StatusBar,
-  Keyboard
+  Keyboard,
+  Dimensions
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faPaperPlane, faLightbulb, faBrain, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -20,15 +22,22 @@ import { useTranslation } from "react-i18next";
 import { storage, getAiMentorRemainingMessagesKey, getAiMentorLastActiveDateKey, getAiMentorChatHistoryKey } from "../../utils/MMKVStore";
 import { aiMentorChatFetch, aiMentorRemainingFetch } from "../../utils/fetch";
 import { useMMKVString } from "react-native-mmkv";
+import { getLocalMoodHistory } from "../../utils/MoodLocalStore";
+
 
 import LinearGradient from "react-native-linear-gradient";
 
 const AIMentorChatScreen = () => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
   const [token] = useMMKVString("accessToken");
+
+  const screenHeight = Dimensions.get("screen").height;
+  const windowHeight = Dimensions.get("window").height;
+  const navBarHeight = screenHeight - windowHeight;
 
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -37,6 +46,21 @@ const AIMentorChatScreen = () => {
   const [errorText, setErrorText] = useState("");
 
   const flatListRef = useRef(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   // Gündəlik limiti yükləyirik
   const syncRemainingMessages = async () => {
@@ -152,6 +176,17 @@ const AIMentorChatScreen = () => {
     setIsTyping(true);
 
     try {
+      // Fetch user's local mood history to inject into prompt context (fallback for production)
+      const localMoods = getLocalMoodHistory(token);
+      let moodContextStr = "";
+      if (localMoods && localMoods.length > 0) {
+        const moodListStr = localMoods
+          .slice(0, 14)
+          .map(e => `${e.date}: ${e.emoji} (${e.mood})`)
+          .join(", ");
+        moodContextStr = `\n\n[System Context - User's local mood history (last 14 days): ${moodListStr}. Use this context to analyze mood trends, correlation to habits, and customize your advice/motivation.]`;
+      }
+
       // Backend tarixçə formatını qururuq (sistem mesajı xaric)
       const historyPayload = updatedMessages
         .filter(m => m.id !== "welcome-1")
@@ -161,8 +196,8 @@ const AIMentorChatScreen = () => {
           content: m.text,
         }));
 
-      // API call
-      const res = await aiMentorChatFetch(token, text, historyPayload);
+      // API call with injected mood context
+      const res = await aiMentorChatFetch(token, text + moodContextStr, historyPayload);
 
       if (res && res.success && res.data) {
         const aiMessage = {
@@ -256,7 +291,7 @@ const AIMentorChatScreen = () => {
   ];
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
       {/* Header */}
@@ -307,9 +342,9 @@ const AIMentorChatScreen = () => {
 
       {/* Main Chat View */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         <FlatList
           ref={flatListRef}
@@ -430,8 +465,11 @@ const AIMentorChatScreen = () => {
             />
           </TouchableOpacity>
         </View>
+        {Platform.OS === "android" && (
+          <View style={{ height: keyboardHeight > 0 ? keyboardHeight - insets.bottom + navBarHeight + 45 : 0 }} />
+        )}
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -6,13 +6,13 @@ const THEME_KEY = 'app_theme_mode';
 export const lightTheme = {
   isDark: false,
   colors: {
-    background: '#e7f0df',
-    backgroundGradient: ['#e7f0df', '#5a9e6f'],
+    background: '#FCFBF9',
+    backgroundGradient: ['#FCFBF9', '#FAF6F0'],
     card: '#FFFFFF',
     cardSecondary: '#F3F4F6',
     text: '#111827',
-    textSecondary: '#6B7280',
-    textMuted: '#9CA3AF',
+    textSecondary: '#4B5563', // Increased contrast from #6B7280
+    textMuted: '#6B7280',      // Increased contrast from #9CA3AF
     textGray: '#676666',
     primary: '#2f6f3f',
     primaryLight: '#4caf66',
@@ -20,7 +20,7 @@ export const lightTheme = {
     border: '#E5E7EB',
     sectionLabel: '#374151',
     icon: '#111827',
-    iconMuted: '#9CA3AF',
+    iconMuted: '#6B7280',      // Increased contrast from #9CA3AF
     switchTrackOn: '#4caf66',
     switchTrackOff: '#D1D5DB',
     danger: '#EF4444',
@@ -30,7 +30,7 @@ export const lightTheme = {
     inputBackground: '#F9FAFB',
     inputBorder: '#D1D5DB',
     inputText: '#111827',
-    placeholder: '#9CA3AF',
+    placeholder: '#6B7280',    // Increased contrast from #9CA3AF
     pointsBadge: '#FFF4E6',
     pointsText: '#F5A623',
   },
@@ -44,8 +44,8 @@ export const darkTheme = {
     card: '#1E293B',
     cardSecondary: '#273549',
     text: '#F1F5F9',
-    textSecondary: '#94A3B8',
-    textMuted: '#64748B',
+    textSecondary: '#E2E8F0', // Increased contrast from #94A3B8
+    textMuted: '#94A3B8',      // Increased contrast from #64748B
     textGray: '#CBD5E1',
     primary: '#4caf66',
     primaryLight: '#6fcf85',
@@ -53,7 +53,7 @@ export const darkTheme = {
     border: '#334155',
     sectionLabel: '#CBD5E1',
     icon: '#E2E8F0',
-    iconMuted: '#64748B',
+    iconMuted: '#94A3B8',      // Increased contrast from #64748B
     switchTrackOn: '#4caf66',
     switchTrackOff: '#475569',
     danger: '#F87171',
@@ -63,7 +63,7 @@ export const darkTheme = {
     inputBackground: '#273549',
     inputBorder: '#334155',
     inputText: '#F1F5F9',
-    placeholder: '#64748B',
+    placeholder: '#94A3B8',    // Increased contrast from #64748B
     pointsBadge: '#2d1f06',
     pointsText: '#F5A623',
   },
@@ -214,8 +214,8 @@ export const ThemeContext = createContext({
   theme: lightTheme,
   isDark: false,
   themeName: 'light',
-  toggleTheme: () => {},
-  setThemeByName: (name) => {},
+  toggleTheme: () => { },
+  setThemeByName: (name) => { },
 });
 
 export const ThemeProvider = ({ children }) => {

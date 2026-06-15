@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,10 @@ import {
   TextInput,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../utils/MMKVStore';
@@ -66,7 +70,7 @@ const PREDEFINED_AVATARS = [
   { url: 'https://api.dicebear.com/7.x/adventurer/png?seed=Valkyrie', level: 50, name: 'Valkyrie' }
 ];
 
-const InputField = ({ label, value, onChangeText, placeholder, icon, error, colors, keyboardType = 'default' }) => (
+const InputField = ({ label, value, onChangeText, placeholder, icon, error, colors, keyboardType = 'default', onFocus }) => (
   <View style={styles.inputContainer}>
     <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{label}</Text>
     <View style={[styles.inputWrapper, { backgroundColor: colors.card, borderColor: error ? colors.danger : colors.border }]}>
@@ -81,6 +85,7 @@ const InputField = ({ label, value, onChangeText, placeholder, icon, error, colo
         placeholderTextColor={colors.textSecondary + '80'}
         keyboardType={keyboardType}
         autoCapitalize="none"
+        onFocus={onFocus}
       />
     </View>
     {error ? <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text> : null}
@@ -92,8 +97,37 @@ const EditProfile = ({ navigation, route }) => {
   const { colors } = theme;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const screenHeight = Dimensions.get("screen").height;
+  const windowHeight = Dimensions.get("window").height;
+  const navBarHeight = screenHeight - windowHeight;
+
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const scrollViewRef = useRef(null);
+
+  const handleInputFocus = (offset) => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: offset, animated: true });
+    }, 150);
+  };
   const { initialData, points = 0 } = route.params || {};
-  const userLevel = Math.floor(Math.sqrt(points / 50)) + 1;
+  const calculationPoints = initialData?.totalExperiencePoints !== undefined && initialData?.totalExperiencePoints !== null ? initialData.totalExperiencePoints : points;
+  const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
 
   const PREDEFINED_BORDERS = [
     { level: 1, name: 'Normal' },
@@ -214,11 +248,16 @@ const EditProfile = ({ navigation, route }) => {
         <View style={{ width: 40 }} /> 
       </View>
 
-      <ScrollView 
-        style={{ flex: 1 }} 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
       >
+        <ScrollView 
+          ref={scrollViewRef}
+          style={{ flex: 1 }} 
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Avatar Selection Section */}
         <View style={{ alignItems: 'center', marginBottom: 26 }}>
           <View style={{ position: 'relative' }}>
@@ -340,6 +379,7 @@ const EditProfile = ({ navigation, route }) => {
           icon={faUser}
           error={errors.firstName}
           colors={colors}
+          onFocus={() => handleInputFocus(240)}
         />
         <InputField
           label={t("profile.edit_profile_screen.last_name")}
@@ -349,6 +389,7 @@ const EditProfile = ({ navigation, route }) => {
           icon={faUser}
           error={errors.lastName}
           colors={colors}
+          onFocus={() => handleInputFocus(340)}
         />
         <InputField
           label={t("profile.edit_profile_screen.username")}
@@ -358,6 +399,7 @@ const EditProfile = ({ navigation, route }) => {
           icon={faSignature}
           error={errors.username}
           colors={colors}
+          onFocus={() => handleInputFocus(440)}
         />
         <InputField
           label={t("profile.edit_profile_screen.email")}
@@ -368,6 +410,7 @@ const EditProfile = ({ navigation, route }) => {
           error={errors.email}
           colors={colors}
           keyboardType="email-address"
+          onFocus={() => handleInputFocus(540)}
         />
 
         <TouchableOpacity
@@ -385,7 +428,11 @@ const EditProfile = ({ navigation, route }) => {
             </>
           )}
         </TouchableOpacity>
+        {Platform.OS === "android" && (
+          <View style={{ height: keyboardHeight > 0 ? keyboardHeight - insets.bottom + navBarHeight : 0 }} />
+        )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };

@@ -951,3 +951,28 @@ export const deleteCategoryFetch = async (token, id) => {
     });
     return handleResponse(response);
 };
+
+export const submitMoodFetch = async (token, mood, emoji) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mood/submit`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify({ mood, emoji }),
+    });
+    return handleResponse(response);
+};
+
+export const getMoodHistoryFetch = async (token, days = 30) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mood/history?days=${days}`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const getMoodStatisticsFetch = async (token, days = 30) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mood/statistics?days=${days}`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};

@@ -117,6 +117,23 @@
     "Time to complete your habit ⏰": "Alışkanlığınızı tamamlama zamanı ⏰"
   },
   "home": {
+    "mood_title": "Bugün kendinizi nasıl hissediyorsunuz?",
+    "mood_saved": "Ruh haliniz kaydedildi! Gelişmeye devam! 🌟",
+    "mood_xp_earned": "+5 XP Günlük Ruh Hali Bonusu!",
+    "mood_toast_saved": "Ruh haliniz kaydedildi! 🎉",
+    "mood_toast_xp": "+5 XP kazanıldı",
+    "mood_title_distribution": "Ruh Hali Dağılımı (Son 30 Gün)",
+    "mood_title_history": "Ruh Hali Geçmişi (Son 7 Gün)",
+    "mood_no_data": "Ruh hali kaydedilmedi",
+    "mood_labels": {
+      "peaceful": "Huzurlu",
+      "energetic": "Enerjik",
+      "tired": "Yorgun",
+      "sad": "Üzgün",
+      "stressed": "Stresli",
+      "happy": "Mutlu",
+      "neutral": "Normal"
+    },
     "greeting": "Merhaba {{name}}!",
     "subtitle": "Birlikte alışkanlıklar oluşturalım!",
     "todays_habits": "Bugünkü Alışkanlıklar",
@@ -132,7 +149,7 @@
     "add_first_habit": "İlk alışkanlığınızı ekleyin",
     "empty_hint": "Alışkanlıklarınızı günlük takip edebilir\nve ilerlemenizi görebilirsiniz",
     "progress_today": "Bugünkü İlerleme",
-    "add_habits_tracking": "Takibe başlamak için alışkanlık ekleyin",
+    "add_habits_tracking": "Günlük istatistiklerin kilidini açmak için ilk alışkanlığınızı oluşturun",
     "days_habits": "{{day}} günü alışkanlıkları",
     "day_names": {
       "sunday": "Pazar",
@@ -152,7 +169,44 @@
       "fri": "CUM",
       "sat": "CMT"
     },
-    "quote_of_the_day": "✨ Günün Sözü"
+    "quote_of_the_day": "✨ Günün Sözü",
+    "suggested_habits_title": "💡 Önerilen Alışkanlıklar",
+    "suggestions": {
+      "read": {
+        "title": "Kitap Okumak",
+        "desc": "Kişisel gelişim için 10 sayfa okuyun"
+      },
+      "water": {
+        "title": "Su İçmek",
+        "desc": "Gün boyunca susuz kalmayın"
+      },
+      "meditate": {
+        "title": "Meditasyon",
+        "desc": "Zihninizi 10 dakika dinlendirin"
+      },
+      "walk": {
+        "title": "Günlük Yürüyüş",
+        "desc": "Formda kalmak için 10.000 adım atın"
+      },
+      "sleep": {
+        "title": "Sağlıklı Uyku",
+        "desc": "Tam iyileşme için 8 saat uyuyun"
+      }
+    },
+    "checklist_title": "🚀 İlk Adımlarınız",
+    "checklist_subtitle": "AI Mentor'unuzun kilidini açmak için ilk adımları tamamlayın ve Seviye 3'e ulaşın.",
+    "checklist_log_mood": "😊 Ruh Halinizi Kaydedin",
+    "checklist_log_mood_desc": "+5 XP kazanın ve hislerinizi takip edin",
+    "checklist_create_habit": "➕ İlk Alışkanlığınızı Oluşturun",
+    "checklist_create_habit_desc": "+15 XP kazanın ve gelişim yolculuğunuza başlayın",
+    "checklist_play_game": "🧠 Beyin Oyunu Deneyin",
+    "checklist_play_game_desc": "Odaklanma ve hafızayı eğiterek +10 XP kazanın",
+    "checklist_complete_habit": "✅ İlk Alışkanlığınızı Tamamlayın",
+    "checklist_complete_habit_desc": "İlk alışkanlığınızı tamamlayarak +20 XP kazanın",
+    "checklist_success_title": "🎉 İlk Adımlar Tamamlandı!",
+    "checklist_success_desc": "🎉 Her şey hazır! Gelişim yolculuğunuz şimdi başlıyor.",
+    "checklist_success_btn": "Harika! Başlayalım",
+    "checklist_bonus_awarded": "İlk adımlar tamamlama bonusu"
   },
   "my_habits": {
     "header": "Alışkanlıklarınız",
@@ -238,6 +292,9 @@
     "locked_past_desc": "Yalnızca bugün ve dün için ilerleme kaydedebilirsiniz."
   },
   "explore": {
+    "games_intro_title": "Zihinsel Oyunları Keşfet! 🧠",
+    "games_intro_desc": "Keşfet bölümüne hoş geldiniz! GrowDay'in temel amacı güçlü alışkanlıklar edinmenizi sağlamak olsa da, burada bilişsel oyunlar da oynayabilirsiniz. Daha hızlı seviye atlamak ve ekstra XP kazanmak için odaklanma, hafıza ve reaksiyon hızınızı geliştirin!",
+    "games_intro_button": "Hadi Oynayalım!",
     "header": "Keşfet",
     "search_placeholder": "Alışkanlıkları, görevleri ara...",
     "suggested_habits": "Önerilen alışkanlıklar",
@@ -328,6 +385,9 @@
     "clear_btn": "Temizle",
     "reminders_label": "HATIRLATICILAR",
     "reminders_sub": "Yolda kalmam için bana bildirim gönder.",
+    "set_reminder_time": "Hatırlatıcı Vaktini Ayarla",
+    "hour": "Saat",
+    "minute": "Dakika",
     "every_day": "Her gün",
     "on_scheduled_days": "Planlanmış günlerde",
     "selected_days": "Seçili günlerde",
@@ -425,7 +485,11 @@
     "finance": "Finans",
     "social": "Sosyal",
     "wellness": "Esenlik",
-    "other": "Diğer"
+    "other": "Diğer",
+    "learning": "Öğrenme",
+    "hydration": "Su Tüketimi",
+    "mindfulness": "Farkındalık",
+    "sleep": "Uyku"
   },
   "achievements": {
     "header": "Başarımlar",
@@ -716,7 +780,7 @@
       "question": "Cinsiyetiniz nedir?",
       "male": "Erkek",
       "female": "Kadın",
-      "other": "Diğer"
+      "other": "Belirtmek istemiyorum"
     },
     "step1": {
       "title1": "Kaç",
@@ -800,9 +864,12 @@
   },
   "auth": {
     "welcome_back": "Tekrar hoş geldiniz!",
+    "welcome_subtitle": "Gelişiminize devam etmek için hesabınıza giriş yapın",
     "lets_start": "Hadi başlayalım!",
+    "register_subtitle": "Alışkanlıklarınızı yönetmek için bir hesap oluşturun",
     "google_continue": "GOOGLE İLE DEVAM ET",
     "or_login_email": "VEYA E-POSTA İLE GİRİŞ YAPIN",
+    "or_register_email": "VEYA E-POSTA İLE KAYDOLUN",
     "email_username": "E-posta veya Kullanıcı adı",
     "email": "E-posta",
     "password": "Şifre",
@@ -867,6 +934,7 @@
       "password_wrong": "Şifre hatalı.",
       "user_not_found": "Kullanıcı bulunamadı.",
       "invalid_credentials": "Kullanıcı adı veya şifre hatalı.",
+      "username_or_email_wrong": "Kullanıcı adı veya e-posta hatalı.",
       "account_locked": "Hesap geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.",
       "email_not_confirmed": "E-posta adresiniz doğrulanmamış."
     }
@@ -1009,7 +1077,22 @@
     "habits_label": "Alışkanlıklar",
     "brain_insight_high_past": "Bu dönemde alışkanlıklarınızı {{rate}}% oranında tamamlayarak beyninizi mükemmel formda tuttunuz! Bunu mevcut hedefleriniz için bir kılavuz olarak kullanın. 🏆",
     "brain_insight_medium_past": "Bu dönemde alışkanlıklarınızın {{rate}}%-ini gerçekleştirdiniz. Her yeni dönem temiz bir sayfadır; bu sefer daha da yukarısını hedefleyebilirsiniz! ⚡",
-    "brain_insight_low_past": "Bu dönemde tamamlama oranınız {{rate}}% kaldı. Geçmiş geçmişte kaldı! Mevcut dönemde yeni bir başlangıç yapın ve beyninizi uyandırın. 🌟"
+    "brain_insight_low_past": "Bu dönemde tamamlama oranınız {{rate}}% kaldı. Geçmiş geçmişte kaldı! Mevcut dönemde yeni bir başlangıç yapın ve beyninizi uyandırın. 🌟",
+    "ai_insight_title": "AI Mentor Analizi",
+    "total_xp": "Kazanılan Toplam XP",
+    "avg_completion": "Ortalama Tamamlama",
+    "most_consistent": "En İstikrarlı Alışkanlık",
+    "mood_trend_coming_soon": "Çok Yakında: Ruh Hali Trendi & Ruh Hali Skoru",
+    "insight_most_common_mood": "En çok kaydedilen ruh hali: {{mood}}",
+    "insight_completion_improved": "Tamamlama oranı bu dönemde %{{change}} arttı",
+    "insight_completion_decreased": "Tamamlama oranı bu dönemde %{{change}} azaldı",
+    "insight_completion_stable": "Tamamlama oranı bu dönemde sabit kaldı",
+    "insight_completion_rate": "Mevcut dönem için tamamlama oranınız: %{{rate}}",
+    "insight_best_streak": "En iyi alışkanlık serisi: {{streak}} gün",
+    "insight_positive_mood_completion": "Pozitif ruh halinde ({{emoji}} {{mood}}) alışkanlık tamamlama oranınız %25 daha yüksektir",
+    "insight_mood_stable_consistency": "Ruh haliniz sabit kaldığında alışkanlık istikrarınız artar",
+    "insight_longest_streak_positive_mood": "En uzun seriniz ruh halinizin en iyi olduğu döneme denk geldi",
+    "insight_harder_on_difficult_days": "Yorgun veya stresli günlerde alışkanlıklarınızı tamamlamak zorlaşabilir"
   },
   "help": {
     "title": "Yardım Merkezi",
@@ -1064,7 +1147,7 @@
     }
   },
   "games": {
-    "title": "Bilişsel Oyunlar",
+    "title": "Zihinsel Oyunlar",
     "memory_match": "Hafıza Kartları",
     "memory_match_desc": "Eşleşen ikon çiftlerini bulun. Görsel hafızanızı ve konsantrasyonunuzu artırın.",
     "select_difficulty": "Oyuna başlamak için zorluk seviyesini ve boyutunu seçin.",
@@ -1274,6 +1357,7 @@
   "ai_mentor": {
     "card_title": "Yapay Zeka Mentörü",
     "card_subtitle": "Alışkanlıklarınız hakkında her şeyi sorun",
+    "compact_desc": "Hedeflerinize uygun kişiselleştirilmiş öneriler alın.",
     "card_locked": "Seviye 3'te Açılır",
     "chat_header": "AI Mentor",
     "input_placeholder": "Mesajınızı yazın...",
@@ -1289,7 +1373,8 @@
     "select_prompt": "Sohbete başlamak için birini seçin:",
     "prompt_motivate": "Beni bugün için motive et!",
     "prompt_habit": "Verimliliğimi artırmak için hangi alışkanlıkları önerirsin?",
-    "prompt_plan": "Harika bir gün planı hazırlamama yardım et!"
+    "prompt_plan": "Harika bir gün planı hazırlamama yardım et!",
+    "demo_habit_response": "🧠 Mevcut Analiz\n\n• Kitap Okuma Alışkanlığı: %100 🔥\n• Ruh Hali: Huzurlu 😊\n\n⚡ Önerilen Plan\n\n• Sabah Yürüyüşü - 07:30\n• Meditasyon - 12:00\n• Kitap Oku - 17:00\n\n🎯 Hızlı İpucu\n\nKitap okuma serinizi bugün de devam ettirin."
   },
   "focus_sounds": {
     "title": "Odaklanma Sesleri",
@@ -1301,5 +1386,44 @@
     "river": "Nehir",
     "now_playing": "Şimdi Çalıyor",
     "ready": "Çalmaya Hazır"
+  },
+  "virtual_plant": {
+    "title": "Alışkanlık Arkadaşı: Growy",
+    "wateringLevel": "Sulama Seviyesi",
+    "stageName": "Aşama",
+    "waterMe": "Beni sula",
+    "nextStage": "Sonraki aşamaya",
+    "stages": [
+      "Tohum / Filiz 🌱",
+      "Saksı Bitkisi 🪴",
+      "Çiçek Açan Bitki 🌸",
+      "Genç Yaprak 🌿",
+      "Görkemli Ağaç 🌳"
+    ],
+    "thirsty": [
+      "Çok susadım... Beni sulamak için alışkanlıklarını tamamla! 🥺💧",
+      "Bugün henüz hiçbir alışkanlık tamamlamadın. Beni unutma! 🥀",
+      "Bir damla su şu an harika hissettirirdi! 🥤",
+      "Hedeflerine başlamak için harika bir zaman! Hadi başlayalım! 🚀"
+    ],
+    "growing": [
+      "Su için çok teşekkürler! Kalan alışkanlıkları da tamamlayalım! 💧🍃",
+      "Her seferinde bir adım! Çaba göstermeye devam et! 🏃‍♂️",
+      "Büyüyorum! Özdisiplinin beni hayatta tutuyor! 💪",
+      "Birlikte harika bir takımız! Hedeflere doğru devam! 🌟"
+    ],
+    "blooming": [
+      "Harika! Bugün tüm alışkanlıklarını tamamladın! Çok mutluyum! 🎉🌟",
+      "Sen gerçek bir alışkanlık kahramanısın! Bugün %100 tamamlandı! 🏆",
+      "Çiçeklerim senin disiplininin meyvesidir! Teşekkürler! 🌸✨",
+      "Mükemmel bir gün! Yarın da aynı enerjiyle devam edelim! 🌿❤️"
+    ],
+    "general": [
+      "Her alışkanlık benim için bir damla sudur! 💧",
+      "Birlikte güçlüyüz! Bugün alışkanlıklarını yaptın mı? 💪",
+      "Beni büyütmek için XP kazan! 🌱",
+      "Dokunduğun için teşekkürler! Bu çok güzel hissettirdi! 😊",
+      "Unutma, küçük adımlar büyük sonuçlar doğurur! 🚀"
+    ]
   }
 }

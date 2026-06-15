@@ -27,7 +27,7 @@ const CalendarSelector = ({ selectedDate, onDateSelect }) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      className="px-4 py-4"
+      className="px-4 py-3"
       contentContainerStyle={{ gap: 12 }}
     >
       {dates.map((date, index) => (
@@ -35,21 +35,25 @@ const CalendarSelector = ({ selectedDate, onDateSelect }) => {
           key={index}
           onPress={() => onDateSelect(date.day, date.fullDate)}
           style={{
-            backgroundColor: date.day === selectedDate ? colors.card : colors.cardSecondary,
-            borderColor: date.day === selectedDate ? colors.primary : 'transparent',
-            borderWidth: date.day === selectedDate ? 2 : 0,
-            shadowColor: date.day === selectedDate ? "#000" : "transparent",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: date.day === selectedDate ? 3 : 0,
+            backgroundColor: date.day === selectedDate ? colors.primarySurface : colors.card,
+            borderColor: date.day === selectedDate ? colors.primary : colors.border,
+            borderWidth: date.day === selectedDate ? 2 : 1,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: date.day === selectedDate ? 0.08 : 0.02,
+            shadowRadius: 3,
+            elevation: date.day === selectedDate ? 2 : 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: 50,
           }}
-          className="px-4 py-3 rounded-2xl"
+          className="px-3 py-2.5 rounded-xl"
         >
           <Text
             style={{
               color: date.day === selectedDate ? colors.primary : colors.text,
               fontFamily: 'RedditSans-Bold',
+              textAlign: 'center',
             }}
             className="text-lg font-bold"
           >
@@ -57,8 +61,10 @@ const CalendarSelector = ({ selectedDate, onDateSelect }) => {
           </Text>
           <Text
             style={{
-              color: date.day === selectedDate ? colors.text : colors.textSecondary,
-              fontFamily: 'RedditSans-Regular',
+              color: date.day === selectedDate ? colors.primary : colors.textSecondary,
+              fontFamily: 'RedditSans-Medium',
+              textAlign: 'center',
+              marginTop: 2,
             }}
             className="text-xs"
           >

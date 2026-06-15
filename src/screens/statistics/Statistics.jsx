@@ -11,8 +11,11 @@ import Svg, { Circle, G } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch, getYearlyStatisticsFetch, getUserTotalXPFetch } from "../../utils/fetch";
+import { getDailyStatisticsFetch, getWeeklyStatisticsFetch, getMonthlyStatisticsFetch, getYearlyStatisticsFetch, getUserTotalXPFetch, getMoodHistoryFetch, getUserHabitFetch } from "../../utils/fetch";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getLocalMoodHistory } from '../../utils/MoodLocalStore';
+
+
 
 const { width } = Dimensions.get('window');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -31,7 +34,121 @@ const Statistics = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isYearPickerVisible, setYearPickerVisible] = useState(false);
   const [points, setPoints] = useState(0);
+  const [moodHistory, setMoodHistory] = useState([]);
+  const [habits, setHabits] = useState([]);
+  const [prevStats, setPrevStats] = useState(null);
 
+
+  const loadMoodData = useCallback(async () => {
+    // 1. Load from MMKV local storage
+    const localData = getLocalMoodHistory(token);
+    setMoodHistory(localData);
+
+    // 2. Fetch from backend API if available
+    if (token) {
+      try {
+        const response = await getMoodHistoryFetch(token, 30);
+        if (response && response.success && Array.isArray(response.data) && response.data.length > 0) {
+          const normalized = response.data.map(entry => ({
+            date: entry.date ? entry.date.split('T')[0] : '',
+            mood: entry.mood.toLowerCase(),
+            emoji: entry.emoji
+          }));
+          setMoodHistory(normalized);
+        }
+      } catch (err) {
+        console.log("Backend mood fetch failed, using local history fallback:", err);
+      }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadMoodData();
+  }, [loadMoodData]);
+
+  // Helper to get last 7 days strings and names
+  const getLast7DaysList = () => {
+    const list = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+
+      const dayOfWeek = d.getDay();
+      const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayLabel = t(`home.day_names.${dayKeys[dayOfWeek]}`).slice(0, 3);
+      list.push({ dateStr, dayLabel });
+    }
+    return list;
+  };
+
+  // Helper to map mood key to emoji and color
+  const getMoodMeta = (moodKey) => {
+    const meta = {
+      energetic: { emoji: '😄', color: '#F59E0B' },
+      happy: { emoji: '😊', color: '#EC4899' },
+      peaceful: { emoji: '😌', color: '#10B981' },
+      neutral: { emoji: '😐', color: '#6B7280' },
+      sad: { emoji: '😔', color: '#8B5CF6' },
+      tired: { emoji: '😫', color: '#3B82F6' },
+      stressed: { emoji: '😡', color: '#EF4444' },
+    };
+    return meta[moodKey] || null;
+  };
+
+  // Helper to get distribution breakdown
+  const getMoodStatsBreakdown = () => {
+    const counts = {
+      energetic: 0,
+      happy: 0,
+      peaceful: 0,
+      neutral: 0,
+      sad: 0,
+      tired: 0,
+      stressed: 0
+    };
+
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const entriesWithin30Days = moodHistory.filter(entry => entry.date >= thirtyDaysAgoStr);
+    const total = entriesWithin30Days.length;
+
+    if (total === 0) return { total: 0, distribution: [] };
+
+    entriesWithin30Days.forEach(entry => {
+      if (counts[entry.mood] !== undefined) {
+        counts[entry.mood]++;
+      }
+    });
+
+    const moodsMetadata = [
+      { key: 'energetic', emoji: '😄', label: t('home.mood_labels.energetic'), color: '#F59E0B' },
+      { key: 'happy', emoji: '😊', label: t('home.mood_labels.happy'), color: '#EC4899' },
+      { key: 'peaceful', emoji: '😌', label: t('home.mood_labels.peaceful'), color: '#10B981' },
+      { key: 'neutral', emoji: '😐', label: t('home.mood_labels.neutral'), color: '#6B7280' },
+      { key: 'sad', emoji: '😔', label: t('home.mood_labels.sad'), color: '#8B5CF6' },
+      { key: 'tired', emoji: '😫', label: t('home.mood_labels.tired'), color: '#3B82F6' },
+      { key: 'stressed', emoji: '😡', label: t('home.mood_labels.stressed'), color: '#EF4444' },
+    ];
+
+    const distribution = moodsMetadata.map(mood => {
+      const count = counts[mood.key];
+      const percentage = Math.round((count / total) * 100);
+      return {
+        ...mood,
+        count,
+        percentage
+      };
+    }).sort((a, b) => b.percentage - a.percentage);
+
+    return { total, distribution };
+  };
 
   // Production best practice: Show years from app launch year (e.g. 2024) up to current year
   const currentYear = new Date().getFullYear();
@@ -50,6 +167,7 @@ const Statistics = () => {
       if (activeTab === 'daily') {
         const dateStr = selectedDate.toISOString().split('T')[0];
         response = await getDailyStatisticsFetch(token, dateStr);
+        setPrevStats(null);
       } else if (activeTab === 'weekly') {
         const day = selectedDate.getDay();
         const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1);
@@ -57,10 +175,40 @@ const Statistics = () => {
         monday.setDate(diff);
         const weekStartStr = monday.toISOString().split('T')[0];
         response = await getWeeklyStatisticsFetch(token, weekStartStr);
+
+        try {
+          const prevMonday = new Date(monday);
+          prevMonday.setDate(prevMonday.getDate() - 7);
+          const prevWeekStartStr = prevMonday.toISOString().split('T')[0];
+          const prevRes = await getWeeklyStatisticsFetch(token, prevWeekStartStr);
+          if (prevRes && prevRes.success) {
+            setPrevStats(prevRes.data);
+          } else {
+            setPrevStats(null);
+          }
+        } catch (err) {
+          console.log("Failed to fetch previous week stats:", err);
+          setPrevStats(null);
+        }
       } else if (activeTab === 'monthly') {
         response = await getMonthlyStatisticsFetch(token, selectedDate.getFullYear(), selectedDate.getMonth() + 1);
+
+        try {
+          const prevMonthDate = new Date(selectedDate);
+          prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+          const prevRes = await getMonthlyStatisticsFetch(token, prevMonthDate.getFullYear(), prevMonthDate.getMonth() + 1);
+          if (prevRes && prevRes.success) {
+            setPrevStats(prevRes.data);
+          } else {
+            setPrevStats(null);
+          }
+        } catch (err) {
+          console.log("Failed to fetch previous month stats:", err);
+          setPrevStats(null);
+        }
       } else {
         response = await getYearlyStatisticsFetch(token, selectedDate.getFullYear());
+        setPrevStats(null);
       }
 
       if (response && response.success) {
@@ -72,6 +220,17 @@ const Statistics = () => {
       const ptsRes = await getUserTotalXPFetch(token);
       if (ptsRes && ptsRes.success) {
         setPoints(ptsRes.data ?? 0);
+      }
+
+      if (activeTab === 'monthly' || activeTab === 'yearly') {
+        try {
+          const habitsRes = await getUserHabitFetch(token, 0, 100);
+          if (habitsRes && habitsRes.success && Array.isArray(habitsRes.data)) {
+            setHabits(habitsRes.data);
+          }
+        } catch (habitsErr) {
+          console.log("Failed to fetch habits for extra statistics:", habitsErr);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch stats:", error);
@@ -90,63 +249,93 @@ const Statistics = () => {
     fetchStats();
   };
 
-  const getBrainInsight = () => {
-    if (!stats || typeof stats.completionRate !== 'number') return null;
-    const rate = Math.round(stats.completionRate);
+  // Future Enhancements: Structure for Mood Score and Mood Trend Calculations
+  const getMoodScore = () => {
+    // TODO: Implement scoring logic for daily mood logs (e.g. happy = 5, stressed = 1)
+    return null;
+  };
 
-    const getIsCurrentPeriod = () => {
-      const today = new Date();
-      if (activeTab === 'daily') {
-        return selectedDate.toDateString() === today.toDateString();
-      } else if (activeTab === 'weekly') {
-        const getMonday = (d) => {
-          const date = new Date(d);
-          const day = date.getDay();
-          const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-          return new Date(date.setDate(diff)).toDateString();
-        };
-        return getMonday(selectedDate) === getMonday(today);
-      } else if (activeTab === 'monthly') {
-        return selectedDate.getMonth() === today.getMonth() && selectedDate.getFullYear() === today.getFullYear();
-      } else if (activeTab === 'yearly') {
-        return selectedDate.getFullYear() === today.getFullYear();
-      }
-      return true;
-    };
+  const getMoodTrend = () => {
+    // TODO: Implement trend analysis over last 30 days (e.g. rising, falling, stable)
+    return null;
+  };
 
-    const isCurrent = getIsCurrentPeriod();
+  const getAICoachInsight = () => {
+    if (!stats) return [];
 
-    if (rate >= 80) {
-      return {
-        text: isCurrent
-          ? t('statistics.brain_insight_high', 'Bu dövrdə vərdişlərinizi {{rate}}% tamamladığınız üçün Koqnitiv Oyunlarda fokus və yaddaş sürətiniz 15% yüksəlib! Beyniniz əla formadadır. 🧠', { rate })
-          : t('statistics.brain_insight_high_past', 'Bu dövrdə vərdişlərinizi {{rate}}% tamamlayaraq beyninizi əla formada saxlamısınız! Bunu cari hədəfləriniz üçün nümunə götürün. 🏆', { rate }),
-        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: +${rate}%`,
-        brainText: t('statistics.brain_speed_high', 'Yaddaş sürəti: +15%'),
-        colors: isDark ? ['#1e1b4b', '#311042'] : ['#f5f3ff', '#fae8ff'],
-        borderColor: '#d8b4fe50',
-      };
-    } else if (rate >= 50) {
-      return {
-        text: isCurrent
-          ? t('statistics.brain_insight_medium', 'Bu dövrdə vərdişlərinizi {{rate}}% icra etmisiniz. Oyun nəticələrində yaddaş fokusunun 8% artdığı görünür. Davamlılığı artıraraq beyninizi daha da itiləyin! ⚡', { rate })
-          : t('statistics.brain_insight_medium_past', 'Bu dövrdə vərdişlərinizin {{rate}}%-ni icra etmisiniz. Hər yeni dövr yeni bir başlanğıcdır — bu dəfə daha da yüksəyə hədəfləyə bilərsiniz! ⚡', { rate }),
-        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: +${rate}%`,
-        brainText: t('statistics.brain_speed_medium', 'Fokuslanma: +8%'),
-        colors: isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe'],
-        borderColor: '#bae6fd50',
-      };
-    } else {
-      return {
-        text: isCurrent
-          ? t('statistics.brain_insight_low', 'Bu dövrdə vərdişlərin tamamlanma faizi {{rate}}% olub. Bu, yaddaş oyunlarında reaksiya sürətinizi yavaşlada bilər. Vərdişləri bərpa etməklə beyninizi oyadın! 🔋', { rate })
-          : t('statistics.brain_insight_low_past', 'Bu dövrdə tamamlanma faiziniz {{rate}}% olub. Keçmiş keçmişdə qaldı! Cari dövrdə yeni bir səhifə açaraq beyninizi fəallaşdırın. 🌟', { rate }),
-        habitText: `${t('statistics.habits_label', 'Vərdişlər')}: ${rate}%`,
-        brainText: t('statistics.brain_speed_low', 'Aktivlik: Zəifləyib'),
-        colors: isDark ? ['#2d1212', '#1f0d0d'] : ['#fff5f5', '#fee2e2'],
-        borderColor: '#fecaca50',
-      };
+    // Find the most frequent mood from last 30 days breakdown
+    const { total, distribution } = getMoodStatsBreakdown();
+    const topMood = distribution.length > 0 ? distribution[0] : null;
+
+    const candidateInsights = [];
+
+    // 1. Mood Based Candidate
+    if (topMood) {
+      candidateInsights.push({
+        emoji: topMood.emoji,
+        text: t('statistics.insight_most_common_mood', { mood: topMood.label })
+      });
     }
+
+    // 2. Habit Completion Rate Change Candidate
+    if (prevStats) {
+      const change = Math.round(stats.completionRate - prevStats.completionRate);
+      if (change > 0) {
+        candidateInsights.push({
+          emoji: '📈',
+          text: t('statistics.insight_completion_improved', { change })
+        });
+      } else if (change < 0) {
+        candidateInsights.push({
+          emoji: '📉',
+          text: t('statistics.insight_completion_decreased', { change: Math.abs(change) })
+        });
+      } else {
+        candidateInsights.push({
+          emoji: '📊',
+          text: t('statistics.insight_completion_stable')
+        });
+      }
+    } else {
+      candidateInsights.push({
+        emoji: '📈',
+        text: t('statistics.insight_completion_rate', { rate: Math.round(stats.completionRate) })
+      });
+    }
+
+    // 3. Best Streak Candidate
+    if (bestStreakVal > 0) {
+      candidateInsights.push({
+        emoji: '🔥',
+        text: t('statistics.insight_best_streak', { streak: bestStreakVal })
+      });
+    }
+
+    // 4. Combined / Stability Candidate
+    const isMoodStable = topMood && total > 0 && (distribution[0].count / total) >= 0.5;
+    if (topMood && (topMood.key === 'peaceful' || topMood.key === 'happy' || topMood.key === 'energetic') && stats.completionRate >= 70) {
+      candidateInsights.push({
+        emoji: '🧠',
+        text: t('statistics.insight_positive_mood_completion', { mood: topMood.label, emoji: topMood.emoji })
+      });
+    } else if (isMoodStable) {
+      candidateInsights.push({
+        emoji: '📊',
+        text: t('statistics.insight_mood_stable_consistency')
+      });
+    } else if (bestStreakVal >= 5 && topMood && (topMood.key === 'happy' || topMood.key === 'peaceful' || topMood.key === 'energetic')) {
+      candidateInsights.push({
+        emoji: '🎯',
+        text: t('statistics.insight_longest_streak_positive_mood')
+      });
+    } else if (topMood && (topMood.key === 'tired' || topMood.key === 'stressed' || topMood.key === 'sad')) {
+      candidateInsights.push({
+        emoji: '😴',
+        text: t('statistics.insight_harder_on_difficult_days')
+      });
+    }
+
+    return candidateInsights.slice(0, 3);
   };
 
   const handlePrev = () => {
@@ -244,6 +433,17 @@ const Statistics = () => {
       </View>
     );
   };
+
+  const bestStreakVal = habits.length > 0
+    ? Math.max(...habits.map(h => Math.max(h.longestStreak || 0, h.currentStreak || 0)))
+    : 0;
+
+  const sortedHabits = [...habits].sort((a, b) => {
+    const streakA = Math.max(a.longestStreak || 0, a.currentStreak || 0);
+    const streakB = Math.max(b.longestStreak || 0, b.currentStreak || 0);
+    return streakB - streakA;
+  });
+  const mostConsistentHabit = sortedHabits.length > 0 ? sortedHabits[0].title : null;
 
   return (
     <LinearGradient colors={colors.backgroundGradient} className="flex-1">
@@ -372,108 +572,201 @@ const Statistics = () => {
                 </View>
               </View>
 
-              {/* Advanced Insights */}
-              <View className="p-6 rounded-3xl mb-6 shadow-sm" style={{ backgroundColor: colors.card }}>
-                <View className="flex-row items-center mb-6">
-                  <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#f59e0b20' }}>
-                    <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={16} />
-                  </View>
-                  <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                    {t('statistics.performance_overview')}
-                  </Text>
-                </View>
-
-                <View className="space-y-6">
-                  {/* Progress Bar Item */}
-                  <View className="mb-6">
-                    <View className="flex-row items-center justify-between mb-3">
-                      <View className="flex-row items-center">
-                        <FontAwesomeIcon icon={faFire} color={colors.primary} size={14} className="mr-2" />
-                        <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-medium">
-                          {t('statistics.consistency_score')}
-                        </Text>
-                      </View>
-                      <Text style={{ color: colors.primary }} className="text-base font-redditsans-bold">
-                        {Math.round(stats.completionRate)}/100
-                      </Text>
-                    </View>
-                    <View className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <Animated.View
-                        style={{
-                          width: `${stats.completionRate}%`,
-                          backgroundColor: colors.primary,
-                          height: '100%'
-                        }}
-                      />
-                    </View>
+              {/* Extra Monthly/Yearly Stats Grid */}
+              {(activeTab === 'monthly' || activeTab === 'yearly') && (
+                <View className="flex-row flex-wrap justify-between mb-4">
+                  {/* Card 1: Best Streak */}
+                  <View style={{ width: '48%', backgroundColor: colors.card, marginBottom: 12 }} className="p-4 rounded-3xl shadow-sm">
+                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider mb-1">
+                      {t('habit_history.best_streak', 'Best Streak')}
+                    </Text>
+                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                      {bestStreakVal} {t('habit_history.days', 'days')}
+                    </Text>
                   </View>
 
-                  <View style={{ backgroundColor: colors.primary + '08' }} className="p-4 rounded-2xl border border-primary/10">
-                    <Text style={{ color: colors.textSecondary }} className="text-sm italic font-redditsans-regular leading-6 text-center">
-                      {stats.completionRate >= 80
-                        ? t('statistics.keep_going')
-                        : t('statistics.improve_hint')
-                      }
+                  {/* Card 2: Total XP Earned */}
+                  <View style={{ width: '48%', backgroundColor: colors.card, marginBottom: 12 }} className="p-4 rounded-3xl shadow-sm">
+                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider mb-1">
+                      {t('statistics.total_xp', 'Total XP Earned')}
+                    </Text>
+                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                      {points} XP
+                    </Text>
+                  </View>
+
+                  {/* Card 3: Average Completion Rate */}
+                  <View style={{ width: '48%', backgroundColor: colors.card, marginBottom: 12 }} className="p-4 rounded-3xl shadow-sm">
+                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider mb-1">
+                      {t('statistics.avg_completion', 'Avg Completion')}
+                    </Text>
+                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
+                      {Math.round(stats.completionRate)}%
+                    </Text>
+                  </View>
+
+                  {/* Card 4: Most Consistent Habit */}
+                  <View style={{ width: '48%', backgroundColor: colors.card, marginBottom: 12 }} className="p-4 rounded-3xl shadow-sm">
+                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider mb-1">
+                      {t('statistics.most_consistent', 'Consistent Habit')}
+                    </Text>
+                    <Text style={{ color: colors.text }} className="text-sm font-redditsans-bold" numberOfLines={1} ellipsizeMode="tail">
+                      {mostConsistentHabit || '—'}
                     </Text>
                   </View>
                 </View>
+              )}
+
+              {/* Performance Overview (Consistency Score) */}
+              <View className="p-5 rounded-3xl mb-6 shadow-sm" style={{ backgroundColor: colors.card }}>
+                <View className="flex-row items-center justify-between mb-3">
+                  <View className="flex-row items-center">
+                    <FontAwesomeIcon icon={faFire} color={colors.primary} size={16} className="mr-2" />
+                    <Text style={{ color: colors.text }} className="text-base font-redditsans-bold">
+                      {t('statistics.consistency_score')}
+                    </Text>
+                  </View>
+                  <Text style={{ color: colors.primary }} className="text-base font-redditsans-bold">
+                    {Math.round(stats.completionRate)}/100
+                  </Text>
+                </View>
+                <View className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <Animated.View
+                    style={{
+                      width: `${stats.completionRate}%`,
+                      backgroundColor: colors.primary,
+                      height: '100%'
+                    }}
+                  />
+                </View>
               </View>
 
-              {/* Brain-Habit AI Insights Card */}
-              {getBrainInsight() && (() => {
-                const insight = getBrainInsight();
+              {/* Mood History & Distribution Card */}
+              {(() => {
+                const last7Days = getLast7DaysList();
+                const { total, distribution } = getMoodStatsBreakdown();
+
                 return (
                   <View className="p-6 rounded-3xl mb-6 shadow-sm border" style={{ backgroundColor: colors.card, borderColor: colors.primary + '20' }}>
-                    <View className="flex-row items-center mb-4">
-                      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#a855f720' }}>
-                        <FontAwesomeIcon icon={faBrain} color="#a855f7" size={16} />
+
+                    {/* Header */}
+                    <View className="flex-row items-center mb-6">
+                      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: colors.primary + '20' }}>
+                        <FontAwesomeIcon icon={faBrain} color={colors.primary} size={16} />
                       </View>
-                      <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                        {t('statistics.brain_insight_title', 'Beyin & Vərdiş Analizi')}
+                      <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold flex-1">
+                        {t('home.mood_title_history')}
                       </Text>
                     </View>
 
-                    <LinearGradient
-                      colors={insight.colors}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      className="p-5 rounded-2xl border"
-                      style={{ borderColor: insight.borderColor }}
-                    >
-                      <Text style={{ color: isDark ? '#e9d5ff' : '#581c87' }} className="text-sm font-redditsans-medium leading-6">
-                        {insight.text}
-                      </Text>
+                    {/* Section 1: 7-Day History */}
+                    <View className="flex-row justify-between items-center mb-8 mt-2">
+                      {last7Days.map((day) => {
+                        const entry = moodHistory.find(e => e.date === day.dateStr);
+                        const loggedMood = entry ? getMoodMeta(entry.mood) : null;
 
-                      {/* Small stats badge row */}
-                      <View className="flex-row justify-between items-center mt-4 pt-3 border-t border-purple-500/10">
-                        <View className="flex-row items-center">
-                          <View className="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2" />
-                          <Text className="text-xs" style={{ color: colors.textSecondary }}>{insight.habitText}</Text>
-                        </View>
-                        <View className="flex-row items-center">
-                          <View className="w-2.5 h-2.5 rounded-full bg-purple-500 mr-2" />
-                          <Text className="text-xs" style={{ color: colors.textSecondary }}>{insight.brainText}</Text>
-                        </View>
+                        return (
+                          <View key={day.dateStr} className="items-center flex-1">
+                            <Text style={{ color: colors.textSecondary }} className="text-[9px] font-redditsans-bold mb-2 uppercase">
+                              {day.dayLabel}
+                            </Text>
+                            <View
+                              className="w-10 h-10 rounded-full items-center justify-center border"
+                              style={{
+                                backgroundColor: loggedMood ? loggedMood.color + '15' : colors.cardSecondary,
+                                borderColor: loggedMood ? loggedMood.color : colors.border,
+                                opacity: loggedMood ? 1 : 0.35,
+                              }}
+                            >
+                              {loggedMood ? (
+                                <Text className="text-lg">
+                                  {loggedMood.emoji}
+                                </Text>
+                              ) : (
+                                <Text style={{ color: colors.textSecondary, fontSize: 16 }}>•</Text>
+                              )}
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </View>
+
+                    {/* Divider */}
+                    <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 8, opacity: 0.5 }} />
+
+                    {/* Section 2: 30-Day Distribution */}
+                    <Text style={{ color: colors.text }} className="text-base font-redditsans-bold mb-4 mt-4">
+                      {t('home.mood_title_distribution')}
+                    </Text>
+
+                    {total === 0 ? (
+                      <View className="py-6 items-center justify-center">
+                        <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-medium">
+                          {t('home.mood_no_data')}
+                        </Text>
                       </View>
-                    </LinearGradient>
+                    ) : (
+                      <View className="space-y-4">
+                        {distribution.map((item) => {
+                          if (item.percentage === 0) return null; // Only show moods that have been logged
+                          return (
+                            <View key={item.key} className="mb-3">
+                              <View className="flex-row justify-between items-center mb-1.5">
+                                <Text style={{ color: colors.text }} className="text-sm font-redditsans-medium">
+                                  {item.emoji} {item.label}
+                                </Text>
+                                <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-bold">
+                                  {item.percentage}%
+                                </Text>
+                              </View>
+                              <View className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.cardSecondary }}>
+                                <View
+                                  style={{
+                                    width: `${item.percentage}%`,
+                                    backgroundColor: item.color,
+                                    height: '100%'
+                                  }}
+                                />
+                              </View>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    )}
+
                   </View>
                 );
               })()}
 
-              {/* Extra Summary Row */}
-              <View className="flex-row gap-4 mb-6">
-                <View className="flex-1 p-5 rounded-3xl flex-row items-center shadow-sm" style={{ backgroundColor: colors.card }}>
-                  <View className="w-10 h-10 rounded-xl items-center justify-center mr-3" style={{ backgroundColor: colors.primary + '15' }}>
-                    <FontAwesomeIcon icon={faChartBar} color={colors.primary} size={18} />
+              {/* Optimized AI Insight Card */}
+              {stats && (() => {
+                const insights = getAICoachInsight();
+                if (!insights || insights.length === 0) return null;
+                return (
+                  <View className="p-5 rounded-3xl mb-6 shadow-sm border" style={{ backgroundColor: colors.card, borderColor: colors.primary + '20' }}>
+                    <View className="flex-row items-center mb-4">
+                      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: '#a855f720' }}>
+                        <FontAwesomeIcon icon={faBrain} color="#a855f7" size={16} />
+                      </View>
+                      <Text style={{ color: colors.text }} className="text-base font-redditsans-bold flex-1">
+                        {t('statistics.ai_insight_title', 'AI Insight')}
+                      </Text>
+                    </View>
+                    <View className="space-y-3">
+                      {insights.map((insight, index) => (
+                        <View key={index} className="flex-row items-start">
+                          <Text className="text-base mr-3">{insight.emoji}</Text>
+                          <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-medium leading-5 flex-1">
+                            {insight.text}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
-                  <View>
-                    <Text style={{ color: colors.textSecondary }} className="text-[10px] font-redditsans-bold uppercase tracking-wider">{t('statistics.daily_average')}</Text>
-                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                      {activeTab === 'daily' ? '1.0' : (stats.completedCount / (activeTab === 'weekly' ? 7 : (activeTab === 'monthly' ? 30 : 365))).toFixed(1)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
+                );
+              })()}
+
+
 
             </>
           ) : (
@@ -501,8 +794,8 @@ const Statistics = () => {
           <View className="rounded-3xl p-4 shadow-lg" style={{ backgroundColor: colors.card, width: activeTab === 'monthly' ? 260 : 256 }}>
             <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-4 text-center">
               {activeTab === 'monthly'
-                ? t('statistics.select_month', 'Ay seçin')
-                : t('statistics.select_year', 'İli seçin')}
+                ? t('statistics.select_month', 'Select Month')
+                : t('statistics.select_year', 'Select Year')}
             </Text>
 
             <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>

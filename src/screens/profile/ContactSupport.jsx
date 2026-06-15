@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
   ActivityIndicator,
   Alert,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -177,6 +180,34 @@ const ContactSupport = ({ navigation }) => {
   const currentLang = (i18n.language || 'en').split('-')[0];
   const trans = localTranslations[currentLang] || localTranslations.en;
 
+  const screenHeight = Dimensions.get("screen").height;
+  const windowHeight = Dimensions.get("window").height;
+  const navBarHeight = screenHeight - windowHeight;
+
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const scrollViewRef = useRef(null);
+
+  const handleInputFocus = (offset) => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: offset, animated: true });
+    }, 150);
+  };
+
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -238,11 +269,16 @@ const ContactSupport = ({ navigation }) => {
 
   return (
     <LinearGradient colors={colors.backgroundGradient} style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={[styles.container, { paddingTop: insets.top + 16 }]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
       >
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={[styles.container, { paddingTop: insets.top + 16 }]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
@@ -357,7 +393,10 @@ const ContactSupport = ({ navigation }) => {
                 setActiveChip(null); // Reset active chip if manually typing
                 if (errors.subject) setErrors(prev => ({ ...prev, subject: null }));
               }}
-              onFocus={() => setSubjectFocused(true)}
+              onFocus={() => {
+                setSubjectFocused(true);
+                handleInputFocus(280);
+              }}
               onBlur={() => setSubjectFocused(false)}
             />
           </View>
@@ -394,7 +433,10 @@ const ContactSupport = ({ navigation }) => {
                 setMessage(text);
                 if (errors.message) setErrors(prev => ({ ...prev, message: null }));
               }}
-              onFocus={() => setMessageFocused(true)}
+              onFocus={() => {
+                setMessageFocused(true);
+                handleInputFocus(400);
+              }}
               onBlur={() => setMessageFocused(false)}
               multiline
               numberOfLines={5}
@@ -420,7 +462,11 @@ const ContactSupport = ({ navigation }) => {
             )}
           </TouchableOpacity>
         </View>
+        {Platform.OS === "android" && (
+          <View style={{ height: keyboardHeight > 0 ? keyboardHeight - insets.bottom + navBarHeight : 0 }} />
+        )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };

@@ -20,6 +20,26 @@ export const clearUserSession = () => {
     storage.delete('aiMentorLastActiveDate');
     storage.delete('aiMentorChatHistory');
     storage.delete('local_push_notifications');
+    storage.delete('user.lastMoodDate');
+    storage.delete('user.checklist.played_game');
+    storage.delete('user.checklist.habit_completed');
+    storage.delete('user.onboarding_checklist_completed');
+    storage.delete('user.onboarding_checklist_bonus_awarded');
+    storage.delete('user.onboarding_checklist_bonus_awarded_server');
+    storage.delete('user.checklist.create_habit_xp_awarded');
+    storage.delete('user.checklist.create_habit_xp_awarded_server');
+    storage.delete('user.checklist.played_game_xp_awarded');
+    storage.delete('user.checklist.played_game_xp_awarded_server');
+    storage.delete('user.checklist.complete_habit_xp_awarded');
+    storage.delete('user.checklist.complete_habit_xp_awarded_server');
+
+    // Clear all virtual plant (growy) keys dynamically
+    const keys = storage.getAllKeys();
+    keys.forEach(key => {
+        if (key.startsWith('growy.')) {
+            storage.delete(key);
+        }
+    });
 };
 
 
@@ -38,4 +58,6 @@ export const getStorageScope = (_token?: string) => {
 export const getAiMentorRemainingMessagesKey = (token?: string) => `aiMentorRemainingMessages.${getStorageScope(token)}`;
 export const getAiMentorLastActiveDateKey = (token?: string) => `aiMentorLastActiveDate.${getStorageScope(token)}`;
 export const getAiMentorChatHistoryKey = (token?: string) => `aiMentorChatHistory.${getStorageScope(token)}`;
+export const getMoodHistoryKey = (token?: string) => `user.moodHistory.${getStorageScope(token)}`;
+
 

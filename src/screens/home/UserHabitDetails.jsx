@@ -6,6 +6,7 @@ import { faArrowLeft, faEdit, faNoteSticky, faExclamationTriangle, faHistory, fa
 import { getUserHabitByIdFetch, getWeeklyProgressFetch, reportHabitProgressFetch } from "../../utils/fetch";
 
 import { useMMKVString } from "react-native-mmkv";
+import { storage } from "../../utils/MMKVStore";
 import { useEffect, useState, useRef } from "react";
 import { ICONS } from "../../constants/icons";
 import { TouchableOpacity } from "react-native";
@@ -17,17 +18,17 @@ import { getTranslatedHabit } from "../../utils/habitTranslations";
 
 
 const CATEGORY_ICON_MAP = {
-  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
-  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
-  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
-  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
-  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+    default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+    productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+    nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+    hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+    nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
 };
 
 const getCategoryIcon = (iconKey) => {
-  if (!iconKey) return '⭐';
-  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
-  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+    if (!iconKey) return '⭐';
+    if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+    return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
 };
 
 const weeklyDataPlaceholder = [
@@ -102,6 +103,7 @@ const UserHabitDetails = () => {
             getUserHabitById(habitId, date);
             getWeeklyProgress(habitId);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [route.params?.habitId, route.params?.date]);
 
     const totalCurrent = userHabit ? ((userHabit.currentValue ?? 0) + liveDelta) : 0;
@@ -114,6 +116,7 @@ const UserHabitDetails = () => {
             easing: Easing.out(Easing.cubic),
             useNativeDriver: false,
         }).start();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dailyPercent]);
 
 
@@ -123,6 +126,31 @@ const UserHabitDetails = () => {
             const response = await getUserHabitByIdFetch(token, habitId, date);
             if (response?.data) {
                 const newData = response.data;
+
+                // Check for background celebration flag
+                const dateStr = date ? date.split('T')[0] : new Date().toISOString().split('T')[0];
+                const celebrateKey = `celebrate_${habitId}_${dateStr}`;
+                const hasCelebrateFlag = storage.getString(celebrateKey) === 'true';
+
+                if (hasCelebrateFlag) {
+                    storage.delete(celebrateKey);
+                    storage.delete(`timer_start_${habitId}_${dateStr}`);
+                    storage.delete(`timer_acc_${habitId}_${dateStr}`);
+                    storage.delete(`timer_target_${habitId}_${dateStr}`);
+                    storage.delete(`timer_unit_${habitId}_${dateStr}`);
+                    storage.delete(`pending_stop_${habitId}_${dateStr}`);
+
+                    try {
+                        const { NativeModules } = require('react-native');
+                        if (NativeModules.RNSound && typeof NativeModules.RNSound.stopAllPlayers === 'function') {
+                            NativeModules.RNSound.stopAllPlayers();
+                        }
+                    } catch (e) {}
+
+                    const updatedHabit = { ...newData, currentValue: newData.targetValue || 1 };
+                    navigation.navigate("HabitCelebration", { habit: updatedHabit });
+                    return;
+                }
 
                 // Calculate how much the server has actually advanced since our last baseline
                 const confirmedAmount = Math.max(0, (newData.currentValue ?? 0) - (userHabit?.currentValue ?? 0));
@@ -246,9 +274,11 @@ const UserHabitDetails = () => {
                     contentContainerStyle={styles.scrollContent}
                 >
                     <View style={styles.titleSection}>
-                        <Text className="font-redditsans-bold" style={[styles.habitTitle, { color: colors.text }]}>
-                            {getTranslatedHabit(userHabit || { title: "Loading..." }, i18n.language, t).title}{" "}
-                            {ICONS[userHabit?.icon]}
+                        <Text
+                            className="font-redditsans-bold"
+                            style={[styles.habitTitle, { color: colors.text }]}
+                        >
+                            {userHabit?.title || "Loading..."} {ICONS[userHabit?.icon]}
                         </Text>
                         <Text
                             className="font-redditsans-medium"
@@ -257,28 +287,26 @@ const UserHabitDetails = () => {
                             {userHabit?.description ||
                                 getTranslatedHabit(userHabit, i18n.language, t).description}
                         </Text>
- 
+
                         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
                             {userHabit?.categoryDetails && (
-                                <View 
+                                <View
                                     style={[
-                                        styles.tag, 
-                                        { 
-                                            backgroundColor: (userHabit.categoryDetails.color || colors.primary) + '20', 
-                                            marginTop: 0, 
-                                            flexDirection: 'row', 
-                                            alignItems: 'center', 
-                                            gap: 4 
+                                        styles.tag,
+                                        {
+                                            backgroundColor: (userHabit.categoryDetails.color || colors.primary) + '20',
+                                            marginTop: 0,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            gap: 4
                                         }
                                     ]}
                                 >
-                                    <Text style={{ fontSize: 13 }}>{getCategoryIcon(userHabit.categoryDetails.icon)}</Text>
-
-                                    <Text 
-                                        className="font-redditsans-bold" 
+                                    <Text
+                                        className="font-redditsans-bold"
                                         style={[
-                                            styles.tagText, 
-                                            { 
+                                            styles.tagText,
+                                            {
                                                 color: userHabit.categoryDetails.color || colors.primary,
                                                 fontWeight: '700'
                                             }
@@ -310,7 +338,7 @@ const UserHabitDetails = () => {
                                 </View>
                             )}
                         </View>
- 
+
                         {/* Bugünkü Tərəqqi / Today's Progress Horizontal Bar */}
                         {userHabit && (
                             <View style={{ marginTop: 20 }}>
@@ -336,22 +364,22 @@ const UserHabitDetails = () => {
                                     </Text>
                                 </View>
                                 <View style={{ height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden', width: '100%' }}>
-                                    <Animated.View 
-                                        style={{ 
-                                            height: '100%', 
-                                            backgroundColor: colors.primary, 
+                                    <Animated.View
+                                        style={{
+                                            height: '100%',
+                                            backgroundColor: colors.primary,
                                             borderRadius: 3,
                                             width: progressAnim.interpolate({
                                                 inputRange: [0, 100],
                                                 outputRange: ['0%', '100%']
                                             })
-                                        }} 
+                                        }}
                                     />
                                 </View>
                             </View>
                         )}
                     </View>
- 
+
                     {/* Separator Line */}
                     <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 14 }} />
 

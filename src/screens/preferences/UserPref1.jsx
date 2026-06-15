@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 const UserPref1 = () => {
   const { t } = useTranslation();
   const { theme, isDark } = useTheme();
-  
+
   const AGE_RANGES = [
     { id: "under18", label: t("preferences.step1.ranges.under18"), value: 17 },
     { id: "18-24", label: "18 - 24", value: 21 },
@@ -61,37 +61,35 @@ const UserPref1 = () => {
 
           <View className="mb-8">
             {AGE_RANGES.map((range) => {
-              const isSelected = selectedRange?.id === range.id;
-              return (
-                <TouchableOpacity
-                  key={range.id}
-                  onPress={() => setSelectedRange(range)}
-                  className={`flex-row items-center p-5 mb-4 rounded-2xl ${
-                    isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
-                  }`}
-                  style={{ 
-                    backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: isSelected ? 0.2 : 0.05,
-                    shadowRadius: 4,
-                    elevation: 3
-                  }}
-                >
-                  <View className={`w-6 h-6 rounded-full border-2 mr-4 items-center justify-center ${
-                    isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
-                  }`}>
-                    {isSelected && <View className="w-2.5 h-2.5 bg-white rounded-full" />}
-                  </View>
-                  <Text style={{ 
-                    color: colors.text,
-                    fontSize: 18,
-                    fontWeight: isSelected ? "700" : "500"
-                  }} className="font-redditsans-bold">
-                    {range.label}
-                  </Text>
-                </TouchableOpacity>
-              );
+                const isSelected = selectedRange?.id === range.id;
+                return (
+                    <TouchableOpacity
+                        key={range.id}
+                        onPress={() => setSelectedRange(range)}
+                        className={`flex-row items-center p-4 mb-3 rounded-2xl ${isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
+                            }`}
+                        style={{
+                            backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: isSelected ? 0.2 : 0.05,
+                            shadowRadius: 4,
+                            elevation: 3
+                        }}
+                    >
+                        <View className={`w-5 h-5 rounded-full border-2 mr-3 items-center justify-center ${isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
+                            }`}>
+                            {isSelected && <View className="w-2 h-2 bg-white rounded-full" />}
+                        </View>
+                        <Text style={{
+                            color: colors.text,
+                            fontSize: 16,
+                            fontWeight: isSelected ? "700" : "500"
+                        }} className="font-redditsans-bold">
+                            {range.label}
+                        </Text>
+                    </TouchableOpacity>
+                );
             })}
           </View>
 
@@ -106,12 +104,13 @@ const UserPref1 = () => {
                   initialData,
                   preferences: {
                     ...previousPreferences,
-                    age: selectedRange.value, // Sending representative value for backend compatibility
-                    ageLabel: selectedRange.label // Keeping label for UI if needed
+                    age: selectedRange.value,
+                    ageLabel: selectedRange.label
                   }
                 });
               }}
-              className={`${!selectedRange ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full shadow-lg`}
+              style={{ backgroundColor: colors.primaryLight, opacity: !selectedRange ? 0.5 : 1 }}
+              className="py-5 rounded-full shadow-lg"
             >
               <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>

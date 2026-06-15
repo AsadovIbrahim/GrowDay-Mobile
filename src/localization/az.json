@@ -117,6 +117,23 @@
     "Time to complete your habit ⏰": "Vərdişinizi tamamlamaq vaxtıdır ⏰"
   },
   "home": {
+    "mood_title": "Bu gün özünüzü necə hiss edirsiniz?",
+    "mood_saved": "Əhval-ruhiyyəniz qeyd olundu! İnkişafa davam! 🌟",
+    "mood_xp_earned": "+5 XP Gündəlik Əhval Bonusu!",
+    "mood_toast_saved": "Əhvalınız qeyd edildi! 🎉",
+    "mood_toast_xp": "+5 XP qazandınız",
+    "mood_title_distribution": "Əhval Paylanması (Son 30 Gün)",
+    "mood_title_history": "Əhval-ruhiyyə Tarixçəsi (Son 7 Gün)",
+    "mood_no_data": "Qeyd yoxdur",
+    "mood_labels": {
+      "peaceful": "Sakit",
+      "energetic": "Enerjili",
+      "tired": "Yorğun",
+      "sad": "Kədərli",
+      "stressed": "Əsəbi",
+      "happy": "Xoşbəxt",
+      "neutral": "Normal"
+    },
     "greeting": "Salam {{name}}!",
     "subtitle": "Gəlin birlikdə vərdişlər quraq!",
     "todays_habits": "Bugünkü Vərdişlər",
@@ -131,9 +148,9 @@
     "empty_subtitle": "Kiçikdən başlayın, ardicıl olun",
     "add_first_habit": "İlk vərdişinizi əlavə edin",
     "empty_hint": "Vərdişlərinizi gündəlik izləyə\nvə irəliləmənizi görə bilərsiniz",
-    "progress_today": "Bugünkü Tərəqqi",
-    "add_habits_tracking": "İzləməyə başlamaq üçün vərdiş əlavə edin",
-    "days_habits": "{{day}} gününün vərdişləri",
+    "progress_today": "Bugünkü tərəqqi",
+    "add_habits_tracking": "Gündəlik statistikanı açmaq üçün ilk vərdişinizi yaradın",
+    "days_habits": "{{day}} vərdişləri",
     "day_names": {
       "sunday": "Bazar",
       "monday": "Bazar ertəsi",
@@ -152,7 +169,44 @@
       "fri": "CÜM",
       "sat": "ŞƏN"
     },
-    "quote_of_the_day": "✨ Günün Sitatı"
+    "quote_of_the_day": "✨ Günün Sitatı",
+    "suggested_habits_title": "💡 Tövsiyə Olunan Vərdişlər",
+    "suggestions": {
+      "read": {
+        "title": "Kitab Oxumaq",
+        "desc": "Fərdi inkişaf üçün 10 səhifə oxuyun"
+      },
+      "water": {
+        "title": "Su İçmək",
+        "desc": "Gün ərzində bədəninizi nəmli saxlayın"
+      },
+      "meditate": {
+        "title": "Meditasiya",
+        "desc": "10 dəqiqə ağlınızı sakitləşdirin"
+      },
+      "walk": {
+        "title": "Gəzinti",
+        "desc": "Formda qalmaq üçün 10,000 addım atın"
+      },
+      "sleep": {
+        "title": "Yuxu Rejimi",
+        "desc": "Tam bərpa üçün 8 saat yatın"
+      }
+    },
+    "checklist_title": "🚀 İlk Addımlarınız",
+    "checklist_subtitle": "AI Məşqçini açmaq üçün ilk addımları tamamlayın və 3-cü Səviyyəyə çatın.",
+    "checklist_log_mood": "😊 Əhvalınızı Qeyd Edin",
+    "checklist_log_mood_desc": "+5 XP qazanın və hisslərinizi izləyin",
+    "checklist_create_habit": "➕ İlk Vərdişinizi Yaradın",
+    "checklist_create_habit_desc": "+15 XP qazanın və inkişaf yoluna başlayın",
+    "checklist_play_game": "🧠 Zehni Oyun Oynayın",
+    "checklist_play_game_desc": "Diqqət və yaddaşınızı məşq etdirərək +10 XP qazanın",
+    "checklist_complete_habit": "✅ İlk Vərdişinizi Tamamlayın",
+    "checklist_complete_habit_desc": "İlk vərdişinizi tamamlayaraq +20 XP qazanın",
+    "checklist_success_title": "🎉 İlk Addımlar Tamamlandı!",
+    "checklist_success_desc": "🎉 Hər şey hazırdır! İnkişaf yolunuz indi başlayır.",
+    "checklist_success_btn": "Möhtəşəm! Başlayaq",
+    "checklist_bonus_awarded": "İlk addımlar tamamlanma bonusu"
   },
   "my_habits": {
     "header": "Vərdişləriniz",
@@ -238,6 +292,9 @@
     "locked_past_desc": "Yalnız bu gün və dünənki vərdişləri tamamlaya bilərsiniz."
   },
   "explore": {
+    "games_intro_title": "Zehni Oyunları Kəşf Edin! 🧠",
+    "games_intro_desc": "Kəşf et bölməsinə xoş gəlmisiniz! GrowDay-in əsas məqsədi güclü vərdişlər yaratmaq olsa da, burada həmçinin koqnitiv oyunlar da oynaya bilərsiniz. Əlavə XP qazanmaq və daha sürətli səviyyə artırmaq üçün diqqət, yaddaş və reaksiya sürətinizi məşq etdirin!",
+    "games_intro_button": "Oynayaq!",
     "header": "Kəşf et",
     "search_placeholder": "Vərdişləri, tapşırıqları axtar...",
     "suggested_habits": "Təklif olunan vərdişlər",
@@ -328,6 +385,9 @@
     "clear_btn": "Təmizlə",
     "reminders_label": "XATIRLATMALAR",
     "reminders_sub": "Yolda qalmaq üçün mənə bildiriş göndər.",
+    "set_reminder_time": "Xatırlatma Vaxtını Təyin Et",
+    "hour": "Saat",
+    "minute": "Dəqiqə",
     "every_day": "Hər gün",
     "on_scheduled_days": "Təyin olunmuş günlərdə",
     "selected_days": "Seçilmiş günlərdə",
@@ -425,7 +485,11 @@
     "finance": "Maliyyə",
     "social": "Sosial",
     "wellness": "Rifah",
-    "other": "Digər"
+    "other": "Digər",
+    "learning": "Öyrənmə",
+    "hydration": "Su Qəbulu",
+    "mindfulness": "Zehinlilik",
+    "sleep": "Yuxu"
   },
   "achievements": {
     "header": "Nailiyyətlər",
@@ -716,7 +780,7 @@
       "question": "Cinsiyyətiniz nədir?",
       "male": "Kişi",
       "female": "Qadın",
-      "other": "Digər"
+      "other": "Deməməyi üstün tuturam"
     },
     "step1": {
       "title1": "Neçə",
@@ -800,9 +864,12 @@
   },
   "auth": {
     "welcome_back": "Yenidən xoş gəldiniz!",
+    "welcome_subtitle": "İnkişafınıza davam etmək üçün hesabınıza daxil olun",
     "lets_start": "Gəlin başlayaq!",
+    "register_subtitle": "Vərdişlərinizi idarə etmək üçün hesab yaradın",
     "google_continue": "GOOGLE İLƏ DAVAM ET",
     "or_login_email": "VƏ YA E-POÇT İLƏ DAXİL OLUN",
+    "or_register_email": "VƏ YA EMAİL İLƏ QEYDİYYAT",
     "email_username": "E-poçt və ya İstifadəçi adı",
     "email": "E-poçt",
     "password": "Şifrə",
@@ -867,6 +934,7 @@
       "password_wrong": "Şifrə yanlışdır.",
       "user_not_found": "İstifadəçi tapılmadı.",
       "invalid_credentials": "İstifadəçi adı və ya şifrə yanlışdır.",
+      "username_or_email_wrong": "İstifadəçi adı və ya e-poçt yanlışdır.",
       "account_locked": "Hesab müəqqətli olaraq blokladı. Bir az sonra yenidən cəhd edin.",
       "email_not_confirmed": "E-poçt ənvəniniz təsdiqlənməyib."
     }
@@ -1009,7 +1077,22 @@
     "habits_label": "Vərdişlər",
     "brain_insight_high_past": "Bu dövrdə vərdişlərinizi {{rate}}% tamamlayaraq beyninizi əla formada saxlamısınız! Bunu cari hədəfləriniz üçün nümunə götürün. 🏆",
     "brain_insight_medium_past": "Bu dövrdə vərdişlərinizin {{rate}}%-ni icra etmisiniz. Hər yeni dövr yeni bir başlanğıcdır — bu dəfə daha da yüksəyə hədəfləyə bilərsiniz! ⚡",
-    "brain_insight_low_past": "Bu dövrdə tamamlanma faiziniz {{rate}}% olub. Keçmiş keçmişdə qaldı! Cari dövrdə yeni bir səhifə açaraq beyninizi fəallaşdırın. 🌟"
+    "brain_insight_low_past": "Bu dövrdə tamamlanma faiziniz {{rate}}% olub. Keçmiş keçmişdə qaldı! Cari dövrdə yeni bir səhifə açaraq beyninizi fəallaşdırın. 🌟",
+    "ai_insight_title": "AI Mentor Analizi",
+    "total_xp": "Qazanılmış Ümumi XP",
+    "avg_completion": "Ortalama Tamamlama",
+    "most_consistent": "Ən Davamlı Vərdiş",
+    "mood_trend_coming_soon": "Tezliklə: Əhval Trendi və Əhval Balı",
+    "insight_most_common_mood": "Ən çox qeyd edilən əhval: {{mood}}",
+    "insight_completion_improved": "Tamamlama göstəricisi bu dövrdə {{change}}% artıb",
+    "insight_completion_decreased": "Tamamlama göstəricisi bu dövrdə {{change}}% azalıb",
+    "insight_completion_stable": "Tamamlama faizi bu dövrdə sabit qalıb",
+    "insight_completion_rate": "Cari dövr üçün tamamlama faiziniz: {{rate}}%",
+    "insight_best_streak": "Ən yaxşı vərdiş seriyası: {{streak}} gün",
+    "insight_positive_mood_completion": "Pozitiv əhvalda ({{emoji}} {{mood}}) vərdiş tamamlama faiziniz 25% daha yüksəkdir",
+    "insight_mood_stable_consistency": "Əhvalınız stabil qaldıqda vərdiş davamlılığınız artır",
+    "insight_longest_streak_positive_mood": "Ən uzun seriyanız əhvalınızın ən yaxşı olduğu dövrə təsadüf edib",
+    "insight_harder_on_difficult_days": "Yorğun və ya gərgin günlərdə vərdişlərinizi tamamlamaq çətinləşə bilər"
   },
   "help": {
     "title": "Kömək Mərkəzi",
@@ -1063,7 +1146,7 @@
     }
   },
   "games": {
-    "title": "Koqnitiv Oyunlar",
+    "title": "Zehni Oyunlar",
     "memory_match": "Yaddaş Kartları",
     "memory_match_desc": "Eyni ikon cütlərini tapın. Vizual yaddaşınızı və diqqətinizi gücləndirin.",
     "select_difficulty": "Oyuna başlamaq üçün çətinlik səviyyəsini və ölçünü seçin.",
@@ -1273,6 +1356,7 @@
   "ai_mentor": {
     "card_title": "Süni İntellekt Mentoru",
     "card_subtitle": "Vərdişləriniz haqqında hər şeyi soruşun",
+    "compact_desc": "Məqsədlərinizə uyğun fərdi tövsiyələr alın.",
     "card_locked": "Səviyyə 3-də açılır",
     "chat_header": "AI Mentor",
     "input_placeholder": "Mesajınızı yazın...",
@@ -1288,7 +1372,8 @@
     "select_prompt": "Söhbətə başlamaq üçün birini seçin:",
     "prompt_motivate": "Məni bu gün üçün motivasiya et!",
     "prompt_habit": "Məhsuldarlığımı artırmaq üçün hansı vərdişləri təklif edirsən?",
-    "prompt_plan": "Gözəl bir gün planlaması hazırlamağıma kömək et!"
+    "prompt_plan": "Gözəl bir gün planlaması hazırlamağıma kömək et!",
+    "demo_habit_response": "🧠 Cari Analiz\n\n• Mütaliə Vərdişi: 100% 🔥\n• Əhval: Sakit 😊\n\n⚡ Təklif Olunan Plan\n\n• Səhər Qaçışı - 07:30\n• Meditasiya - 12:00\n• Kitab Oxumaq - 17:00\n\n🎯 Qısa Məsləhət\n\nMütaliə seriyanızı bu gün də davam etdirin."
   },
   "focus_sounds": {
     "title": "Fokus Səsləri",
@@ -1300,5 +1385,44 @@
     "river": "Çay",
     "now_playing": "İndi Çalır",
     "ready": "Çalmağa Hazır"
+  },
+  "virtual_plant": {
+    "title": "Vərdiş Dostun: Growy",
+    "wateringLevel": "Sulama Səviyyəsi",
+    "stageName": "Mərhələ",
+    "waterMe": "Məni sula",
+    "nextStage": "Növbəti mərhələyə",
+    "stages": [
+      "Toxum / Filiz 🌱",
+      "Dibçək Bitkisi 🪴",
+      "Çiçəklənən Bitki 🌸",
+      "Gənc Budaq 🌿",
+      "Möhtəşəm Ağac 🌳"
+    ],
+    "thirsty": [
+      "Çox susamışam... Məni sulamaq üçün vərdişlərini tamamla! 🥺💧",
+      "Bu dipçək bir az quru qalıb. Məni unutma! 🥀",
+      "Bir stəkan su mənə də yaxşı gələrdi! 🥤",
+      "Hədəflərinə başlamaq üçün əla andır! Gəl başlayaq! 🚀"
+    ],
+    "growing": [
+      "Su üçün çox sağ ol! Qalan vərdişləri də tamamlasaq əla olar! 💧🍃",
+      "Hər gün bir addım! Bir az daha səy göstərək! 🏃‍♂️",
+      "Mən artıq böyüyürəm! Sənin intizamın məni yaşadır! 💪",
+      "Birlikdə əla komandayıq! Hədəflərə doğru davam! 🌟"
+    ],
+    "blooming": [
+      "Möhtəşəm! Bu gün bütün vərdişləri tamamladın! Mən çox xoşbəxtəm! 🎉🌟",
+      "Sən əsl vərdiş qəhrəmanısan! Günü 100% tamamladıq! 🏆",
+      "Çiçəklərim sənin intizamının bəhrəsidir! Təşəkkürlər! 🌸✨",
+      "Mükəmməl gün! Sabah da eyni enerji ilə davam edək! 🌿❤️"
+    ],
+    "general": [
+      "Hər vərdiş mənim üçün bir damla sudur! 💧",
+      "Birlikdə güclüyük! Bu gün vərdişlərini etdin? 💪",
+      "Məni böyütmək üçün XP qazan! 🌱",
+      "Mənə toxunduğun üçün təşəkkürlər! Bu çox xoşdur! 😊",
+      "Unutma, kiçik addımlar böyük nəticələrə aparır! 🚀"
+    ]
   }
 }

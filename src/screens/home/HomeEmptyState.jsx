@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { MenuContext } from '../../context/MenuContext';
-import { useTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import { MenuContext } from "../../context/MenuContext";
+import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import GettingStartedChecklist from "./components/GettingStartedChecklist";
 
-const HomeEmptyState = () => {
+const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
   const { setIsCreateModalOpen } = useContext(MenuContext);
   const { theme, isDark } = useTheme();
   const { colors } = theme;
@@ -19,7 +19,7 @@ const HomeEmptyState = () => {
       <View className="px-4 mb-4">
         <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
           <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular text-sm">
-            {t('home.calendar_inactive')}
+            {t("home.calendar_inactive")}
           </Text>
         </View>
       </View>
@@ -42,10 +42,10 @@ const HomeEmptyState = () => {
           </View>
 
           <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-1 text-center">
-            {t('home.empty_title')}
+            {t("home.empty_title")}
           </Text>
           <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular mb-5 text-center">
-            {t('home.empty_subtitle')}
+            {t("home.empty_subtitle")}
           </Text>
 
           <TouchableOpacity
@@ -55,30 +55,38 @@ const HomeEmptyState = () => {
           >
             <FontAwesomeIcon icon={faPlus} color="#ffffff" size={18} />
             <Text className="ml-2 text-white text-base font-redditsans-medium">
-              {t('home.add_first_habit')}
+              {t("home.add_first_habit")}
             </Text>
           </TouchableOpacity>
 
           <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular text-center">
-            {t('home.empty_hint')}
+            {t("home.empty_hint")}
           </Text>
         </View>
       </View>
+
+      {/* Getting Started Checklist Section */}
+      <GettingStartedChecklist
+        accountData={accountData}
+        onLogMoodPress={onLogMoodPress}
+        userHabitCount={0}
+        onAwardBonusXP={onAwardBonusXP}
+      />
 
       {/* Progress Today placeholder */}
       <View className="px-4 mb-20">
         <View
           className="rounded-3xl px-4 py-4"
           style={{
-            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.3)',
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.3)",
           }}
         >
           <Text style={{ color: colors.text }} className="text-base font-redditsans-bold mb-3">
-            {t('home.progress_today')}
+            {t("home.progress_today")}
           </Text>
           <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
             <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular">
-              {t('home.add_habits_tracking')}
+              {t("home.add_habits_tracking")}
             </Text>
           </View>
         </View>

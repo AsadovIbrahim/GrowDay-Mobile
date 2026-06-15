@@ -90,19 +90,24 @@ export default function Onboarding() {
             flexDirection: "row",
             alignItems: "center",
             gap: 6,
-            backgroundColor: "rgba(255,255,255,0.22)",
+            backgroundColor: "#ffffff",
             borderRadius: 999,
             paddingHorizontal: 14,
             paddingVertical: 8,
             borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.4)",
+            borderColor: "rgba(32, 137, 58, 0.15)",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 2,
           }}
         >
           <Text style={{ fontSize: 16 }}>{currentLang.flag}</Text>
-          <Text style={{ fontFamily: "RedditSans-Bold", fontSize: 13, color: "#fff" }}>
+          <Text style={{ fontFamily: "RedditSans-Bold", fontSize: 13, color: "#20893a" }}>
             {currentLang.label}
           </Text>
-          <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 10, marginLeft: -2 }}>▾</Text>
+          <Text style={{ color: "#20893a", fontSize: 10, marginLeft: -2 }}>▾</Text>
         </TouchableOpacity>
 
         {/* Language Modal */}
@@ -199,7 +204,7 @@ export default function Onboarding() {
         />
 
         <View
-          className="gap-5"
+          className="gap-4"
           style={[styles.dotContainer, { bottom: insets.bottom + 110 }]}
         >
           {data.map((_, i) => (

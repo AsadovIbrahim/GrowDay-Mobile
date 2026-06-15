@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, PermissionsAndroid, Platform, Alert, Animated, Easing } from 'react-native';
 import { useMMKVString, useMMKVBoolean } from 'react-native-mmkv';
+import { storage } from '../../../utils/MMKVStore';
 import Geolocation from 'react-native-geolocation-service';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlay, faPause, faStop, faPlus, faKeyboard, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -79,7 +80,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             pulseAnim.stopAnimation();
             pulseAnim.setValue(1);
         }
-    }, [timerActive]);
+    }, [timerActive, pulseAnim]);
 
     // Sync state when MMKV changes externally
     useEffect(() => {
@@ -92,7 +93,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             handleStop();
             setPendingStop(undefined);
         }
-    }, [pendingStop]);
+    }, [pendingStop, handleStop, setPendingStop]);
 
     useEffect(() => {
         if (!timerActive) return;
@@ -117,10 +118,16 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             autoStopTriggered.current = true;
             handleStop();
         }
-    }, [distance, seconds, stepCount, timerActive]);
+    }, [distance, seconds, stepCount, timerActive, habit.currentValue, habit.targetValue, handleStop, isDistance, isKcal, isSteps, unit]);
 
     const isBoolean = useMemo(() => !habit.unit || !habit.targetValue || habit.targetValue <= 0, [habit]);
     const isDuration = useMemo(() => ["minute", "minutes", "hour", "hours", "min", "hr", "mins", "hrs"].includes(unit), [unit]);
+    const targetSeconds = useMemo(() => {
+        if (!isDuration) return 0;
+        const targetVal = habit.targetValue || 1;
+        const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+        return targetVal * unitMod;
+    }, [habit.targetValue, isDuration, unit]);
     const isDistance = useMemo(() => ["km", "m", "mile", "miles"].includes(unit), [unit]);
     const isSteps = useMemo(() => unit === "steps", [unit]);
     const isKcal = useMemo(() => ["kcal", "cal", "calories"].includes(unit), [unit]);
@@ -213,6 +220,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const kcalBurned = Math.max(stepCountRef.current * 0.04, initialAcc * (6.5 / 60));
             onLiveUpdate?.(kcalBurned);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const lastMmkvWriteRef = useRef(0);
@@ -227,6 +235,13 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 const start = new Date(storedStart).getTime();
                 const now = new Date().getTime();
                 total += Math.floor((now - start) / 1000);
+            }
+
+            if (isDuration) {
+                const maxSessionSeconds = targetSeconds - baseSeconds;
+                if (maxSessionSeconds > 0 && total > maxSessionSeconds) {
+                    total = maxSessionSeconds;
+                }
             }
 
             // GUARD: Skip all React state/UI updates when app is in background to prevent ANR
@@ -252,6 +267,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         syncTime();
         if (storedStart) interval = setInterval(syncTime, 1000);
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [storedStart, storedAcc]);
 
     // Use a ref for displaySeconds to avoid running the effect every second
@@ -282,13 +298,13 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 displayVal = `${displayKcal.toFixed(1)} kcal`;
             }
 
-            let targetSeconds = null;
+            let computedTargetSeconds = null;
             if (isDuration) {
                 const targetVal = habit.targetValue || 1;
                 const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
-                targetSeconds = targetVal * unitMod;
+                computedTargetSeconds = targetVal * unitMod;
             }
-            displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, targetSeconds, dateStr);
+            displayOngoingHabitNotification(habit, displaySecondsRef.current, displayVal, !timerActive, baseSeconds, computedTargetSeconds, dateStr);
             lastNotifUpdateRef.current = nowMs;
         } else {
             cancelOngoingHabitNotification(hId);
@@ -299,15 +315,15 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 cancelOngoingHabitNotification(hId);
             }
         };
-    }, [timerActive, displayDistance, displaySteps, displayKcal, hId, isDuration, isKcal, habit.targetValue, unit, baseSeconds, habit]);
+    }, [timerActive, displayDistance, displaySteps, displayKcal, hId, isDuration, isKcal, habit.targetValue, unit, baseSeconds, habit, dateStr, distance, formatDistance, isDistance, isSteps, stepCount, t]);
 
     useEffect(() => {
         if ((isDistance || isSteps || isKcal) && timerActive) startTracking();
         else stopTracking();
         return () => stopTracking();
-    }, [isDistance, isSteps, isKcal, timerActive]);
+    }, [isDistance, isSteps, isKcal, timerActive, startTracking, stopTracking]);
 
-    const requestPermissions = async () => {
+    const requestPermissions = useCallback(async () => {
         if (Platform.OS === 'ios') return true;
         try {
             console.log("Requesting permissions for unit:", unit);
@@ -331,9 +347,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             console.log("Permission Error:", err);
             return false;
         }
-    };
+    }, [unit, isSteps, isKcal]);
 
-    const startTracking = async () => {
+    const startTracking = useCallback(async () => {
         const hasPermission = await requestPermissions();
         if (!hasPermission) return;
 
@@ -399,9 +415,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 console.warn("Pedometer check error:", err);
             });
         }
-    };
+    }, [requestPermissions, isDistance, onLiveUpdate, isReporting, storedAcc, storedStart, isSteps, isKcal, t, setStoredDist]);
 
-    const stopTracking = () => {
+    const stopTracking = useCallback(() => {
         if (isDistance && watchId.current !== null) {
             Geolocation.clearWatch(watchId.current);
             watchId.current = null;
@@ -420,12 +436,15 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         lastPos.current = { lat: null, lon: null };
         setStoredLat(undefined);
         setStoredLon(undefined);
-    };
+    }, [isDistance, isSteps, isKcal, setStoredLat, setStoredLon]);
 
-    const handleStartResume = () => {
+    const handleStartResume = useCallback(() => {
         blockUpdates.current = false;
         setStoredStart(new Date().toISOString());
         setTimerActive(true);
+
+        storage.set(`timer_target_${hId}_${dateStr}`, (habit.targetValue ?? 1).toString());
+        storage.set(`timer_unit_${hId}_${dateStr}`, habit.unit || '');
 
         if (isDuration) {
             const targetVal = habit.targetValue || 1;
@@ -436,9 +455,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 scheduleGoalReachedNotification(habit, remaining);
             }
         }
-    };
+    }, [hId, dateStr, habit, isDuration, unit, setStoredStart]);
 
-    const handlePause = () => {
+    const handlePause = useCallback(() => {
         if (!storedStart) return;
         const diff = Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000);
         const newAcc = parseInt(storedAcc || "0", 10) + diff;
@@ -450,11 +469,20 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
         // They paused but haven't finished, so schedule a reminder
         scheduleIncompleteReminder(habit);
-    };
+    }, [storedStart, storedAcc, hId, habit, setStoredStart, setStoredAcc]);
 
-    const handleStop = async () => {
+    const handleStop = useCallback(async () => {
         const acc = parseInt(storedAcc || "0", 10);
         let totalTime = acc + (storedStart ? Math.floor((new Date().getTime() - new Date(storedStart).getTime()) / 1000) : 0);
+
+        if (isDuration) {
+            const maxSessionSeconds = targetSeconds - baseSeconds;
+            if (maxSessionSeconds > 0 && (maxSessionSeconds - totalTime) <= 1.5) {
+                totalTime = maxSessionSeconds;
+            } else if (maxSessionSeconds > 0 && totalTime > maxSessionSeconds) {
+                totalTime = maxSessionSeconds;
+            }
+        }
 
         let delta = isDistance ? totalDistRef.current : (totalTime / 60);
         if (isSteps) delta = stepCount;
@@ -472,9 +500,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         const success = await handleReportProgress(delta, "device", totalTime);
         if (success) cleanup();
         else console.log("Report failed, keeping data for retry.");
-    };
+    }, [storedAcc, storedStart, isDuration, targetSeconds, baseSeconds, isDistance, isSteps, stepCount, isKcal, unit, cleanup, handleReportProgress]);
 
-    const cleanup = () => {
+    const cleanup = useCallback(() => {
         blockUpdates.current = true;
         setStoredStart(undefined); setStoredAcc("0"); setStoredDist("0");
         setStoredLat(undefined); setStoredLon(undefined);
@@ -484,11 +512,11 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         cancelGoalReachedNotification(hId);
         autoStopTriggered.current = false;
         stopGlobalFocusSound();
-    };
+        storage.delete(`timer_target_${hId}_${dateStr}`);
+        storage.delete(`timer_unit_${hId}_${dateStr}`);
+    }, [hId, dateStr, stopTracking, setStoredStart, setStoredAcc, setStoredDist, setStoredLat, setStoredLon]);
 
-
-
-    const handleReportProgress = async (delta, source = "manual", durationInSec = 0) => {
+    const handleReportProgress = useCallback(async (delta, source = "manual", durationInSec = 0) => {
         try {
             setIsReporting(true);
             const hId = habit.userHabitId || habit.UserHabitId || habit.id;
@@ -504,7 +532,6 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const result = await reportHabitProgressFetch(token, payload);
             if (result.success) {
                 onActionComplete();
-
 
                 const totalProgress = (habit.currentValue ?? 0) + delta;
                 if (totalProgress >= (habit.targetValue ?? 1) && (habit.currentValue ?? 0) < (habit.targetValue ?? 1)) {
@@ -524,18 +551,18 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         } finally {
             setIsReporting(false);
         }
-    };
+    }, [habit, note, date, token, onActionComplete, navigation]);
 
-    const formatTime = (s) => {
+    const formatTime = useCallback((s) => {
         const hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
         return (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? `${hh}:${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}` : `${mm}:${ss < 10 ? '0' : ''}${ss}`;
-    };
+    }, [unit]);
 
-    const formatDistance = (val) => {
+    const formatDistance = useCallback((val) => {
         if (unit === "m") return `${(val * 1000).toFixed(0)} ${t("units.m")}`;
         if (unit === "miles" || unit === "mile") return `${val.toFixed(2)} ${t("units.miles")}`;
         return `${val.toFixed(2)} ${t("units.km")}`;
-    };
+    }, [unit, t]);
 
     // Prevent any action for future dates
     if (isFuture) {
@@ -759,8 +786,8 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         return (
             <View style={styles.durationContainer}>
                 {/* 1. Section Title */}
-                <Text 
-                    className="font-redditsans-bold text-xs uppercase tracking-[1.2px] self-start" 
+                <Text
+                    className="font-redditsans-bold text-xs uppercase tracking-[1.2px] self-start"
                     style={{ color: colors.textSecondary, marginBottom: -4, marginTop: 4 }}
                 >
                     {t("habit_details.action.today_session")}
@@ -775,16 +802,16 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                     <Text className="font-redditsans-bold" style={[styles.timerValue, { color: colors.text }]}>
                         {isKcal ? `${displayKcal.toFixed(1)} kcal`
                             : isSteps ? `${displaySteps} ${t("units.steps")}`
-                            : isDistance ? formatDistance(displayDistance)
-                            : formatTime(displaySeconds)}
+                                : isDistance ? formatDistance(displayDistance)
+                                    : formatTime(displaySeconds)}
                     </Text>
                     <Text className="font-redditsans-medium" style={[styles.timerLabel, { color: colors.textSecondary }]}>
                         {isKcal ? t("habit_details.action.live_calories")
                             : isSteps ? t("habit_details.action.live_steps")
-                            : isDistance ? t("habit_details.action.live_distance")
-                            : ["hour", "hr", "hrs", "hours"].includes(unit)
-                                ? t("habit_details.action.duration_hms")
-                                : t("habit_details.action.duration_ms")}
+                                : isDistance ? t("habit_details.action.live_distance")
+                                    : ["hour", "hr", "hrs", "hours"].includes(unit)
+                                        ? t("habit_details.action.duration_hms")
+                                        : t("habit_details.action.duration_ms")}
                     </Text>
 
                     {(isDistance || isSteps || isKcal) && (() => {
@@ -862,7 +889,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                 )}
 
                 {/* 4. Fokus Səsləri */}
-                {isDuration && <FocusSoundsPanel timerActive={timerActive} habitId={hId} />}
+                {isDuration && <FocusSoundsPanel timerActive={timerActive} habitId={hId} remainingSeconds={targetSeconds - displaySeconds} />}
             </View>
         );
     };

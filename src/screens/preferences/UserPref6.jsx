@@ -25,7 +25,7 @@ const UserPref6 = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedOptions, setSelectedOptions] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -65,32 +65,32 @@ const UserPref6 = () => {
     }
     return () => clearInterval(interval);
   }, [isLoading]);
-  
+
   const isUpdate = route.params?.isUpdate;
   const initialData = route.params?.initialData;
   const previousPreferences = route.params?.preferences || {};
 
   React.useEffect(() => {
     if (initialData?.motivationalFactors) {
-       const reverseMap = {
-         "LackOfMotivation": "Lack of Motivation",
-         "WorkOverload": "Work Overload",
-         "ClutteredEnvironment": "Cluttered Environment",
-         "DigitalDistractions": "Digital Distractions",
-         "Other": "Stress",
-         "LackOfTimeManagement": "Lack of Motivation" // Fallback or add new option if needed
-       };
-       
-       let factors = [];
-       if (typeof initialData.motivationalFactors === 'string') {
-         factors = initialData.motivationalFactors.split(",").map(f => f.trim());
-       } else if (Array.isArray(initialData.motivationalFactors)) {
-         factors = initialData.motivationalFactors;
-       }
+      const reverseMap = {
+        "LackOfMotivation": "Lack of Motivation",
+        "WorkOverload": "Work Overload",
+        "ClutteredEnvironment": "Cluttered Environment",
+        "DigitalDistractions": "Digital Distractions",
+        "Other": "Stress",
+        "LackOfTimeManagement": "Lack of Motivation" // Fallback or add new option if needed
+      };
 
-       const labels = factors.map(f => reverseMap[f]).filter(f => f);
-       // Remove duplicates if any
-       setSelectedOptions([...new Set(labels)]);
+      let factors = [];
+      if (typeof initialData.motivationalFactors === 'string') {
+        factors = initialData.motivationalFactors.split(",").map(f => f.trim());
+      } else if (Array.isArray(initialData.motivationalFactors)) {
+        factors = initialData.motivationalFactors;
+      }
+
+      const labels = factors.map(f => reverseMap[f]).filter(f => f);
+      // Remove duplicates if any
+      setSelectedOptions([...new Set(labels)]);
     }
   }, [initialData]);
 
@@ -147,15 +147,15 @@ const UserPref6 = () => {
       "Work Overload": "WorkOverload",
       "Cluttered Environment": "ClutteredEnvironment",
       "Digital Distractions": "DigitalDistractions",
-      "Stress": "Other", 
+      "Stress": "Other",
     };
 
     const motivationalFactorsEnumNames = selectedOptions
       .map((option) => motivationalFactorsMap[option])
       .filter((value) => value !== undefined);
 
-    const motivationalFactors = motivationalFactorsEnumNames.length > 0 
-      ? motivationalFactorsEnumNames.join(",") 
+    const motivationalFactors = motivationalFactorsEnumNames.length > 0
+      ? motivationalFactorsEnumNames.join(",")
       : "None";
 
     navigation.navigate("UserPref7", {
@@ -186,7 +186,7 @@ const UserPref6 = () => {
           </Text>
         </View>
 
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
@@ -200,7 +200,7 @@ const UserPref6 = () => {
                 {t("preferences.step6.title2")}
               </Text>
               <Text className="text-2xl ml-2">🧘</Text>
-              </View>
+            </View>
 
             <Text style={{ color: colors.textSecondary }} className="text-[13px] font-redditsans-regular mt-4 text-center px-8 leading-5">
               {t("preferences.step6.subtitle")}
@@ -215,11 +215,10 @@ const UserPref6 = () => {
                 <TouchableOpacity
                   key={option.id}
                   onPress={() => toggleOption(option.id)}
-                  className={`rounded-2xl p-5 mb-3 flex-row items-center justify-between ${
-                    isSelected
+                  className={`rounded-2xl p-4 mb-3 flex-row items-center justify-between ${isSelected
                       ? "border-2 border-green-500"
                       : isDark ? "border border-white/10" : "border border-green-100"
-                  }`}
+                    }`}
                   style={{
                     backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
                     shadowColor: "#000",
@@ -230,14 +229,14 @@ const UserPref6 = () => {
                   }}
                 >
                   <View className="flex-row items-center flex-1">
-                    <View className="mr-4">
+                    <View className="mr-3">
                       <FontAwesomeIcon
                         icon={option.icon}
-                        size={28}
+                        size={22}
                         color={option.iconColor}
                       />
                     </View>
-                    <Text style={{ color: colors.text }} className="text-[16px] font-redditsans-bold flex-1">
+                    <Text style={{ color: colors.text }} className="text-[15px] font-redditsans-bold flex-1">
                       {option.label}
                     </Text>
                   </View>
@@ -245,7 +244,7 @@ const UserPref6 = () => {
                     <View className="ml-3">
                       <FontAwesomeIcon
                         icon={faCheck}
-                        size={18}
+                        size={16}
                         color="#22c55e"
                       />
                     </View>
@@ -261,14 +260,16 @@ const UserPref6 = () => {
           <TouchableOpacity
             disabled={selectedOptions.length === 0}
             onPress={handleSubmit}
-            className={`${selectedOptions.length === 0 ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-4 rounded-full mb-6`}
             style={{
+              backgroundColor: colors.primaryLight,
+              opacity: selectedOptions.length === 0 ? 0.5 : 1,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 4,
               elevation: 4,
             }}
+            className="py-4 rounded-full mb-6"
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
               {t("preferences.continue")}

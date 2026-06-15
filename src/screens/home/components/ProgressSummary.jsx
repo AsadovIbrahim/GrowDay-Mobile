@@ -9,7 +9,7 @@ const ProgressSummary = ({ dailyStatistics }) => {
   const { colors } = theme;
   const { t } = useTranslation();
   return (
-    <View className="px-4 mb-8">
+    <View className="px-4 mb-4">
       <View className="flex-row gap-3">
         <View 
           className="flex-1 rounded-xl p-4 flex-row items-center"

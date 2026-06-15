@@ -117,6 +117,23 @@
     "Time to complete your habit ⏰": "该完成您的习惯了 ⏰"
   },
   "home": {
+    "mood_title": "你今天感觉怎么样？",
+    "mood_saved": "心情已记录！继续成长！ 🌟",
+    "mood_xp_earned": "+5 XP 每日心情奖励！",
+    "mood_toast_saved": "心情已记录！ 🎉",
+    "mood_toast_xp": "获得 +5 XP",
+    "mood_title_distribution": "心情分布（最近30天）",
+    "mood_title_history": "心情记录（最近7天）",
+    "mood_no_data": "无心情记录",
+    "mood_labels": {
+      "peaceful": "平静",
+      "energetic": "精力充沛",
+      "tired": "疲倦",
+      "sad": "难过",
+      "stressed": "压力",
+      "happy": "高兴",
+      "neutral": "一般"
+    },
     "greeting": "嗨，{{name}}！",
     "subtitle": "让我们一起养成好习惯！",
     "todays_habits": "今日习惯",
@@ -132,7 +149,7 @@
     "add_first_habit": "添加您的第一个习惯",
     "empty_hint": "您可以每天追踪习惯\n并见证您的进步成长",
     "progress_today": "今日进度",
-    "add_habits_tracking": "添加习惯以开始追踪",
+    "add_habits_tracking": "创建您的第一个习惯以解锁每日统计数据",
     "days_habits": "{{day}}的习惯",
     "day_names": {
       "sunday": "星期日",
@@ -152,7 +169,44 @@
       "fri": "五",
       "sat": "六"
     },
-    "quote_of_the_day": "✨ 每日一言"
+    "quote_of_the_day": "✨ 每日一言",
+    "suggested_habits_title": "💡 推荐习惯",
+    "suggestions": {
+      "read": {
+        "title": "阅读一本书",
+        "desc": "阅读10页以促进个人成长"
+      },
+      "water": {
+        "title": "喝水",
+        "desc": "全天保持身体水分"
+      },
+      "meditate": {
+        "title": "冥想",
+        "desc": "静心10分钟以放松大脑"
+      },
+      "walk": {
+        "title": "每日散步",
+        "desc": "步行10,000步以保持健康"
+      },
+      "sleep": {
+        "title": "健康睡眠",
+        "desc": "睡眠8小时以完全恢复精力"
+      }
+    },
+    "checklist_title": "🚀 入门指南",
+    "checklist_subtitle": "完成新手引导任务并达到 3 级即可解锁您的 AI 导师。",
+    "checklist_log_mood": "😊 记录今日心情",
+    "checklist_log_mood_desc": "赢取 +5 XP 并记录您的感受",
+    "checklist_create_habit": "➕ 创建你的第一个习惯",
+    "checklist_create_habit_desc": "赢取 +15 XP 并开启您的成长之旅",
+    "checklist_play_game": "🧠 尝试一次脑力游戏",
+    "checklist_play_game_desc": "通过训练专注力和记忆力赢取 +10 XP",
+    "checklist_complete_habit": "✅ 完成你的第一个习惯",
+    "checklist_complete_habit_desc": "勾选你的第一个习惯以赢取 +20 XP",
+    "checklist_success_title": "🎉 新手指引已完成！",
+    "checklist_success_desc": "🎉 准备就绪！您的成长之旅现在开始。",
+    "checklist_success_btn": "太棒了！我们出发吧",
+    "checklist_bonus_awarded": "新手任务完成奖励"
   },
   "my_habits": {
     "header": "我的习惯",
@@ -238,6 +292,9 @@
     "locked_past_desc": "您只能记录今天和昨天的进度。"
   },
   "explore": {
+    "games_intro_title": "探索脑力游戏！ 🧠",
+    "games_intro_desc": "欢迎来到探索板块！虽然 GrowDay 的主要目标是帮助你建立良好的习惯，但你也可以在这里玩认知游戏。锻炼你的专注力、记忆力和反应速度，赚取额外的经验值（XP）并更快升级！",
+    "games_intro_button": "开始游戏！",
     "header": "发现",
     "search_placeholder": "搜索习惯、任务...",
     "suggested_habits": "推荐习惯",
@@ -328,6 +385,9 @@
     "clear_btn": "清除",
     "reminders_label": "提醒",
     "reminders_sub": "发送通知以保持进度。",
+    "set_reminder_time": "设置提醒时间",
+    "hour": "小时",
+    "minute": "分钟",
     "every_day": "每天",
     "on_scheduled_days": "在计划日期",
     "selected_days": "已选天数",
@@ -425,7 +485,11 @@
     "finance": "财务",
     "social": "社交",
     "wellness": "身心健康",
-    "other": "其他"
+    "other": "其他",
+    "learning": "学习",
+    "hydration": "补水",
+    "mindfulness": "正念",
+    "sleep": "睡眠"
   },
   "achievements": {
     "header": "成就",
@@ -716,7 +780,7 @@
       "question": "您的性别是？",
       "male": "男",
       "female": "女",
-      "other": "其他"
+      "other": "不便透露"
     },
     "step1": {
       "title1": "您的",
@@ -800,9 +864,12 @@
   },
   "auth": {
     "welcome_back": "欢迎回来！",
+    "welcome_subtitle": "登录您的帐户以继续您的成长",
     "lets_start": "让我们开始吧！",
+    "register_subtitle": "创建一个帐户来管理您的习惯",
     "google_continue": "使用 GOOGLE 继续",
     "or_login_email": "或使用邮箱登录",
+    "or_register_email": "或使用邮箱注册",
     "email_username": "邮箱或用户名",
     "email": "邮箱",
     "password": "密码",
@@ -867,6 +934,7 @@
       "password_wrong": "密码错误。",
       "user_not_found": "用户未找到。",
       "invalid_credentials": "用户名或密码错误。",
+      "username_or_email_wrong": "用户名或邮箱错误。",
       "account_locked": "账户被暂时锁定。请稍后再试。",
       "email_not_confirmed": "您的电子邮件地址尚未确认。"
     }
@@ -1012,7 +1080,22 @@
     "habits_label": "习惯",
     "brain_insight_high_past": "您在此期间完成了 {{rate}}% 的习惯，让大脑保持在极佳状态！将此作为您当前目标的向导吧。 🏆",
     "brain_insight_medium_past": "您在此期间执行了 {{rate}}% 的习惯。每个新阶段都是一个全新的开始——这次您可以挑战更高的目标！ ⚡",
-    "brain_insight_low_past": "您在此期间的习惯完成率为 {{rate}}%。过去已成过去！在当前阶段重新开始，唤醒您的大脑吧。 🌟"
+    "brain_insight_low_past": "您在此期间的习惯完成率为 {{rate}}%。过去已成过去！在当前阶段重新开始，唤醒您的大脑吧。 🌟",
+    "ai_insight_title": "AI 导师分析",
+    "total_xp": "已获得的总经验值",
+    "avg_completion": "平均完成率",
+    "most_consistent": "最稳定的习惯",
+    "mood_trend_coming_soon": "即将推出：情绪趋势与情绪评分",
+    "insight_most_common_mood": "最常见的情绪：{{mood}}",
+    "insight_completion_improved": "本期习惯完成率提高了 {{change}}%",
+    "insight_completion_decreased": "本期习惯完成率下降了 {{change}}%",
+    "insight_completion_stable": "本期习惯完成率保持稳定",
+    "insight_completion_rate": "习惯完成率：{{rate}}%",
+    "insight_best_streak": "最佳习惯连续天数：{{streak}} 天",
+    "insight_positive_mood_completion": "在积极情绪下（{{emoji}} {{mood}}），您的习惯完成率高出 25%",
+    "insight_mood_stable_consistency": "情绪保持稳定时，习惯的持续性会有所增加",
+    "insight_longest_streak_positive_mood": "您的最长连续天数出现在您情绪最积极的时期",
+    "insight_harder_on_difficult_days": "在疲惫或压力大的日子里，完成习惯会更加困难"
   },
   "help": {
     "title": "帮助中心",
@@ -1067,7 +1150,7 @@
     }
   },
   "games": {
-    "title": "认知游戏",
+    "title": "脑力游戏",
     "memory_match": "记忆配对",
     "memory_match_desc": "找出成对的相同图标。锻炼视觉记忆与专注力。",
     "select_difficulty": "选择难度级别和大小以开始游戏。",
@@ -1276,7 +1359,8 @@
   },
   "ai_mentor": {
     "card_title": "AI 导师",
-    "card_subtitle": "向我询问关于你习惯的任何事情",
+    "card_subtitle": "向我询问关于您的习惯的任何事情",
+    "compact_desc": "获取针对您目标定制的个性化建议。",
     "card_locked": "在级别 3 解锁",
     "chat_header": "AI 导师",
     "input_placeholder": "输入消息...",
@@ -1292,7 +1376,8 @@
     "select_prompt": "选择一个开始对话：",
     "prompt_motivate": "激励我今天！",
     "prompt_habit": "你有什么建议来提高我的工作效率？",
-    "prompt_plan": "帮我准备一个很棒的一天计划！"
+    "prompt_plan": "帮我准备一个很棒的一天计划！",
+    "demo_habit_response": "🧠 当前分析\n\n• 阅读习惯：100% 🔥\n• 情绪：平和 😊\n\n⚡ 建议计划\n\n• 晨间散步 - 07:30\n• 冥想 - 12:00\n• 阅读一本书 - 17:00\n\n🎯 温馨提示\n\n今天继续保持您的阅读连续天数。"
   },
   "focus_sounds": {
     "title": "专注音效",
@@ -1304,5 +1389,44 @@
     "river": "河流",
     "now_playing": "正在播放",
     "ready": "准备播放"
+  },
+  "virtual_plant": {
+    "title": "习惯伙伴: Growy",
+    "wateringLevel": "浇水进度",
+    "stageName": "阶段",
+    "waterMe": "帮我浇水",
+    "nextStage": "距离下一阶段",
+    "stages": [
+      "种子 / 嫩芽 🌱",
+      "盆栽植物 🪴",
+      "开花植物 🌸",
+      "繁茂枝叶 🌿",
+      "参天大树 🌳"
+    ],
+    "thirsty": [
+      "我太渴了... 快完成习惯帮我浇水吧！ 🥺💧",
+      "今天你还没完成任何习惯。别忘了我哦！ 🥀",
+      "现在来一滴水就太棒了！ 🥤",
+      "开启今天目标的好时机！让我们开始吧！ 🚀"
+    ],
+    "growing": [
+      "谢谢你给我浇水！让我们完成剩下的习惯吧！ 💧🍃",
+      "一步一个脚印！继续努力！ 🏃‍♂️",
+      "我在成长！你的自律让我充满生机！ 💪",
+      "我们是超级棒的的团队！继续前进！ 🌟"
+    ],
+    "blooming": [
+      "太棒了！今天你完成了所有的习惯！我太开心了！ 🎉🌟",
+      "你是真正的习惯英雄！今天100%完成！ 🏆",
+      "我的花朵是你自律的果实！谢谢你！ 🌸✨",
+      "完美的一天！明天也要保持同样的活力哦！ 🌿❤️"
+    ],
+    "general": [
+      "每个习惯对我来说都是一滴水！ 💧",
+      "团结就是力量！今天你完成习惯了吗？ 💪",
+      "赚取XP帮助我成长吧！ 🌱",
+      "谢谢你的轻触！感觉真好！ 😊",
+      "记住，微小的进步会带来巨大的改变！ 🚀"
+    ]
   }
 }

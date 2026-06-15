@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faMars, faVenus, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -21,9 +21,9 @@ const UserPref0 = () => {
   const [gender, setGender] = useState(initialData?.gender || null);
 
   const genders = [
-    { id: "Male", label: t("preferences.step0.male"), icon: "👨" },
-    { id: "Female", label: t("preferences.step0.female"), icon: "👩" },
-    { id: "Other", label: t("preferences.step0.other"), icon: "🌈" },
+    { id: "Male", label: t("preferences.step0.male"), icon: faMars, iconColor: "#3b82f6" },
+    { id: "Female", label: t("preferences.step0.female"), icon: faVenus, iconColor: "#ec4899" },
+    { id: "Other", label: t("preferences.step0.other"), icon: faEyeSlash, iconColor: "#8b949e" },
   ];
 
   return (
@@ -55,40 +55,47 @@ const UserPref0 = () => {
           <View className="mb-8">
             <Text style={{ color: colors.text }} className="text-[18px] font-redditsans-bold mb-4 px-1">{t("preferences.step0.question")}</Text>
             {genders.map((g) => {
-              const isSelected = gender === g.id;
-              return (
-                <TouchableOpacity
-                  key={g.id}
-                  onPress={() => setGender(g.id)}
-                  className={`flex-row items-center p-5 mb-4 rounded-2xl ${
-                    isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
-                  }`}
-                  style={{ 
-                    backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: isSelected ? 0.2 : 0.05,
-                    shadowRadius: 4,
-                    elevation: 3
-                  }}
-                >
-                  <View className={`w-6 h-6 rounded-full border-2 mr-4 items-center justify-center ${
-                    isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
-                  }`}>
-                    {isSelected && <View className="w-2.5 h-2.5 bg-white rounded-full" />}
-                  </View>
-                  <View className="flex-row items-center flex-1">
-                    <Text className="text-2xl mr-3">{g.icon}</Text>
-                    <Text style={{ 
-                      color: colors.text,
-                      fontSize: 18,
-                      fontWeight: isSelected ? "700" : "500"
-                    }} className="font-redditsans-bold">
-                      {g.label}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
+                const isSelected = gender === g.id;
+                return (
+                    <TouchableOpacity
+                        key={g.id}
+                        onPress={() => setGender(g.id)}
+                        className={`flex-row items-center p-4 mb-3 rounded-2xl ${isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
+                            }`}
+                        style={{
+                            backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: isSelected ? 0.2 : 0.05,
+                            shadowRadius: 4,
+                            elevation: 3
+                        }}
+                    >
+                        <View className={`w-5 h-5 rounded-full border-2 mr-3 items-center justify-center ${isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
+                            }`}>
+                            {isSelected && <View className="w-2 h-2 bg-white rounded-full" />}
+                        </View>
+                        <View className="flex-row items-center flex-1">
+                            <View 
+                                style={{
+                                    backgroundColor: isSelected 
+                                        ? `${g.iconColor}20` 
+                                        : (isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")
+                                }}
+                                className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                            >
+                                <FontAwesomeIcon icon={g.icon} size={20} color={isSelected ? g.iconColor : (isDark ? "#9ca3af" : "#4b5563")} />
+                            </View>
+                            <Text style={{
+                                color: colors.text,
+                                fontSize: 16,
+                                fontWeight: isSelected ? "700" : "500"
+                            }} className="font-redditsans-bold">
+                                {g.label}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                );
             })}
           </View>
 
@@ -106,7 +113,8 @@ const UserPref0 = () => {
                   }
                 });
               }}
-              className={`${!gender ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full shadow-lg`}
+              style={{ backgroundColor: colors.primaryLight, opacity: !gender ? 0.5 : 1 }}
+              className="py-5 rounded-full shadow-lg"
             >
               <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.continue")}</Text>
             </TouchableOpacity>

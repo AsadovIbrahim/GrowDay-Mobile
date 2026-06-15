@@ -119,24 +119,24 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
-      className="mx-4 my-3 rounded-2xl overflow-hidden"
+      className="mx-4 rounded-2xl overflow-hidden"
       style={{
         borderWidth: 1,
         borderColor: cardBorderColor,
         shadowColor: isLocked ? "#000" : "#8b5cf6",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: isLocked ? 0.05 : 0.12,
-        shadowRadius: 10,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isLocked ? 0.05 : 0.1,
+        shadowRadius: 6,
+        elevation: 2,
       }}
     >
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="p-5 flex-row items-center justify-between"
+        className="p-3.5 flex-row items-center justify-between"
       >
-        <View className="flex-row items-center flex-1 pr-3">
+        <View className="flex-row items-center flex-1 pr-2">
           {/* Animated AI Icon container */}
           <Animated.View
             style={{
@@ -149,7 +149,7 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
               <View
                 style={{
                   backgroundColor: isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.04)",
-                  padding: 11,
+                  padding: 8,
                   borderRadius: 50,
                   borderWidth: 1,
                   borderColor: colors.border,
@@ -157,7 +157,7 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
               >
                 <FontAwesomeIcon
                   icon={faLock}
-                  size={18}
+                  size={14}
                   color={colors.textMuted}
                 />
               </View>
@@ -167,7 +167,7 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
-                  padding: 11,
+                  padding: 8,
                   borderRadius: 50,
                   shadowColor: "#8b5cf6",
                   shadowOffset: { width: 0, height: 2 },
@@ -178,7 +178,7 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
               >
                 <FontAwesomeIcon
                   icon={faBrain}
-                  size={18}
+                  size={14}
                   color="#ffffff"
                 />
               </LinearGradient>
@@ -186,53 +186,47 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
           </Animated.View>
 
           {/* Title & Subtitle */}
-          <View className="ml-4 flex-1">
+          <View className="ml-3 flex-1">
             <View className="flex-row items-center">
               <Text
-                className="font-bold text-[16px] tracking-wide"
+                className="font-redditsans-bold text-[15px] tracking-wide"
                 style={{ color: colors.text }}
               >
                 {t("ai_mentor.card_title", "AI Mentor")}
               </Text>
               {!isLocked && (
-                <Text className="text-[10px] ml-1.5 font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
-                  Beta
-                </Text>
+                <View className="bg-indigo-500/10 px-1.5 py-0.5 rounded-md ml-2">
+                  <Text className="text-[8px] font-redditsans-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
+                    Beta
+                  </Text>
+                </View>
               )}
             </View>
             <Text
-              className="text-xs mt-1 leading-4"
-              numberOfLines={2}
               style={{ color: colors.textSecondary }}
+              className="text-[11px] font-redditsans-medium mt-0.5"
+              numberOfLines={1}
             >
               {isLocked
                 ? t("ai_mentor.card_locked", "Unlock at Level 3")
-                : t("ai_mentor.card_subtitle", "Ask me anything about your habits")}
+                : t("ai_mentor.compact_desc", "Get personalized recommendations tailored to your goals.")}
             </Text>
           </View>
         </View>
 
-        {/* Right side Badge / Navigation icon */}
-        <View className="items-end pl-1">
+        <View className="flex-row items-center">
           {!isLocked && (
-            <View
-              className="px-2.5 py-1 rounded-full mb-2 border"
-              style={{
-                backgroundColor: isDark ? "rgba(139, 92, 246, 0.12)" : "rgba(139, 92, 246, 0.05)",
-                borderColor: isDark ? "rgba(139, 92, 246, 0.22)" : "rgba(139, 92, 246, 0.12)",
-              }}
-            >
-              <Text
-                className="text-[10px] font-extrabold"
-                style={{ color: isDark ? "#a78bfa" : "#6d28d9" }}
-              >
-                {t("ai_mentor.remaining_badge", { remaining: remainingMessages })}
-              </Text>
+            <View className="mr-3 items-end">
+              <View className="bg-green-500/10 px-2 py-0.5 rounded-full">
+                <Text className="text-[10px] font-redditsans-bold text-green-600 dark:text-green-400">
+                  {t("ai_mentor.remaining_badge", { remaining: remainingMessages })}
+                </Text>
+              </View>
             </View>
           )}
           <FontAwesomeIcon
-            icon={isLocked ? faLock : faChevronRight}
-            size={14}
+            icon={faChevronRight}
+            size={12}
             color={colors.textMuted}
           />
         </View>

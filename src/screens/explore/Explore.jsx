@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert, Modal, TouchableWithoutFeedback } from "react-native";
+import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMinus, faChevronRight, faStar, faSearch, faTimes, faBrain, faLock } from '@fortawesome/free-solid-svg-icons';
-import { getUserSuggestedHabitsFetch, getUserLearningContentFetch, regenerateSuggestedHabitsFetch, getUserTotalXPFetch } from "../../utils/fetch";
-import { useMMKVString } from "react-native-mmkv";
+import { getUserSuggestedHabitsFetch, getUserLearningContentFetch, regenerateSuggestedHabitsFetch, getUserTotalXPFetch, getUserHabitFetch, getAccountDataFetch } from "../../utils/fetch";
+import { useMMKVString, useMMKVBoolean } from "react-native-mmkv";
 import { storage } from "../../utils/MMKVStore";
 import {
   loadCachedSuggestedHabits,
@@ -30,6 +30,7 @@ const AI_COACH_DAILY_LIMIT = 3;
 
 const Explore = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
@@ -39,27 +40,129 @@ const Explore = () => {
   const [learningContent, setLearningContent] = useState([]);
   const [learningLoading, setLearningLoading] = useState(false);
   const [token] = useMMKVString('accessToken');
+  const [hasSeenGamesIntro, setHasSeenGamesIntro] = useMMKVBoolean("hasSeenGamesIntro");
+  const [showGamesIntroModal, setShowGamesIntroModal] = useState(false);
+  const mainScrollViewRef = useRef(null);
+  const [gamesLayoutY, setGamesLayoutY] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [hasMore, setHasMore] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isGeneratingHabits, setIsGeneratingHabits] = useState(false);
   const [points, setPoints] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
   const [aiCount, setAiCount] = useState(0);
-  const userLevel = Math.floor(Math.sqrt(points / 50)) + 1;
+  const [userHabits, setUserHabits] = useState([]);
+  const calculationPoints = totalPoints > 0 ? totalPoints : points;
+  const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
 
   const fetchXP = async () => {
     try {
-      const xpRes = await getUserTotalXPFetch(token);
+      const [xpRes, accountRes] = await Promise.all([
+        getUserTotalXPFetch(token),
+        getAccountDataFetch(token).catch(() => null)
+      ]);
       if (xpRes && xpRes.success) {
         setPoints(xpRes.data ?? 0);
+      }
+      if (accountRes && accountRes.success) {
+        setTotalPoints(accountRes.data?.totalExperiencePoints ?? xpRes.data ?? 0);
+      } else {
+        setTotalPoints(xpRes.data ?? 0);
       }
     } catch (err) {
       console.log("Error loading XP in Explore:", err);
     }
   };
+
+  const fetchUserHabits = async () => {
+    if (!token) return;
+    try {
+      const response = await getUserHabitFetch(token, 0, 100);
+      if (response && response.data) {
+        setUserHabits(response.data);
+        return response.data;
+      }
+    } catch (error) {
+      console.log("Error fetching user habits in Explore:", error);
+    }
+    return [];
+  };
+
+  const isHabitAlreadyAdded = (suggestedHabit, currentUserHabits) => {
+    if (!currentUserHabits || currentUserHabits.length === 0) return false;
+
+    const normalize = (str) => {
+      if (!str) return "";
+      // Convert to lowercase and remove common punctuation/symbols and whitespace
+      // This is more universal for multiple languages than stripping everything but specific letters
+      return str.toString()
+        .toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()\s]/g, "")
+        .trim();
+    };
+
+    const { title: suggestedTitle } = getTranslatedHabit(suggestedHabit, i18n.language, t);
+    const normalizedSuggested = normalize(suggestedTitle);
+    const normalizedSuggestedRaw = normalize(suggestedHabit.title);
+    const suggestedId = String(suggestedHabit.id);
+
+    return currentUserHabits.some(userHabit => {
+      if (
+        String(userHabit.suggestedHabitId) === suggestedId ||
+        String(userHabit.habitId) === suggestedId ||
+        String(userHabit.id) === suggestedId
+      ) {
+        return true;
+      }
+
+      const { title: userHabitTitle } = getTranslatedHabit(userHabit, i18n.language, t);
+      const normalizedUserHabit = normalize(userHabitTitle);
+      const normalizedUserHabitRaw = normalize(userHabit.title);
+
+      if (normalizedSuggested && normalizedUserHabit && normalizedSuggested === normalizedUserHabit) return true;
+      if (normalizedSuggestedRaw && normalizedUserHabitRaw && normalizedSuggestedRaw === normalizedUserHabitRaw) return true;
+      if (normalizedSuggested && normalizedUserHabitRaw && normalizedSuggested === normalizedUserHabitRaw) return true;
+      if (normalizedSuggestedRaw && normalizedUserHabit && normalizedSuggestedRaw === normalizedUserHabit) return true;
+
+      if (userHabit.habit) {
+        const nestedHabitTitle = normalize(userHabit.habit.title);
+        if (nestedHabitTitle && (nestedHabitTitle === normalizedSuggested || nestedHabitTitle === normalizedSuggestedRaw)) return true;
+      }
+
+      return false;
+    });
+  };
+
+  const filteredSuggestedHabits = useMemo(() => {
+    const seenIds = new Set();
+    const seenTitles = new Set();
+    return suggestedHabits.filter(h => {
+      if (!h) return false;
+
+      // Deduplicate by ID
+      if (h.id) {
+        if (seenIds.has(h.id)) return false;
+        seenIds.add(h.id);
+      }
+
+      if (isHabitAlreadyAdded(h, userHabits)) return false;
+
+      const { title } = getTranslatedHabit(h, i18n.language, t);
+      const normalizedTitle = title ? title.trim().toLowerCase() : "";
+
+      // Deduplicate by normalized Title to catch duplicate names
+      if (normalizedTitle) {
+        if (seenTitles.has(normalizedTitle)) return false;
+        seenTitles.add(normalizedTitle);
+      }
+
+      return title.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestedHabits, userHabits, searchQuery, i18n.language, t]);
 
   const syncAiCoachLimitFromStorage = () => {
     try {
@@ -106,9 +209,33 @@ const Explore = () => {
   useEffect(() => {
     fetchXP();
     syncAiCoachLimitFromStorage();
-    if (token) getUserSuggestedHabits();
+    if (token) {
+      fetchUserHabits().then(() => {
+        getUserSuggestedHabits();
+      });
+    }
     if (token) getLearningContent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, token]);
+
+  useEffect(() => {
+    if (token && !hasSeenGamesIntro) {
+      const timer = setTimeout(() => {
+        setShowGamesIntroModal(true);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [token, hasSeenGamesIntro]);
+
+  const handleCloseGamesIntro = () => {
+    setShowGamesIntroModal(false);
+    setHasSeenGamesIntro(true);
+    if (mainScrollViewRef.current && gamesLayoutY > 0) {
+      setTimeout(() => {
+        mainScrollViewRef.current?.scrollTo({ y: gamesLayoutY - 20, animated: true });
+      }, 300);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -117,10 +244,23 @@ const Explore = () => {
       syncAiCoachLimitFromStorage();
       setPageIndex(0);
       setHasMore(true);
-      getUserSuggestedHabits();
+      fetchUserHabits().then(() => {
+        getUserSuggestedHabits();
+      });
       getLearningContent();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
   );
+
+  useEffect(() => {
+    if (route.params?.scrollToGames && mainScrollViewRef.current && gamesLayoutY > 0) {
+      const timer = setTimeout(() => {
+        mainScrollViewRef.current?.scrollTo({ y: gamesLayoutY - 20, animated: true });
+        navigation.setParams({ scrollToGames: undefined });
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [route.params?.scrollToGames, gamesLayoutY, navigation]);
 
   const getLearningContent = async () => {
     try {
@@ -154,6 +294,7 @@ const Explore = () => {
   const getUserSuggestedHabits = async () => {
     if (!token) return;
     if (!hasMore && pageIndex !== 0) return;
+
     if (pageIndex === 0) {
       const cached = loadCachedSuggestedHabits();
       if (cached?.length) {
@@ -164,9 +305,22 @@ const Explore = () => {
       setLoading(true);
       const response = await getUserSuggestedHabitsFetch(token, pageIndex, pageSize);
       if (response.data && response.data.length > 0) {
-        setSuggestedHabits(prev => pageIndex === 0 ? response.data : [...prev, ...response.data]);
+        const newData = response.data;
+
+        setSuggestedHabits(prev => {
+          const combined = pageIndex === 0 ? newData : [...prev, ...newData];
+          const unique = [];
+          const seen = new Set();
+          for (const item of combined) {
+            if (item && item.id && !seen.has(item.id)) {
+              seen.add(item.id);
+              unique.push(item);
+            }
+          }
+          return unique;
+        });
         if (pageIndex === 0) {
-          saveSuggestedHabitsCache(response.data);
+          saveSuggestedHabitsCache(newData);
         }
         if (response.data.length < pageSize) {
           setHasMore(false);
@@ -190,6 +344,9 @@ const Explore = () => {
     if (!token) return false;
     try {
       setIsGeneratingHabits(true);
+
+      await fetchUserHabits();
+
       const response = await regenerateSuggestedHabitsFetch(token);
       if (!response?.success) {
         showAiCoachError(response?.message, response?.message);
@@ -200,6 +357,7 @@ const Explore = () => {
         showAiCoachError('AI_GENERATION_FAILED');
         return false;
       }
+
       setSuggestedHabits(habits);
       saveSuggestedHabitsCache(habits);
       setHasMore(habits.length >= pageSize);
@@ -247,6 +405,7 @@ const Explore = () => {
         unit: habit.unit || "times",
         incrementValue: habit.incrementValue || 1,
         durationInMinutes: habit.durationInMinutes,
+        notificationTime: habit.notificationTime || habit.NotificationTime,
         titleTranslations: habit.titleTranslations || habit.TitleTranslations,
         descriptionTranslations: habit.descriptionTranslations || habit.DescriptionTranslations,
       },
@@ -260,6 +419,7 @@ const Explore = () => {
     <LinearGradient colors={colors.backgroundGradient} className="flex-1">
       <SafeAreaView className="flex-1">
         <ScrollView
+          ref={mainScrollViewRef}
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
@@ -380,9 +540,16 @@ const Explore = () => {
           </TouchableOpacity>
 
           {/* Suggested Habits Section */}
-          <View className="px-4 mb-6">
+          <View className="px-4">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
+              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('SuggestedHabits')}
+                className="flex-row items-center gap-1"
+              >
+                <Text className="text-sm text-green-600 font-redditsans-medium">{t("explore.view_all")}</Text>
+                <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
+              </TouchableOpacity>
             </View>
 
             {loading && pageIndex === 0 ? (
@@ -396,7 +563,7 @@ const Explore = () => {
                   {t("levelup.generating_new_habits", "Generating new suggested habits...")}
                 </Text>
               </View>
-            ) : (suggestedHabits.filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0) ? (
+            ) : (filteredSuggestedHabits.length === 0) ? (
               <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
                 <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
                   {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
@@ -406,13 +573,11 @@ const Explore = () => {
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                className="px-4 mb-6"
+                className="mb-6"
                 contentContainerStyle={{ paddingRight: 40 }}
-                onScroll={handleHorizontalScroll}
-                scrollEventThrottle={16}
               >
-                {suggestedHabits
-                  .filter(h => getTranslatedHabit(h, i18n.language, t).title.toLowerCase().includes(searchQuery.toLowerCase()))
+                {filteredSuggestedHabits
+                  .slice(0, 5)
                   .map((habit, index) => (
                     <SuggestedHabitCard
                       key={habit.id || `suggested-${index}`}
@@ -423,27 +588,22 @@ const Explore = () => {
                       habit={habit}
                     />
                   ))}
-                {loading && pageIndex !== 0 && (
-                  <View className="justify-center items-center px-4">
-                    <ActivityIndicator size="small" color={colors.primary} />
-                  </View>
-                )}
               </ScrollView>
             )}
           </View>
 
           {/* Tasks Section */}
-          <View className="px-4 mb-6">
+          <View className="px-4">
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center gap-2">
-                <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.tasks")}</Text>
+                <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.tasks")}</Text>
                 <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate('UserTasks')}
                 className="flex-row items-center gap-1"
               >
-                <Text className="text-base text-green-600 font-redditsans-medium">{t("explore.view_all")}</Text>
+                <Text className="text-green-600 font-redditsans-medium text-sm">{t("explore.view_all")}</Text>
                 <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
               </TouchableOpacity>
             </View>
@@ -453,15 +613,18 @@ const Explore = () => {
           </View>
 
           {/* Brain Games Section */}
-          <View className="mb-6">
+          <View onLayout={(event) => {
+            const layout = event.nativeEvent.layout;
+            setGamesLayoutY(layout.y);
+          }}>
             <View className="px-4 mb-4">
-              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>🧠 {t("games.title")}</Text>
+              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>🧠 {t("games.title")}</Text>
             </View>
 
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="px-4 mb-6"
+              className="px-4 mb-4"
               contentContainerStyle={{ paddingRight: 40 }}
             >
               {/* Memory Game Card */}
@@ -472,7 +635,9 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.cardSecondary,
+                  backgroundColor: colors.card,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.05,
@@ -510,7 +675,9 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.cardSecondary,
+                  backgroundColor: colors.card,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.05,
@@ -548,7 +715,9 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.cardSecondary,
+                  backgroundColor: colors.card,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.05,
@@ -586,7 +755,9 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.cardSecondary,
+                  backgroundColor: colors.card,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                   shadowColor: "#000",
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.05,
@@ -621,7 +792,7 @@ const Explore = () => {
           {/* Learning Section */}
           <View className="mb-6">
             <View className="px-4 mb-4">
-              <Text className="text-xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.learning")}</Text>
+              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.learning")}</Text>
             </View>
 
             <ScrollView
@@ -652,6 +823,311 @@ const Explore = () => {
           <AdBanner />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Games Introduction Bottom Sheet Modal */}
+      <Modal
+        visible={showGamesIntroModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCloseGamesIntro}
+      >
+        <TouchableWithoutFeedback onPress={handleCloseGamesIntro}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <TouchableWithoutFeedback onPress={() => { }}>
+              <View
+                style={{
+                  backgroundColor: colors.card,
+                  borderTopLeftRadius: 30,
+                  borderTopRightRadius: 30,
+                  padding: 24,
+                  paddingBottom: 40,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                {/* Drag Handle */}
+                <View
+                  style={{
+                    width: 40,
+                    height: 5,
+                    backgroundColor: colors.textSecondary + '33',
+                    borderRadius: 3,
+                    alignSelf: 'center',
+                    marginBottom: 20,
+                  }}
+                />
+
+                {/* Title */}
+                <Text
+                  style={{
+                    fontSize: 22,
+                    fontFamily: 'RedditSans-Bold',
+                    fontWeight: '800',
+                    color: colors.text,
+                    textAlign: 'center',
+                    marginBottom: 10,
+                  }}
+                >
+                  {t("explore.games_intro_title", "Discover Brain Games! 🧠")}
+                </Text>
+
+                {/* Description */}
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: 'RedditSans-Medium',
+                    color: colors.textSecondary,
+                    textAlign: 'center',
+                    lineHeight: 20,
+                    marginBottom: 20,
+                  }}
+                >
+                  {t("explore.games_intro_desc", "Welcome to the Explore section! While GrowDay's main goal is to build strong habits, you can also play cognitive games here. Train your focus, memory, and reaction speed to earn extra XP and level up faster!")}
+                </Text>
+
+                {/* Games List Showcase */}
+                <View style={{ gap: 10, marginBottom: 24 }}>
+                  {/* Memory Match */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
+                      padding: 12,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        backgroundColor: 'rgba(76, 175, 102, 0.15)',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 12,
+                      }}
+                    >
+                      <Text style={{ fontSize: 20 }}>🧩</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontFamily: 'RedditSans-Bold',
+                          fontWeight: '700',
+                          fontSize: 14,
+                        }}
+                      >
+                        {t("games.memory_match")}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: 'RedditSans-Regular',
+                          fontSize: 11,
+                          marginTop: 2,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {t("games.memory_match_desc")}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Sequence Memory */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
+                      padding: 12,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 12,
+                      }}
+                    >
+                      <Text style={{ fontSize: 20 }}>⚡</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontFamily: 'RedditSans-Bold',
+                          fontWeight: '700',
+                          fontSize: 14,
+                        }}
+                      >
+                        {t("games.sequence_memory")}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: 'RedditSans-Regular',
+                          fontSize: 11,
+                          marginTop: 2,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {t("games.sequence_memory_desc")}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Stroop Test */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
+                      padding: 12,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 12,
+                      }}
+                    >
+                      <Text style={{ fontSize: 20 }}>🎨</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontFamily: 'RedditSans-Bold',
+                          fontWeight: '700',
+                          fontSize: 14,
+                        }}
+                      >
+                        {t("games.stroop_test")}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: 'RedditSans-Regular',
+                          fontSize: 11,
+                          marginTop: 2,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {t("games.stroop_test_desc")}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Reaction Time */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
+                      padding: 12,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 12,
+                      }}
+                    >
+                      <Text style={{ fontSize: 20 }}>⏱️</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontFamily: 'RedditSans-Bold',
+                          fontWeight: '700',
+                          fontSize: 14,
+                        }}
+                      >
+                        {t("games.reaction_game")}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: 'RedditSans-Regular',
+                          fontSize: 11,
+                          marginTop: 2,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {t("games.reaction_game_desc")}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Confirm/Play Button */}
+                <TouchableOpacity onPress={handleCloseGamesIntro} activeOpacity={0.8}>
+                  <LinearGradient
+                    colors={[colors.primaryLight || '#4caf66', colors.primary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      borderRadius: 20,
+                      paddingVertical: 15,
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 8,
+                      elevation: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontFamily: 'RedditSans-Bold',
+                        fontWeight: '800',
+                        fontSize: 16,
+                      }}
+                    >
+                      {t("explore.games_intro_button", "Let's Play!")}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </LinearGradient>
   );
 };

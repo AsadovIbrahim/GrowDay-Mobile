@@ -87,9 +87,9 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
   // Get habit frequency/type
   const habitType = habit.frequency || habit.frequencyType || habit.type || 'Daily';
-  
+
   const isCompleted = showStatus && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
-  
+
   const handlePress = () => {
     if (isSelectionMode) {
       onToggleSelect && onToggleSelect();
@@ -114,8 +114,8 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
           shadowRadius: 4,
           elevation: isCompleted ? 0 : 3,
           backgroundColor: isCompleted ? colors.primarySurface : colors.card,
-          borderColor: isSelected 
-            ? colors.primary 
+          borderColor: isSelected
+            ? colors.primary
             : (isCompleted ? colors.primary + '30' : colors.border + '15'),
           borderWidth: isSelected ? 2 : 1,
           transform: [{ scale: scaleValue }],
@@ -152,8 +152,8 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
         )}
 
         {/* Icon (With Absolute Corner Checkmark Badge if Completed) */}
-        <View 
-          style={{ 
+        <View
+          style={{
             width: 46,
             height: 46,
             borderRadius: 23,
@@ -167,7 +167,7 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
           }}
         >
           <Text style={{ fontSize: 22 }}>{ICONS[habit.icon] || '⭐'}</Text>
-          
+
           {isCompleted && (
             <View
               style={{
@@ -191,22 +191,22 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
         {/* Title and Metadata */}
         <View style={{ flex: 1 }}>
-          <Text 
-            className="text-[16px] font-redditsans-bold mb-1" 
-            style={{ 
-              color: isCompleted ? colors.textSecondary : colors.text, 
-              lineHeight: 20 
-            }} 
+          <Text
+            className="text-[16px] font-redditsans-bold mb-1"
+            style={{
+              color: isCompleted ? colors.textSecondary : colors.text,
+              lineHeight: 20
+            }}
             numberOfLines={1}
           >
             {habit.title || getTranslatedHabit(habit, i18n.language, t).title}          </Text>
-          
+
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 8, rowGap: 4 }}>
             {/* Status / Frequency Pill */}
             <View
               style={{
-                backgroundColor: isCompleted 
-                  ? colors.primary + '15' 
+                backgroundColor: isCompleted
+                  ? colors.primary + '15'
                   : (showStatus ? '#eab30815' : colors.cardSecondary),
                 paddingHorizontal: 6,
                 paddingVertical: 1,
@@ -215,43 +215,42 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
                 alignItems: 'center',
               }}
             >
-              <Text 
+              <Text
                 className="font-redditsans-bold"
-                style={{ 
+                style={{
                   fontSize: 11,
-                  color: isCompleted 
-                    ? colors.primary 
-                    : (showStatus ? '#eab308' : colors.textSecondary) 
+                  color: isCompleted
+                    ? colors.primary
+                    : (showStatus ? '#eab308' : colors.textSecondary)
                 }}
               >
-                {isCompleted 
-                  ? `✓ ${t('common.completed', 'Completed')}` 
-                  : (showStatus 
-                      ? `⏳ ${t('my_habits.filters.due_today', 'Due Today')}` 
-                      : t(`my_habits.filters.${habitType.toLowerCase()}`)
-                    )
+                {isCompleted
+                  ? `✓ ${t('common.completed', 'Completed')}`
+                  : (showStatus
+                    ? `⏳ ${t('my_habits.filters.due_today', 'Due Today')}`
+                    : t(`my_habits.filters.${habitType.toLowerCase()}`)
+                  )
                 }
               </Text>
             </View>
-            
+
             {/* Category Pill */}
             {habit.categoryDetails && (
-              <View 
+              <View
                 style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   backgroundColor: (habit.categoryDetails.color || '#3b82f6') + '15',
                   paddingHorizontal: 6,
                   paddingVertical: 1,
                   borderRadius: 6,
-                  flexDirection: 'row',
-                  alignItems: 'center',
                   gap: 3
                 }}
               >
-                <Text style={{ fontSize: 11 }}>{getCategoryIcon(habit.categoryDetails.icon)}</Text>
-                <Text 
+                <Text
                   className="font-redditsans-bold"
-                  style={{ 
-                    color: habit.categoryDetails.color || '#3b82f6', 
+                  style={{
+                    color: habit.categoryDetails.color || '#3b82f6',
                     fontSize: 11
                   }}
                   numberOfLines={1}
@@ -263,15 +262,15 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
             {/* Streak Pill */}
             {habit.currentStreak > 0 && (
-              <View 
-                style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'center', 
-                  backgroundColor: '#f59e0b15', 
-                  paddingHorizontal: 6, 
-                  paddingVertical: 1, 
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: '#f59e0b15',
+                  paddingHorizontal: 6,
+                  paddingVertical: 1,
                   borderRadius: 6,
-                  gap: 3 
+                  gap: 3
                 }}
               >
                 <Text style={{ fontSize: 11 }}>🔥</Text>
@@ -283,15 +282,15 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
 
             {/* Time Pill */}
             {formattedTime && (
-              <View 
-                style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'center', 
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   backgroundColor: colors.cardSecondary,
                   paddingHorizontal: 6,
                   paddingVertical: 1,
                   borderRadius: 6,
-                  gap: 3 
+                  gap: 3
                 }}
               >
                 <FontAwesomeIcon icon={faClock} color={colors.textSecondary} size={9} />

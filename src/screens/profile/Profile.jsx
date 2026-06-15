@@ -75,13 +75,10 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
   const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
   const levelTitle = getTitleForLevel(userLevel, t);
 
-  // Level calculations for progress bar
-  const currentLvlPoints = calculationPoints !== undefined ? 50 * Math.pow(userLevel - 1, 2) : 0;
+  // Level calculations for progress bar (Absolute layout)
   const nextLvlPoints = calculationPoints !== undefined ? 50 * Math.pow(userLevel, 2) : 0;
-  const totalLvlRange = nextLvlPoints - currentLvlPoints;
-  const pointsInCurrentLvl = calculationPoints !== undefined ? calculationPoints - currentLvlPoints : 0;
   const xpRemaining = nextLvlPoints - calculationPoints;
-  const progressRatio = totalLvlRange > 0 ? Math.min(Math.max(pointsInCurrentLvl / totalLvlRange, 0), 1) : 0;
+  const progressRatio = nextLvlPoints > 0 ? Math.min(Math.max(calculationPoints / nextLvlPoints, 0), 1) : 0;
 
   return (
     <View style={[styles.profileCard, { backgroundColor: colors.card, flexDirection: 'column', alignItems: 'stretch', padding: 18 }]}>
@@ -121,7 +118,7 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
                   {levelTitle}
                 </Text>
               ) : null}
-
+              
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <View style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}>
                   <Text style={{ color: colors.primary, fontSize: 11, fontFamily: 'RedditSans-Bold', fontWeight: '700' }}>
@@ -137,7 +134,7 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
           )}
         </View>
       </View>
-
+      
       {/* Level Progress Bar Section */}
       {!loading && !error && (
         <View style={{ marginBottom: 16 }}>
@@ -146,7 +143,7 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
               {t("profile.xp_to_next_level", { xp: xpRemaining, level: userLevel + 1 })}
             </Text>
             <Text style={{ fontSize: 11, fontFamily: 'RedditSans-Bold', color: colors.textSecondary }}>
-              {pointsInCurrentLvl} / {totalLvlRange} XP
+              {calculationPoints} / {nextLvlPoints} XP
             </Text>
           </View>
           <View style={{ height: 6, width: '100%', backgroundColor: colors.border + '30', borderRadius: 3, overflow: 'hidden' }}>
@@ -199,7 +196,7 @@ const DarkModeToggleRow = ({ isDark, onToggle, colors }) => {
       speed: 20,
       bounciness: 8,
     }).start();
-  }, [isDark]);
+  }, [isDark, slideAnim]);
 
   const trackBg = slideAnim.interpolate({
     inputRange: [0, 1],
@@ -255,7 +252,7 @@ const Profile = ({ navigation }) => {
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isDark]);
+  }, [isDark, themeAnim]);
 
   const handleLogOut = async () => {
     try {
@@ -312,11 +309,13 @@ const Profile = ({ navigation }) => {
         getUserTotalXPFetch(token),
         getAccountDataFetch(token),
       ]);
+      
       const pts = pointsRes.data ?? 0;
+      const totalPts = accountRes.data?.totalExperiencePoints ?? pts;
       setPoints(pts);
       setAccountData(accountRes.data);
       
-      const realLevel = Math.floor(Math.sqrt(pts / 50)) + 1;
+      const realLevel = Math.floor(Math.sqrt(totalPts / 50)) + 1;
       let savedBorder = storage.getNumber('user.activeBorder');
       if (!savedBorder || savedBorder > realLevel) {
         savedBorder = realLevel;

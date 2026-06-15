@@ -8,6 +8,7 @@ import GameLeaderboardScreen from '../screens/explore/GameLeaderboardScreen';
 import SequenceGameScreen from '../screens/explore/SequenceGameScreen';
 import StroopGameScreen from '../screens/explore/StroopGameScreen';
 import ReactionGameScreen from '../screens/explore/ReactionGameScreen';
+import SuggestedHabitsScreen from '../screens/explore/SuggestedHabitsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ const ExploreStack = () => {
             <Stack.Screen name="SequenceGame" component={SequenceGameScreen} />
             <Stack.Screen name="StroopGame" component={StroopGameScreen} />
             <Stack.Screen name="ReactionGame" component={ReactionGameScreen} />
+            <Stack.Screen name="SuggestedHabits" component={SuggestedHabitsScreen} />
         </Stack.Navigator>
     )
 }

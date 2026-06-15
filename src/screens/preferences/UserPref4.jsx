@@ -23,7 +23,7 @@ const UserPref4 = () => {
   const isUpdate = route.params?.isUpdate;
 
   const [selectedOption, setSelectedOption] = useState(initialData?.procrestinateFrequency || null);
-  
+
   // Get preferences from previous screen
   const previousPreferences = route.params?.preferences || {};
 
@@ -36,7 +36,7 @@ const UserPref4 = () => {
     { id: "Sometimes", SvgIcon: SadEmoji, label: t("preferences.step4.options.sometimes") },
     { id: "Rarely", SvgIcon: LaughEmoji, label: t("preferences.step4.options.rarely") },
     { id: "Never", SvgIcon: CoolEmoji, label: t("preferences.step4.options.never") },
-  ];  
+  ];
 
   return (
     <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
@@ -56,7 +56,7 @@ const UserPref4 = () => {
           </Text>
         </View>
 
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         >
@@ -83,26 +83,33 @@ const UserPref4 = () => {
               <TouchableOpacity
                 key={option.id}
                 onPress={() => setSelectedOption(option.id)}
-                className={`rounded-2xl p-6 mb-4 flex-row items-center ${
-                  selectedOption === option.id
-                    ? "border-2 border-green-500"
-                    : isDark ? "border-2 border-white/10" : "border-2 border-transparent"
-                }`}
+                className="rounded-2xl p-4 mb-3 flex-row items-center"
                 style={{
                   backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
-                  shadowColor: "#000",
+                  borderWidth: selectedOption === option.id ? 3 : 2,
+                  borderColor: selectedOption === option.id
+                    ? "#22c55e"
+                    : (isDark ? "rgba(255,255,255,0.1)" : "transparent"),
+                  shadowColor: selectedOption === option.id ? "#22c55e" : "#000",
                   shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
+                  shadowOpacity: selectedOption === option.id ? 0.3 : 0.1,
+                  shadowRadius: selectedOption === option.id ? 8 : 4,
+                  elevation: selectedOption === option.id ? 5 : 3,
                 }}
               >
                 {option.SvgIcon && (
                   <View className="mr-3">
-                    <option.SvgIcon width={30} height={30} />
+                    <option.SvgIcon width={24} height={24} />
                   </View>
                 )}
-                 <Text style={{ color: isDark ? "#ffffff" : "#1f2937" }} className="text-[16px] font-redditsans-bold">
+                <Text 
+                  style={{ 
+                    color: selectedOption === option.id 
+                      ? (isDark ? "#22c55e" : colors.primary) 
+                      : (isDark ? "#ffffff" : "#1f2937") 
+                  }} 
+                  className="text-[15px] font-redditsans-bold"
+                >
                   {option.label}
                 </Text>
               </TouchableOpacity>
@@ -124,7 +131,8 @@ const UserPref4 = () => {
                 }
               });
             }}
-            className={`${!selectedOption ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full`}
+            style={{ backgroundColor: colors.primaryLight, opacity: !selectedOption ? 0.5 : 1 }}
+            className="py-5 rounded-full"
           >
             <Text className="text-white text-center font-redditsans-bold text-[16px]">
               {t("preferences.continue")}

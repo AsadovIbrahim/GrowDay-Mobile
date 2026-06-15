@@ -132,14 +132,14 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
   const ss = seconds % 60;
   const timeStr = `${hh > 0 ? hh + ':' : ''}${mm < 10 ? '0' : ''}${mm}:${ss < 10 ? '0' : ''}${ss}`;
 
-    let body = `${t('notifications.push_time_label')}: ${timeStr}`;
-    if (distance !== null && distance !== '') {
-        // distance is expected to be a pre-formatted string from the caller (e.g. "1.23 km" or "500 steps")
-        body = `${distance}`;
-    } else {
-        // If it's just duration, we can let the chronometer handle the visual time
-        body = '';
-    }
+  let body = `${t('notifications.push_time_label')}: ${timeStr}`;
+  if (distance !== null && distance !== '') {
+    // distance is expected to be a pre-formatted string from the caller (e.g. "1.23 km" or "500 steps")
+    body = `${distance}`;
+  } else {
+    // If it's just duration, we can let the chronometer handle the visual time
+    body = '';
+  }
 
   if (isPaused) {
     body = t('notifications.push_tracking_paused', { body: body || timeStr });
@@ -156,7 +156,10 @@ export const displayOngoingHabitNotification = async (habit, seconds, distance =
       distance: distance ? distance.toString() : '',
       baseSeconds: baseSeconds.toString(),
       targetSeconds: targetSeconds ? targetSeconds.toString() : '',
-      dateStr: dateStr
+      dateStr: dateStr,
+      unit: (habit.unit || '').toString(),
+      targetValue: (habit.targetValue || 1).toString(),
+      currentValue: (habit.currentValue || 0).toString(),
     },
     android: {
       channelId: channelId,
@@ -201,7 +204,7 @@ export const scheduleIncompleteReminder = async (habit) => {
 
   const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
   const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
-  
+
   await notifee.createChannel({
     id: channelId,
     name: t('notifications.channel_reminders'),
@@ -283,7 +286,7 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
   if (!pushEnabled || timeRemainingSeconds <= 0) return;
 
   const hId = habit.userHabitId || habit.UserHabitId || habit.id;
-  
+
   await cancelGoalReachedNotification(hId);
 
   const trigger = {
@@ -293,7 +296,15 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
 
   const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
   const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
-  
+
+  await notifee.createChannel({
+    id: channelId,
+    name: t('notifications.channel_reminders'),
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
+    sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
+  });
+
   await notifee.createTriggerNotification({
     id: `ongoing_${hId}`, // Overwrites the ongoing notification
     title: t('notifications.push_goal_reached_title'),
@@ -303,6 +314,9 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
     data: {
       habitId: hId.toString(),
       type: 'goal_reached',
+      targetValue: (habit.targetValue || 1).toString(),
+      currentValue: (habit.currentValue || 0).toString(),
+      unit: (habit.unit || '').toString(),
     },
     android: {
       channelId: channelId,
@@ -344,7 +358,7 @@ export const scheduleDailyMotivationalQuotes = async () => {
       { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" }
     ];
   }
-  
+
   // Shuffle/Randomize quotes to schedule unique ones for the next 7 days
   const shuffled = [...selectedQuotes].sort(() => 0.5 - Math.random());
 
@@ -360,7 +374,7 @@ export const scheduleDailyMotivationalQuotes = async () => {
   });
 
   const now = new Date();
-  
+
   for (let i = 0; i < 7; i++) {
     // Schedule for i-th day at 9:00 AM
     const scheduledTime = new Date();

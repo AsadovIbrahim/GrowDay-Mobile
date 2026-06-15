@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, Easing, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, Easing, Dimensions, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -10,6 +10,7 @@ import Sound from 'react-native-sound';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../../utils/habitTranslations';
 import { useInterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import { storage } from '../../utils/MMKVStore';
 
 Sound.setCategory('Playback');
 
@@ -40,12 +41,13 @@ const HabitCelebration = () => {
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    
+
     // Confetti setup
     const confettiCount = 40;
     const confettiAnims = useRef([...Array(confettiCount)].map(() => new Animated.Value(0))).current;
 
     useEffect(() => {
+        storage.set('user.checklist.habit_completed', 'true');
         Animated.parallel([
             Animated.spring(scaleAnim, {
                 toValue: 1,
@@ -111,11 +113,11 @@ const HabitCelebration = () => {
 
     const targetValue = habit.targetValue ?? 1;
     const isBoolean = !habit.unit || !habit.targetValue || habit.targetValue <= 0;
-    
+
     // Translate unit if available, otherwise use default
     const unitKey = habit.unit?.toLowerCase().replace(/s$/, ''); // try to singularize for lookup if needed, but units in en.json are like 'glasses', 'pages'
     const translatedUnit = isBoolean ? t("habit_celebration.default_unit") : t(`units.${habit.unit?.toLowerCase()}`, { defaultValue: habit.unit || t("habit_celebration.default_unit") });
-    
+
     const descText = isBoolean ? t("habit_celebration.completed_today") : t("habit_celebration.value_completed", { value: formatValue(targetValue), unit: translatedUnit });
 
     const displayTitle = getTranslatedHabit(habit, i18n.language, t).title || "HABIT";
@@ -128,16 +130,16 @@ const HabitCelebration = () => {
     const highestStreak = Math.max(habit.longestStreak || 0, newStreak);
 
     return (
-        <LinearGradient 
-            colors={['#e6f2dc', '#2f6f3f']} 
-            style={[styles.container, { paddingTop: insets.top + 20 }]}
+        <LinearGradient
+            colors={['#e6f2dc', '#2f6f3f']}
+            style={styles.container}
         >
             {/* Confetti Background Layer */}
             <View style={StyleSheet.absoluteFillObject}>
                 {confettiAnims.map((anim, i) => {
                     const angle = (i / confettiCount) * Math.PI * 2;
                     const distance = width * 0.4 + Math.random() * width * 0.3;
-                    
+
                     const translateX = anim.interpolate({
                         inputRange: [0, 1],
                         outputRange: [0, Math.cos(angle) * distance]
@@ -154,7 +156,7 @@ const HabitCelebration = () => {
                         inputRange: [0, 0.5, 1],
                         outputRange: [0, 1.2, 0.8]
                     });
-                    
+
                     const colors = ['#f59e0b', '#ef4444', '#8b5cf6', '#10b981', '#3b82f6'];
                     const color = colors[i % colors.length];
 
@@ -163,13 +165,13 @@ const HabitCelebration = () => {
                             key={i}
                             style={[
                                 styles.confetti,
-                                { 
+                                {
                                     backgroundColor: color,
                                     width: i % 3 === 0 ? 8 : 12,
                                     height: i % 2 === 0 ? 8 : 16,
                                     transform: [
-                                        { translateX }, 
-                                        { translateY }, 
+                                        { translateX },
+                                        { translateY },
                                         { rotate },
                                         { scale }
                                     ],
@@ -186,66 +188,78 @@ const HabitCelebration = () => {
                     );
                 })}
             </View>
-
-            {/* Checkmark Icon */}
-            <Animated.View style={[styles.checkCircleWrapper, { transform: [{ scale: scaleAnim }] }]}>
-                <View style={styles.checkCircle}>
-                    <FontAwesomeIcon icon={faCheck} color="#fff" size={54} />
-                </View>
-            </Animated.View>
-
-            <Animated.View style={{ opacity: fadeAnim, alignItems: 'center', marginTop: 24, zIndex: 10 }}>
-                <Text className="font-redditsans-black" style={styles.completedLabel}>{displayTitle.toUpperCase()} {t("habit_celebration.completed_label")}</Text>
-                <Text className="font-redditsans-black" style={styles.title}>{t("habit_celebration.title")}</Text>
-                <Text className="font-redditsans-medium" style={styles.subtitle}>{t("habit_celebration.subtitle")}</Text>
-            </Animated.View>
-
-            {/* Stats Card */}
-            <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
-                <View style={styles.cardHeader}>
-                    <View style={styles.iconCircle}>
-                        <Text style={styles.iconText}>{ICONS[habit.icon] || '🎯'}</Text>
-                    </View>
-                    <View style={styles.cardHeaderText}>
-                        <Text className="font-redditsans-black" style={styles.habitName}>{displayTitle}</Text>
-                        <Text className="font-redditsans-medium" style={styles.habitDesc}>{descText}</Text>
-                    </View>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.statsRow}>
-                    <View style={styles.statBox}>
-                        <FontAwesomeIcon icon={faFire} color="#f59e0b" size={26} />
-                        <View style={styles.statTextCol}>
-                            <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.streak")}</Text>
-                            <Text className="font-redditsans-black" style={styles.statValue}>{newStreak} {t("habit_celebration.days")}</Text>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: insets.top + 20,
+                    paddingBottom: Math.max(insets.bottom + 30, 50),
+                }}
+                style={styles.scrollView}
+            >
+                {/* Top / Content Section */}
+                <View style={styles.contentSection}>
+                    {/* Checkmark Icon */}
+                    <Animated.View style={[styles.checkCircleWrapper, { transform: [{ scale: scaleAnim }] }]}>
+                        <View style={styles.checkCircle}>
+                            <FontAwesomeIcon icon={faCheck} color="#fff" size={54} />
                         </View>
-                    </View>
-                    <View style={styles.statDivider} />
-                    <View style={styles.statBox}>
-                        <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={26} />
-                        <View style={styles.statTextCol}>
-                            <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.best")}</Text>
-                            <Text className="font-redditsans-black" style={styles.statValue}>{highestStreak} {t("habit_celebration.days")}</Text>
+                    </Animated.View>
+
+                    <Animated.View style={{ opacity: fadeAnim, alignItems: 'center', marginTop: 24, zIndex: 10 }}>
+                        <Text className="font-redditsans-black" style={styles.completedLabel}>{displayTitle.toUpperCase()} {t("habit_celebration.completed_label")}</Text>
+                        <Text className="font-redditsans-black" style={styles.title}>{t("habit_celebration.title")}</Text>
+                        <Text className="font-redditsans-medium" style={styles.subtitle}>{t("habit_celebration.subtitle")}</Text>
+                    </Animated.View>
+
+                    {/* Stats Card */}
+                    <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
+                        <View style={styles.cardHeader}>
+                            <View style={styles.iconCircle}>
+                                <Text style={styles.iconText}>{ICONS[habit.icon] || '🎯'}</Text>
+                            </View>
+                            <View style={styles.cardHeaderText}>
+                                <Text className="font-redditsans-black" style={styles.habitName}>{displayTitle}</Text>
+                                <Text className="font-redditsans-medium" style={styles.habitDesc}>{descText}</Text>
+                            </View>
                         </View>
-                    </View>
+
+                        <View style={styles.divider} />
+
+                        <View style={styles.statsRow}>
+                            <View style={styles.statBox}>
+                                <FontAwesomeIcon icon={faFire} color="#f59e0b" size={26} />
+                                <View style={styles.statTextCol}>
+                                    <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.streak")}</Text>
+                                    <Text className="font-redditsans-black" style={styles.statValue}>{newStreak} {t("habit_celebration.days")}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.statDivider} />
+                            <View style={styles.statBox}>
+                                <FontAwesomeIcon icon={faTrophy} color="#f59e0b" size={26} />
+                                <View style={styles.statTextCol}>
+                                    <Text className="font-redditsans-bold" style={styles.statLabel}>{t("habit_celebration.best")}</Text>
+                                    <Text className="font-redditsans-black" style={styles.statValue}>{highestStreak} {t("habit_celebration.days")}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </Animated.View>
                 </View>
-            </Animated.View>
 
-            <View style={{ flex: 1 }} />
+                {/* Footer Section */}
+                <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
+                    <Text className="font-redditsans-medium" style={styles.quoteText}>
+                        {t("habit_celebration.quote")}
+                    </Text>
 
-            {/* Footer */}
-            <Animated.View style={[styles.footer, { opacity: fadeAnim, paddingBottom: Math.max(insets.bottom + 20, 40) }]}>
-                <Text className="font-redditsans-medium" style={styles.quoteText}>
-                    {t("habit_celebration.quote")}
-                </Text>
-
-                <Pressable style={styles.continueBtn} onPress={handleContinue}>
-                    <Text className="font-redditsans-bold" style={styles.continueText}>{t("habit_celebration.continue")}</Text>
-                    <FontAwesomeIcon icon={faArrowRight} color="#fff" size={16} />
-                </Pressable>
-            </Animated.View>
+                    <Pressable style={styles.continueBtn} onPress={handleContinue}>
+                        <Text className="font-redditsans-bold" style={styles.continueText}>{t("habit_celebration.continue")}</Text>
+                        <FontAwesomeIcon icon={faArrowRight} color="#fff" size={16} />
+                    </Pressable>
+                </Animated.View>
+            </ScrollView>
         </LinearGradient>
     );
 };
@@ -415,6 +429,13 @@ const styles = StyleSheet.create({
     confetti: {
         position: 'absolute',
         borderRadius: 4,
+    },
+    scrollView: {
+        width: '100%',
+    },
+    contentSection: {
+        alignItems: 'center',
+        width: '100%',
     }
 });
 

@@ -244,8 +244,8 @@ const CreateHabitBottomSheet = () => {
                 )
               )}
               renderItem={({ item: habit }) => {
-                const habitCategory = categories.find(c => c.id === habit.categoryId);
-                const categoryIcon = habitCategory ? getCategoryIcon(habitCategory.icon) : '';
+                const habitCategory = categories.find(c => c.id === habit.categoryId || c.name === habit.category);
+                
                 return (
                   <TouchableOpacity
                     key={habit.id}
@@ -267,7 +267,7 @@ const CreateHabitBottomSheet = () => {
                         {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
                       </Text>
                       <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
-                        {categoryIcon ? `${categoryIcon} ` : ''}{t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}
+                        {t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}
                       </Text>
                     </View>
                   </TouchableOpacity>

@@ -1,0 +1,136 @@
+diff --git a/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/Sound.kt b/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/Sound.kt
+index 749ea14..e01ce63 100644
+--- a/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/Sound.kt
++++ b/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/Sound.kt
+@@ -19,8 +19,9 @@ import java.io.IOException
+ 
+ 
+ open class Sound internal constructor(context:ReactApplicationContext):AudioManager.OnAudioFocusChangeListener  {
+-  private var playerPool: MutableMap<Double, MediaPlayer> = mutableMapOf()
+   private val reactContext: ReactApplicationContext = context
++  private val playerPool: MutableMap<Double, MediaPlayer>
++    get() = Sound.playerPool
+   var category: String? = null
+   private var mixWithOthers: Boolean = true
+   private var focusedPlayerKey: Double? = null
+@@ -262,6 +263,7 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
+ 
+ 
+   fun stop(key: Double, callback: Callback) {
++    cancelStopAfter(key)
+     val player = playerPool[key]
+     if (player != null && player.isPlaying) {
+       player.pause()
+@@ -285,6 +287,7 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
+ 
+ 
+   fun release(key: Double) {
++    cancelStopAfter(key)
+     val player = playerPool[key]
+     if (player != null) {
+       player.reset()
+@@ -414,4 +417,38 @@ open class Sound internal constructor(context:ReactApplicationContext):AudioMana
+       }
+     }
+   }
++
++  fun stopAfter(key: Double, seconds: Double) {
++    cancelStopAfter(key)
++    val runnable = Runnable {
++      val player = playerPool[key]
++      if (player != null) {
++        try {
++          if (player.isPlaying) {
++            player.pause()
++            player.seekTo(0)
++          }
++          setOnPlay(false, key)
++        } catch (e: Exception) {
++          Log.e("RNSound", "Error auto-stopping player", e)
++        }
++      }
++      Sound.stopHandlers.remove(key)
++    }
++    Sound.stopHandlers[key] = runnable
++    Sound.mainHandler.postDelayed(runnable, (seconds * 1000).toLong())
++  }
++
++  fun cancelStopAfter(key: Double) {
++    Sound.stopHandlers[key]?.let {
++      Sound.mainHandler.removeCallbacks(it)
++      Sound.stopHandlers.remove(key)
++    }
++  }
++
++  companion object {
++    val playerPool: MutableMap<Double, MediaPlayer> = java.util.concurrent.ConcurrentHashMap()
++    val stopHandlers: MutableMap<Double, Runnable> = java.util.concurrent.ConcurrentHashMap()
++    val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
++  }
+ }
+diff --git a/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/SoundModule.kt b/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/SoundModule.kt
+index af25df1..0f33be1 100644
+--- a/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/SoundModule.kt
++++ b/node_modules/react-native-sound/android/src/main/java/com/zmxv/RNSound/SoundModule.kt
+@@ -88,6 +88,16 @@ class SoundModule internal constructor(context: ReactApplicationContext) :
+     // Keep: Needed for RN built in Event Emitter Calls
+   }
+ 
++  @ReactMethod
++  override fun stopAfter(key: Double, seconds: Double) {
++    module.stopAfter(key, seconds)
++  }
++
++  @ReactMethod
++  override fun cancelStopAfter(key: Double) {
++    module.cancelStopAfter(key)
++  }
++
+   override fun getName(): String {
+     return NAME
+   }
+diff --git a/node_modules/react-native-sound/android/src/newarch/SoundSpec.kt b/node_modules/react-native-sound/android/src/newarch/SoundSpec.kt
+index 0adc511..7782305 100644
+--- a/node_modules/react-native-sound/android/src/newarch/SoundSpec.kt
++++ b/node_modules/react-native-sound/android/src/newarch/SoundSpec.kt
+@@ -39,6 +39,14 @@ open class SoundSpec internal constructor(context: ReactApplicationContext) :
+     module.release(key)
+   }
+ 
++  override fun stopAfter(key: Double, seconds: Double) {
++    module.stopAfter(key, seconds)
++  }
++
++  override fun cancelStopAfter(key: Double) {
++    module.cancelStopAfter(key)
++  }
++
+   override fun setVolume(key: Double, left: Double, right: Double) {
+     module.setVolume(key,left.toFloat(),right.toFloat())
+   }
+diff --git a/node_modules/react-native-sound/android/src/oldarch/SoundSpec.kt b/node_modules/react-native-sound/android/src/oldarch/SoundSpec.kt
+index 5324012..16bd239 100644
+--- a/node_modules/react-native-sound/android/src/oldarch/SoundSpec.kt
++++ b/node_modules/react-native-sound/android/src/oldarch/SoundSpec.kt
+@@ -14,6 +14,8 @@ abstract class SoundSpec internal constructor(context: ReactApplicationContext)
+   abstract fun stop(key: Double, callback: Callback)
+   abstract fun reset(key: Double)
+   abstract fun release(key: Double)
++  abstract fun stopAfter(key: Double, seconds: Double)
++  abstract fun cancelStopAfter(key: Double)
+   abstract fun setVolume(key: Double, left: Double, right: Double)
+   abstract fun getSystemVolume(callback: Callback)
+   abstract fun setSystemVolume(value: Double)
+diff --git a/node_modules/react-native-sound/src/NativeSoundAndroid.ts b/node_modules/react-native-sound/src/NativeSoundAndroid.ts
+index ed2b8b5..e060df6 100644
+--- a/node_modules/react-native-sound/src/NativeSoundAndroid.ts
++++ b/node_modules/react-native-sound/src/NativeSoundAndroid.ts
+@@ -5,6 +5,8 @@ interface SoundOptionTypes {
+   loadSync: boolean;
+ }
+ export interface Spec extends TurboModule {
++  stopAfter: (key: number, seconds: number) => void;
++  cancelStopAfter: (key: number) => void;
+   setVolume: (key: number, left: number, right: number) => void;
+   setSpeed: (key: number, speed: number) => void;
+   setSystemVolume: (value: number) => void;

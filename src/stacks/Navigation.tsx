@@ -6,7 +6,7 @@ import UserPreferencesStack from './UserPreferencesStack';
 import { MenuContext } from '../context/MenuContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
-import { AppState, Alert } from 'react-native';
+import { AppState, Alert, BackHandler } from 'react-native';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
 import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
 import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder, scheduleDailyMotivationalQuotes } from '../utils/NotificationService';
@@ -58,7 +58,7 @@ const Navigation = () => {
     };
 
     useEffect(() => {
-        let unsubscribe = () => {};
+        let unsubscribe = () => { };
 
         if (accessToken) {
             const setupNotifications = async () => {
@@ -97,12 +97,27 @@ const Navigation = () => {
         };
     }, []);
 
+    // Handle Android physical back button presses globally
+    useEffect(() => {
+        const onBackPress = () => {
+            if (navigationRef.isReady() && navigationRef.canGoBack()) {
+                navigationRef.goBack();
+                return true;
+            }
+            return false;
+        };
+
+        const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+        return () => subscription.remove();
+    }, []);
+
     // Handle Deep Linking from Notifee (Ongoing Habits & Reminders)
     useEffect(() => {
         // Handle when app is opened from quit state
         const handleInitialNotification = async () => {
             const initialNotification = await notifee.getInitialNotification();
-            
+
             if (initialNotification?.notification?.data?.type === 'winback') {
                 setTimeout(() => {
                     Alert.alert("Welcome back! 🎉", "We missed you! Let's crush your goals today.");
@@ -111,9 +126,9 @@ const Navigation = () => {
                 const habitId = initialNotification.notification.data.habitId;
                 setTimeout(() => {
                     if (navigationRef.isReady()) {
-                        navigationRef.navigate('Home', { 
-                            screen: 'UserHabitDetails', 
-                            params: { habitId: habitId } 
+                        navigationRef.navigate('Home', {
+                            screen: 'UserHabitDetails',
+                            params: { habitId: habitId }
                         });
                     }
                 }, 500);
@@ -129,9 +144,9 @@ const Navigation = () => {
                 } else if (detail.notification?.data?.habitId) {
                     const habitId = detail.notification.data.habitId;
                     if (navigationRef.isReady()) {
-                        navigationRef.navigate('Home', { 
-                            screen: 'UserHabitDetails', 
-                            params: { habitId: habitId } 
+                        navigationRef.navigate('Home', {
+                            screen: 'UserHabitDetails',
+                            params: { habitId: habitId }
                         });
                     }
                 }
@@ -142,10 +157,10 @@ const Navigation = () => {
                     const dateSuffix = dateStr ? `_${dateStr}` : '';
                     const startKey = `timer_start_${habitId}${dateSuffix}`;
                     const accKey = `timer_acc_${habitId}${dateSuffix}`;
-                    
+
                     if (detail.pressAction.id === 'stop') {
                         notifee.cancelNotification(detail.notification.id);
-                        
+
                         // Import MMKV storage dynamically to avoid cyclic dependencies
                         import('../utils/MMKVStore').then(({ storage }) => {
                             const storedStart = storage.getString(startKey);
@@ -167,7 +182,7 @@ const Navigation = () => {
                                 storage.set(accKey, newAcc.toString());
                                 storage.delete(startKey);
                             }
-                            
+
                             const baseSecs = parseInt(detail.notification.data?.baseSeconds || '0', 10);
                             const targetSecsStr = detail.notification.data?.targetSeconds;
                             const targetSecs = targetSecsStr ? parseInt(targetSecsStr, 10) : null;
@@ -181,7 +196,7 @@ const Navigation = () => {
                     } else if (detail.pressAction.id === 'resume') {
                         import('../utils/MMKVStore').then(({ storage }) => {
                             storage.set(startKey, new Date().toISOString());
-                            
+
                             const currentAcc = parseInt(storage.getString(accKey) || '0', 10);
                             const baseSecs = parseInt(detail.notification.data?.baseSeconds || '0', 10);
                             const targetSecsStr = detail.notification.data?.targetSeconds;
@@ -191,7 +206,7 @@ const Navigation = () => {
                             import('../utils/NotificationService').then(({ displayOngoingHabitNotification, scheduleGoalReachedNotification }) => {
                                 const totalCurrent = currentAcc + baseSecs;
                                 displayOngoingHabitNotification({ id: habitId, title }, totalCurrent, distance, false, baseSecs, targetSecs, dateStr);
-                                
+
                                 if (targetSecs !== null) {
                                     const remaining = targetSecs - totalCurrent;
                                     if (remaining > 0) {
@@ -207,19 +222,19 @@ const Navigation = () => {
 
         return () => unsubscribeNotifee();
     }, []);
-    
+
     return (
         <ThemeProvider>
-            <MenuContext.Provider value={{ 
-                isMenuOpen, 
-                setIsMenuOpen, 
-                isCreateModalOpen, 
-                setIsCreateModalOpen 
+            <MenuContext.Provider value={{
+                isMenuOpen,
+                setIsMenuOpen,
+                isCreateModalOpen,
+                setIsCreateModalOpen
             }}>
                 <NavigationContainer ref={navigationRef} onReady={() => setIsNavReady(true)}>
                     {!accessToken ? (
                         <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
-                     ) : !hasCompletedPreferences ? (
+                    ) : !hasCompletedPreferences ? (
                         <UserPreferencesStack />
                     ) : (
                         <TabStack />

@@ -117,6 +117,23 @@
     "Time to complete your habit ⏰": "Time to complete your habit ⏰"
   },
   "home": {
+    "mood_title": "How do you feel today?",
+    "mood_saved": "Mood saved! Keep growing! 🌟",
+    "mood_xp_earned": "+5 XP Daily Mood Bonus!",
+    "mood_toast_saved": "Mood recorded! 🎉",
+    "mood_toast_xp": "+5 XP earned",
+    "mood_title_distribution": "Mood Distribution (Last 30 Days)",
+    "mood_title_history": "Mood History (Last 7 Days)",
+    "mood_no_data": "No mood logged",
+    "mood_labels": {
+      "peaceful": "Peaceful",
+      "energetic": "Energetic",
+      "tired": "Tired",
+      "sad": "Sad",
+      "stressed": "Stressed",
+      "happy": "Happy",
+      "neutral": "Neutral"
+    },
     "greeting": "Hi {{name}}!",
     "subtitle": "Let's make habits together!",
     "todays_habits": "Today's Habits",
@@ -132,8 +149,8 @@
     "add_first_habit": "Add your first habit",
     "empty_hint": "You can track habits daily\nand see your progress grow",
     "progress_today": "Progress Today",
-    "add_habits_tracking": "Add habits to start tracking",
-    "days_habits": "{{day}}'s Habits",
+    "add_habits_tracking": "Create your first habit to unlock daily statistics",
+    "days_habits": "{{day}} Habits",
     "day_names": {
       "sunday": "Sunday",
       "monday": "Monday",
@@ -152,7 +169,44 @@
       "fri": "FRI",
       "sat": "SAT"
     },
-    "quote_of_the_day": "✨ Quote of the Day"
+    "quote_of_the_day": "✨ Quote of the Day",
+    "suggested_habits_title": "💡 Suggested Habits",
+    "suggestions": {
+      "read": {
+        "title": "Read a Book",
+        "desc": "Read 10 pages for personal growth"
+      },
+      "water": {
+        "title": "Drink Water",
+        "desc": "Stay hydrated throughout the day"
+      },
+      "meditate": {
+        "title": "Meditation",
+        "desc": "Calm your mind for 10 minutes"
+      },
+      "walk": {
+        "title": "Daily Walk",
+        "desc": "Walk 10,000 steps to stay fit"
+      },
+      "sleep": {
+        "title": "Healthy Sleep",
+        "desc": "Sleep 8 hours for complete recovery"
+      }
+    },
+    "checklist_title": "🚀 Getting Started",
+    "checklist_subtitle": "Complete onboarding tasks and reach Level 3 to unlock your AI Mentor.",
+    "checklist_log_mood": "😊 Log Your Mood Today",
+    "checklist_log_mood_desc": "Earn +5 XP and track how you feel",
+    "checklist_create_habit": "➕ Create Your First Habit",
+    "checklist_create_habit_desc": "Earn +15 XP and start your growth journey",
+    "checklist_play_game": "🧠 Try a Brain Game",
+    "checklist_play_game_desc": "Earn +10 XP by training focus and memory",
+    "checklist_complete_habit": "✅ Complete Your First Habit",
+    "checklist_complete_habit_desc": "Earn +20 XP by checking off your first habit",
+    "checklist_success_title": "🎉 Onboarding Completed!",
+    "checklist_success_desc": "🎉 You're all set! Your growth journey starts now.",
+    "checklist_success_btn": "Awesome! Let's Go",
+    "checklist_bonus_awarded": "Checklist Completion Bonus"
   },
   "my_habits": {
     "header": "Your Habits",
@@ -238,6 +292,9 @@
     "locked_past_desc": "You can only log progress for today and yesterday."
   },
   "explore": {
+    "games_intro_title": "Discover Brain Games! 🧠",
+    "games_intro_desc": "Welcome to the Explore section! While GrowDay's main goal is to build strong habits, you can also play cognitive games here. Train your focus, memory, and reaction speed to earn extra XP and level up faster!",
+    "games_intro_button": "Let's Play!",
     "header": "Explore",
     "search_placeholder": "Search habits, tasks...",
     "suggested_habits": "Suggested Habits",
@@ -328,6 +385,9 @@
     "clear_btn": "Clear",
     "reminders_label": "REMINDERS",
     "reminders_sub": "Send me a notification to stay on track.",
+    "set_reminder_time": "Set Reminder Time",
+    "hour": "Hour",
+    "minute": "Minute",
     "every_day": "Every day",
     "on_scheduled_days": "On scheduled days",
     "selected_days": "Selected days",
@@ -425,7 +485,11 @@
     "finance": "Finance",
     "social": "Social",
     "wellness": "Wellness",
-    "other": "Other"
+    "other": "Other",
+    "learning": "Learning",
+    "hydration": "Hydration",
+    "mindfulness": "Mindfulness",
+    "sleep": "Sleep"
   },
   "achievements": {
     "header": "Achievements",
@@ -716,7 +780,7 @@
       "question": "What is your gender?",
       "male": "Male",
       "female": "Female",
-      "other": "Other"
+      "other": "Prefer not to say"
     },
     "step1": {
       "title1": "How old",
@@ -800,9 +864,12 @@
   },
   "auth": {
     "welcome_back": "Welcome Back!",
+    "welcome_subtitle": "Sign in to your account to continue your growth",
     "lets_start": "Let's get started!",
+    "register_subtitle": "Create an account to manage your habits",
     "google_continue": "CONTINUE WITH GOOGLE",
     "or_login_email": "OR LOG IN WITH EMAIL",
+    "or_register_email": "OR REGISTER WITH EMAIL",
     "email_username": "Email or Username",
     "email": "Email",
     "password": "Password",
@@ -867,6 +934,7 @@
       "password_wrong": "Password is incorrect.",
       "user_not_found": "User not found.",
       "invalid_credentials": "Invalid username or password.",
+      "username_or_email_wrong": "Username or email is wrong.",
       "account_locked": "Account is temporarily locked. Please try again later.",
       "email_not_confirmed": "Your email address is not confirmed."
     }
@@ -1011,7 +1079,22 @@
     "habits_label": "Habits",
     "brain_insight_high_past": "You completed {{rate}}% of your habits in this period, keeping your brain in excellent shape! Use this as a guide for your current goals. 🏆",
     "brain_insight_medium_past": "You carried out {{rate}}% of your habits in this period. Every new period is a fresh start—you can aim even higher this time! ⚡",
-    "brain_insight_low_past": "Your completion rate was {{rate}}% in this period. The past is in the past! Start fresh in the current period and wake up your brain. 🌟"
+    "brain_insight_low_past": "Your completion rate was {{rate}}% in this period. The past is in the past! Start fresh in the current period and wake up your brain. 🌟",
+    "ai_insight_title": "AI Mentor Insights",
+    "total_xp": "Total XP Earned",
+    "avg_completion": "Avg Completion",
+    "most_consistent": "Consistent Habit",
+    "mood_trend_coming_soon": "Coming Soon: Mood Trend & Mood Score",
+    "insight_most_common_mood": "Most common mood: {{mood}}",
+    "insight_completion_improved": "Completion improved by {{change}}% this period",
+    "insight_completion_decreased": "Completion decreased by {{change}}% this period",
+    "insight_completion_stable": "Completion rate remained stable this period",
+    "insight_completion_rate": "Habit completion rate: {{rate}}%",
+    "insight_best_streak": "Best habit streak: {{streak}} days",
+    "insight_positive_mood_completion": "{{mood}} days have a 25% higher completion rate",
+    "insight_mood_stable_consistency": "Consistency increases when your mood remains stable",
+    "insight_longest_streak_positive_mood": "Your longest streak occurred during your most positive mood period",
+    "insight_harder_on_difficult_days": "Completing habits is harder on tired or stressed days"
   },
   "help": {
     "title": "Help Center",
@@ -1066,7 +1149,7 @@
     }
   },
   "games": {
-    "title": "Cognitive Games",
+    "title": "Brain Games",
     "memory_match": "Memory Match",
     "memory_match_desc": "Find matching pairs of icons. Boost your visual recall and concentration.",
     "select_difficulty": "Select the difficulty level and size to start the game.",
@@ -1276,6 +1359,7 @@
   "ai_mentor": {
     "card_title": "AI Mentor",
     "card_subtitle": "Ask me anything about your habits",
+    "compact_desc": "Get personalized recommendations tailored to your goals.",
     "card_locked": "Unlock at Level 3",
     "chat_header": "AI Mentor",
     "input_placeholder": "Type your message...",
@@ -1291,7 +1375,8 @@
     "select_prompt": "Select one to start the conversation:",
     "prompt_motivate": "Motivate me for today!",
     "prompt_habit": "What habits do you suggest to increase my productivity?",
-    "prompt_plan": "Help me prepare a great day plan!"
+    "prompt_plan": "Help me prepare a great day plan!",
+    "demo_habit_response": "🧠 Current Analysis\n\n• Reading Habit: 100% 🔥\n• Mood: Peaceful 😊\n\n⚡ Suggested Plan\n\n• Morning Walk - 07:30\n• Meditation - 12:00\n• Read a Book - 17:00\n\n🎯 Quick Tip\n\nKeep your reading streak going today."
   },
   "focus_sounds": {
     "title": "Focus Sounds",
@@ -1303,5 +1388,44 @@
     "river": "River",
     "now_playing": "Now Playing",
     "ready": "Ready to Play"
+  },
+  "virtual_plant": {
+    "title": "Habit Buddy: Growy",
+    "wateringLevel": "Watering Level",
+    "stageName": "Stage",
+    "waterMe": "Water me",
+    "nextStage": "To next stage",
+    "stages": [
+      "Seed / Sprout 🌱",
+      "Potted Plant 🪴",
+      "Flowering Plant 🌸",
+      "Young Foliage 🌿",
+      "Mighty Tree 🌳"
+    ],
+    "thirsty": [
+      "I'm so thirsty... Complete your habits to water me! 🥺💧",
+      "You haven't completed any habits today. Don't forget me! 🥀",
+      "A drop of water would feel amazing right now! 🥤",
+      "Great time to start your goals! Let's go! 🚀"
+    ],
+    "growing": [
+      "Thanks for the water! Let's complete the remaining habits! 💧🍃",
+      "One step at a time! Keep putting in the effort! 🏃‍♂️",
+      "I am growing! Your self-discipline keeps me alive! 💪",
+      "We make a great team! Keep pushing forward! 🌟"
+    ],
+    "blooming": [
+      "Awesome! You completed all your habits today! I'm so happy! 🎉🌟",
+      "You are a true habit hero! 100% completed today! 🏆",
+      "My blossoms are the fruits of your discipline! Thank you! 🌸✨",
+      "A perfect day! Let's keep this energy going tomorrow! 🌿❤️"
+    ],
+    "general": [
+      "Every habit is a drop of water to me! 💧",
+      "Together we are strong! Have you done your habits today? 💪",
+      "Gain XP to help me grow! 🌱",
+      "Thanks for tapping! That feels nice! 😊",
+      "Remember, small steps lead to big results! 🚀"
+    ]
   }
 }

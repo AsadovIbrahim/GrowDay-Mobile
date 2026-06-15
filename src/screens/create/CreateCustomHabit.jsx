@@ -225,8 +225,8 @@ const CreateCustomHabit = () => {
     try {
       const payload = {
         name: newCategoryName.trim(),
-        icon: newCategoryIcon,
-        color: newCategoryColor
+        icon: "📦",
+        color: "#3b82f6"
       };
 
       const response = await createCategoryFetch(accessToken, payload);
@@ -381,7 +381,9 @@ const CreateCustomHabit = () => {
         navigateOnSuccess();
       } else {
         let errorMsg = response?.message;
-        const isDuplicate = errorMsg === "User habit already exists." || errorMsg === "User habit with the same title already exists.";
+        const isDuplicate = errorMsg === "User habit already exists." || 
+                            errorMsg === "User habit with the same title already exists." ||
+                            errorMsg === "User already has this habit.";
         if (isDuplicate) {
           errorMsg = t("create_habit.already_exists", "This habit already exists in your list.");
           setErrorModalTitle(t("common.oops", "Oops!"));
@@ -441,7 +443,7 @@ const CreateCustomHabit = () => {
           </View>
 
           {/* Description Section */}
-          <View style={styles.fieldSection}>
+          <View style={[styles.fieldSection, { marginBottom: 12 }]}>
             <Text className="font-redditsans-bold" style={styles.label}>{t("create_habit.desc_label")}</Text>
             <TextInput
               style={[
@@ -449,7 +451,8 @@ const CreateCustomHabit = () => {
                 {
                   color: colors.text,
                   borderBottomColor: colors.textGray,
-                  minHeight: 60,
+                  minHeight: 40,
+                  paddingVertical: 2,
                   textAlignVertical: "top",
                 }
               ]}
@@ -485,28 +488,25 @@ const CreateCustomHabit = () => {
               </TouchableOpacity>
               {categories.map((item) => {
                 const isSelected = categoryId === item.id;
+                let catColor = "#3b82f6";
                 return (
                   <TouchableOpacity
                     key={item.id}
                     style={[
                       styles.categoryChip,
                       { backgroundColor: colors.card, borderColor: colors.border, marginRight: 8, marginBottom: 8 },
-                      isSelected && { backgroundColor: (item.color || colors.primary) + '15', borderColor: item.color || colors.primary, borderWidth: 1.5 },
+                      isSelected && { backgroundColor: catColor + '15', borderColor: catColor, borderWidth: 1.5 },
                     ]}
                     onPress={() => {
                       setCategoryId(item.id);
                       setCategory(item.name);
                     }}
                   >
-                    <Text style={{ fontSize: 14, marginRight: 6 }}>
-                      {getCategoryIcon(item.icon)}
-                    </Text>
-
                     <Text
                       style={[
                         styles.categoryText,
                         { color: colors.textSecondary },
-                        isSelected && { color: item.color || colors.primary, fontWeight: "bold" },
+                        isSelected && { color: catColor, fontWeight: "bold" },
                       ]}
                     >
                       {getTranslatedCategory(item, i18n.language, t)}
@@ -1040,7 +1040,7 @@ const CreateCustomHabit = () => {
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 fontSize: 16,
-                marginBottom: 16,
+                marginBottom: 24,
                 borderWidth: 1,
                 borderColor: colors.border
               }}
@@ -1049,58 +1049,6 @@ const CreateCustomHabit = () => {
               value={newCategoryName}
               onChangeText={setNewCategoryName}
             />
-
-            {/* Select Emoji/Icon */}
-            <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
-              {t("create_habit.category_icon", "Icon / Emoji")}
-            </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
-              {["📦", "💧", "💪", "🧠", "⚡", "💰", "🧘", "🤝", "🎨", "📚", "✍️", "🏡", "🍎", "⏰"].map(emoji => (
-                <TouchableOpacity
-                  key={emoji}
-                  onPress={() => setNewCategoryIcon(emoji)}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: newCategoryIcon === emoji ? colors.primary + '30' : colors.cardSecondary,
-                    borderWidth: 1.5,
-                    borderColor: newCategoryIcon === emoji ? colors.primary : 'transparent'
-                  }}
-                >
-                  <Text style={{ fontSize: 20 }}>{emoji}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Select Color */}
-            <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
-              {t("create_habit.category_color", "Theme Color")}
-            </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
-              {["#64748b", "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#a855f7", "#ec4899", "#6366f1"].map(color => (
-                <TouchableOpacity
-                  key={color}
-                  onPress={() => setNewCategoryColor(color)}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
-                    backgroundColor: color,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderWidth: 2,
-                    borderColor: newCategoryColor === color ? colors.text : 'transparent'
-                  }}
-                >
-                  {newCategoryColor === color && (
-                    <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF' }} />
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
 
             {/* Action Buttons */}
             <View style={{ flexDirection: 'row', gap: 12 }}>

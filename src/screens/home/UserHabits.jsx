@@ -693,7 +693,6 @@ const UserHabits = ({ route }) => {
                                                             gap: 6
                                                         }}
                                                     >
-                                                        <Text style={{ fontSize: 14 }}>{getCategoryIcon(cat.icon)}</Text>
                                                         <Text className="font-redditsans-medium" style={{ color: isSel ? '#FFFFFF' : colors.text, fontSize: 14 }}>
                                                             {getTranslatedCategory(cat, i18n.language, t)}
                                                         </Text>

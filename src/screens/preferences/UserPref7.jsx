@@ -88,12 +88,12 @@ const UserPref7 = () => {
       };
 
       const currentMainGoal = normalizeCSV(selectedGoals.join(","));
-      
+
       // If it's an update, check if anything actually changed
       if (isUpdate && initialData) {
         const initialWakeUp = initialData.wakeUpTime?.split(':').slice(0, 2).join(':') || "07:00";
         const currentWakeUp = `${String(previousPreferences.wakeUpHour || 7).padStart(2, "0")}:${String(previousPreferences.wakeUpMinute || 0).padStart(2, "0")}`;
-        
+
         const initialSleep = initialData.sleepTime?.split(':').slice(0, 2).join(':') || "22:00";
         const currentSleep = `${String(previousPreferences.endOfDayHour || 22).padStart(2, "0")}:${String(previousPreferences.endOfDayMinute || 0).padStart(2, "0")}`;
 
@@ -102,7 +102,7 @@ const UserPref7 = () => {
 
         const initialGoal = normalizeCSV(initialData.mainGoal || "");
 
-        const hasChanged = 
+        const hasChanged =
           initialWakeUp !== currentWakeUp ||
           initialSleep !== currentSleep ||
           normalizeString(initialData.procrestinateFrequency) !== normalizeString(previousPreferences.procrastinationFrequency) ||
@@ -125,7 +125,7 @@ const UserPref7 = () => {
 
         if (!hasChanged) {
           Alert.alert(t("preferences.alerts.no_changes_title"), t("preferences.alerts.no_changes_desc"));
-          navigation.navigate("Profile"); 
+          navigation.navigate("Profile");
           return;
         }
       }
@@ -149,10 +149,10 @@ const UserPref7 = () => {
         mainGoal: currentMainGoal
       };
 
-      const response = isUpdate 
+      const response = isUpdate
         ? await updateUserPreferencesWithAIFetch(accessToken, payload)
         : await createUserPreferencesWithAIFetch(accessToken, payload);
-      
+
       if (response && !response.error && response.success !== false) {
         setIsLoading(false);
         setTimeout(() => setShowSuccessModal(true), 500);
@@ -199,10 +199,9 @@ const UserPref7 = () => {
                 <TouchableOpacity
                   key={goal.id}
                   onPress={() => toggleGoal(goal.id)}
-                  className={`flex-row items-center p-5 mb-4 rounded-2xl ${
-                    isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
-                  }`}
-                  style={{ 
+                  className={`flex-row items-center p-4 mb-3 rounded-2xl ${isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
+                    }`}
+                  style={{
                     backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
@@ -212,17 +211,17 @@ const UserPref7 = () => {
                   }}
                 >
                   <View className="flex-row items-center flex-1">
-                    <Text className="text-2xl mr-4">{goal.icon}</Text>
-                    <Text style={{ 
+                    <Text className="text-xl mr-3">{goal.icon}</Text>
+                    <Text style={{
                       color: colors.text,
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: isSelected ? "700" : "500"
                     }} className="font-redditsans-bold">
                       {goal.label}
                     </Text>
                   </View>
                   {isSelected && (
-                    <FontAwesomeIcon icon={faCheck} size={18} color="#22c55e" />
+                    <FontAwesomeIcon icon={faCheck} size={16} color="#22c55e" />
                   )}
                 </TouchableOpacity>
               );
@@ -231,10 +230,11 @@ const UserPref7 = () => {
 
           <View className="flex-1" />
 
-          <TouchableOpacity 
-            onPress={handleSubmit} 
-            disabled={isLoading || selectedGoals.length === 0} 
-            className={`${isLoading || selectedGoals.length === 0 ? "bg-[#8bc37a]/50" : "bg-[#8bc37a]"} py-5 rounded-full mb-6`}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={isLoading || selectedGoals.length === 0}
+            style={{ backgroundColor: colors.primaryLight, opacity: (isLoading || selectedGoals.length === 0) ? 0.5 : 1 }}
+            className="py-5 rounded-full mb-6"
           >
             {isLoading ? <ActivityIndicator color="#ffffff" /> : <Text className="text-white text-center font-redditsans-bold text-[16px]">{t("preferences.complete")}</Text>}
           </TouchableOpacity>
@@ -255,19 +255,19 @@ const UserPref7 = () => {
               </Animated.Text>
             </View>
             <View style={{ marginTop: 60, width: '100%', height: 3, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
-               <Animated.View 
-                  style={{ 
-                    height: '100%', 
-                    backgroundColor: '#8bc37a', 
-                    width: '100%',
-                    transform: [{
-                      translateX: fadeAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-300, 0]
-                      })
-                    }]
-                  }} 
-               />
+              <Animated.View
+                style={{
+                  height: '100%',
+                  backgroundColor: '#8bc37a',
+                  width: '100%',
+                  transform: [{
+                    translateX: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-300, 0]
+                    })
+                  }]
+                }}
+              />
             </View>
             <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 25, textAlign: 'center', letterSpacing: 3, textTransform: 'uppercase' }}>
               {t("preferences.ai_loading.optimizing")}
@@ -281,7 +281,7 @@ const UserPref7 = () => {
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' }}>
           <View style={{ backgroundColor: isDark ? colors.card : 'white', borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 30, alignItems: 'center', minHeight: '50%' }}>
             <View style={{ width: 60, height: 60, backgroundColor: '#8bc37a', borderRadius: 30, justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
-               <FontAwesomeIcon icon={faCheck} size={30} color="white" />
+              <FontAwesomeIcon icon={faCheck} size={30} color="white" />
             </View>
             <Text style={{ fontSize: 26, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 15 }}>
               {isUpdate ? t("preferences.success.updated_title") : t("preferences.success.ready_title")}

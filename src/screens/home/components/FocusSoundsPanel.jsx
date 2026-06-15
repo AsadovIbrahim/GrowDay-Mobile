@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated, Easing } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Animated, Easing, NativeModules } from 'react-native';
 import Sound from 'react-native-sound';
+
+const { RNSound } = NativeModules;
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHeadphones, faVolumeHigh, faVolumeLow } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../../context/ThemeContext';
@@ -38,6 +40,9 @@ const notify = () => {
 export const stopGlobalFocusSound = () => {
   if (activeSoundInstance) {
     try {
+      if (RNSound && typeof activeSoundInstance._key === 'number') {
+        RNSound.cancelStopAfter(activeSoundInstance._key);
+      }
       activeSoundInstance.stop();
       activeSoundInstance.release();
     } catch (e) {
@@ -51,7 +56,7 @@ export const stopGlobalFocusSound = () => {
   }
 };
 
-const FocusSoundsPanel = ({ timerActive, habitId }) => {
+const FocusSoundsPanel = ({ timerActive, habitId, remainingSeconds }) => {
   const { theme } = useTheme();
   const { colors } = theme;
   const { t } = useTranslation();
@@ -88,16 +93,22 @@ const FocusSoundsPanel = ({ timerActive, habitId }) => {
       activeHabitId = habitId;
       activeSoundInstance.play();
       isGlobalSoundPlaying = true;
+      if (RNSound && typeof activeSoundInstance._key === 'number' && typeof remainingSeconds === 'number' && remainingSeconds > 0) {
+        RNSound.stopAfter(activeSoundInstance._key, remainingSeconds);
+      }
       notify();
     } else {
       // Only pause if this habit owns the sound
       if (activeHabitId === habitId) {
         activeSoundInstance.pause();
+        if (RNSound && typeof activeSoundInstance._key === 'number') {
+          RNSound.cancelStopAfter(activeSoundInstance._key);
+        }
         isGlobalSoundPlaying = false;
         notify();
       }
     }
-  }, [timerActive, habitId]);
+  }, [timerActive, habitId, remainingSeconds]);
 
   // Pulse animation for now-playing indicator
   useEffect(() => {
@@ -124,7 +135,7 @@ const FocusSoundsPanel = ({ timerActive, habitId }) => {
       try {
         activeSoundInstance.stop();
         activeSoundInstance.release();
-      } catch (e) {}
+      } catch (e) { }
       activeSoundInstance = null;
     }
 
@@ -154,6 +165,9 @@ const FocusSoundsPanel = ({ timerActive, habitId }) => {
       if (timerActive) {
         newSound.play();
         isGlobalSoundPlaying = true;
+        if (RNSound && typeof newSound._key === 'number' && typeof remainingSeconds === 'number' && remainingSeconds > 0) {
+          RNSound.stopAfter(newSound._key, remainingSeconds);
+        }
       } else {
         isGlobalSoundPlaying = false;
       }
@@ -166,7 +180,7 @@ const FocusSoundsPanel = ({ timerActive, habitId }) => {
     const newVol = direction === 'up'
       ? Math.min(1, activeVolume + step)
       : Math.max(0.1, activeVolume - step);
-    
+
     activeVolume = newVol;
     setVolume(newVol);
     if (activeSoundInstance) {
