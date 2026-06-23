@@ -123,24 +123,24 @@ const Login = () => {
       // 2. Perform login
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      
+
       const idToken = userInfo?.data?.idToken || userInfo?.idToken;
-      
+
       if (!idToken) {
-         setLoading(false);
-         // If it's cancelled, we can just return silently or show a message.
-         if (userInfo?.type === 'cancelled') return;
-         showToast(t("auth.messages.google_token_not_found"), "error");
-         return;
+        setLoading(false);
+        // If it's cancelled, we can just return silently or show a message.
+        if (userInfo?.type === 'cancelled') return;
+        showToast(t("auth.messages.google_token_not_found"), "error");
+        return;
       }
-      
+
       setLoading(true);
       const data = await googleLoginFetch(idToken);
       console.log("SERVER RESPONSE FROM GOOGLE LOGIN:", data);
-      
+
       if (data && data.success) {
         const token = data.data.accessToken.token;
-        
+
         let hasPrefs = false;
         try {
           const preferencesResponse = await getUserPreferencesFetch(token);
@@ -190,17 +190,17 @@ const Login = () => {
         colors={colors.backgroundGradient}
         className="flex-1"
       >
-        <KeyboardAvoidingView 
-          style={{ flex: 1 }} 
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <ScrollView
             ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ 
-              paddingHorizontal: 24, 
-              paddingTop: insets.top + 20, 
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: insets.top + 20,
               paddingBottom: insets.bottom + 60,
               flexGrow: 1,
               justifyContent: 'center'
@@ -232,7 +232,7 @@ const Login = () => {
             </Text>
 
             {/* Google */}
-            <TouchableOpacity 
+            <TouchableOpacity
               className="flex-row justify-center items-center rounded-2xl py-3.5 mb-6 border"
               style={[styles.googleButton, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={handleGoogleLogin}
@@ -346,22 +346,22 @@ const Login = () => {
                 style={{ color: colors.text }}
                 autoCapitalize="none"
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="absolute right-4"
                 onPress={() => setShowPassword(!showPassword)}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
-                <FontAwesomeIcon 
-                  icon={showPassword ? faEye : faEyeSlash} 
-                  size={18} 
-                  color={colors.textSecondary} 
+                <FontAwesomeIcon
+                  icon={showPassword ? faEye : faEyeSlash}
+                  size={18}
+                  color={colors.textSecondary}
                 />
               </TouchableOpacity>
             </View>
 
             {/* Forgot */}
-            <TouchableOpacity 
-              onPress={()=>navigation.navigate("ForgotPassword")} 
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
               className="mb-6 mt-1"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
@@ -371,7 +371,7 @@ const Login = () => {
             </TouchableOpacity>
 
             {/* Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleLogin}
               disabled={loading}
               activeOpacity={0.8}
@@ -392,9 +392,9 @@ const Login = () => {
             {/* Register */}
             <View className="flex-row justify-center mt-6">
               <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>
-                {t("auth.no_account")} 
+                {t("auth.no_account")}
               </Text>
-              <TouchableOpacity onPress={()=>navigation.navigate("Register")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Register")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                 <Text className="font-redditsans-bold" style={{ color: colors.primary }}> {t("auth.sign_up")}</Text>
               </TouchableOpacity>
             </View>

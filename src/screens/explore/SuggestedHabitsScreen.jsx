@@ -385,7 +385,7 @@ export default function SuggestedHabitsScreen() {
           }
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
-          contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 110 }}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.2}
           renderItem={({ item }) => {

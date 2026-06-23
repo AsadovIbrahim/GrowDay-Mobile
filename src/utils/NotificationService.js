@@ -408,3 +408,57 @@ export const scheduleDailyMotivationalQuotes = async () => {
   }
   console.log(`Successfully scheduled 7 days of daily motivational quotes for language: ${lang}`);
 };
+
+export const schedulePlantWateringReminder = async (isWateredToday = false, plantName = 'Growy') => {
+  const pushEnabled = storage.getBoolean('settings.pushEnabled') ?? true;
+  if (!pushEnabled) return;
+
+  const triggerId = 'plant_watering_reminder';
+
+  // Cancel any existing scheduled watering reminder
+  await notifee.cancelTriggerNotification(triggerId);
+
+  const soundEnabled = storage.getBoolean('settings.soundEnabled') ?? true;
+  const channelId = soundEnabled ? 'growday_reminder_channel_sound' : 'growday_reminder_channel_silent';
+
+  await notifee.createChannel({
+    id: channelId,
+    name: t('notifications.channel_reminders'),
+    importance: soundEnabled ? AndroidImportance.HIGH : AndroidImportance.DEFAULT,
+    sound: soundEnabled ? 'default' : undefined,
+    vibration: soundEnabled,
+  });
+
+  const scheduledTime = new Date();
+  scheduledTime.setHours(20, 0, 0, 0); // 8:00 PM
+
+  // If already watered today, or 8:00 PM has already passed today, schedule for tomorrow
+  if (isWateredToday || scheduledTime <= new Date()) {
+    scheduledTime.setDate(scheduledTime.getDate() + 1);
+  }
+
+  const trigger = {
+    type: TriggerType.TIMESTAMP,
+    timestamp: scheduledTime.getTime(),
+  };
+
+  await notifee.createTriggerNotification(
+    {
+      id: triggerId,
+      title: t('notifications.push_plant_thirsty_title', { name: plantName, defaultValue: `${plantName} is thirsty! 🥺` }),
+      body: t('notifications.push_plant_thirsty_body', { name: plantName, defaultValue: "Don't forget to water your virtual plant today! 💧" }),
+      data: { type: 'plant_watering' },
+      android: {
+        channelId: channelId,
+        pressAction: { id: 'default' },
+      },
+    },
+    trigger
+  );
+  console.log(`Scheduled plant watering reminder for: ${scheduledTime.toString()}`);
+};
+
+export const cancelPlantWateringReminder = async () => {
+  await notifee.cancelTriggerNotification('plant_watering_reminder');
+};
+

@@ -976,3 +976,27 @@ export const getMoodStatisticsFetch = async (token, days = 30) => {
     });
     return handleResponse(response);
 };
+
+export const getTournamentStatusFetch = async (token, gameType) => {
+    const response = await fetch(`${VITE_API_URL}/api/Tournament/status?gameType=${gameType}&_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const getPendingTournamentRewardFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Tournament/pending-reward?_t=${Date.now()}`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const claimTournamentRewardFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Tournament/claim`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};

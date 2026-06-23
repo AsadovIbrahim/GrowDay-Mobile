@@ -62,24 +62,24 @@ export const saveLocalMood = (token, mood, emoji) => {
   try {
     const todayStr = getLocalDateString();
     const history = getLocalMoodHistory(token);
-    
+
     // Check if already logged today
     const alreadyLogged = history.some(entry => entry.date === todayStr);
     if (alreadyLogged) {
       return { success: false, alreadyLogged: true, entry: null };
     }
-    
+
     const newEntry = {
       date: todayStr,
       mood: mood,
       emoji: emoji
     };
-    
+
     // Prepend to show newest first, and limit to last 30 entries
     const updatedHistory = [newEntry, ...history].slice(0, 30);
     const key = getMoodHistoryKey(token);
     storage.set(key, JSON.stringify(updatedHistory));
-    
+
     return { success: true, alreadyLogged: false, entry: newEntry };
   } catch (error) {
     console.error('Error saving local mood:', error);

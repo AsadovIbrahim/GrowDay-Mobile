@@ -5,7 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../utils/MMKVStore";
+import { schedulePlantWateringReminder } from "../utils/NotificationService";
 
 const LOCAL_TRANSLATIONS = {
   az: {
@@ -48,7 +50,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Möhtəşəm Ağac 🌳✨"
     },
     customizer: {
-      header: "Growy-ni Sazla 🎨",
+      header: "{{name}} Sazla 🎨",
       streak_info: "Hazırkı ən yüksək ardıcıllığınız: {{streak}} gün. Ardıcıllığınız artdıqca yeni görünüşlər açılır!",
       pots_title: "Dibçək Dizaynları",
       species_title: "Bitki Növləri",
@@ -57,7 +59,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Kilidli: {{val}}",
       streak_days: "{{count}} gün streak",
       rename_title: "Bitkinin adını dəyiş",
-      rename_welcome: "Yeni virtual bitkinə (Growy) ad ver! 🪴",
+      rename_welcome: "Yeni virtual bitkinə ad ver! 🪴",
       rename_placeholder: "Yeni ad daxil edin...",
       rename_save: "Yadda saxla",
       rename_cancel: "Ləğv et"
@@ -117,7 +119,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Nadir Bitki 🌳✨"
     },
     customizer: {
-      header: "Growy'yi Özelleştir 🎨",
+      header: "{{name}} Özelleştir 🎨",
       streak_info: "Mevcut en yüksek seriniz: {{streak}} gün. Seriniz arttıkça yeni görünümler açılır!",
       pots_title: "Saksı Tasarımları",
       species_title: "Bitki Türleri",
@@ -126,7 +128,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Kilitli: {{val}}",
       streak_days: "{{count}} gün seri",
       rename_title: "Bitkinin adını değiştir",
-      rename_welcome: "Yeni sanal bitkine (Growy) isim ver! 🪴",
+      rename_welcome: "Yeni sanal bitkine isim ver! 🪴",
       rename_placeholder: "Yeni ad girin...",
       rename_save: "Kaydet",
       rename_cancel: "İptal"
@@ -186,7 +188,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Редкое растение 🌳✨"
     },
     customizer: {
-      header: "Настроить Growy 🎨",
+      header: "Настроить {{name}} 🎨",
       streak_info: "Ваша лучшая серия: {{streak}} дн. Увеличивайте серию для разблокировки нового!",
       pots_title: "Дизайн горшков",
       species_title: "Виды растений",
@@ -195,7 +197,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Закрыто: {{val}}",
       streak_days: "Серия {{count}} дн.",
       rename_title: "Переименовать растение",
-      rename_welcome: "Дай имя своему новому виртуальному растению (Growy)! 🪴",
+      rename_welcome: "Дай имя своему новому виртуальному растению! 🪴",
       rename_placeholder: "Введите новое имя...",
       rename_save: "Сохранить",
       rename_cancel: "Отмена"
@@ -255,7 +257,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Rare Plant 🌳✨"
     },
     customizer: {
-      header: "Customize Growy 🎨",
+      header: "Customize {{name}} 🎨",
       streak_info: "Your current best streak: {{streak}} days. Reach higher streaks to unlock new looks!",
       pots_title: "Pot Designs",
       species_title: "Plant Species",
@@ -264,7 +266,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Locked: {{val}}",
       streak_days: "{{count}} day streak",
       rename_title: "Rename your plant",
-      rename_welcome: "Name your new virtual plant (Growy)! 🪴",
+      rename_welcome: "Name your new virtual plant! 🪴",
       rename_placeholder: "Enter a new name...",
       rename_save: "Save",
       rename_cancel: "Cancel"
@@ -324,7 +326,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Seltene Pflanze 🌳✨"
     },
     customizer: {
-      header: "Growy anpassen 🎨",
+      header: "{{name}} anpassen 🎨",
       streak_info: "Deine beste Serie: {{streak}} Tage. Erhöhe deine Serie für neue Designs!",
       pots_title: "Topf-Designs",
       species_title: "Pflanzenarten",
@@ -333,7 +335,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Gesperrt: {{val}}",
       streak_days: "{{count}} Tage Serie",
       rename_title: "Pflanze umbenennen",
-      rename_welcome: "Gib deiner neuen virtuellen Pflanze (Growy) einen Namen! 🪴",
+      rename_welcome: "Gib deiner neuen virtuellen Pflanze einen Namen! 🪴",
       rename_placeholder: "Neuen Namen eingeben...",
       rename_save: "Speichern",
       rename_cancel: "Abbrechen"
@@ -393,7 +395,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Planta Rara 🌳✨"
     },
     customizer: {
-      header: "Personalizar Growy 🎨",
+      header: "Personalizar {{name}} 🎨",
       streak_info: "Tu mejor racha: {{streak}} días. ¡Aumenta tu racha para desbloquear nuevos aspectos!",
       pots_title: "Diseños de macetas",
       species_title: "Especies de plantas",
@@ -402,7 +404,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Bloqueado: {{val}}",
       streak_days: "racha de {{count}} días",
       rename_title: "Renombrar planta",
-      rename_welcome: "¡Dale un nombre a tu nueva planta virtual (Growy)! 🪴",
+      rename_welcome: "¡Dale un nombre a tu nueva planta virtual! 🪴",
       rename_placeholder: "Ingrese un nuevo nombre...",
       rename_save: "Guardar",
       rename_cancel: "Cancelar"
@@ -462,7 +464,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Plante Rare 🌳✨"
     },
     customizer: {
-      header: "Personnaliser Growy 🎨",
+      header: "Personnaliser {{name}} 🎨",
       streak_info: "Votre meilleure série: {{streak}} jours. Augmentez-la pour débloquer de nouveaux styles!",
       pots_title: "Modèles de pots",
       species_title: "Espèces de plantes",
@@ -471,7 +473,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Verrouillé: {{val}}",
       streak_days: "série de {{count}} jours",
       rename_title: "Renommer la plante",
-      rename_welcome: "Donne un nom à ta nouvelle plante virtuelle (Growy) ! 🪴",
+      rename_welcome: "Donne un nom à ta nouvelle plante virtuelle ! 🪴",
       rename_placeholder: "Entrez un nouveau nom...",
       rename_save: "Enregistrer",
       rename_cancel: "Annuler"
@@ -531,7 +533,7 @@ const LOCAL_TRANSLATIONS = {
       5: "Pianta Rara 🌳✨"
     },
     customizer: {
-      header: "Personalizza Growy 🎨",
+      header: "Personalizza {{name}} 🎨",
       streak_info: "La tua serie migliore: {{streak}} giorni. Continua per sbloccare nuovi stili!",
       pots_title: "Design dei vasi",
       species_title: "Specie di piante",
@@ -540,7 +542,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "Bloccato: {{val}}",
       streak_days: "serie di {{count}} giorni",
       rename_title: "Rinomina la pianta",
-      rename_welcome: "Dai un nome alla tua nuova pianta virtuale (Growy)! 🪴",
+      rename_welcome: "Dai un nome alla tua nuova pianta virtuale! 🪴",
       rename_placeholder: "Inserisci un nuovo nome...",
       rename_save: "Salva",
       rename_cancel: "Annulla"
@@ -600,7 +602,7 @@ const LOCAL_TRANSLATIONS = {
       5: "稀有植物 🌳✨"
     },
     customizer: {
-      header: "自定义 Growy 🎨",
+      header: "自定义 {{name}} 🎨",
       streak_info: "你当前最高连续天数: {{streak}} 天。连续天数越高，解锁的外观越多！",
       pots_title: "花盆设计",
       species_title: "植物种类",
@@ -609,7 +611,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "未解锁: {{val}}",
       streak_days: "连续 {{count}} 天",
       rename_title: "重命名植物",
-      rename_welcome: "给你的新虚拟植物（Growy）起个名字吧！ 🪴",
+      rename_welcome: "给你的新虚拟植物起个名字吧！ 🪴",
       rename_placeholder: "输入新名称...",
       rename_save: "保存",
       rename_cancel: "取消"
@@ -669,7 +671,7 @@ const LOCAL_TRANSLATIONS = {
       5: "نبتة نادرة 🌳✨"
     },
     customizer: {
-      header: "تخصيص Growy 🎨",
+      header: "تخصيص {{name}} 🎨",
       streak_info: "أفضل سلسلة متتالية حالية: {{streak}} أيام. حقق سلاسل أطول لفتح أشكال جديدة!",
       pots_title: "تصاميم الأحواض",
       species_title: "أنواع النباتات",
@@ -678,7 +680,7 @@ const LOCAL_TRANSLATIONS = {
       locked_by: "مغلق: {{val}}",
       streak_days: "سلسلة {{count}} أيام",
       rename_title: "إعادة تسمية النبات",
-      rename_welcome: "سمِّ نبتتك الافتراضية الجديدة (Growy)! 🪴",
+      rename_welcome: "سمِّ نبتتك الافتراضية الجديدة! 🪴",
       rename_placeholder: "أدخل اسمًا جديدًا...",
       rename_save: "حفظ",
       rename_cancel: "إلغاء"
@@ -734,7 +736,7 @@ const translateLocal = (key, currentLang, variables = {}) => {
   return val;
 };
 
-const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = null, totalExperiencePoints = 0, todaysUserHabit = [] }) => {
+const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = null, totalExperiencePoints = 0, todaysUserHabit = [], onAwardXP = null }) => {
   const { t, i18n } = useTranslation();
   const { theme, isDark } = useTheme();
   const { colors } = theme;
@@ -880,6 +882,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const generalDialogues = useMemo(() => t("virtual_plant.general", { returnObjects: true }) || [], [t]);
 
   // MMKV Persistent states for Growy
+  const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
   const [plantXP, setPlantXP] = useState(() => storage.getNumber(getStorageKey("xp")) || 0);
   const [plantLevel, setPlantLevel] = useState(() => storage.getNumber(getStorageKey("level")) || 1);
   const [selectedPot, setSelectedPot] = useState(() => storage.getString(getStorageKey("selectedPot")) || "classic");
@@ -970,6 +973,159 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   }, [userId, getStorageKey]);
 
   useEffect(() => {
+    // Schedule a plant watering push notification reminder based on watered status
+    try {
+      schedulePlantWateringReminder(wateredCount > 0, plantName);
+    } catch (e) {
+      console.error("Error scheduling plant watering reminder:", e);
+    }
+  }, [wateredCount, plantName]);
+
+  // Synchronize totalExperiencePoints to plantXP and plantLevel states/MMKV
+  useEffect(() => {
+    if (typeof totalExperiencePoints === "number") {
+      storage.set(getStorageKey("xp"), totalExperiencePoints);
+      setPlantXP(totalExperiencePoints);
+
+      // Level Curve calculation based on user level formula:
+      // userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1
+      const userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1;
+      const newLevel = Math.min(userLevel, 5);
+
+      const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
+      if (newLevel > currentLevel) {
+        storage.set(getStorageKey("level"), newLevel);
+        setPlantLevel(newLevel);
+        setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
+      } else if (newLevel < currentLevel) {
+        storage.set(getStorageKey("level"), newLevel);
+        setPlantLevel(newLevel);
+      }
+    }
+  }, [totalExperiencePoints, getStorageKey, tLocal]);
+
+  // Synchronize MMKV storage and React state with incoming virtualPlantState from the server
+  useEffect(() => {
+    if (!userId || !virtualPlantState) return;
+    try {
+      const parsed = JSON.parse(virtualPlantState);
+      if (parsed) {
+        const localXP = storage.getNumber(getStorageKey("xp")) || 0;
+        const localLevel = storage.getNumber(getStorageKey("level")) || 1;
+
+        if (parsed.xp !== undefined && parsed.xp !== localXP) {
+          storage.set(getStorageKey("xp"), parsed.xp);
+          setPlantXP(parsed.xp);
+        }
+        if (parsed.level !== undefined && parsed.level !== localLevel) {
+          storage.set(getStorageKey("level"), parsed.level);
+          setPlantLevel(parsed.level);
+        }
+        if (parsed.selectedPot !== undefined) {
+          const localPot = storage.getString(getStorageKey("selectedPot")) || "classic";
+          if (parsed.selectedPot !== localPot) {
+            storage.set(getStorageKey("selectedPot"), parsed.selectedPot);
+            setSelectedPot(parsed.selectedPot);
+          }
+        }
+        if (parsed.selectedPlant !== undefined) {
+          const localPlant = storage.getString(getStorageKey("selectedPlant")) || "fern";
+          if (parsed.selectedPlant !== localPlant) {
+            storage.set(getStorageKey("selectedPlant"), parsed.selectedPlant);
+            setSelectedPlant(parsed.selectedPlant);
+          }
+        }
+        if (parsed.plantName !== undefined) {
+          const localName = storage.getString(getStorageKey("plantName")) || "...";
+          if (parsed.plantName !== localName) {
+            storage.set(getStorageKey("plantName"), parsed.plantName);
+            setPlantName(parsed.plantName);
+          }
+        }
+        if (parsed.hasNamedPlant !== undefined) {
+          const localHasNamed = storage.getBoolean(getStorageKey("hasNamedPlant")) || false;
+          if (parsed.hasNamedPlant !== localHasNamed) {
+            storage.set(getStorageKey("hasNamedPlant"), parsed.hasNamedPlant);
+            setHasNamedPlant(parsed.hasNamedPlant);
+          }
+        }
+
+        if (parsed.lastActionDate !== undefined) {
+          const localLastActionDate = storage.getString(getStorageKey("lastActionDate")) || "";
+          if (parsed.lastActionDate !== localLastActionDate) {
+            storage.set(getStorageKey("lastActionDate"), parsed.lastActionDate);
+          }
+        }
+        if (parsed.wateredCountToday !== undefined) {
+          const localWateredCount = storage.getNumber(getStorageKey("wateredCountToday")) || 0;
+          if (parsed.wateredCountToday !== localWateredCount) {
+            storage.set(getStorageKey("wateredCountToday"), parsed.wateredCountToday);
+            setWateredCount(parsed.wateredCountToday);
+          }
+        }
+        if (parsed.sunnedToday !== undefined) {
+          const localSunnedToday = storage.getBoolean(getStorageKey("sunnedToday")) || false;
+          if (parsed.sunnedToday !== localSunnedToday) {
+            storage.set(getStorageKey("sunnedToday"), parsed.sunnedToday);
+            setSunnedToday(parsed.sunnedToday);
+          }
+        }
+        if (parsed.fertilizedToday !== undefined) {
+          const localFertilizedToday = storage.getBoolean(getStorageKey("fertilizedToday")) || false;
+          if (parsed.fertilizedToday !== localFertilizedToday) {
+            storage.set(getStorageKey("fertilizedToday"), parsed.fertilizedToday);
+            setFertilizedToday(parsed.fertilizedToday);
+          }
+        }
+        if (parsed.maxHabitsToday !== undefined) {
+          const localMaxHabits = storage.getNumber(getStorageKey("maxHabitsToday")) || 0;
+          if (parsed.maxHabitsToday !== localMaxHabits) {
+            storage.set(getStorageKey("maxHabitsToday"), parsed.maxHabitsToday);
+            setMaxHabitsToday(parsed.maxHabitsToday);
+          }
+        }
+        if (parsed.maxCompletedHabitsToday !== undefined) {
+          const localMaxCompleted = storage.getNumber(getStorageKey("maxCompletedHabitsToday")) || 0;
+          if (parsed.maxCompletedHabitsToday !== localMaxCompleted) {
+            storage.set(getStorageKey("maxCompletedHabitsToday"), parsed.maxCompletedHabitsToday);
+            setMaxCompletedHabitsToday(parsed.maxCompletedHabitsToday);
+          }
+        }
+        if (parsed.lastCompletedDate !== undefined) {
+          const localLastCompletedDate = storage.getString(getStorageKey("lastCompletedDate")) || "";
+          if (parsed.lastCompletedDate !== localLastCompletedDate) {
+            storage.set(getStorageKey("lastCompletedDate"), parsed.lastCompletedDate);
+          }
+        }
+        if (parsed.lastPetDate !== undefined) {
+          const localLastPetDate = storage.getString(getStorageKey("lastPetDate")) || "";
+          if (parsed.lastPetDate !== localLastPetDate) {
+            storage.set(getStorageKey("lastPetDate"), parsed.lastPetDate);
+          }
+        }
+        if (parsed.petCountToday !== undefined) {
+          const localPetCount = storage.getNumber(getStorageKey("petCountToday")) || 0;
+          if (parsed.petCountToday !== localPetCount) {
+            storage.set(getStorageKey("petCountToday"), parsed.petCountToday);
+          }
+        }
+        if (parsed.completedCountTodayMap && typeof parsed.completedCountTodayMap === "object") {
+          Object.keys(parsed.completedCountTodayMap).forEach(k => {
+            const localVal = storage.getNumber(getStorageKey(`completedCount.${k}`)) || 0;
+            if (parsed.completedCountTodayMap[k] !== localVal) {
+              storage.set(getStorageKey(`completedCount.${k}`), parsed.completedCountTodayMap[k]);
+            }
+          });
+        }
+
+        lastSyncedRef.current = virtualPlantState;
+      }
+    } catch (e) {
+      console.error("Error syncing virtualPlantState to local state:", e);
+    }
+  }, [virtualPlantState, userId, getStorageKey]);
+
+  useEffect(() => {
     const completedCountTodayMap = {};
     completedCountTodayMap[todayStr] = storage.getNumber(getStorageKey(`completedCount.${todayStr}`)) || 0;
 
@@ -989,7 +1145,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       lastCompletedDate: storage.getString(getStorageKey("lastCompletedDate")) || "",
       lastPetDate: storage.getString(getStorageKey("lastPetDate")) || "",
       petCountToday: storage.getNumber(getStorageKey("petCountToday")) || 0,
-      completedCountTodayMap
+      completedCountTodayMap,
+      onboardingChecklistCompleted: checklistCompleted === "true"
     };
 
     const stateStr = JSON.stringify(stateObj);
@@ -1014,7 +1171,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     todayStr,
     getStorageKey,
     onSyncState,
-    virtualPlantState
+    virtualPlantState,
+    checklistCompleted
   ]);
 
 
@@ -1025,59 +1183,43 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   }, [todaysUserHabit]);
 
   // Auto-XP award system when habits are completed
-  const addPlantXP = useCallback((amount) => {
-    const currentXP = storage.getNumber(getStorageKey("xp")) || 0;
-    const newXP = currentXP + amount;
-    storage.set(getStorageKey("xp"), newXP);
-    setPlantXP(newXP);
-
-    // Level Curve calculation
-    let newLevel = 1;
-    if (newXP >= 1000) newLevel = 5;
-    else if (newXP >= 600) newLevel = 4;
-    else if (newXP >= 300) newLevel = 3;
-    else if (newXP >= 100) newLevel = 2;
-    else newLevel = 1;
-
-    const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
-    if (newLevel > currentLevel) {
-      storage.set(getStorageKey("level"), newLevel);
-      setPlantLevel(newLevel);
-      setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
-    }
-  }, [tLocal, getStorageKey]);
-
-  useEffect(() => {
-    const savedDate = storage.getString(getStorageKey("lastCompletedDate")) || "";
-    const savedCompletedCount = storage.getNumber(getStorageKey(`completedCount.${todayStr}`)) || 0;
-
-    if (savedDate !== todayStr) {
-      storage.set(getStorageKey("lastCompletedDate"), todayStr);
-      storage.set(getStorageKey(`completedCount.${todayStr}`), completedHabits);
-    } else if (completedHabits > savedCompletedCount) {
-      const diff = completedHabits - savedCompletedCount;
-      const xpGain = diff * 10;
-      addPlantXP(xpGain);
-      storage.set(getStorageKey(`completedCount.${todayStr}`), completedHabits);
+  const addPlantXP = useCallback((amount, message = null) => {
+    if (onAwardXP) {
+      onAwardXP(amount, message);
     } else {
-      storage.set(getStorageKey(`completedCount.${todayStr}`), completedHabits);
-    }
-  }, [completedHabits, todayStr, addPlantXP, getStorageKey]);
+      const currentXP = storage.getNumber(getStorageKey("xp")) || 0;
+      const newXP = currentXP + amount;
+      storage.set(getStorageKey("xp"), newXP);
+      setPlantXP(newXP);
 
-  // Plant Development Level Requirements
+      // Level Curve calculation based on user level formula:
+      // userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1
+      const userLevel = Math.floor(Math.sqrt(newXP / 50)) + 1;
+      const newLevel = Math.min(userLevel, 5);
+
+      const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
+      if (newLevel > currentLevel) {
+        storage.set(getStorageKey("level"), newLevel);
+        setPlantLevel(newLevel);
+        setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
+      }
+    }
+  }, [onAwardXP, tLocal, getStorageKey]);
+
+  // Plant Development Level Requirements synced with User Level Curve
   const levelRequirements = {
-    1: { min: 0, max: 100, name: tLocal("virtual_plant.levels.1") },
-    2: { min: 100, max: 300, name: tLocal("virtual_plant.levels.2") },
-    3: { min: 300, max: 600, name: tLocal("virtual_plant.levels.3") },
-    4: { min: 600, max: 1000, name: tLocal("virtual_plant.levels.4") },
-    5: { min: 1000, max: 2000, name: tLocal("virtual_plant.levels.5") },
+    1: { min: 0, max: 50, name: tLocal("virtual_plant.levels.1") },
+    2: { min: 50, max: 200, name: tLocal("virtual_plant.levels.2") },
+    3: { min: 200, max: 450, name: tLocal("virtual_plant.levels.3") },
+    4: { min: 450, max: 800, name: tLocal("virtual_plant.levels.4") },
+    5: { min: 800, max: 1250, name: tLocal("virtual_plant.levels.5") },
   };
 
   const currentLevelReq = levelRequirements[plantLevel] || levelRequirements[5];
   const plantXPProgress = plantLevel === 5 ? plantXP - 1000 : plantXP - currentLevelReq.min;
   const plantXPTotal = plantLevel === 5 ? 1000 : currentLevelReq.max - currentLevelReq.min;
   const plantXPPercentage = Math.min(Math.max((plantXPProgress / plantXPTotal) * 100, 0), 100);
-  const xpRemaining = currentLevelReq.max - plantXP;
+  const xpRemaining = Math.max(0, currentLevelReq.max - plantXP);
 
   // Selected Plant Emojis Mapping
   const plantEmoji = useMemo(() => {
@@ -1348,8 +1490,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     if (count < 3) {
       count += 1;
       storage.set(getStorageKey("petCountToday"), count);
-      addPlantXP(2);
-      setSpeechText(tLocal("virtual_plant.dialogues.pet_happy"));
+      const msg = tLocal("virtual_plant.dialogues.pet_happy");
+      addPlantXP(2, msg);
+      setSpeechText(msg);
     } else {
       setSpeechText(tLocal("virtual_plant.dialogues.pet_tired"));
     }
@@ -1368,8 +1511,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     setWateredCount(newCount);
 
     triggerWatering();
-    addPlantXP(5);
-    setSpeechText(tLocal("virtual_plant.dialogues.water_happy"));
+    const msg = tLocal("virtual_plant.dialogues.water_happy");
+    addPlantXP(5, msg);
+    setSpeechText(msg);
   };
 
   const handleSun = () => {
@@ -1386,8 +1530,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     setSunnedToday(true);
 
     triggerSunAnimation();
-    addPlantXP(8);
-    setSpeechText(tLocal("virtual_plant.dialogues.sun_happy"));
+    const msg = tLocal("virtual_plant.dialogues.sun_happy");
+    addPlantXP(8, msg);
+    setSpeechText(msg);
   };
 
   const handleFertilize = () => {
@@ -1404,8 +1549,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     setFertilizedToday(true);
 
     triggerFertilizeAnimation();
-    addPlantXP(15);
-    setSpeechText(tLocal("virtual_plant.dialogues.fertilize_happy"));
+    const msg = tLocal("virtual_plant.dialogues.fertilize_happy");
+    addPlantXP(15, msg);
+    setSpeechText(msg);
   };
 
   // Customize Panel Modal state
@@ -1738,7 +1884,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             {/* Header */}
             <View className="flex-row justify-between items-center mb-5">
               <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>
-                {tLocal("virtual_plant.customizer.header")}
+                {tLocal("virtual_plant.customizer.header", { name: plantName })}
               </Text>
               <TouchableOpacity onPress={() => setCustomizeModalVisible(false)} className="p-1">
                 <FontAwesomeIcon icon={faTimes} color={colors.textSecondary} size={20} />

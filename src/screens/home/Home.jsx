@@ -106,13 +106,14 @@ const Home = () => {
 
   const handleMoodSelect = (mood) => {
     const isFirstTimeToday = lastMoodDate !== todayStr;
-    
+
     // Save to local MMKV history (last 30 entries)
     saveLocalMood(token, mood.key, mood.emoji);
 
     // Save to active daily MMKV keys
     setUserMoodEmoji(mood.emoji);
     setLastMoodDate(todayStr);
+    storage.set('user.lastMoodTimestamp', Date.now());
     setMoodModalVisible(false);
 
     // Attempt API submission
@@ -216,6 +217,53 @@ const Home = () => {
     }
   };
 
+  const handleAwardPlantXP = async (xp, message = null) => {
+    if (accountData) {
+      setAccountData(prev => ({
+        ...prev,
+        totalExperiencePoints: (prev.totalExperiencePoints || 0) + xp
+      }));
+    }
+    showMoodToast(message || `+${xp} XP`);
+
+    try {
+      const payload = {
+        firstName: accountData?.firstName || '',
+        lastName: accountData?.lastName || '',
+        username: accountData?.username || accountData?.email || '',
+        email: accountData?.email || '',
+        profilePicture: accountData?.profilePicture || '',
+        pushNotificationsEnabled: accountData?.pushNotificationsEnabled,
+        soundAlertsEnabled: accountData?.soundAlertsEnabled,
+        emailUpdatesEnabled: accountData?.emailUpdatesEnabled,
+        dailyRemindersEnabled: accountData?.dailyRemindersEnabled,
+        addExperiencePoints: xp
+      };
+
+      const response = await updateAccountFetch(token, payload);
+      if (response && response.success) {
+        console.log(`Successfully added ${xp} XP from virtual plant to server database.`);
+        await fetchAccountData();
+      } else {
+        console.error("Failed to update virtual plant XP on server:", response?.message);
+      }
+    } catch (err) {
+      console.error("Error updating virtual plant XP on server:", err);
+    }
+  };
+
+  // Sort today's habits so that uncompleted habits are bubbled to the top, and completed ones are placed at the bottom
+  const sortedTodaysHabits = useMemo(() => {
+    if (!todaysUserHabit || !Array.isArray(todaysUserHabit)) return [];
+    return [...todaysUserHabit].sort((a, b) => {
+      const aCompleted = a.status?.toLowerCase() === 'completed' || a.status?.toLowerCase() === 'done';
+      const bCompleted = b.status?.toLowerCase() === 'completed' || b.status?.toLowerCase() === 'done';
+      if (aCompleted && !bCompleted) return 1;
+      if (!aCompleted && bCompleted) return -1;
+      return 0;
+    });
+  }, [todaysUserHabit]);
+
   // Premium "Quote of the Day" — pick one quote per day using date as seed
   const dailyQuote = useMemo(() => {
     let quotes = t('notifications.motivation_quotes', { returnObjects: true });
@@ -244,14 +292,36 @@ const Home = () => {
       const token = storage.getString("accessToken");
       const accountData = await getAccountDataFetch(token);
       setAccountData(accountData.data);
+      return accountData.data;
     } catch (error) {
       console.error("Failed to fetch account data", error);
+      return null;
     }
   };
-  const syncOnboardingStateWithServer = async (todaysHabits) => {
+  const syncOnboardingStateWithServer = async (todaysHabits, fetchedAccountData) => {
     if (!token) return;
     try {
-      // 1. Sync Mood Today
+      // 1. Sync Onboarding Checklist Completion from virtualPlantState if stored on server
+      const account = fetchedAccountData || accountData;
+      if (account?.virtualPlantState) {
+        try {
+          const plantStateObj = JSON.parse(account.virtualPlantState);
+          if (plantStateObj && plantStateObj.onboardingChecklistCompleted === true) {
+            storage.set("user.checklist.habit_completed", "true");
+            storage.set("user.checklist.create_habit_xp_awarded", "true");
+            storage.set("user.checklist.create_habit_xp_awarded_server", "true");
+            storage.set("user.checklist.complete_habit_xp_awarded", "true");
+            storage.set("user.checklist.complete_habit_xp_awarded_server", "true");
+            storage.set("user.onboarding_checklist_completed", "true");
+            storage.set("user.onboarding_checklist_bonus_awarded", "true");
+            storage.set("user.onboarding_checklist_bonus_awarded_server", "true");
+          }
+        } catch (e) {
+          console.log("Error parsing virtualPlantState for onboarding checklist sync:", e);
+        }
+      }
+
+      // 2. Sync Mood Today
       const moodHistoryRes = await getMoodHistoryFetch(token, 7);
       if (moodHistoryRes && moodHistoryRes.success && Array.isArray(moodHistoryRes.data)) {
         const todayEntry = moodHistoryRes.data.find(entry => {
@@ -268,7 +338,7 @@ const Home = () => {
         }
       }
 
-      // 2. Sync Habit Completion
+      // 3. Sync Habit Completion
       const habitCompletedCheck = storage.getString("user.checklist.habit_completed");
       const checklistCompleted = storage.getString("user.onboarding_checklist_completed");
 
@@ -287,7 +357,7 @@ const Home = () => {
       if (checklistCompleted !== "true") {
         const habitsRes = await getUserHabitFetch(token, 0, 50);
         const habitsList = habitsRes && habitsRes.data ? (Array.isArray(habitsRes.data) ? habitsRes.data : []) : [];
-        
+
         const hasAnyCompletedHabitPast = habitsList.some(habit => {
           return (habit.longestStreak || 0) > 0 || habit.lastCompletedDate !== null;
         });
@@ -313,6 +383,10 @@ const Home = () => {
   const fetchAllData = async () => {
     if (!token) return;
     setError(null);
+    const isFirstLoad = !accountData || userHabitCount === 0;
+    if (isFirstLoad) {
+      setIsInitialLoading(true);
+    }
     try {
       const results = await Promise.all([
         getUserHabitCount(),
@@ -322,10 +396,14 @@ const Home = () => {
         getTodaysUserHabit()
       ]);
       const todaysHabits = results[4];
-      await syncOnboardingStateWithServer(todaysHabits);
+      await syncOnboardingStateWithServer(todaysHabits, results[1]);
     } catch (err) {
       setError(err);
       setIsSyncingMood(false);
+    } finally {
+      if (isFirstLoad) {
+        setIsInitialLoading(false);
+      }
     }
   };
 
@@ -348,7 +426,9 @@ const Home = () => {
   }, [token, selectedDateObject]);
 
   useEffect(() => {
-    if (token && lastMoodDate !== todayStr && !isSyncingMood) {
+    const lastMoodTime = storage.getNumber('user.lastMoodTimestamp') || 0;
+    const eighteenHoursPassed = Date.now() - lastMoodTime >= 18 * 60 * 60 * 1000;
+    if (token && lastMoodDate !== todayStr && eighteenHoursPassed && !isSyncingMood) {
       const timer = setTimeout(() => {
         setMoodModalVisible(true);
       }, 1000);
@@ -356,7 +436,7 @@ const Home = () => {
     }
   }, [token, lastMoodDate, todayStr, isSyncingMood]);
 
-  const getTodaysUserHabit = async (pageIndex = 0, pageSize = 4) => {
+  const getTodaysUserHabit = async (pageIndex = 0, pageSize = 100) => {
     try {
       const dateStr = getLocalDateString(selectedDateObject);
       const response = await getTodaysUserHabitFetch(token, dateStr, pageIndex, pageSize);
@@ -387,9 +467,6 @@ const Home = () => {
 
   const getUserHabitCount = async () => {
     try {
-      if (userHabitCount === 0) {
-        setIsInitialLoading(true);
-      }
       const response = await getUserHabitCountFetch(token);
       let count = 0;
       if (typeof response === 'number') {
@@ -408,8 +485,6 @@ const Home = () => {
       setUserHabitCount(count);
     } catch (error) {
       setError(error);
-    } finally {
-      setIsInitialLoading(false);
     }
   }
   const getUnreadNotificationCount = async () => {
@@ -730,6 +805,7 @@ const Home = () => {
                 totalExperiencePoints={accountData?.totalExperiencePoints}
                 todaysUserHabit={todaysUserHabit}
                 onRefresh={fetchAllData}
+                onAwardXP={handleAwardPlantXP}
               />
             ) : null}
 
@@ -776,7 +852,7 @@ const Home = () => {
                 </TouchableOpacity>
               </View>
 
-              {todaysUserHabit && Array.isArray(todaysUserHabit) && todaysUserHabit.map((habit, index) => (
+              {sortedTodaysHabits && sortedTodaysHabits.slice(0, 4).map((habit, index) => (
                 <HabitCard
                   key={habit.userHabitId || `habit-${index}`}
                   habit={habit}
@@ -888,37 +964,37 @@ const Home = () => {
         onRequestClose={() => setMoodModalVisible(false)}
       >
         <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             activeOpacity={1}
             onPress={() => setMoodModalVisible(false)}
           />
-          
+
           <View className="w-full rounded-t-[28px] p-6 shadow-2xl relative" style={{ backgroundColor: colors.card, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.border, paddingBottom: 36 }}>
             {/* Drag Handle Indicator */}
-            <View 
-              style={{ 
-                width: 40, 
-                height: 5, 
-                borderRadius: 2.5, 
+            <View
+              style={{
+                width: 40,
+                height: 5,
+                borderRadius: 2.5,
                 backgroundColor: isDark ? '#4b5563' : '#d1d5db',
                 alignSelf: 'center',
                 marginBottom: 16
-              }} 
+              }}
             />
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setMoodModalVisible(false)}
               className="absolute top-5 right-5 w-8 h-8 rounded-full items-center justify-center z-10"
               style={{ backgroundColor: colors.cardSecondary }}
             >
               <FontAwesomeIcon icon={faTimes} size={14} color={colors.textSecondary} />
             </TouchableOpacity>
-            
+
             <Text className="text-xl font-redditsans-bold mb-1 text-center px-6" style={{ color: colors.text }}>
               {t("home.mood_title")}
             </Text>
-            
+
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginVertical: 20 }}>
               {moods.map((mood) => {
                 const isSelected = lastMoodDate === todayStr && userMoodEmoji === mood.emoji;
@@ -936,9 +1012,9 @@ const Home = () => {
                     }}
                   >
                     <Text className="text-3xl mb-1">{mood.emoji}</Text>
-                    <Text 
-                      className="text-xxs font-redditsans-bold text-center mt-1" 
-                      style={{ color: colors.text, fontSize: 10 }} 
+                    <Text
+                      className="text-xxs font-redditsans-bold text-center mt-1"
+                      style={{ color: colors.text, fontSize: 10 }}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                       minimumFontScale={0.7}
@@ -961,9 +1037,9 @@ const Home = () => {
 
       {/* Mood Toast Indicator */}
       {moodToastMsg ? (
-        <Animated.View 
+        <Animated.View
           className="absolute top-1/4 left-[10%] right-[10%] bg-black/85 py-3 px-6 rounded-full items-center justify-center border shadow-xl z-[9999] pointer-events-none"
-          style={{ 
+          style={{
             opacity: moodFadeAnim,
             transform: [{ scale: moodScaleAnim }],
             borderColor: colors.primary + "40",

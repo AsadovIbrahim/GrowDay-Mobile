@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faTrophy, faInfoCircle, faClock, faGift } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useMMKVString } from "react-native-mmkv";
@@ -13,8 +13,10 @@ import {
   getGamePersonalBestFetch,
   getAccountDataFetch,
   getUserGameScoreHistoryFetch,
+  getTournamentStatusFetch,
 } from "../../utils/fetch";
 import AvatarWithBorder from "../../components/AvatarWithBorder";
+import TournamentRewardsModal from "../../components/TournamentRewardsModal";
 
 const MEDAL_COLORS = {
   1: { bg: "#FBBF24", shadow: "#F59E0B", text: "#92400E", bar: ["#FBBF24", "#F59E0B"] },
@@ -107,7 +109,7 @@ const PodiumPlayer = ({ player, rank, colors, gameType, currentUsername }) => {
   );
 };
 
-const RankBadge = ({ rank, colors }) => {
+const RankBadge = ({ rank, colors, isTournament = false }) => {
   if (rank <= 3) {
     const medal = MEDAL_COLORS[rank];
     return (
@@ -121,11 +123,22 @@ const RankBadge = ({ rank, colors }) => {
       </View>
     );
   }
+
+  let indicator = null;
+  if (isTournament) {
+    if (rank <= 10) {
+      indicator = <Text style={{ color: "#22c55e", fontSize: 8, fontFamily: "RedditSans-Bold", marginTop: -1 }}>▲</Text>;
+    } else if (rank >= 26) {
+      indicator = <Text style={{ color: "#ef4444", fontSize: 8, fontFamily: "RedditSans-Bold", marginTop: -1 }}>▼</Text>;
+    }
+  }
+
   return (
-    <View className="w-8 items-center">
+    <View className="w-8 items-center justify-center">
       <Text className="font-redditsans-bold text-sm" style={{ color: colors.textSecondary }}>
         {rank}
       </Text>
+      {indicator}
     </View>
   );
 };
@@ -158,13 +171,18 @@ export default function GameLeaderboardScreen() {
   const [token] = useMMKVString("accessToken");
 
   const gameType = route.params?.gameType || "MemoryMatch";
-  const [activeTab, setActiveTab] = useState("global");
+  const [activeTab, setActiveTab] = useState("tournament");
 
   const [leaderboard, setLeaderboard] = useState([]);
   const [scoreHistory, setScoreHistory] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(false);
+
+  const [tournamentData, setTournamentData] = useState(null);
+  const [tournamentLoading, setTournamentLoading] = useState(true);
+  const [showRewardsModal, setShowRewardsModal] = useState(false);
+  const [remainingTime, setRemainingTime] = useState("");
 
   const gameLabel =
     gameType === "SequenceMemory"
@@ -183,6 +201,23 @@ export default function GameLeaderboardScreen() {
     ]);
     if (lbRes?.success) setLeaderboard(lbRes.data || []);
     if (accountRes?.success) setCurrentUser(accountRes.data);
+  }, [token, gameType]);
+
+  const loadTournament = useCallback(async () => {
+    if (!token) return;
+    setTournamentLoading(true);
+    try {
+      const [tourneyRes, accountRes] = await Promise.all([
+        getTournamentStatusFetch(token, gameType),
+        getAccountDataFetch(token).catch(() => null),
+      ]);
+      if (tourneyRes?.success) setTournamentData(tourneyRes.data);
+      if (accountRes?.success) setCurrentUser(accountRes.data);
+    } catch (err) {
+      console.log("Error loading tournament status:", err);
+    } finally {
+      setTournamentLoading(false);
+    }
   }, [token, gameType]);
 
   const loadHistory = useCallback(async () => {
@@ -204,16 +239,19 @@ export default function GameLeaderboardScreen() {
     if (!token) return;
     try {
       setLoading(true);
-      await loadLeaderboard();
-      if (activeTab === "history") {
+      if (activeTab === "tournament") {
+        await loadTournament();
+      } else if (activeTab === "global") {
+        await loadLeaderboard();
+      } else if (activeTab === "history") {
         await loadHistory();
       }
     } catch (err) {
-      console.log("Error loading leaderboard:", err);
+      console.log("Error loading data:", err);
     } finally {
       setLoading(false);
     }
-  }, [token, activeTab, loadLeaderboard, loadHistory]);
+  }, [token, activeTab, loadTournament, loadLeaderboard, loadHistory]);
 
   useFocusEffect(
     useCallback(() => {
@@ -221,9 +259,44 @@ export default function GameLeaderboardScreen() {
     }, [loadData])
   );
 
+  useEffect(() => {
+    if (!tournamentData || !tournamentData.remainingSeconds) {
+      setRemainingTime("");
+      return;
+    }
+    let secondsLeft = tournamentData.remainingSeconds;
+    const updateTimer = () => {
+      if (secondsLeft <= 0) {
+        setRemainingTime(t("games.tournament_ended", "Bitdi"));
+        return;
+      }
+      const days = Math.floor(secondsLeft / (3600 * 24));
+      const hours = Math.floor((secondsLeft % (3600 * 24)) / 3600);
+      const minutes = Math.floor((secondsLeft % 3600) / 60);
+
+      const lang = i18n.language || "az";
+      if (lang === "az") {
+        setRemainingTime(`${days}gün ${hours}saat ${minutes}dəq`);
+      } else if (lang === "tr") {
+        setRemainingTime(`${days}gün ${hours}saat ${minutes}dk`);
+      } else {
+        setRemainingTime(`${days}d ${hours}h ${minutes}m`);
+      }
+      secondsLeft--;
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [tournamentData, i18n.language, t]);
+
   const switchTab = async (tab) => {
     setActiveTab(tab);
-    if (tab === "history") {
+    if (tab === "tournament") {
+      await loadTournament();
+    } else if (tab === "global") {
+      await loadLeaderboard();
+    } else if (tab === "history") {
       await loadHistory();
     }
   };
@@ -283,7 +356,202 @@ export default function GameLeaderboardScreen() {
       const ms = Math.max(0, 1000 - Math.round(score / 10));
       return `${ms} ms`;
     }
-    return `${score} ${t("games.points_unit", "pts")}`;
+    return `${score} ${t("games.points_unit")}`;
+  };
+
+  const renderTournamentContent = () => {
+    if (tournamentLoading) {
+      return (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text className="mt-4 font-redditsans-medium" style={{ color: colors.textSecondary }}>
+            {t("games.loading_tournament")}
+          </Text>
+        </View>
+      );
+    }
+
+    if (!tournamentData || !tournamentData.leaderboard || tournamentData.leaderboard.length === 0) {
+      return (
+        <View className="flex-1 items-center justify-center px-8">
+          <FontAwesomeIcon icon={faTrophy} size={48} color={colors.textSecondary + "50"} />
+          <Text
+            className="mt-4 font-redditsans-bold text-lg text-center"
+            style={{ color: colors.textSecondary }}
+          >
+            {t("games.no_tournament_scores")}
+          </Text>
+        </View>
+      );
+    }
+
+    const normalizedLB = (tournamentData.leaderboard || []).map((p) => ({
+      ...p,
+      highScore: p.weeklyScore,
+    }));
+
+    const t1 = normalizedLB.find((i) => i.rank === 1);
+    const t2 = normalizedLB.find((i) => i.rank === 2);
+    const t3 = normalizedLB.find((i) => i.rank === 3);
+    const hasPodium = t1 || t2 || t3;
+
+    return (
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 30 }}
+      >
+        {/* Tournament Info Card */}
+        <View
+          className="mx-4 p-4 rounded-3xl mb-4 flex-row items-center justify-between shadow-sm border"
+          style={{
+            backgroundColor: colors.cardSecondary,
+            borderColor: colors.border + "40",
+          }}
+        >
+          <View className="flex-1">
+            <View className="flex-row items-center gap-2">
+              <FontAwesomeIcon icon={faTrophy} size={16} color="#FBBF24" />
+              <Text className="text-sm font-redditsans-bold" style={{ color: colors.text }}>
+                {t(`games.league_${tournamentData.currentLeague}`, { defaultValue: t("games.league_1") })}
+              </Text>
+            </View>
+            {remainingTime ? (
+              <View className="flex-row items-center gap-1.5 mt-1.5">
+                <FontAwesomeIcon icon={faClock} size={11} color={colors.textSecondary} />
+                <Text className="text-xs font-redditsans-regular" style={{ color: colors.textSecondary }}>
+                  {t("games.ends_in")} {remainingTime}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setShowRewardsModal(true)}
+            className="p-2.5 rounded-full"
+            style={{ backgroundColor: colors.card }}
+          >
+            <FontAwesomeIcon icon={faGift} size={18} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        {hasPodium && (
+          <View
+            className="mx-4 rounded-3xl mb-4 overflow-hidden"
+            style={{ backgroundColor: colors.cardSecondary }}
+          >
+            <View className="flex-row items-end justify-center pt-6 pb-0 px-4">
+              <PodiumPlayer
+                player={t2}
+                rank={2}
+                colors={colors}
+                gameType={gameType}
+                currentUsername={currentUsername}
+              />
+              <View style={{ width: 12 }} />
+              <PodiumPlayer
+                player={t1}
+                rank={1}
+                colors={colors}
+                gameType={gameType}
+                currentUsername={currentUsername}
+              />
+              <View style={{ width: 12 }} />
+              <PodiumPlayer
+                player={t3}
+                rank={3}
+                colors={colors}
+                gameType={gameType}
+                currentUsername={currentUsername}
+              />
+            </View>
+          </View>
+        )}
+
+        <View
+          className="mx-4 rounded-3xl overflow-hidden"
+          style={{ backgroundColor: colors.cardSecondary }}
+        >
+          <View className="px-5 pt-5 pb-2 flex-row justify-between items-center">
+            <Text className="text-sm font-redditsans-bold" style={{ color: colors.text }}>
+              {t("games.group_rankings")}
+            </Text>
+          </View>
+
+          {normalizedLB.map((item, index) => {
+            const name =
+              (`${item.firstName || ""} ${item.lastName || ""}`).trim() || item.userName;
+            const level = item.level || 1;
+            const isLast = index === normalizedLB.length - 1;
+            const isCurrentUser = currentUsername && item.userName === currentUsername;
+
+            let rowBg = "transparent";
+            if (isCurrentUser) {
+              rowBg = colors.primary + "15";
+            } else if (item.rank <= 10) {
+              rowBg = "#22c55e" + "08"; // subtle green promotion hint
+            } else if (item.rank >= 26) {
+              rowBg = "#ef4444" + "08"; // subtle red demotion hint
+            }
+
+            return (
+              <View
+                key={item.userId}
+                className="flex-row items-center px-5 py-3"
+                style={{
+                  borderBottomWidth: isLast ? 0 : 1,
+                  borderColor: colors.textSecondary + "10",
+                  backgroundColor: rowBg,
+                }}
+              >
+                <RankBadge rank={item.rank} colors={colors} isTournament={true} />
+                <View className="ml-3">
+                  <AvatarWithBorder avatarUrl={item.profilePicture} level={level} size={36} />
+                </View>
+                <View className="flex-1 ml-3">
+                  <Text
+                    numberOfLines={1}
+                    className="text-sm font-redditsans-semibold"
+                    style={{ color: colors.text }}
+                  >
+                    {name}
+                    {isCurrentUser ? ` ${t("games.you", "(You)")}` : ""}
+                  </Text>
+                  <Text
+                    style={{ fontSize: 11, color: colors.textSecondary }}
+                    className="font-redditsans-regular"
+                  >
+                    {t("common.level_short", { level })}
+                  </Text>
+                </View>
+                <View className="items-end">
+                  <Text
+                    className="text-sm font-redditsans-bold"
+                    style={{
+                      color: item.rank <= 3 ? MEDAL_COLORS[item.rank].bg : colors.primary,
+                    }}
+                  >
+                    {gameType === "ReactionTime"
+                      ? `${Math.max(0, 1000 - Math.round(item.highScore / 10))} ms`
+                      : item.highScore}
+                  </Text>
+                  {gameType !== "ReactionTime" && (
+                    <Text
+                      style={{ fontSize: 10, color: colors.textSecondary }}
+                      className="font-redditsans-regular"
+                    >
+                      {t("games.points_unit")}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            );
+          })}
+
+          <View style={{ height: 8 }} />
+        </View>
+      </ScrollView>
+    );
   };
 
   const renderGlobalContent = () => {
@@ -414,7 +682,7 @@ export default function GameLeaderboardScreen() {
                       style={{ fontSize: 10, color: colors.textSecondary }}
                       className="font-redditsans-regular"
                     >
-                      {t("games.points_unit", "xal")}
+                      {t("games.points_unit")}
                     </Text>
                   )}
                 </View>
@@ -535,20 +803,37 @@ export default function GameLeaderboardScreen() {
 
         <View className="mx-4 mb-3 flex-row p-1 rounded-2xl" style={{ backgroundColor: colors.cardSecondary }}>
           <TabButton
+            active={activeTab === "tournament"}
+            label={t("games.tab_tournament")}
+            onPress={() => switchTab("tournament")}
+            colors={colors}
+          />
+          <TabButton
             active={activeTab === "global"}
-            label={t("games.tab_global", "🏆 Global")}
+            label={t("games.tab_global")}
             onPress={() => switchTab("global")}
             colors={colors}
           />
           <TabButton
             active={activeTab === "history"}
-            label={t("games.tab_my_history", "📊 Mənim tarixçəm")}
+            label={t("games.tab_my_history")}
             onPress={() => switchTab("history")}
             colors={colors}
           />
         </View>
 
-        {activeTab === "global" ? renderGlobalContent() : renderHistoryContent()}
+        {activeTab === "tournament"
+          ? renderTournamentContent()
+          : activeTab === "global"
+            ? renderGlobalContent()
+            : renderHistoryContent()}
+
+        <TournamentRewardsModal
+          visible={showRewardsModal}
+          onClose={() => setShowRewardsModal(false)}
+          currentLeague={tournamentData?.currentLeague || 1}
+          colors={colors}
+        />
       </SafeAreaView>
     </LinearGradient>
   );

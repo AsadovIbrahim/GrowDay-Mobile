@@ -615,7 +615,7 @@ const CreateCustomHabit = () => {
                             { color: colors.textSecondary },
                             selectedDays.includes(day) && { color: colors.primary }
                           ]}>
-                            {day.substring(0, 1)}
+                            {t(`habit_details.days_short.${day.toLowerCase()}`).substring(0, 1)}
                           </Text>
                         </TouchableOpacity>
                       ))}

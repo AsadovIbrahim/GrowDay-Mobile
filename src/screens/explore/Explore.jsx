@@ -19,6 +19,7 @@ import LearningCard from "../../components/LearningCard";
 import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
 import AdBanner from "../../components/AdBanner";
+import TournamentClaimPopup from "../../components/TournamentClaimPopup";
 
 
 import { useTheme } from "../../context/ThemeContext";
@@ -358,11 +359,41 @@ const Explore = () => {
         return false;
       }
 
+      // Check if new habits are different from current suggestedHabits
+      const currentIdsSet = new Set(suggestedHabits.map(h => String(h.id)).filter(Boolean));
+
+      const currentTitlesSet = new Set();
+      suggestedHabits.forEach(h => {
+        if (h.title) currentTitlesSet.add(h.title.trim().toLowerCase());
+        const { title: translated } = getTranslatedHabit(h, i18n.language, t);
+        if (translated) currentTitlesSet.add(translated.trim().toLowerCase());
+      });
+
+      const isDifferent = habits.some(h => {
+        const id = h.id ? String(h.id) : null;
+        const idExists = id ? currentIdsSet.has(id) : false;
+        if (idExists) return false;
+
+        const title = h.title?.trim().toLowerCase() || "";
+        const { title: translated } = getTranslatedHabit(h, i18n.language, t);
+        const translatedTitle = translated?.trim().toLowerCase() || "";
+
+        const titleExists = title ? currentTitlesSet.has(title) : false;
+        const translatedTitleExists = translatedTitle ? currentTitlesSet.has(translatedTitle) : false;
+
+        return !titleExists && !translatedTitleExists;
+      });
+
       setSuggestedHabits(habits);
       saveSuggestedHabitsCache(habits);
       setHasMore(habits.length >= pageSize);
-      recordAiCoachGeneration();
-      return true;
+
+      if (isDifferent) {
+        recordAiCoachGeneration();
+        return "different";
+      } else {
+        return "same";
+      }
     } catch (error) {
       console.log("Error generating new habits:", error);
       showAiCoachError(null);
@@ -486,11 +517,16 @@ const Explore = () => {
                     {
                       text: t("common.confirm"),
                       onPress: async () => {
-                        const ok = await generateNewSuggestedHabits();
-                        if (ok) {
+                        const status = await generateNewSuggestedHabits();
+                        if (status === "different") {
                           Alert.alert(
                             t("levelup.ai_success_title"),
                             t("levelup.ai_success_desc")
+                          );
+                        } else if (status === "same") {
+                          Alert.alert(
+                            t("levelup.ai_same_title"),
+                            t("levelup.ai_same_desc")
                           );
                         }
                       },
@@ -1128,6 +1164,7 @@ const Explore = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      <TournamentClaimPopup colors={colors} onRewardClaimed={fetchXP} />
     </LinearGradient>
   );
 };

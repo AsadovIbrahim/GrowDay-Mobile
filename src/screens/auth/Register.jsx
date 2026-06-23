@@ -17,137 +17,137 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const Register = () => {
-    const navigation = useNavigation();
-    const insets = useSafeAreaInsets();
-    const { theme } = useTheme();
-    const { colors } = theme;
-    const { t } = useTranslation();
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [formData, setFormData] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [serverErrors, setServerErrors] = useState([]);
-    const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
-    const [focusedInput, setFocusedInput] = useState(null);
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const { colors } = theme;
+  const { t } = useTranslation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [serverErrors, setServerErrors] = useState([]);
+  const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+  const [focusedInput, setFocusedInput] = useState(null);
 
-    const scrollViewRef = useRef(null);
-    const firstNameRef = useRef(null);
-    const lastNameRef = useRef(null);
-    const usernameRef = useRef(null);
-    const emailRef = useRef(null);
-    const passwordRef = useRef(null);
-    const confirmPasswordRef = useRef(null);
+  const scrollViewRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
-    const scrollToInput = (ref) => {
-      setTimeout(() => {
-        ref?.current?.measureInWindow((x, y) => {
-          scrollViewRef.current?.scrollTo({ y: y - 120, animated: true });
-        });
-      }, 100);
-    };
+  const scrollToInput = (ref) => {
+    setTimeout(() => {
+      ref?.current?.measureInWindow((x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 120, animated: true });
+      });
+    }, 100);
+  };
 
-    const showToast = (message, type = "success") => {
-      setToast({ visible: true, message, type });
-    };
-  
-    const handleInputChange = (name, text) => {
-      setFormData({ ...formData, [name]: text });
-      setServerErrors([]);
+  const showToast = (message, type = "success") => {
+    setToast({ visible: true, message, type });
+  };
+
+  const handleInputChange = (name, text) => {
+    setFormData({ ...formData, [name]: text });
+    setServerErrors([]);
+  }
+  const handleRegister = async () => {
+    setLoading(true);
+    setServerErrors([]);
+    try {
+      const data = await registerfetch(formData);
+      if (data.success) {
+        storage.set("firstName", formData.firstname);
+        storage.set("lastName", formData.lastname);
+        storage.set("username", formData.username);
+        storage.set("email", formData.email);
+        storage.set("hasCompletedPreferences", false);
+        navigation.navigate("OtpVerification", { email: formData.email });
+      } else {
+        const msgs = data.errors?.length > 0
+          ? translateAuthErrors(data.errors, t)
+          : [translateAuthError(data.message, t) || t("auth.messages.registration_failed")];
+        setServerErrors(msgs);
+      }
+    } catch (error) {
+      setServerErrors([t("auth.messages.network_error")]);
+    } finally {
+      setLoading(false);
     }
-    const handleRegister = async () => {
+  }
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
+
+  const handleGoogleLogin = async () => {
+    GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
+
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      const idToken = userInfo?.data?.idToken || userInfo?.idToken;
+
+      if (!idToken) {
+        setLoading(false);
+        if (userInfo?.type === 'cancelled') return;
+        showToast(t("auth.messages.google_token_not_found"), "error");
+        return;
+      }
+
       setLoading(true);
-      setServerErrors([]);
-      try {
-        const data = await registerfetch(formData);
-        if (data.success) {
-          storage.set("firstName", formData.firstname);
-          storage.set("lastName", formData.lastname);
-          storage.set("username", formData.username);
-          storage.set("email", formData.email);
-          storage.set("hasCompletedPreferences", false);
-          navigation.navigate("OtpVerification", { email: formData.email });
-        } else {
-          const msgs = data.errors?.length > 0
-            ? translateAuthErrors(data.errors, t)
-            : [translateAuthError(data.message, t) || t("auth.messages.registration_failed")];
-          setServerErrors(msgs);
-        }
-      } catch (error) {
-        setServerErrors([t("auth.messages.network_error")]);
-      } finally {
-        setLoading(false);
-      }
-    }
+      const data = await googleLoginFetch(idToken);
 
-    const handleGoBack = () => {
-      navigation.goBack();
-    }
+      if (data && data.success) {
+        const token = data.data.accessToken.token;
 
-    const handleGoogleLogin = async () => {
-      GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
-      
-      try {
-        await GoogleSignin.hasPlayServices();
-        const userInfo = await GoogleSignin.signIn();
-        
-        const idToken = userInfo?.data?.idToken || userInfo?.idToken;
-        
-        if (!idToken) {
-           setLoading(false);
-           if (userInfo?.type === 'cancelled') return;
-           showToast(t("auth.messages.google_token_not_found"), "error");
-           return;
+        let hasPrefs = false;
+        try {
+          const preferencesResponse = await getUserPreferencesFetch(token);
+          hasPrefs = !!(preferencesResponse && preferencesResponse.data && !preferencesResponse.error);
+        } catch (prefError) {
+          console.log("Error checking user preferences:", prefError);
         }
-        
-        setLoading(true);
-        const data = await googleLoginFetch(idToken);
-        
-        if (data && data.success) {
-          const token = data.data.accessToken.token;
-          
-          let hasPrefs = false;
-          try {
-            const preferencesResponse = await getUserPreferencesFetch(token);
-            hasPrefs = !!(preferencesResponse && preferencesResponse.data && !preferencesResponse.error);
-          } catch (prefError) {
-            console.log("Error checking user preferences:", prefError);
+
+        showToast(t("auth.messages.google_signup_success"), "success");
+
+        const googleEmail = userInfo?.data?.user?.email || userInfo?.user?.email || '';
+
+        setTimeout(() => {
+          clearUserSession();
+          if (googleEmail) {
+            storage.set("UsernameOrEmail", googleEmail);
+            const scope = googleEmail.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
+            storage.set('userScope', scope);
           }
-  
-          showToast(t("auth.messages.google_signup_success"), "success");
-
-          const googleEmail = userInfo?.data?.user?.email || userInfo?.user?.email || '';
-  
-          setTimeout(() => {
-            clearUserSession();
-            if (googleEmail) {
-              storage.set("UsernameOrEmail", googleEmail);
-              const scope = googleEmail.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
-              storage.set('userScope', scope);
-            }
-            storage.set("hasCompletedPreferences", hasPrefs);
-            storage.set("accessToken", token);
-          }, 1100);
-        } else {
-          const errorMsg = data?.message || data?.title || t("auth.messages.google_signup_failed");
-          showToast(errorMsg, "error");
-        }
-      } catch (error) {
-        console.error("Google Sign-In Error:", error);
-        const clientPrefix = GOOGLE_WEB_CLIENT_ID ? GOOGLE_WEB_CLIENT_ID.substring(0, 15) : 'null';
-        showToast(`${error.message || t("auth.messages.google_failed")} (ID: ${clientPrefix}...)`, "error");
-      } finally {
-        setLoading(false);
+          storage.set("hasCompletedPreferences", hasPrefs);
+          storage.set("accessToken", token);
+        }, 1100);
+      } else {
+        const errorMsg = data?.message || data?.title || t("auth.messages.google_signup_failed");
+        showToast(errorMsg, "error");
       }
-    };
-  
-    return (
-      <View style={{ flex: 1 }}>
-        <Toast
-          visible={toast.visible}
-          message={toast.message}
-          type={toast.type}
-          onHide={() => setToast((prev) => ({ ...prev, visible: false }))}
-        />
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      const clientPrefix = GOOGLE_WEB_CLIENT_ID ? GOOGLE_WEB_CLIENT_ID.substring(0, 15) : 'null';
+      showToast(`${error.message || t("auth.messages.google_failed")} (ID: ${clientPrefix}...)`, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onHide={() => setToast((prev) => ({ ...prev, visible: false }))}
+      />
 
       <LinearGradient
         colors={colors.backgroundGradient}
@@ -155,17 +155,17 @@ const Register = () => {
         end={{ x: 0, y: 1 }}
         className="flex-1"
       >
-        <KeyboardAvoidingView 
-          style={{ flex: 1 }} 
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <ScrollView
             ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ 
-              paddingHorizontal: 24, 
-              paddingTop: insets.top + 20, 
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: insets.top + 20,
               paddingBottom: insets.bottom + 100,
               flexGrow: 1,
               justifyContent: 'center'
@@ -200,7 +200,7 @@ const Register = () => {
               {t("auth.register_subtitle", "Create an account to manage your habits")}
             </Text>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               className="flex-row justify-center items-center rounded-2xl py-3.5 mb-6 border"
               style={[styles.googleButton, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={handleGoogleLogin}
@@ -413,7 +413,7 @@ const Register = () => {
                 style={{ color: colors.text }}
                 autoCapitalize="none"
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="absolute right-4"
                 onPress={() => setShowPassword(!showPassword)}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
@@ -455,7 +455,7 @@ const Register = () => {
                 style={{ color: colors.text }}
                 autoCapitalize="none"
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="absolute right-4"
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
@@ -464,7 +464,7 @@ const Register = () => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleRegister}
               disabled={loading}
               activeOpacity={0.8}
@@ -484,7 +484,7 @@ const Register = () => {
 
             <View className="flex-row justify-center mt-6">
               <Text className="font-redditsans-medium" style={{ color: colors.textSecondary }}>{t("auth.have_account")} </Text>
-              <TouchableOpacity onPress={()=>navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                 <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("auth.sign_in")}</Text>
               </TouchableOpacity>
             </View>
@@ -492,8 +492,8 @@ const Register = () => {
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
-      </View>
-    );
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
