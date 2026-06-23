@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, Easing, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, Easing, Dimensions, ScrollView, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -16,7 +16,11 @@ Sound.setCategory('Playback');
 
 const { width } = Dimensions.get('window');
 
-const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : "ca-app-pub-8430015420939329/2948302979";
+const interstitialAdUnitId = __DEV__
+    ? TestIds.INTERSTITIAL
+    : Platform.OS === 'ios'
+        ? "YOUR_IOS_INTERSTITIAL_AD_UNIT_ID" // TODO: Replace with your iOS Interstitial Ad Unit ID from AdMob console
+        : "ca-app-pub-8430015420939329/2948302979";
 
 const HabitCelebration = () => {
     const navigation = useNavigation();

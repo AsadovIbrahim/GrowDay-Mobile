@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
 import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../context/ThemeContext";
@@ -11,8 +11,12 @@ const AdBanner = () => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
-  // Dev mode is TestId.BANNER, prod is standard fallback test id or customer's ID
-  const adUnitId = __DEV__ ? TestIds.BANNER : "ca-app-pub-8430015420939329/2836622339";
+  // Dev mode uses TestId.BANNER, prod splits between iOS and Android
+  const adUnitId = __DEV__
+    ? TestIds.BANNER
+    : Platform.OS === "ios"
+      ? "YOUR_IOS_BANNER_AD_UNIT_ID" // TODO: Replace with your iOS Banner Ad Unit ID from AdMob console
+      : "ca-app-pub-8430015420939329/2836622339";
 
   if (error) {
     return null; // Keep UI clean if loading fails
