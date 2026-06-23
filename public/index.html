@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GrowDay - Habit Tracker | Build Better Habits</title>
+  <meta name="description"
+    content="GrowDay is a gamified habit tracker that helps you build better daily habits. Track habits, grow your virtual plant, compete with friends, and transform your life one habit at a time.">
+  <meta name="theme-color" content="#0a0f1c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta property="og:title" content="GrowDay - Habit Tracker">
+  <meta property="og:description" content="Build better habits with GrowDay. Track, compete, and grow.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://growday-17333.web.app">
+  <meta property="og:image" content="/icon.png">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #111827;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #22c55e;
+      --accent-glow: rgba(34, 197, 94, 0.25);
+      --accent-secondary: #4ade80;
+      --gradient-start: #22c55e;
+      --gradient-end: #06b6d4;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Animated background */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bg-glow--green {
+      background: var(--accent);
+      top: -200px;
+      right: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .bg-glow--cyan {
+      background: #06b6d4;
+      bottom: -200px;
+      left: -100px;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(30px, -40px);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.9);
+        opacity: 0.6;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center;
+      }
+
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(10, 15, 28, 0.8);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .nav__inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav__logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .nav__name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav__links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav__link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav__link:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 80px;
+      text-align: center;
+    }
+
+    .hero__content {
+      max-width: 680px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-secondary);
+      margin-bottom: 32px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .hero__badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+
+    .hero__icon-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 36px;
+      animation: scaleIn 0.7s ease-out 0.1s both;
+    }
+
+    .hero__icon {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      box-shadow:
+        0 0 60px var(--accent-glow),
+        0 20px 60px rgba(0, 0, 0, 0.4);
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero__icon-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 34px;
+      border: 2px solid rgba(34, 197, 94, 0.2);
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+
+    .hero__title {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.7s ease-out 0.2s both;
+    }
+
+    .hero__title-gradient {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero__subtitle {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeInUp 0.7s ease-out 0.3s both;
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: fadeInUp 0.7s ease-out 0.4s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn--primary {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: #fff;
+      box-shadow:
+        0 0 30px var(--accent-glow),
+        0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 40px var(--accent-glow),
+        0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn--primary:active {
+      transform: translateY(0);
+    }
+
+    .btn__icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Features Section */
+    .features {
+      position: relative;
+      z-index: 1;
+      padding: 80px 24px;
+    }
+
+    .features__grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: var(--surface-hover);
+      border-color: rgba(34, 197, 94, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-card__emoji {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card__title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-card__desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    .footer {
+      position: relative;
+      z-index: 1;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer__inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer__link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .footer__link:hover {
+      color: var(--accent);
+    }
+
+    .footer__copy {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Privacy Policy Page Styles */
+    .privacy-page {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+      display: none;
+    }
+
+    .privacy-page.active {
+      display: block;
+    }
+
+    .privacy-page h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .privacy-page .updated {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+
+    .privacy-page h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 36px;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .privacy-page p,
+    .privacy-page li {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .privacy-page ul {
+      padding-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    .privacy-page a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .privacy-page a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 32px;
+      transition: gap 0.2s ease;
+    }
+
+    .back-link:hover {
+      gap: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .nav__links {
+        display: none;
+      }
+
+      .hero {
+        padding: 100px 20px 60px;
+      }
+
+      .hero__icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 24px;
+      }
+
+      .hero__icon-ring {
+        border-radius: 30px;
+      }
+
+      .features__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background effects -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow--green"></div>
+  <div class="bg-glow bg-glow--cyan"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav__inner">
+      <a href="/" class="nav__brand" id="nav-home">
+        <img src="/icon.png" alt="GrowDay" class="nav__logo">
+        <span class="nav__name">GrowDay</span>
+      </a>
+      <div class="nav__links">
+        <a href="#features" class="nav__link" id="nav-features">Features</a>
+        <a href="/privacy-policy" class="nav__link" id="nav-privacy" onclick="showPrivacy(event)">Privacy Policy</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Landing Page -->
+  <main id="landing-page">
+    <!-- Hero -->
+    <section class="hero" id="hero">
+      <div class="hero__content">
+        <div class="hero__badge">
+          <span class="hero__badge-dot"></span>
+          Available on Google Play
+        </div>
+
+        <div class="hero__icon-wrapper">
+          <img src="/icon.png" alt="GrowDay App Icon" class="hero__icon" id="app-icon">
+          <div class="hero__icon-ring"></div>
+        </div>
+
+        <h1 class="hero__title">
+          Build Better Habits<br>
+          <span class="hero__title-gradient">Grow Every Day</span>
+        </h1>
+
+        <p class="hero__subtitle">
+          GrowDay is your gamified habit tracker — track daily habits, grow a virtual plant,
+          compete with friends on leaderboards, and transform your routine into an adventure.
+        </p>
+
+        <div class="hero__actions">
+          <a href="https://play.google.com/store/apps/details?id=com.growday" class="btn btn--primary" id="download-btn"
+            target="_blank" rel="noopener noreferrer">
+            <svg class="btn__icon" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 0 1 0 1.38l-2.302 2.302L15.196 12l2.502-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z" />
+            </svg>
+            Download on Google Play
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="features__grid">
+        <div class="feature-card" id="feature-habits">
+          <span class="feature-card__emoji">✅</span>
+          <h3 class="feature-card__title">Smart Habit Tracking</h3>
+          <p class="feature-card__desc">Create custom habits or choose from expert-curated suggestions. Track your
+            progress with daily check-ins and streaks.</p>
+        </div>
+        <div class="feature-card" id="feature-plant">
+          <span class="feature-card__emoji">🌱</span>
+          <h3 class="feature-card__title">Virtual Plant Growth</h3>
+          <p class="feature-card__desc">Watch your virtual plant grow as you complete habits. Miss a day, and your plant
+            suffers — motivation made visual.</p>
+        </div>
+        <div class="feature-card" id="feature-compete">
+          <span class="feature-card__emoji">🏆</span>
+          <h3 class="feature-card__title">Compete & Leaderboards</h3>
+          <p class="feature-card__desc">Join tournaments, climb the leaderboards, and challenge your friends. Turn
+            habit-building into a friendly competition.</p>
+        </div>
+        <div class="feature-card" id="feature-insights">
+          <span class="feature-card__emoji">📊</span>
+          <h3 class="feature-card__title">Detailed Insights</h3>
+          <p class="feature-card__desc">Get beautiful charts and statistics about your progress. Understand your
+            patterns and optimize your routine.</p>
+        </div>
+        <div class="feature-card" id="feature-reminders">
+          <span class="feature-card__emoji">🔔</span>
+          <h3 class="feature-card__title">Smart Reminders</h3>
+          <p class="feature-card__desc">Never miss a habit with customizable notifications. Set reminders for the
+            perfect time to stay on track.</p>
+        </div>
+        <div class="feature-card" id="feature-multilang">
+          <span class="feature-card__emoji">🌍</span>
+          <h3 class="feature-card__title">Multi-Language Support</h3>
+          <p class="feature-card__desc">Available in 10+ languages including English, Azerbaijani, Turkish, Russian,
+            Arabic, and more.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Privacy Policy Page -->
+  <section class="privacy-page" id="privacy-page">
+    <a href="/" class="back-link" onclick="showLanding(event)" id="privacy-back">
+      ← Back to Home
+    </a>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: June 2026</p>
+
+    <h2>Introduction</h2>
+    <p>GrowDay ("we", "our", or "us") is committed to protecting and respecting your privacy. This Privacy Policy
+      explains how we collect, use, and share information about you when you use our mobile application GrowDay (the
+      "App").</p>
+
+    <h2>Information We Collect</h2>
+    <p>We may collect the following types of information:</p>
+    <ul>
+      <li><strong>Account Information:</strong> When you create an account, we collect your name, email address, and
+        profile photo (if provided via Google Sign-In or Apple Sign-In).</li>
+      <li><strong>Habit Data:</strong> Information about the habits you create, track, and complete within the App. This
+        data is stored securely to provide you with analytics and progress tracking.</li>
+      <li><strong>Device Information:</strong> We may collect information about the device you use, including device
+        model, operating system version, and unique device identifiers for analytics and push notification purposes.
+      </li>
+      <li><strong>Usage Data:</strong> We collect information about how you interact with the App, including features
+        used, time spent, and performance metrics.</li>
+    </ul>
+
+    <h2>How We Use Your Information</h2>
+    <p>We use the information we collect to:</p>
+    <ul>
+      <li>Provide, maintain, and improve the App and its features.</li>
+      <li>Personalize your experience and deliver relevant content.</li>
+      <li>Send you push notifications and reminders (with your consent).</li>
+      <li>Display relevant advertisements through Google AdMob.</li>
+      <li>Analyze usage patterns to improve our services.</li>
+      <li>Communicate with you about updates, promotions, or support inquiries.</li>
+    </ul>
+
+    <h2>Advertising</h2>
+    <p>We use Google AdMob to display advertisements in the App. AdMob may collect and use data about your device and
+      app usage to serve personalized ads. You can opt out of personalized ads through your device settings. For more
+      information, please review <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's
+        Privacy Policy</a>.</p>
+
+    <h2>Data Storage & Security</h2>
+    <p>Your data is stored securely using Google Firebase services (including Firebase Authentication, Cloud Firestore,
+      and Firebase Storage). We implement appropriate technical and organizational measures to protect your personal
+      data against unauthorized access, alteration, disclosure, or destruction.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>The App uses the following third-party services that may collect data:</p>
+    <ul>
+      <li><strong>Google Firebase</strong> - Authentication, database, analytics, and cloud storage.</li>
+      <li><strong>Google AdMob</strong> - Advertising services.</li>
+      <li><strong>Google Analytics</strong> - App usage analytics.</li>
+      <li><strong>RevenueCat</strong> - In-app purchase and subscription management.</li>
+    </ul>
+
+    <h2>Children's Privacy</h2>
+    <p>The App is not intended for use by children under the age of 13. We do not knowingly collect personal information
+      from children under 13. If we discover that a child under 13 has provided us with personal information, we will
+      promptly delete it.</p>
+
+    <h2>Your Rights</h2>
+    <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+    <ul>
+      <li>Access and receive a copy of your personal data.</li>
+      <li>Rectify or update inaccurate personal data.</li>
+      <li>Request deletion of your personal data.</li>
+      <li>Object to or restrict the processing of your personal data.</li>
+      <li>Data portability.</li>
+    </ul>
+
+    <h2>Data Retention</h2>
+    <p>We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy or as
+      required by law. When you delete your account, we will delete your personal data within 30 days.</p>
+
+    <h2>Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy
+      on this page and updating the "Last updated" date.</p>
+
+    <h2>Contact Us</h2>
+    <p>If you have any questions about this Privacy Policy or your data, please contact us at:</p>
+    <p>📧 Email: <a href="mailto:growday.support@gmail.com">growday.support@gmail.com</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="footer__inner">
+      <div class="footer__links">
+        <a href="https://play.google.com/store/apps/details?id=com.growday" class="footer__link" target="_blank"
+          rel="noopener" id="footer-playstore">Google Play</a>
+        <a href="/privacy-policy" class="footer__link" onclick="showPrivacy(event)" id="footer-privacy">Privacy
+          Policy</a>
+        <a href="mailto:growday.support@gmail.com" class="footer__link" id="footer-email">Contact</a>
+      </div>
+      <p class="footer__copy">&copy; 2026 GrowDay. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // SPA-like navigation for privacy policy
+    function showPrivacy(e) {
+      if (e) e.preventDefault();
+      document.getElementById('landing-page').style.display = 'none';
+      document.getElementById('privacy-page').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.pushState(null, '', '/privacy-policy');
+    }
+
+    function showLanding(e) {
+      if (e) e.preventDefault();
+      document.getElementById('landing-page').style.display = '';
+      document.getElementById('privacy-page').classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.pushState(null, '', '/');
+    }
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', function () {
+      if (window.location.pathname === '/privacy-policy') {
+        showPrivacy();
+      } else {
+        showLanding();
+      }
+    });
+
+    // Handle direct navigation to /privacy-policy
+    if (window.location.pathname === '/privacy-policy') {
+      showPrivacy();
+    }
+
+    // Intersection Observer for feature card animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.style.opacity = '0';
+      observer.observe(card);
+    });
+  </script>
+</body>
+
+</html>

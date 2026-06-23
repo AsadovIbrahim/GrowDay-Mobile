@@ -15,8 +15,8 @@ const AdBanner = () => {
   const adUnitId = __DEV__
     ? TestIds.BANNER
     : Platform.OS === "ios"
-      ? "YOUR_IOS_BANNER_AD_UNIT_ID" // TODO: Replace with your iOS Banner Ad Unit ID from AdMob console
-      : "ca-app-pub-8430015420939329/2836622339";
+      ? "ca-app-pub-7960556279643322/1603816156" // iOS Banner Ad Unit ID
+      : "ca-app-pub-7960556279643322/1603816156"; // Android Banner Ad Unit ID
 
   if (error) {
     return null; // Keep UI clean if loading fails
