@@ -5,9 +5,8 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
-      android_signing:
-        - keystore_reference: growday_keystore
       groups:
+        - keystore_credentials # CM_KEYSTORE (base64), CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD
         - google_play # GOOGLE_PLAY_JSON_KEY
       node: 20
       java: 17
@@ -24,6 +23,15 @@ workflows:
       - name: Set Android SDK location
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Set up keystore
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > $CM_BUILD_DIR/android/app/growday-release-key.keystore
+          cat >> $CM_BUILD_DIR/android/gradle.properties <<EOF
+          MYAPP_UPLOAD_STORE_FILE=growday-release-key.keystore
+          MYAPP_UPLOAD_STORE_PASSWORD=$CM_KEYSTORE_PASSWORD
+          MYAPP_UPLOAD_KEY_ALIAS=$CM_KEY_ALIAS
+          MYAPP_UPLOAD_KEY_PASSWORD=$CM_KEY_PASSWORD
+          EOF
       - name: Build Android release
         script: |
           cd android
