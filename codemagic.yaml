@@ -97,9 +97,3 @@ workflows:
         notify:
           success: true
           failure: true
-      app_store_connect:
-        auth: api_key
-        submit_to_testflight: true
-        beta_groups:
-          - GrowDay Testers
-
