@@ -2,7 +2,7 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-const inputFile = 'assets/icons/growday-logo.svg';
+const inputFile = 'assets/images/main logo.png';
 
 const androidIconDir = 'android/app/src/main/res';
 const iosIconDir = 'ios/growday/Images.xcassets/AppIcon.appiconset';
