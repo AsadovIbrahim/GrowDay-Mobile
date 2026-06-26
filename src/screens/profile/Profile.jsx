@@ -75,10 +75,13 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
   const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
   const levelTitle = getTitleForLevel(userLevel, t);
 
-  // Level calculations for progress bar (Absolute layout)
-  const nextLvlPoints = calculationPoints !== undefined ? 50 * Math.pow(userLevel, 2) : 0;
+  // Level calculations for progress bar (Relative to current level)
+  const currentLvlPoints = 50 * Math.pow(userLevel - 1, 2);
+  const nextLvlPoints = 50 * Math.pow(userLevel, 2);
   const xpRemaining = nextLvlPoints - calculationPoints;
-  const progressRatio = nextLvlPoints > 0 ? Math.min(Math.max(calculationPoints / nextLvlPoints, 0), 1) : 0;
+  const totalLvlRange = nextLvlPoints - currentLvlPoints;
+  const pointsInCurrentLvl = calculationPoints - currentLvlPoints;
+  const progressRatio = totalLvlRange > 0 ? Math.min(Math.max(pointsInCurrentLvl / totalLvlRange, 0), 1) : 0;
 
   return (
     <View style={[styles.profileCard, { backgroundColor: colors.card, flexDirection: 'column', alignItems: 'stretch', padding: 18 }]}>
@@ -143,7 +146,7 @@ const ProfileCard = ({ firstName, lastName, points, totalPoints, profilePicture,
               {t("profile.xp_to_next_level", { xp: xpRemaining, level: userLevel + 1 })}
             </Text>
             <Text style={{ fontSize: 11, fontFamily: 'RedditSans-Bold', color: colors.textSecondary }}>
-              {calculationPoints} / {nextLvlPoints} XP
+              {pointsInCurrentLvl} / {totalLvlRange} XP
             </Text>
           </View>
           <View style={{ height: 6, width: '100%', backgroundColor: colors.border + '30', borderRadius: 3, overflow: 'hidden' }}>

@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, ScrollView, TextInput, Pressable } from "react-native";
+import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, ScrollView, TextInput, Pressable, Alert } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useMMKVString } from "react-native-mmkv";
 import { storage } from "../utils/MMKVStore";
 import { schedulePlantWateringReminder } from "../utils/NotificationService";
+import Svg, { Polyline } from "react-native-svg";
 
 const LOCAL_TRANSLATIONS = {
   az: {
@@ -77,6 +78,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Qızılgül 🌹",
       bonsai: "Bonsay 🌳",
       rare: "Nadir Bitki 🌴✨"
+    },
+    garden: {
+      title: "Mənim Bağım 🌳",
+      empty: "Bağınız hələlik boşdur. Səviyyə 5-ə çatan ağaclarınızı buraya əkə bilərsiniz! 🌳",
+      plant_btn: "Bağa ək 🌳",
+      alert_title: "Bağa Əkmək İstəyirsiniz?",
+      alert_desc: "Bu möhtəşəm ağacı bağınıza əkib yeni bir bitki yetişdirməyə başlamaq istəyirsiniz? (Yeni bitki 1-ci səviyyədən başlayacaq).",
+      planted_date: "Əkildi: {{date}}",
+      level_5_max: "Səviyyə 5 (Maks)",
+      active_plant: "Aktiv Bitki",
+      level_label: "Səviyyə",
+      currently_growing: "Hazırda yetişdirilir. Səviyyə 5-ə çatdıqda bağda daimi olaraq kilidlənəcək!",
+      locked_plot: "Kilidli sahə 🔒",
+      not_accessible: "Hələlik istifadəyə verilmir",
+      unlock_instructions: "Öncəki boş sahələri doldurduqca növbəti sahələrin kilidi açılacaq."
     }
   },
   tr: {
@@ -146,6 +162,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Gül 🌹",
       bonsai: "Bonsai 🌳",
       rare: "Nadir Bitki 🌴✨"
+    },
+    garden: {
+      title: "Benim Bahçem 🌳",
+      empty: "Bahçeniz henüz boş. Seviye 5'e ulaşan ağaçlarınızı buraya dikebilirsiniz! 🌳",
+      plant_btn: "Bahçeye Dik 🌳",
+      alert_title: "Bahçeye Dikmek İstiyor musunuz?",
+      alert_desc: "Bu harika ağacı bahçenize dikip yeni bir bitki yetiştirmeye başlamak istiyor musunuz? (Yeni bitki 1. seviyeden başlayacak).",
+      planted_date: "Dikildi: {{date}}",
+      level_5_max: "Seviye 5 (Maks)",
+      active_plant: "Aktif Bitki",
+      level_label: "Seviye",
+      currently_growing: "Şu anda yetiştiriliyor. 5. Seviyeye ulaştığında bahçeye kalıcı olarak dikilecektir!",
+      locked_plot: "Kilitli alan 🔒",
+      not_accessible: "Henüz kullanılamaz",
+      unlock_instructions: "Önceki boş alanları doldurdukça bu alanın kilidi açılacaktır."
     }
   },
   ru: {
@@ -215,6 +246,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Роза 🌹",
       bonsai: "Бонсай 🌳",
       rare: "Редкое растение 🌴✨"
+    },
+    garden: {
+      title: "Мой Сад 🌳",
+      empty: "Ваш сад пока пуст. Вы можете посадить сюда деревья, когда они достигнут Уровня 5! 🌳",
+      plant_btn: "Посадить в сад 🌳",
+      alert_title: "Посадить в сад?",
+      alert_desc: "Вы хотите посадить это чудесное дерево в свой сад и начать выращивать новое? (Новое растение начнется с Уровня 1).",
+      planted_date: "Посажено: {{date}}",
+      level_5_max: "Уровень 5 (Макс.)",
+      active_plant: "Активное растение",
+      level_label: "Уровень",
+      currently_growing: "Сейчас выращивается. Будет навсегда посажено в сад по достижении 5-го уровня!",
+      locked_plot: "Закрытый участок 🔒",
+      not_accessible: "Пока недоступно",
+      unlock_instructions: "Этот участок разблокируется по мере заполнения предыдущих пустых участков."
     }
   },
   en: {
@@ -284,6 +330,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Rose 🌹",
       bonsai: "Bonsai 🌳",
       rare: "Rare Plant 🌴✨"
+    },
+    garden: {
+      title: "My Garden 🌳",
+      empty: "Your garden is empty. You can plant your trees here when they reach Level 5! 🌳",
+      plant_btn: "Plant in Garden 🌳",
+      alert_title: "Plant in Garden?",
+      alert_desc: "Do you want to plant this wonderful tree in your garden and start growing a new one? (The new plant will start from Level 1).",
+      planted_date: "Planted: {{date}}",
+      level_5_max: "Level 5 (Max)",
+      active_plant: "Active Plant",
+      level_label: "Level",
+      currently_growing: "Currently growing. Will be permanently planted once it reaches Level 5!",
+      locked_plot: "Locked Plot 🔒",
+      not_accessible: "Not accessible yet",
+      unlock_instructions: "This plot will unlock as you fill the preceding empty plots."
     }
   },
   de: {
@@ -353,6 +414,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Rose 🌹",
       bonsai: "Bonsai 🌳",
       rare: "Seltene Pflanze 🌴✨"
+    },
+    garden: {
+      title: "Mein Garten 🌳",
+      empty: "Dein Garten ist noch leer. Du kannst deine Bäume hier pflanzen, wenn sie Level 5 erreichen! 🌳",
+      plant_btn: "Im Garten pflanzen 🌳",
+      alert_title: "Im Garten pflanzen?",
+      alert_desc: "Möchtest du diesen wunderschönen Baum in deinem Garten pflanzen und einen neuen züchten? (Die neue Pflanze startet bei Level 1).",
+      planted_date: "Gepflanzt: {{date}}",
+      level_5_max: "Level 5 (Max.)",
+      active_plant: "Aktive Pflanze",
+      level_label: "Level",
+      currently_growing: "Wächst gerade. Wird dauerhaft gepflanzt, sobald Level 5 erreicht ist!",
+      locked_plot: "Gesperrtes Grundstück 🔒",
+      not_accessible: "Noch nicht zugänglich",
+      unlock_instructions: "Dieses Grundstück wird freigeschaltet, wenn du die vorherigen leeren Grundstücke ausfüllst."
     }
   },
   es: {
@@ -422,6 +498,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Rosa 🌹",
       bonsai: "Bonsái 🌳",
       rare: "Planta Rara 🌴✨"
+    },
+    garden: {
+      title: "Mi Jardín 🌳",
+      empty: "Tu jardín está vacío. ¡Puedes plantar tus árboles aquí cuando alcancen el Nivel 5! 🌳",
+      plant_btn: "Plantar en el Jardín 🌳",
+      alert_title: "¿Plantar en el Jardín?",
+      alert_desc: "¿Quieres plantar este maravilloso árbol en tu jardín y empezar a cultivar uno nuevo? (La nueva planta comenzará desde el Nivel 1).",
+      planted_date: "Plantado: {{date}}",
+      level_5_max: "Nivel 5 (Máx.)",
+      active_plant: "Planta Activa",
+      level_label: "Nivel",
+      currently_growing: "Creciendo actualmente. ¡Se plantará permanentemente una vez que alcance el Nivel 5!",
+      locked_plot: "Terreno Bloqueado 🔒",
+      not_accessible: "No accesible todavía",
+      unlock_instructions: "Este terreno se desbloqueará a medida que llenes los terrenos vacíos anteriores."
     }
   },
   fr: {
@@ -491,6 +582,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Rose 🌹",
       bonsai: "Bonsaï 🌳",
       rare: "Plante Rare 🌴✨"
+    },
+    garden: {
+      title: "Mon Jardin 🌳",
+      empty: "Votre jardin est vide. Vous pouvez planter vos arbres ici lorsqu'ils atteignent le Niveau 5 ! 🌳",
+      plant_btn: "Planter dans le Jardin 🌳",
+      alert_title: "Planter dans le Jardin ?",
+      alert_desc: "Voulez-vous planter ce magnifique arbre dans votre jardin et commencer à en cultiver un nouveau ? (La nouvelle plante commencera au Niveau 1).",
+      planted_date: "Planté : {{date}}",
+      level_5_max: "Niveau 5 (Max)",
+      active_plant: "Plante Active",
+      level_label: "Niveau",
+      currently_growing: "En cours de croissance. Sera plantée de manière permanente une fois qu'elle aura atteint le Niveau 5 !",
+      locked_plot: "Terrain Verrouillé 🔒",
+      not_accessible: "Pas encore accessible",
+      unlock_instructions: "Ce terrain se déverrouillera au fur et à mesure que vous remplirez les terrains vides précédents."
     }
   },
   it: {
@@ -560,6 +666,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "Rosa 🌹",
       bonsai: "Bonsai 🌳",
       rare: "Piante Rare 🌴✨"
+    },
+    garden: {
+      title: "Il Mio Giardino 🌳",
+      empty: "Il tuo giardino è vuoto. Puoi piantare i tuoi alberi qui quando raggiungono il Livello 5! 🌳",
+      plant_btn: "Pianta nel Giardino 🌳",
+      alert_title: "Pianta nel Giardino?",
+      alert_desc: "Vuoi piantare questo meraviglioso albero nel tuo giardino e iniziare a coltivarne uno nuovo? (La nuova pianta inizierà dal Livello 1).",
+      planted_date: "Piantato: {{date}}",
+      level_5_max: "Livello 5 (Max)",
+      active_plant: "Pianta Attiva",
+      level_label: "Livello",
+      currently_growing: "Attualmente in crescita. Verrà piantata permanentemente una volta raggiunto il Livello 5!",
+      locked_plot: "Terreno Bloccato 🔒",
+      not_accessible: "Non ancora accessibile",
+      unlock_instructions: "Questo terreno si sbloccherà man mano che riempirai i terreni vuoti precedenti."
     }
   },
   zh: {
@@ -629,6 +750,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "玫瑰 🌹",
       bonsai: "盆景树 🌳",
       rare: "珍稀植物 🌴✨"
+    },
+    garden: {
+      title: "我的花园 🌳",
+      empty: "你的花园还是空的。当你的树达到等级 5 时，你可以把它们种植在这里！ 🌳",
+      plant_btn: "种植在花园中 🌳",
+      alert_title: "种植在花园中？",
+      alert_desc: "你想把这棵神奇的树种植在你的花园里并开始培育一棵新树吗？（新植物将从等级 1 开始）。",
+      planted_date: "种植时间: {{date}}",
+      level_5_max: "等级 5 (最高)",
+      active_plant: "活动植物",
+      level_label: "等级",
+      currently_growing: "目前正在生长。一旦达到等级 5，将永久种植在花园中！",
+      locked_plot: "未解锁区域 🔒",
+      not_accessible: "尚不可访问",
+      unlock_instructions: "当你填满前面的空区域时，该区域将被解锁。"
     }
   },
   ar: {
@@ -698,6 +834,21 @@ const LOCAL_TRANSLATIONS = {
       rose: "وردة 🌹",
       bonsai: "بونساي 🌳",
       rare: "نبتة نادرة 🌴✨"
+    },
+    garden: {
+      title: "حديقتي 🌳",
+      empty: "حديقتك فارغة. يمكنك زراعة أشجارك هنا عندما تصل إلى المستوى 5! 🌳",
+      plant_btn: "ازرع في الحديقة 🌳",
+      alert_title: "ازرع في الحديقة؟",
+      alert_desc: "هل تريد زراعة هذه الشجرة الرائعة في حديقتك والبدء في زراعة واحدة جديدة؟ (النبتة الجديدة ستبدأ من المستوى 1).",
+      planted_date: "تمت الزراعة: {{date}}",
+      level_5_max: "المستوى 5 (الأقصى)",
+      active_plant: "النبتة النشطة",
+      level_label: "المستوى",
+      currently_growing: "تنمو حالياً. ستزرع بشكل دائم بمجرد وصولها إلى المستوى 5!",
+      locked_plot: "موقع مغلق 🔒",
+      not_accessible: "غير متاح بعد",
+      unlock_instructions: "سيتم فتح هذا الموقع عندما تملأ المواقع الفارغة السابقة."
     }
   }
 };
@@ -887,6 +1038,17 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const [plantLevel, setPlantLevel] = useState(() => storage.getNumber(getStorageKey("level")) || 1);
   const [selectedPot, setSelectedPot] = useState(() => storage.getString(getStorageKey("selectedPot")) || "classic");
   const [selectedPlant, setSelectedPlant] = useState(() => storage.getString(getStorageKey("selectedPlant")) || "fern");
+  const [garden, setGarden] = useState(() => {
+    const saved = storage.getString(getStorageKey("garden"));
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error parsing local garden data on init:", e);
+      }
+    }
+    return [];
+  });
   const [plantName, setPlantName] = useState(() => storage.getString(getStorageKey("plantName")) || "...");
   const [hasNamedPlant, setHasNamedPlant] = useState(() => storage.getBoolean(getStorageKey("hasNamedPlant")) || false);
   const [isRenameModalVisible, setRenameModalVisible] = useState(false);
@@ -981,28 +1143,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     }
   }, [wateredCount, plantName]);
 
-  // Synchronize totalExperiencePoints to plantXP and plantLevel states/MMKV
-  useEffect(() => {
-    if (typeof totalExperiencePoints === "number") {
-      storage.set(getStorageKey("xp"), totalExperiencePoints);
-      setPlantXP(totalExperiencePoints);
-
-      // Level Curve calculation based on user level formula:
-      // userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1
-      const userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1;
-      const newLevel = Math.min(userLevel, 5);
-
-      const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
-      if (newLevel > currentLevel) {
-        storage.set(getStorageKey("level"), newLevel);
-        setPlantLevel(newLevel);
-        setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
-      } else if (newLevel < currentLevel) {
-        storage.set(getStorageKey("level"), newLevel);
-        setPlantLevel(newLevel);
-      }
-    }
-  }, [totalExperiencePoints, getStorageKey, tLocal]);
+  // Note: We no longer synchronize totalExperiencePoints directly to plantXP and plantLevel.
+  // The plant now has its own separate XP and Level progression.
 
   // Synchronize MMKV storage and React state with incoming virtualPlantState from the server
   useEffect(() => {
@@ -1020,6 +1162,14 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
         if (parsed.level !== undefined && parsed.level !== localLevel) {
           storage.set(getStorageKey("level"), parsed.level);
           setPlantLevel(parsed.level);
+        }
+        if (parsed.garden !== undefined) {
+          const localGardenStr = storage.getString(getStorageKey("garden")) || "[]";
+          const incomingGardenStr = JSON.stringify(parsed.garden);
+          if (incomingGardenStr !== localGardenStr) {
+            storage.set(getStorageKey("garden"), incomingGardenStr);
+            setGarden(parsed.garden);
+          }
         }
         if (parsed.selectedPot !== undefined) {
           const localPot = storage.getString(getStorageKey("selectedPot")) || "classic";
@@ -1146,7 +1296,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       lastPetDate: storage.getString(getStorageKey("lastPetDate")) || "",
       petCountToday: storage.getNumber(getStorageKey("petCountToday")) || 0,
       completedCountTodayMap,
-      onboardingChecklistCompleted: checklistCompleted === "true"
+      onboardingChecklistCompleted: checklistCompleted === "true",
+      garden: garden
     };
 
     const stateStr = JSON.stringify(stateObj);
@@ -1172,7 +1323,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     getStorageKey,
     onSyncState,
     virtualPlantState,
-    checklistCompleted
+    checklistCompleted,
+    garden
   ]);
 
 
@@ -1184,40 +1336,45 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
   // Auto-XP award system when habits are completed
   const addPlantXP = useCallback((amount, message = null) => {
+    // 1. Update the plant's own XP and Level locally (which will sync to backend via virtualPlantState)
+    const currentXP = storage.getNumber(getStorageKey("xp")) || 0;
+    const newXP = currentXP + amount;
+    storage.set(getStorageKey("xp"), newXP);
+    setPlantXP(newXP);
+
+    // Level Curve calculation
+    let newLevel = 1;
+    if (newXP >= 450) newLevel = 5;
+    else if (newXP >= 200) newLevel = 4;
+    else if (newXP >= 80) newLevel = 3;
+    else if (newXP >= 20) newLevel = 2;
+    else newLevel = 1;
+
+    const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
+    if (newLevel > currentLevel) {
+      storage.set(getStorageKey("level"), newLevel);
+      setPlantLevel(newLevel);
+      setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
+    }
+
+    // 2. Award XP to the user's main profile as a reward for caring for the plant
     if (onAwardXP) {
       onAwardXP(amount, message);
-    } else {
-      const currentXP = storage.getNumber(getStorageKey("xp")) || 0;
-      const newXP = currentXP + amount;
-      storage.set(getStorageKey("xp"), newXP);
-      setPlantXP(newXP);
-
-      // Level Curve calculation based on user level formula:
-      // userLevel = Math.floor(Math.sqrt(totalExperiencePoints / 50)) + 1
-      const userLevel = Math.floor(Math.sqrt(newXP / 50)) + 1;
-      const newLevel = Math.min(userLevel, 5);
-
-      const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
-      if (newLevel > currentLevel) {
-        storage.set(getStorageKey("level"), newLevel);
-        setPlantLevel(newLevel);
-        setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
-      }
     }
   }, [onAwardXP, tLocal, getStorageKey]);
 
-  // Plant Development Level Requirements synced with User Level Curve
+  // Plant Development Level Requirements
   const levelRequirements = {
-    1: { min: 0, max: 50, name: tLocal("virtual_plant.levels.1") },
-    2: { min: 50, max: 200, name: tLocal("virtual_plant.levels.2") },
-    3: { min: 200, max: 450, name: tLocal("virtual_plant.levels.3") },
-    4: { min: 450, max: 800, name: tLocal("virtual_plant.levels.4") },
-    5: { min: 800, max: 1250, name: tLocal("virtual_plant.levels.5") },
+    1: { min: 0, max: 20, name: tLocal("virtual_plant.levels.1") },
+    2: { min: 20, max: 80, name: tLocal("virtual_plant.levels.2") },
+    3: { min: 80, max: 200, name: tLocal("virtual_plant.levels.3") },
+    4: { min: 200, max: 450, name: tLocal("virtual_plant.levels.4") },
+    5: { min: 450, max: 800, name: tLocal("virtual_plant.levels.5") },
   };
 
   const currentLevelReq = levelRequirements[plantLevel] || levelRequirements[5];
-  const plantXPProgress = plantLevel === 5 ? plantXP - 1000 : plantXP - currentLevelReq.min;
-  const plantXPTotal = plantLevel === 5 ? 1000 : currentLevelReq.max - currentLevelReq.min;
+  const plantXPProgress = plantXP - currentLevelReq.min;
+  const plantXPTotal = currentLevelReq.max - currentLevelReq.min;
   const plantXPPercentage = Math.min(Math.max((plantXPProgress / plantXPTotal) * 100, 0), 100);
   const xpRemaining = Math.max(0, currentLevelReq.max - plantXP);
 
@@ -1554,8 +1711,121 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     setSpeechText(msg);
   };
 
+  const handlePlantInGarden = () => {
+    Alert.alert(
+      tLocal("virtual_plant.garden.alert_title"),
+      tLocal("virtual_plant.garden.alert_desc"),
+      [
+        {
+          text: tLocal("virtual_plant.customizer.rename_cancel"),
+          style: "cancel"
+        },
+        {
+          text: tLocal("virtual_plant.garden.plant_btn"),
+          style: "default",
+          onPress: () => {
+            const newPlantedItem = {
+              id: `plant-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+              name: plantName,
+              species: selectedPlant,
+              pot: selectedPot,
+              level: plantLevel,
+              xp: plantXP,
+              emoji: plantEmoji,
+              plantedDate: new Date().toLocaleDateString(i18n.language || "az", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              })
+            };
+
+            const updatedGarden = [...garden, newPlantedItem];
+            
+            // Update garden state and storage
+            storage.set(getStorageKey("garden"), JSON.stringify(updatedGarden));
+            setGarden(updatedGarden);
+
+            // Reset current plant state in storage
+            storage.set(getStorageKey("xp"), 0);
+            storage.set(getStorageKey("level"), 1);
+            storage.set(getStorageKey("selectedPot"), "classic");
+            storage.set(getStorageKey("selectedPlant"), "fern");
+            storage.set(getStorageKey("plantName"), "");
+            storage.set(getStorageKey("hasNamedPlant"), false);
+
+            storage.set(getStorageKey("wateredCountToday"), 0);
+            storage.set(getStorageKey("sunnedToday"), false);
+            storage.set(getStorageKey("fertilizedToday"), false);
+            storage.set(getStorageKey("maxCompletedHabitsToday"), 0);
+
+            // Update local React state
+            setPlantXP(0);
+            setPlantLevel(1);
+            setSelectedPot("classic");
+            setSelectedPlant("fern");
+            setPlantName("");
+            setHasNamedPlant(false);
+            setWateredCount(0);
+            setSunnedToday(false);
+            setFertilizedToday(false);
+            setMaxCompletedHabitsToday(0);
+
+            // Trigger naming modal automatically for the new plant
+            setRenameInput("");
+            setRenameModalVisible(true);
+          }
+        }
+      ]
+    );
+  };
+
   // Customize Panel Modal state
   const [isCustomizeModalVisible, setCustomizeModalVisible] = useState(false);
+  const [isGardenModalVisible, setGardenModalVisible] = useState(false);
+  const [selectedSlotIndex, setSelectedSlotIndex] = useState(null);
+  const gardenScrollRef = useRef(null);
+
+  // Map animation values
+  const butterflyAnim1 = useRef(new Animated.Value(0)).current;
+  const butterflyAnim2 = useRef(new Animated.Value(0)).current;
+  const butterflyAnim3 = useRef(new Animated.Value(0)).current;
+  const decorSwayAnim = useRef(new Animated.Value(0)).current;
+  const cloudAnim1 = useRef(new Animated.Value(0)).current;
+  const cloudAnim2 = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isGardenModalVisible) {
+      setTimeout(() => {
+        gardenScrollRef.current?.scrollToEnd({ animated: false });
+      }, 100);
+    }
+  }, [isGardenModalVisible]);
+
+  // Garden map animations (butterflies, swaying flowers, clouds, active node pulsing glow)
+  useEffect(() => {
+    const loop = (anim, dur) => Animated.loop(Animated.timing(anim, { toValue: 1, duration: dur, easing: Easing.linear, useNativeDriver: true }));
+    
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 0, duration: 1200, easing: Easing.inOut(Easing.ease), useNativeDriver: true })
+      ])
+    );
+
+    const anims = [
+      loop(butterflyAnim1, 6000),
+      loop(butterflyAnim2, 8500),
+      loop(butterflyAnim3, 5200),
+      loop(decorSwayAnim, 2500),
+      loop(cloudAnim1, 35000),
+      loop(cloudAnim2, 45000),
+      pulseLoop
+    ];
+    anims.forEach(a => a.start());
+    return () => anims.forEach(a => a.stop());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Rewards unlock status
   const isBronzePotUnlocked = bestStreak >= 7;
@@ -1589,6 +1859,172 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const isSunable = wateringProgressRate >= 0.5 && !sunnedToday;
   const isFertilizable = wateringProgressRate === 1.0 && !fertilizedToday;
 
+  // Winding roadmap geometry calculations
+  const MAP_WIDTH = 320;
+  const totalNodes = Math.max(12, garden.length + 3);
+  const nodeStepY = 110;
+  const mapHeight = totalNodes * nodeStepY + 120;
+
+  // Smooth rounded sine-wave node positions
+  const nodes = useMemo(() => {
+    const list = [];
+    for (let i = 0; i < totalNodes; i++) {
+      const y = mapHeight - 80 - (i * nodeStepY);
+      let x = MAP_WIDTH / 2;
+      if (i > 0) {
+        const direction = i % 2 === 1 ? 1 : -1;
+        const offset = 75 + (i % 3) * 10;
+        x = MAP_WIDTH / 2 + direction * offset;
+      }
+      list.push({ x, y, index: i });
+    }
+    return list;
+  }, [totalNodes, mapHeight]);
+
+  // Cosine-interpolated smooth polyline (rounded curves between nodes)
+  const pointsString = useMemo(() => {
+    if (nodes.length < 2) return '';
+    const allPts = [];
+    for (let i = 0; i < nodes.length - 1; i++) {
+      const curr = nodes[i];
+      const next = nodes[i + 1];
+      const segs = 10;
+      for (let s = 0; s <= (i === nodes.length - 2 ? segs : segs - 1); s++) {
+        const t = s / segs;
+        // Cosine interpolation for smooth S-curves
+        const smoothX = curr.x + (next.x - curr.x) * (0.5 - 0.5 * Math.cos(t * Math.PI));
+        const y = curr.y + (next.y - curr.y) * t;
+        allPts.push(`${Math.round(smoothX)},${Math.round(y)}`);
+      }
+    }
+    return allPts.join(' ');
+  }, [nodes]);
+
+  // Richer decorative elements
+  const decors = useMemo(() => {
+    const list = [];
+    const decorSets = [
+      { emoji: "🌸", sz: 14 }, { emoji: "🍄", sz: 13 }, { emoji: "🪨", sz: 15 },
+      { emoji: "🌿", sz: 14 }, { emoji: "🌼", sz: 13 }, { emoji: "🌻", sz: 16 },
+      { emoji: "🌲", sz: 18 }, { emoji: "🐞", sz: 11 }, { emoji: "🌺", sz: 14 },
+      { emoji: "🍀", sz: 12 }, { emoji: "🐝", sz: 11 }, { emoji: "🌷", sz: 13 },
+    ];
+    for (let i = 0; i < totalNodes - 1; i++) {
+      const nodeY = mapHeight - 80 - (i * nodeStepY) - 55;
+      const d1 = decorSets[(i * 3) % decorSets.length];
+      const d2 = decorSets[(i * 7 + 2) % decorSets.length];
+      const d3 = decorSets[(i * 5 + 1) % decorSets.length];
+      list.push({ id: `dl-${i}`, emoji: d1.emoji, sz: d1.sz, x: 8 + (i % 4) * 14, y: nodeY + (i % 2 === 0 ? 8 : -12), sway: i % 3 === 0 });
+      list.push({ id: `dr-${i}`, emoji: d2.emoji, sz: d2.sz, x: MAP_WIDTH - 30 - (i % 3) * 12, y: nodeY + (i % 2 === 0 ? -18 : 12), sway: i % 2 === 0 });
+      if (i % 2 === 0) {
+        list.push({ id: `dm-${i}`, emoji: d3.emoji, sz: d3.sz, x: MAP_WIDTH / 2 + (i % 4 === 0 ? -55 : 55), y: nodeY + 30, sway: false });
+      }
+    }
+    return list;
+  }, [totalNodes, mapHeight]);
+
+  // Dense forest trees to make the ground look like a dense forest (meşəlik)
+  const grassPatches = useMemo(() => {
+    const list = [];
+    const count = totalNodes * 28; // Rich density for thick forest canopy
+    const forestEmojis = ["🌲", "🌳", "🌲", "🌳", "🌲", "🌳"];
+    
+    // Helper to calculate smooth road path X coordinate at a given Y coordinate
+    const getPathX = (yVal) => {
+      if (!nodes || nodes.length === 0) return MAP_WIDTH / 2;
+      const bottomNode = nodes[0];
+      const topNode = nodes[nodes.length - 1];
+      if (yVal >= bottomNode.y) return bottomNode.x;
+      if (yVal <= topNode.y) return topNode.x;
+      for (let i = 0; i < nodes.length - 1; i++) {
+        const curr = nodes[i];
+        const next = nodes[i + 1];
+        if (yVal <= curr.y && yVal >= next.y) {
+          const t = (yVal - curr.y) / (next.y - curr.y);
+          return curr.x + (next.x - curr.x) * (0.5 - 0.5 * Math.cos(t * Math.PI));
+        }
+      }
+      return MAP_WIDTH / 2;
+    };
+
+    for (let i = 0; i < count; i++) {
+      // Deterministic pseudo-random placements using sine hash
+      const rawX = Math.sin(i * 17.11 + 3.1) * 43758.5453;
+      const initialX = Math.floor((rawX - Math.floor(rawX)) * (MAP_WIDTH - 20));
+      
+      const rawY = Math.sin(i * 87.43 + 7.5) * 43758.5453;
+      const y = Math.floor((rawY - Math.floor(rawY)) * (mapHeight - 40));
+      
+      const emoji = forestEmojis[i % forestEmojis.length];
+      const size = 20 + (i % 6) * 5; // Sizes: 20, 25, 30, 35, 40, 45
+      
+      // Make sure trees stay clear of the road path center
+      let x = initialX;
+      const pathX = getPathX(y);
+      const minDistance = 45; // clearance from road center
+      
+      if (Math.abs(x - pathX) < minDistance) {
+        // Push tree away from the road center
+        if (x < pathX) {
+          x = pathX - minDistance - ((i * 3) % 20) - 10;
+        } else {
+          x = pathX + minDistance + ((i * 3) % 20) + 10;
+        }
+      }
+      
+      // Allow trees to slightly overlap the edge of the map layout for a full-bleed look
+      if (x < -20) x = -20;
+      if (x > MAP_WIDTH - 15) x = MAP_WIDTH - 15;
+      
+      list.push({
+        id: `forest-${i}`,
+        emoji,
+        x,
+        y,
+        sz: size,
+        opacity: 0.65 + (i % 4) * 0.08 // More solid opacities: 0.65 to 0.89
+      });
+    }
+    return list;
+  }, [totalNodes, mapHeight, nodes]);
+
+  const toRoman = (num) => {
+    const lookup = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
+    return lookup[num] || num.toString();
+  };
+
+  const getSlotDetails = useCallback((index) => {
+    const isOccupied = index < garden.length;
+    const isNextEmpty = index === garden.length;
+
+    if (isOccupied) {
+      const item = garden[index];
+      return {
+        title: item.name,
+        subtitle: `${tLocal("virtual_plant.garden.level_5_max")} • ${tLocal(`virtual_plant.species.${item.species}`)} • ${tLocal(`virtual_plant.pots.${item.pot}`)}`,
+        description: tLocal("virtual_plant.garden.planted_date", { date: item.plantedDate }),
+        extra: `🏆 ${item.xp} XP`,
+        emoji: item.emoji || "🌳"
+      };
+    } else if (isNextEmpty) {
+      return {
+        title: plantName || tLocal("virtual_plant.garden.active_plant"),
+        subtitle: `${tLocal("virtual_plant.garden.level_label")} ${plantLevel} (${tLocal(`virtual_plant.levels.${plantLevel}`)}) • ${potStyle.name}`,
+        description: tLocal("virtual_plant.garden.currently_growing"),
+        extra: `${plantXP} XP`,
+        emoji: plantEmoji
+      };
+    } else {
+      return {
+        title: tLocal("virtual_plant.garden.locked_plot"),
+        subtitle: tLocal("virtual_plant.garden.not_accessible"),
+        description: tLocal("virtual_plant.garden.unlock_instructions"),
+        extra: "",
+        emoji: "🔒"
+      };
+    }
+  }, [garden, tLocal, plantName, plantLevel, potStyle.name, plantXP, plantEmoji]);
+
 
 
   return (
@@ -1607,7 +2043,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="p-4">
         {/* Title, Badge and Customize Icon */}
         <View className="flex-row justify-between items-center mb-2">
-          <View className="flex-row items-center gap-1.5">
+          <View className="flex-1 mr-2 flex-row items-center gap-1.5">
             <FontAwesomeIcon icon={faLeaf} size={15} color={healthState === "blooming" ? "#f59e0b" : "#10b981"} />
             <TouchableOpacity
               onPress={() => {
@@ -1615,9 +2051,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                 setRenameModalVisible(true);
               }}
               activeOpacity={0.7}
-              className="flex-row items-center gap-1"
+              className="flex-row items-center gap-1 flex-1"
             >
-              <Text className="font-redditsans-bold text-[15px]" style={{ color: colors.text }}>
+              <Text numberOfLines={1} className="font-redditsans-bold text-[15px] flex-shrink" style={{ color: colors.text }}>
                 {plantName}
               </Text>
               <FontAwesomeIcon icon={faPen} size={9} color={colors.textMuted} />
@@ -1625,6 +2061,18 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           </View>
 
           <View className="flex-row items-center gap-2">
+            {/* Garden Trigger */}
+            <TouchableOpacity
+              onPress={() => setGardenModalVisible(true)}
+              className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/25"
+              activeOpacity={0.7}
+            >
+              <FontAwesomeIcon icon={faTree} size={11} color={isDark ? "#34d399" : "#059669"} />
+              <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#34d399" : "#059669" }}>
+                {tLocal("virtual_plant.garden.title")}
+              </Text>
+            </TouchableOpacity>
+
             {/* Customize Palette Trigger */}
             <TouchableOpacity
               onPress={() => setCustomizeModalVisible(true)}
@@ -1782,9 +2230,25 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                 {tLocal("virtual_plant.xp_remaining", { count: xpRemaining, level: plantLevel + 1 })}
               </Text>
             ) : (
-              <Text className="text-[10px] font-redditsans-bold" style={{ color: "#fbbf24" }}>
-                {tLocal("virtual_plant.max_level")}
-              </Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-[10px] font-redditsans-bold" style={{ color: "#fbbf24" }}>
+                  {tLocal("virtual_plant.max_level")}
+                </Text>
+                <TouchableOpacity
+                  onPress={handlePlantInGarden}
+                  style={{
+                    backgroundColor: "#10b981",
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 8,
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={{ color: "#fff", fontSize: 9, fontFamily: "RedditSans-Bold" }}>
+                    {tLocal("virtual_plant.garden.plant_btn")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
 
@@ -1990,6 +2454,749 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           </Pressable>
         </TouchableOpacity>
       </Modal>
+
+      <Modal
+        visible={isGardenModalVisible}
+        transparent={false}
+        animationType="slide"
+        onRequestClose={() => {
+          setGardenModalVisible(false);
+          setSelectedSlotIndex(null);
+        }}
+      >
+        <View style={{ flex: 1, backgroundColor: isDark ? "#022c22" : "#166534" }}>
+          {/* Static Full Screen Backdrop Gradient */}
+          <LinearGradient
+            colors={isDark ? ["#064e3b", "#022c22"] : ["#bbf7d0", "#166534"]}
+            style={StyleSheet.absoluteFillObject}
+          />
+
+          {/* Scrollable Meadow Winding Map (full screen) */}
+          <ScrollView 
+            ref={gardenScrollRef}
+            showsVerticalScrollIndicator={false} 
+            contentContainerStyle={{ alignItems: 'center', paddingTop: 76, paddingBottom: 160 }}
+            style={StyleSheet.absoluteFillObject}
+          >
+            <View style={{ width: MAP_WIDTH, height: mapHeight, position: 'relative' }}>
+              {/* Dense Forest Canopy Background */}
+              {grassPatches.map(g => (
+                <Text
+                  key={g.id}
+                  style={{
+                    position: 'absolute',
+                    left: g.x,
+                    top: g.y,
+                    fontSize: g.sz,
+                    opacity: g.opacity,
+                    textShadowColor: 'rgba(0,0,0,0.15)',
+                    textShadowOffset: { width: 1, height: 1.5 },
+                    textShadowRadius: 2,
+                  }}
+                >
+                  {g.emoji}
+                </Text>
+              ))}
+
+              {/* SVG Paths representing the winding dirt road */}
+              <Svg width={MAP_WIDTH} height={mapHeight} style={{ position: 'absolute', top: 0, left: 0 }}>
+                {/* Path shadow / Grass blend */}
+                <Polyline
+                  points={pointsString}
+                  fill="none"
+                  stroke={isDark ? "#064e3b" : "#bbf7d0"}
+                  strokeWidth={38}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity={0.6}
+                />
+                {/* Road dark border / Dirt edge */}
+                <Polyline
+                  points={pointsString}
+                  fill="none"
+                  stroke="#78350f"
+                  strokeWidth={30}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Main road body (warm brown) */}
+                <Polyline
+                  points={pointsString}
+                  fill="none"
+                  stroke="#d97706"
+                  strokeWidth={24}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Light inner path (sandy/dirt texture) */}
+                <Polyline
+                  points={pointsString}
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth={18}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Stepping trails/footprints inside */}
+                <Polyline
+                  points={pointsString}
+                  fill="none"
+                  stroke="#fef08a"
+                  strokeWidth={6}
+                  strokeDasharray="8, 12"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity={0.7}
+                />
+              </Svg>
+
+              {/* Scenery Scenes */}
+
+              {/* 1. Large Tree & Wooden Bench Scene (Top-Left) */}
+              <View style={{ position: 'absolute', left: 15, top: 70, alignItems: 'center' }}>
+                <Text style={{ fontSize: 44 }}>🌳</Text>
+                <View style={{ flexDirection: 'row', marginTop: -8, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 12 }}>🪵</Text>
+                  <View style={{ width: 22, height: 6, backgroundColor: '#b45309', borderRadius: 2, borderWidth: 1, borderColor: '#78350f' }} />
+                  <Text style={{ fontSize: 12 }}>🪵</Text>
+                </View>
+                <Animated.Text style={{
+                  position: 'absolute',
+                  top: -15,
+                  left: 10,
+                  fontSize: 12,
+                  transform: [{
+                    translateY: decorSwayAnim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, -4, 0]
+                    })
+                  }]
+                }}>
+                  🐝
+                </Animated.Text>
+              </View>
+
+              {/* 2. Water Pond Scene (Top-Right) */}
+              <View style={{ position: 'absolute', left: MAP_WIDTH - 85, top: 80, width: 70, height: 55, alignItems: 'center', justifyContent: 'center' }}>
+                {/* Grey rock background */}
+                <View style={{ position: 'absolute', width: 66, height: 46, borderRadius: 23, backgroundColor: '#94a3b8', borderWidth: 2, borderColor: '#64748b' }} />
+                {/* Blue water */}
+                <View style={{ position: 'absolute', width: 54, height: 34, borderRadius: 17, backgroundColor: '#0ea5e9', borderWidth: 1, borderColor: '#38bdf8' }}>
+                  <Text style={{ fontSize: 9, position: 'absolute', left: 4, top: 2 }}>✨</Text>
+                  <Text style={{ fontSize: 13, position: 'absolute', left: 16, top: 4 }}>🦆</Text>
+                </View>
+                {/* Surrounding plants */}
+                <Text style={{ fontSize: 12, position: 'absolute', bottom: -2, right: 2 }}>🌿</Text>
+                <Text style={{ fontSize: 10, position: 'absolute', top: -4, left: 12 }}>🌸</Text>
+              </View>
+
+              {/* 3. Wooden Fence (Middle) */}
+              <View style={{ position: 'absolute', left: MAP_WIDTH / 2 - 20, top: mapHeight - 245, flexDirection: 'row' }}>
+                <Text style={{ fontSize: 12 }}>🪵</Text>
+                <Text style={{ fontSize: 12, marginLeft: -4 }}>🪵</Text>
+                <Text style={{ fontSize: 12, marginLeft: -4 }}>🪵</Text>
+              </View>
+
+              {/* 4. Garden Bed Scene (Bottom-Left) */}
+              <View style={{ position: 'absolute', left: 15, top: mapHeight - 185, width: 65, height: 50 }}>
+                {/* Wooden container */}
+                <View style={{ width: 50, height: 34, backgroundColor: '#78350f', borderRadius: 4, borderWidth: 2, borderColor: '#451a03', flexDirection: 'row', flexWrap: 'wrap', padding: 2, justifyContent: 'space-around', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 9 }}>🌱</Text>
+                  <Text style={{ fontSize: 9 }}>🌱</Text>
+                  <Text style={{ fontSize: 9 }}>🌱</Text>
+                  <Text style={{ fontSize: 9 }}>🌱</Text>
+                </View>
+                {/* Watering can next to it */}
+                <Text style={{ fontSize: 14, position: 'absolute', bottom: 0, right: 0 }}>🚿</Text>
+              </View>
+
+              {/* 5. Cherry Blossom & Stone Lantern Scene (Bottom-Right) */}
+              <View style={{ position: 'absolute', left: MAP_WIDTH - 65, top: mapHeight - 175, alignItems: 'center', width: 50 }}>
+                {/* Cherry blossom tree */}
+                <View style={{ width: 44, height: 44, position: 'relative' }}>
+                  <Text style={{ fontSize: 34, position: 'absolute', bottom: 0, left: 5 }}>🌳</Text>
+                  <Text style={{ fontSize: 15, position: 'absolute', top: 0, left: 0 }}>🌸</Text>
+                  <Text style={{ fontSize: 13, position: 'absolute', top: 8, left: 20 }}>🌸</Text>
+                  <Text style={{ fontSize: 11, position: 'absolute', top: -4, left: 12 }}>🌸</Text>
+                </View>
+                {/* Stone lantern / Japanese lantern */}
+                <View style={{ marginTop: -4, alignItems: 'center' }}>
+                  <View style={{ width: 14, height: 16, backgroundColor: '#475569', borderRadius: 3, borderWidth: 1, borderColor: '#334155', alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#f59e0b' }} />
+                  </View>
+                  <View style={{ width: 18, height: 4, backgroundColor: '#334155', borderRadius: 1 }} />
+                </View>
+              </View>
+
+              {/* 6. Grazing Sheep (Bottom-Center) */}
+              <Animated.View style={{
+                position: 'absolute',
+                left: MAP_WIDTH / 2 - 35,
+                top: mapHeight - 110,
+                flexDirection: 'row',
+                alignItems: 'center',
+                transform: [
+                  {
+                    translateY: decorSwayAnim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, -3, 0]
+                    })
+                  },
+                  {
+                    translateX: decorSwayAnim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 4, 0]
+                    })
+                  }
+                ]
+              }}>
+                <Text style={{ fontSize: 20 }}>🐑</Text>
+                <Text style={{ fontSize: 8, color: '#16a34a', marginLeft: -2, marginTop: 10 }}>🌾</Text>
+              </Animated.View>
+
+              {/* Floating Clouds */}
+              <Animated.Text style={{
+                position: 'absolute',
+                top: mapHeight * 0.15,
+                fontSize: 34,
+                opacity: 0.35,
+                transform: [{
+                  translateX: cloudAnim1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-60, MAP_WIDTH + 60]
+                  })
+                }]
+              }}>
+                ☁️
+              </Animated.Text>
+              <Animated.Text style={{
+                position: 'absolute',
+                top: mapHeight * 0.5,
+                fontSize: 28,
+                opacity: 0.3,
+                transform: [{
+                  translateX: cloudAnim2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [MAP_WIDTH + 60, -60]
+                  })
+                }]
+              }}>
+                ☁️
+              </Animated.Text>
+
+              {/* Decorative Elements (some swaying) */}
+              {decors.map(dec => (
+                <Animated.Text
+                  key={dec.id}
+                  style={{
+                    position: 'absolute',
+                    left: dec.x,
+                    top: dec.y,
+                    fontSize: dec.sz || 16,
+                    textShadowColor: 'rgba(0,0,0,0.15)',
+                    textShadowOffset: { width: 1, height: 1.5 },
+                    textShadowRadius: 1.5,
+                    transform: dec.sway ? [{
+                      translateX: decorSwayAnim.interpolate({
+                        inputRange: [0, 0.25, 0.5, 0.75, 1],
+                        outputRange: [0, 2, 0, -2, 0],
+                      })
+                    }] : [],
+                  }}
+                >
+                  {dec.emoji}
+                </Animated.Text>
+              ))}
+
+              {/* Animated Butterflies */}
+              <Animated.Text style={{
+                position: 'absolute', left: 55, top: mapHeight * 0.3, fontSize: 20,
+                transform: [
+                  { translateX: butterflyAnim1.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 35, 0, -35, 0] }) },
+                  { translateY: butterflyAnim1.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, -25, -5, 25, 0] }) },
+                  { rotate: butterflyAnim1.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: ['0deg', '15deg', '0deg', '-15deg', '0deg'] }) },
+                ],
+              }}>🦋</Animated.Text>
+              <Animated.Text style={{
+                position: 'absolute', left: MAP_WIDTH - 70, top: mapHeight * 0.55, fontSize: 16,
+                transform: [
+                  { translateX: butterflyAnim2.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, -30, 5, 30, 0] }) },
+                  { translateY: butterflyAnim2.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 20, 0, -20, 0] }) },
+                  { rotate: butterflyAnim2.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: ['0deg', '-10deg', '0deg', '10deg', '0deg'] }) },
+                ],
+              }}>🦋</Animated.Text>
+              <Animated.Text style={{
+                position: 'absolute', left: MAP_WIDTH / 2 - 10, top: mapHeight * 0.78, fontSize: 18,
+                transform: [
+                  { translateX: butterflyAnim3.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 25, 5, -25, 0] }) },
+                  { translateY: butterflyAnim3.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, -30, 0, 30, 0] }) },
+                  { rotate: butterflyAnim3.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: ['0deg', '20deg', '0deg', '-20deg', '0deg'] }) },
+                ],
+              }}>🦋</Animated.Text>
+
+              {/* Path Nodes */}
+              {nodes.map(n => {
+                const item = garden[n.index];
+                const isOccupied = !!item;
+                const isNextEmpty = !isOccupied && n.index === garden.length;
+                const isLocked = !isOccupied && n.index > garden.length;
+                const isSelected = selectedSlotIndex === n.index;
+
+                return (
+                  <Animated.View
+                    key={`node-${n.index}`}
+                    style={{
+                      position: 'absolute',
+                      left: n.x - 34,
+                      top: n.y - 34,
+                      width: 68,
+                      height: 68,
+                      transform: isNextEmpty ? [{
+                        scale: pulseAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.08]
+                        })
+                      }] : []
+                    }}
+                  >
+                    {isNextEmpty && (
+                      <Animated.View
+                        style={{
+                          position: 'absolute',
+                          width: 84,
+                          height: 84,
+                          borderRadius: 42,
+                          backgroundColor: 'rgba(245, 158, 11, 0.35)',
+                          left: -8,
+                          top: -8,
+                          zIndex: -1,
+                          transform: [{
+                            scale: pulseAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0.9, 1.3]
+                            })
+                          }],
+                          opacity: pulseAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.7, 0]
+                          })
+                        }}
+                      />
+                    )}
+
+                    <TouchableOpacity
+                      activeOpacity={isOccupied || isNextEmpty ? 0.7 : 0.95}
+                      onPress={() => setSelectedSlotIndex(n.index)}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: 34,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: isOccupied 
+                          ? "#ffffff" 
+                          : (isNextEmpty ? "#ffffff" : (isDark ? "#374151" : "#e5e7eb")),
+                        borderWidth: isSelected ? 4 : 3,
+                        borderColor: isSelected 
+                          ? "#d97706" 
+                          : (isOccupied 
+                              ? "#10b981" 
+                              : (isNextEmpty ? "#f59e0b" : (isDark ? "#4b5563" : "#9ca3af"))),
+                        borderStyle: isNextEmpty ? "dashed" : "solid",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.15,
+                        shadowRadius: 3,
+                        elevation: isSelected ? 6 : 4,
+                      }}
+                    >
+                      {isOccupied ? (
+                        <Animated.View 
+                          style={{ 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            position: 'relative', 
+                            width: '100%', 
+                            height: '100%',
+                            transform: [{
+                              translateY: decorSwayAnim.interpolate({
+                                inputRange: [0, 0.5, 1],
+                                outputRange: [0, -2, 0]
+                              })
+                            }]
+                          }}
+                        >
+                          {/* Plant Emoji */}
+                          <Text style={{ fontSize: 30, marginBottom: 2 }}>{item.emoji || "🌳"}</Text>
+
+                          {/* Tiny Pot Representation */}
+                          <View
+                            style={{
+                              width: 20,
+                              height: 7,
+                              borderRadius: 2,
+                              backgroundColor: (() => {
+                                if (item.pot === "bronze") return "#cd7f32";
+                                if (item.pot === "silver") return "#cbd5e1";
+                                if (item.pot === "gold" || item.pot === "gold_glow") return "#fbbf24";
+                                return "#d97706";
+                              })(),
+                              borderWidth: 0.5,
+                              borderColor: "#fff",
+                              marginTop: -4
+                            }}
+                          />
+                        </Animated.View>
+                      ) : isNextEmpty ? (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', position: 'relative', width: '100%', height: '100%' }}>
+                          {/* Growing Active Plant Emoji */}
+                          <Text style={{ fontSize: 30, marginBottom: 2 }}>{plantEmoji}</Text>
+
+                          {/* Active Pot Style */}
+                          <View
+                            style={{
+                              width: 20,
+                              height: 7,
+                              borderRadius: 2,
+                              backgroundColor: potStyle.bg,
+                              borderWidth: 0.5,
+                              borderColor: "#fff",
+                              marginTop: -4
+                            }}
+                          />
+                        </View>
+                      ) : (
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                          <Text style={{ fontSize: 18, opacity: 0.5 }}>🔒</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+
+                    {/* Brown Plate with Roman Numeral underneath (for completed or active nodes) */}
+                    {!isLocked && (
+                      <View 
+                        style={{
+                          position: "absolute",
+                          bottom: -14,
+                          alignSelf: 'center',
+                          backgroundColor: "#854d0e",
+                          paddingHorizontal: 8,
+                          paddingVertical: 1.5,
+                          borderRadius: 5,
+                          borderWidth: 1,
+                          borderColor: "#a16207",
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.15,
+                          shadowRadius: 1,
+                          elevation: 2,
+                          zIndex: 5,
+                        }}
+                      >
+                        <Text 
+                          style={{ 
+                            color: "#fef3c7", 
+                            fontSize: 7.5, 
+                            fontFamily: "RedditSans-Bold", 
+                            textAlign: "center",
+                            letterSpacing: 0.5
+                          }}
+                        >
+                          {toRoman(n.index + 1)}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Top-Left Level Badge */}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: -4,
+                        left: -4,
+                        backgroundColor: isOccupied ? '#3b82f6' : (isNextEmpty ? '#f97316' : '#6b7280'),
+                        borderRadius: 9,
+                        width: 18,
+                        height: 18,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderWidth: 1.5,
+                        borderColor: '#fff',
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 1,
+                        elevation: 3,
+                        zIndex: 10,
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 9, fontFamily: 'RedditSans-Bold' }}>
+                        {n.index + 1}
+                      </Text>
+                    </View>
+                  </Animated.View>
+                );
+              })}
+            </View>
+          </ScrollView>
+
+          {/* Floating Glassy Header */}
+          <View 
+            style={{ 
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              flexDirection: "row", 
+              justifyContent: "space-between", 
+              alignItems: "center", 
+              paddingHorizontal: 20, 
+              paddingTop: 16, 
+              paddingBottom: 16,
+              backgroundColor: isDark ? "#022c22" : "#16a34a",
+              borderBottomWidth: 1,
+              borderColor: isDark ? "rgba(6, 95, 70, 0.3)" : "rgba(134, 239, 172, 0.3)",
+              zIndex: 10,
+            }}
+          >
+            <Text className="text-lg font-redditsans-bold" style={{ color: "#fff" }}>
+              {tLocal("virtual_plant.garden.title")}
+            </Text>
+            <TouchableOpacity 
+              onPress={() => {
+                setGardenModalVisible(false);
+                setSelectedSlotIndex(null);
+              }} 
+              className="p-1"
+            >
+              <FontAwesomeIcon icon={faTimes} color="#fff" size={20} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Floating Bottom Panel */}
+          <View 
+            style={{ 
+              position: 'absolute',
+              bottom: 16,
+              left: 16,
+              right: 16,
+              zIndex: 10,
+            }}
+          >
+            {selectedSlotIndex !== null ? (() => {
+              const details = getSlotDetails(selectedSlotIndex);
+              return (
+                <View 
+                  className="p-3 rounded-2xl border"
+                  style={{
+                    backgroundColor: colors.card,
+                    borderColor: colors.border + "40",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 12,
+                    elevation: 8,
+                  }}
+                >
+                  <View className="flex-row justify-between items-center">
+                    <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
+                      <View 
+                        style={{ 
+                          width: 36, 
+                          height: 36, 
+                          borderRadius: 18, 
+                          backgroundColor: selectedSlotIndex < garden.length 
+                            ? (isDark ? "#065f46" : "#dcfce7") 
+                            : (isDark ? "#78350f" : "#fef3c7"),
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <Text style={{ fontSize: 20 }}>{details.emoji}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text className="text-[13px] font-redditsans-bold" style={{ color: colors.text }}>
+                          {details.title}
+                        </Text>
+                        <Text className="text-[10px] font-redditsans-medium" style={{ color: colors.textMuted }}>
+                          {details.subtitle}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity 
+                      onPress={() => setSelectedSlotIndex(null)}
+                      className="w-5 h-5 rounded-full items-center justify-center"
+                      style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)" }}
+                    >
+                      <FontAwesomeIcon icon={faTimes} size={10} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Speech bubble / feedback box inside the details card for active growing plant */}
+                  {selectedSlotIndex === garden.length && speechText ? (
+                    <View 
+                      className="p-2 rounded-xl border mt-2.5" 
+                      style={{ 
+                        backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", 
+                        borderColor: colors.border + "20" 
+                      }}
+                    >
+                      <Text className="text-[11px] font-redditsans-medium italic" style={{ color: colors.textSecondary }}>
+                        💬 {speechText}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {/* Progress dashboard inside the details card for active growing plant */}
+                  {selectedSlotIndex === garden.length ? (
+                    <View className="mt-2.5 pt-2.5 border-t" style={{ borderColor: colors.border + "30" }}>
+                      {/* Today's Watering Progress Bar */}
+                      <View className="flex-row justify-between items-center mb-1">
+                        <Text className="text-[10px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
+                          💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{maxHabitsToday})
+                        </Text>
+                        <Text className="text-[9px] font-redditsans-medium italic" style={{ color: colors.textMuted }}>
+                          {maxCompletedHabitsToday > 0
+                            ? tLocal("virtual_plant.status.watered_today", { completed: Math.min(wateredCount, maxCompletedHabitsToday), total: maxCompletedHabitsToday })
+                            : tLocal("virtual_plant.status.thirsty_today")
+                          }
+                        </Text>
+                      </View>
+                      <View className="w-full h-1 rounded-full overflow-hidden mb-2 bg-slate-200 dark:bg-slate-700">
+                        <LinearGradient
+                          colors={["#0ea5e9", "#38bdf8"]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%` }}
+                          className="h-full rounded-full"
+                        />
+                      </View>
+
+                      {/* Plant Level Growth Bar */}
+                      <View className="flex-row justify-between items-center mb-1">
+                        <Text className="text-[10px] font-redditsans-medium" style={{ color: colors.textSecondary }}>
+                          🌱 {t("virtual_plant.stageName")} {plantLevel} ({currentLevelReq.name})
+                        </Text>
+
+                        {plantLevel < 5 ? (
+                          <Text className="text-[9px] font-redditsans-bold" style={{ color: colors.textMuted }}>
+                            {tLocal("virtual_plant.xp_remaining", { count: xpRemaining, level: plantLevel + 1 })}
+                          </Text>
+                        ) : (
+                          <View className="flex-row items-center gap-1.5">
+                            <Text className="text-[9px] font-redditsans-bold" style={{ color: "#fbbf24" }}>
+                              {tLocal("virtual_plant.max_level")}
+                            </Text>
+                            <TouchableOpacity
+                              onPress={handlePlantInGarden}
+                              style={{
+                                backgroundColor: "#10b981",
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
+                                borderRadius: 6,
+                              }}
+                              activeOpacity={0.7}
+                            >
+                              <Text style={{ color: "#fff", fontSize: 8, fontFamily: "RedditSans-Bold" }}>
+                                {tLocal("virtual_plant.garden.plant_btn")}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+                      <View className="w-full h-1 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+                        <LinearGradient
+                          colors={["#10b981", "#34d399"]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          style={{ width: `${Math.max(plantXPPercentage, 2)}%` }}
+                          className="h-full rounded-full"
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <View className="flex-row justify-between items-center pt-2 mt-2 border-t" style={{ borderColor: colors.border + "30" }}>
+                      <Text className="text-[11px] font-redditsans-medium flex-1 mr-2" style={{ color: colors.textSecondary }}>
+                        {details.description}
+                      </Text>
+                      {details.extra ? (
+                        <Text className="text-[11px] font-redditsans-bold" style={{ color: "#f59e0b" }}>
+                          {details.extra}
+                        </Text>
+                      ) : null}
+                    </View>
+                  )}
+
+                  {/* Care Action Buttons Row inside the level map card */}
+                  {selectedSlotIndex === garden.length && (
+                    <View className="flex-row justify-between items-center gap-1.5 mt-3 pt-3 border-t" style={{ borderColor: colors.border + "30" }}>
+                      {/* Action 1: Pet */}
+                      <TouchableOpacity
+                        onPress={handlePet}
+                        className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 active:scale-95"
+                        activeOpacity={0.7}
+                      >
+                        <FontAwesomeIcon icon={faHeart} size={11} color="#ef4444" />
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
+                          {tLocal("virtual_plant.actions.pet")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Action 2: Water */}
+                      <TouchableOpacity
+                        onPress={handleWater}
+                        style={{
+                          backgroundColor: isWaterable ? "rgba(14, 165, 233, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                          opacity: isWaterable ? 1 : 0.45,
+                        }}
+                        className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                        activeOpacity={0.7}
+                      >
+                        <FontAwesomeIcon icon={faTint} size={11} color={isWaterable ? "#0ea5e9" : "#94a3b8"} />
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isWaterable ? (isDark ? "#38bdf8" : "#0284c7") : "#94a3b8" }}>
+                          {tLocal("virtual_plant.actions.water")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Action 3: Sun */}
+                      <TouchableOpacity
+                        onPress={handleSun}
+                        style={{
+                          backgroundColor: isSunable ? "rgba(234, 179, 8, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                          opacity: isSunable ? 1 : 0.45,
+                        }}
+                        className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                        activeOpacity={0.7}
+                      >
+                        <FontAwesomeIcon icon={faSun} size={11} color={isSunable ? "#eab308" : "#94a3b8"} />
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isSunable ? (isDark ? "#fde047" : "#a16207") : "#94a3b8" }}>
+                          {tLocal("virtual_plant.actions.sun")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Action 4: Fertilize */}
+                      <TouchableOpacity
+                        onPress={handleFertilize}
+                        style={{
+                          backgroundColor: isFertilizable ? "rgba(34, 197, 94, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                          opacity: isFertilizable ? 1 : 0.45,
+                        }}
+                        className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                        activeOpacity={0.7}
+                      >
+                        <FontAwesomeIcon icon={faStar} size={11} color={isFertilizable ? "#22c55e" : "#94a3b8"} />
+                        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isFertilizable ? (isDark ? "#4ade80" : "#16a34a") : "#94a3b8" }}>
+                          {tLocal("virtual_plant.actions.fertilize")}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              );
+            })() : null}
+          </View>
+        </View>
+      </Modal>
+
       <Modal
         visible={isRenameModalVisible}
         transparent

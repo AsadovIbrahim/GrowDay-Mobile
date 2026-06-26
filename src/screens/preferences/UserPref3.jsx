@@ -53,7 +53,7 @@ const UserPref3 = () => {
     setTimeout(() => {
       const hourIdx = BASE_HOURS.indexOf(startHour);
       const minuteIdx = BASE_MINUTES.indexOf(startMinute);
-      
+
       const initialHourIndex = hourIdx + BASE_HOURS.length;
       const initialMinuteIndex = minuteIdx + BASE_MINUTES.length;
 
@@ -63,6 +63,7 @@ const UserPref3 = () => {
       hourRef.current?.scrollTo({ y: initialHourIndex * ITEM_HEIGHT, animated: false });
       minuteRef.current?.scrollTo({ y: initialMinuteIndex * ITEM_HEIGHT, animated: false });
     }, 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const UserPref3 = () => {
       </Text>
     </View>
   );
-  
+
   const handleGoBack = () => {
     navigation.goBack();
   };
@@ -152,16 +153,17 @@ const UserPref3 = () => {
         <View className="items-center mb-12">
           <View
             className="relative flex-row justify-center items-center rounded-3xl overflow-hidden"
-            style={{ 
+            style={{
               height: ITEM_HEIGHT * VISIBLE_ITEMS,
               backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
               width: '100%',
               maxWidth: 280,
-              
+
             }}
           >
             {/* CENTER INDICATOR */}
             <View
+              pointerEvents="none"
               className="absolute z-10"
               style={{
                 top: CENTER_OFFSET,
@@ -175,7 +177,7 @@ const UserPref3 = () => {
             />
 
             {/* COLON SEPARATOR */}
-            <View className="absolute z-20" style={{ top: CENTER_OFFSET + (ITEM_HEIGHT / 2) - 17 }}>
+            <View pointerEvents="none" className="absolute z-20" style={{ top: CENTER_OFFSET + (ITEM_HEIGHT / 2) - 17 }}>
               <Text className="text-3xl font-bold" style={{ color: isDark ? "#ffffff" : "#1f2937" }}>:</Text>
             </View>
 
@@ -220,7 +222,7 @@ const UserPref3 = () => {
         </View>
 
         {/* BUTTON */}
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => {
             navigation.navigate("UserPref4", {
               isUpdate,
@@ -231,8 +233,8 @@ const UserPref3 = () => {
                 endOfDayMinute: minute,
               }
             });
-          }} 
-          style={{ backgroundColor: colors.primaryLight, shadowColor: isDark ? colors.primary : "rgba(0,0,0,0.15)", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 }} 
+          }}
+          style={{ backgroundColor: colors.primaryLight, shadowColor: isDark ? colors.primary : "rgba(0,0,0,0.15)", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 }}
           className="mt-auto py-5 rounded-full mb-6"
         >
           <Text className="text-white text-center font-redditsans-bold text-lg">
