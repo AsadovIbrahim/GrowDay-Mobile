@@ -4,50 +4,55 @@ import { AppRegistry, Text, TextInput } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 import notifee, { EventType } from '@notifee/react-native';
-
+import { cssInterop } from 'nativewind';
+import LinearGradient from 'react-native-linear-gradient';
 import { storage } from './src/utils/MMKVStore';
+
+cssInterop(LinearGradient, {
+    className: 'style',
+});
 
 // Dynamic Font Fallback for Non-Latin Languages (Russian, Arabic, Chinese)
 // This resolves font blending issues where some characters render in custom font and others fall back to system font.
 const systemFontLanguages = ['ru', 'ar', 'zh'];
 
 const patchFontFamily = (style, currentLanguage) => {
-  if (!style) return style;
-  if (!systemFontLanguages.includes(currentLanguage)) return style;
+    if (!style) return style;
+    if (!systemFontLanguages.includes(currentLanguage)) return style;
 
-  const stripFont = (s) => {
-    if (!s) return s;
-    if (s.fontFamily && (s.fontFamily.includes('RedditSans') || s.fontFamily.includes('SFPRODISPLAY'))) {
-      const { fontFamily, ...rest } = s;
-      return rest;
+    const stripFont = (s) => {
+        if (!s) return s;
+        if (s.fontFamily && (s.fontFamily.includes('RedditSans') || s.fontFamily.includes('SFPRODISPLAY'))) {
+            const { fontFamily, ...rest } = s;
+            return rest;
+        }
+        return s;
+    };
+
+    if (Array.isArray(style)) {
+        return style.map(s => patchFontFamily(s, currentLanguage));
+    } else if (typeof style === 'object') {
+        return stripFont(style);
     }
-    return s;
-  };
-
-  if (Array.isArray(style)) {
-    return style.map(s => patchFontFamily(s, currentLanguage));
-  } else if (typeof style === 'object') {
-    return stripFont(style);
-  }
-  return style;
+    return style;
 };
 
 const patchComponent = (Component) => {
-  if (!Component) return;
-  if (Component.render) {
-    const originalRender = Component.render;
-    Component.render = function (props, ref) {
-      const currentLanguage = storage.getString('userLanguage') || 'en';
-      if (systemFontLanguages.includes(currentLanguage)) {
-        const newProps = {
-          ...props,
-          style: patchFontFamily(props.style, currentLanguage)
+    if (!Component) return;
+    if (Component.render) {
+        const originalRender = Component.render;
+        Component.render = function (props, ref) {
+            const currentLanguage = storage.getString('userLanguage') || 'en';
+            if (systemFontLanguages.includes(currentLanguage)) {
+                const newProps = {
+                    ...props,
+                    style: patchFontFamily(props.style, currentLanguage)
+                };
+                return originalRender.call(this, newProps, ref);
+            }
+            return originalRender.call(this, props, ref);
         };
-        return originalRender.call(this, newProps, ref);
-      }
-      return originalRender.call(this, props, ref);
-    };
-  }
+    }
 };
 
 patchComponent(Text);

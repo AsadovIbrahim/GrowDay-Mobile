@@ -7,7 +7,7 @@ require Pod::Executable.execute_command('node', ['-p',
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
-use_modular_headers!
+
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -17,6 +17,9 @@ end
 
 target 'growday' do
   config = use_native_modules!
+
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -31,5 +34,16 @@ target 'growday' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+      end
+      if target.name == 'fmt'
+        target.build_configurations.each do |config|
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        end
+      end
+    end
   end
 end

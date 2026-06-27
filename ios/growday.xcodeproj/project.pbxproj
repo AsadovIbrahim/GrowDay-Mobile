@@ -7,73 +7,74 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		081F3CDB46AA455891C6CC4C /* RedditSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-growday.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-growday.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		4F2B61EBC0E347A79410E344 /* RedditSans-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */; };
-		99B1580420C74B84A14F13EB /* RedditSans-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */; };
-		BC5BA18D34394AA88F684C8D /* RedditSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */; };
-		AB21BEA329174631B2BD221F /* RedditSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */; };
-		FDA38408F60442129A535081 /* RedditSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */; };
-		081F3CDB46AA455891C6CC4C /* RedditSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */; };
-		E8531A03A46249FD9E40ECF5 /* RedditSans-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */; };
-		DBBFCBE1D1F54EE8BEDB5BCF /* RedditSans-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */; };
-		2AB5BF65C1CD4914A18DFCF9 /* RedditSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */; };
-		AD3B4526C9734154820DAAD6 /* RedditSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */; };
-		C8626CE138C14C44B8458299 /* RedditSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */; };
-		A3D5BD1D319445A599F30BC6 /* RedditSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */; };
-		8781E3608BB642B9A3593641 /* RedditSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */; };
-		3B714D7CB6E14E3DB3B1FC4F /* RedditSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */; };
-		99B49B2BA09D43C7A09AFBE0 /* RedditSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */; };
-		3AF6A383D0994764AEC788AE /* RedditSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */; };
-		F6A90E0514FA4BBB8B3EAD00 /* SFPRODISPLAYBLACKITALIC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */; };
-		C93DB19E731E4D86A530CEA1 /* SFPRODISPLAYBOLD.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */; };
+		13B07FC01A68108700A75B9A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB91A68108700A75B9A /* GoogleService-Info.plist */; };
 		1C9C56BF23A84181A358C710 /* SFPRODISPLAYHEAVYITALIC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA51FB76D2FC4DCAB2A9A460 /* SFPRODISPLAYHEAVYITALIC.ttf */; };
-		57865DCC47F7475691A12D59 /* SFPRODISPLAYLIGHTITALIC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */; };
+		2AB5BF65C1CD4914A18DFCF9 /* RedditSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */; };
+		3AF6A383D0994764AEC788AE /* RedditSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */; };
+		3B714D7CB6E14E3DB3B1FC4F /* RedditSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */; };
 		426C1E3A756D435D9E698709 /* SFPRODISPLAYMEDIUM.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEB5AC02F56D423B999216DD /* SFPRODISPLAYMEDIUM.ttf */; };
+		4F2B61EBC0E347A79410E344 /* RedditSans-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */; };
+		57865DCC47F7475691A12D59 /* SFPRODISPLAYLIGHTITALIC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */; };
 		5A7E56F04CE4480C9973EE79 /* SFPRODISPLAYREGULAR.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 298A3C9C56E2419F90528ED1 /* SFPRODISPLAYREGULAR.ttf */; };
 		689A9E259CE74519BB016339 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFE6EE9F483C4A76A3BC6016 /* BootSplash.storyboard */; };
+		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8781E3608BB642B9A3593641 /* RedditSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */; };
+		8C9C9021C1C8F56D27D22DCE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		99B1580420C74B84A14F13EB /* RedditSans-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */; };
+		99B49B2BA09D43C7A09AFBE0 /* RedditSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */; };
+		A3D5BD1D319445A599F30BC6 /* RedditSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */; };
+		AB21BEA329174631B2BD221F /* RedditSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */; };
+		AD3B4526C9734154820DAAD6 /* RedditSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */; };
+		BC5BA18D34394AA88F684C8D /* RedditSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */; };
+		C8626CE138C14C44B8458299 /* RedditSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */; };
+		C93DB19E731E4D86A530CEA1 /* SFPRODISPLAYBOLD.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */; };
+		DBBFCBE1D1F54EE8BEDB5BCF /* RedditSans-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */; };
+		E8531A03A46249FD9E40ECF5 /* RedditSans-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */; };
 		EAC27AC0966F475AB91FBD99 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7988394846D74FE4B06FFD58 /* Colors.xcassets */; };
-		13B07FC01A68108700A75B9A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB91A68108700A75B9A /* GoogleService-Info.plist */; };
+		F6A90E0514FA4BBB8B3EAD00 /* SFPRODISPLAYBLACKITALIC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */; };
+		FDA38408F60442129A535081 /* RedditSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Bold.ttf"; path = "../assets/fonts/RedditSans-Bold.ttf"; sourceTree = "<group>"; };
+		05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-BlackItalic.ttf"; path = "../assets/fonts/RedditSans-BlackItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* growday.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = growday.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = growday/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = growday/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = growday/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		13B07FB91A68108700A75B9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "growday/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-ExtraBold.ttf"; path = "../assets/fonts/RedditSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYLIGHTITALIC.ttf; path = ../assets/fonts/SFPRODISPLAYLIGHTITALIC.ttf; sourceTree = "<group>"; };
+		28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-BoldItalic.ttf"; path = "../assets/fonts/RedditSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Black.ttf"; path = "../assets/fonts/RedditSans-Black.ttf"; sourceTree = "<group>"; };
+		298A3C9C56E2419F90528ED1 /* SFPRODISPLAYREGULAR.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYREGULAR.ttf; path = ../assets/fonts/SFPRODISPLAYREGULAR.ttf; sourceTree = "<group>"; };
+		355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-SemiBold.ttf"; path = "../assets/fonts/RedditSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-growday.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-growday.debug.xcconfig"; path = "Target Support Files/Pods-growday/Pods-growday.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-growday.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-growday.release.xcconfig"; path = "Target Support Files/Pods-growday/Pods-growday.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-growday.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-growday.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-ExtraLightItalic.ttf"; path = "../assets/fonts/RedditSans-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = growday/AppDelegate.swift; sourceTree = "<group>"; };
+		7988394846D74FE4B06FFD58 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = growday/Colors.xcassets; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = growday/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYBLACKITALIC.ttf; path = ../assets/fonts/SFPRODISPLAYBLACKITALIC.ttf; sourceTree = "<group>"; };
+		8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-MediumItalic.ttf"; path = "../assets/fonts/RedditSans-MediumItalic.ttf"; sourceTree = "<group>"; };
+		914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-SemiBoldItalic.ttf"; path = "../assets/fonts/RedditSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		AEB5AC02F56D423B999216DD /* SFPRODISPLAYMEDIUM.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYMEDIUM.ttf; path = ../assets/fonts/SFPRODISPLAYMEDIUM.ttf; sourceTree = "<group>"; };
+		BA51FB76D2FC4DCAB2A9A460 /* SFPRODISPLAYHEAVYITALIC.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYHEAVYITALIC.ttf; path = ../assets/fonts/SFPRODISPLAYHEAVYITALIC.ttf; sourceTree = "<group>"; };
+		BFE6EE9F483C4A76A3BC6016 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = growday/BootSplash.storyboard; sourceTree = "<group>"; };
+		D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Medium.ttf"; path = "../assets/fonts/RedditSans-Medium.ttf"; sourceTree = "<group>"; };
+		D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-ExtraLight.ttf"; path = "../assets/fonts/RedditSans-ExtraLight.ttf"; sourceTree = "<group>"; };
+		D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Light.ttf"; path = "../assets/fonts/RedditSans-Light.ttf"; sourceTree = "<group>"; };
+		DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/RedditSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-LightItalic.ttf"; path = "../assets/fonts/RedditSans-LightItalic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */ = {isa = PBXFileReference; name = "RedditSans-Black.ttf"; path = "../assets/fonts/RedditSans-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-BlackItalic.ttf"; path = "../assets/fonts/RedditSans-BlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */ = {isa = PBXFileReference; name = "RedditSans-Bold.ttf"; path = "../assets/fonts/RedditSans-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-BoldItalic.ttf"; path = "../assets/fonts/RedditSans-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */ = {isa = PBXFileReference; name = "RedditSans-ExtraBold.ttf"; path = "../assets/fonts/RedditSans-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/RedditSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */ = {isa = PBXFileReference; name = "RedditSans-ExtraLight.ttf"; path = "../assets/fonts/RedditSans-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-ExtraLightItalic.ttf"; path = "../assets/fonts/RedditSans-ExtraLightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */ = {isa = PBXFileReference; name = "RedditSans-Italic.ttf"; path = "../assets/fonts/RedditSans-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */ = {isa = PBXFileReference; name = "RedditSans-Light.ttf"; path = "../assets/fonts/RedditSans-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-LightItalic.ttf"; path = "../assets/fonts/RedditSans-LightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */ = {isa = PBXFileReference; name = "RedditSans-Medium.ttf"; path = "../assets/fonts/RedditSans-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-MediumItalic.ttf"; path = "../assets/fonts/RedditSans-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */ = {isa = PBXFileReference; name = "RedditSans-Regular.ttf"; path = "../assets/fonts/RedditSans-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */ = {isa = PBXFileReference; name = "RedditSans-SemiBold.ttf"; path = "../assets/fonts/RedditSans-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; name = "RedditSans-SemiBoldItalic.ttf"; path = "../assets/fonts/RedditSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYBLACKITALIC.ttf"; path = "../assets/fonts/SFPRODISPLAYBLACKITALIC.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYBOLD.ttf"; path = "../assets/fonts/SFPRODISPLAYBOLD.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BA51FB76D2FC4DCAB2A9A460 /* SFPRODISPLAYHEAVYITALIC.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYHEAVYITALIC.ttf"; path = "../assets/fonts/SFPRODISPLAYHEAVYITALIC.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYLIGHTITALIC.ttf"; path = "../assets/fonts/SFPRODISPLAYLIGHTITALIC.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		AEB5AC02F56D423B999216DD /* SFPRODISPLAYMEDIUM.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYMEDIUM.ttf"; path = "../assets/fonts/SFPRODISPLAYMEDIUM.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		298A3C9C56E2419F90528ED1 /* SFPRODISPLAYREGULAR.ttf */ = {isa = PBXFileReference; name = "SFPRODISPLAYREGULAR.ttf"; path = "../assets/fonts/SFPRODISPLAYREGULAR.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BFE6EE9F483C4A76A3BC6016 /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "growday/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7988394846D74FE4B06FFD58 /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "growday/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
-		13B07FB91A68108700A75B9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "growday/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Italic.ttf"; path = "../assets/fonts/RedditSans-Italic.ttf"; sourceTree = "<group>"; };
+		F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SFPRODISPLAYBOLD.ttf; path = ../assets/fonts/SFPRODISPLAYBOLD.ttf; sourceTree = "<group>"; };
+		FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Regular.ttf"; path = "../assets/fonts/RedditSans-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +111,36 @@
 				5DCACB8F33CDC322A6C60F78 /* libPods-growday.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		65959AB70DD54B7E85DBD938 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */,
+				05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */,
+				0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */,
+				28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */,
+				1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */,
+				DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */,
+				D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */,
+				75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */,
+				F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */,
+				D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */,
+				E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */,
+				D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */,
+				8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */,
+				FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */,
+				355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */,
+				914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */,
+				84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */,
+				F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */,
+				BA51FB76D2FC4DCAB2A9A460 /* SFPRODISPLAYHEAVYITALIC.ttf */,
+				1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */,
+				AEB5AC02F56D423B999216DD /* SFPRODISPLAYMEDIUM.ttf */,
+				298A3C9C56E2419F90528ED1 /* SFPRODISPLAYREGULAR.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -151,36 +182,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		65959AB70DD54B7E85DBD938 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */,
-				05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */,
-				0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */,
-				28680C40EB9E4B2583AC4C30 /* RedditSans-BoldItalic.ttf */,
-				1A0BEE9C202043CEB70A3C44 /* RedditSans-ExtraBold.ttf */,
-				DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */,
-				D51EFEA03340486780FB6738 /* RedditSans-ExtraLight.ttf */,
-				75B6CD4068994E189ABC2AF1 /* RedditSans-ExtraLightItalic.ttf */,
-				F115207EFF3948A2BB54C02F /* RedditSans-Italic.ttf */,
-				D9ABF486CFC4413AAC6169BB /* RedditSans-Light.ttf */,
-				E423370624D3426EAD26130F /* RedditSans-LightItalic.ttf */,
-				D4AC37CA1E5248A6A1D59D2D /* RedditSans-Medium.ttf */,
-				8656F094EDA54F2EAE350B67 /* RedditSans-MediumItalic.ttf */,
-				FEC4D63284FF4470BF14A163 /* RedditSans-Regular.ttf */,
-				355F482A49A7432C864D8003 /* RedditSans-SemiBold.ttf */,
-				914C1AA4F725428698EB71FA /* RedditSans-SemiBoldItalic.ttf */,
-				84D0F04B1CDD414B881C3594 /* SFPRODISPLAYBLACKITALIC.ttf */,
-				F37DEFD5155747AF95745BB9 /* SFPRODISPLAYBOLD.ttf */,
-				BA51FB76D2FC4DCAB2A9A460 /* SFPRODISPLAYHEAVYITALIC.ttf */,
-				1D0243FAD42A4485A128FFB1 /* SFPRODISPLAYLIGHTITALIC.ttf */,
-				AEB5AC02F56D423B999216DD /* SFPRODISPLAYMEDIUM.ttf */,
-				298A3C9C56E2419F90528ED1 /* SFPRODISPLAYREGULAR.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -195,6 +196,8 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				ABF158CF5AAA079F1B324E3C /* [CP-User] [RNFB] Core Configuration */,
+				8698D26BCC169462FD6B3629 /* [CP-User] [RNGoogleMobileAds] Configuration */,
 			);
 			buildRules = (
 			);
@@ -268,6 +271,7 @@
 				5A7E56F04CE4480C9973EE79 /* SFPRODISPLAYREGULAR.ttf in Resources */,
 				689A9E259CE74519BB016339 /* BootSplash.storyboard in Resources */,
 				EAC27AC0966F475AB91FBD99 /* Colors.xcassets in Resources */,
+				8C9C9021C1C8F56D27D22DCE /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +310,32 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-growday/Pods-growday-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8698D26BCC169462FD6B3629 /* [CP-User] [RNGoogleMobileAds] Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNGoogleMobileAds] Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_PROJECT_ABBREVIATION=\"RNGoogleMobileAds\"\n_JSON_ROOT=\"'react-native-google-mobile-ads'\"\n_JSON_FILE_NAME='app.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n_PACKAGE_JSON_NAME='package.json'\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"note:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"note:      '$1' already exists\"\n}\n\nfunction getJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -KU -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"note: -> ${_PROJECT_ABBREVIATION} build script started\"\necho \"note: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == *.generated ]]; then continue; fi\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"note:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"note:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -KU -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"error: python3 not found, app.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"google_mobile_ads_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.delay_app_measurement_init\n  _DELAY_APP_MEASUREMENT=$(getJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"delay_app_measurement_init\")\n  if [[ $_DELAY_APP_MEASUREMENT == \"true\" ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADDelayAppMeasurementInit\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"YES\")\n  fi\n\n  # config.ios_app_id\n  _IOS_APP_ID=$(getJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"ios_app_id\")\n  if [[ $_IOS_APP_ID ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GADApplicationIdentifier\")\n    _PLIST_ENTRY_TYPES+=(\"string\")\n    _PLIST_ENTRY_VALUES+=(\"$_IOS_APP_ID\")\n  fi\n\n  # config.sk_ad_network_items\n  _SK_AD_NETWORK_ITEMS=$(getJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"sk_ad_network_items\")\n  if [[ $_SK_AD_NETWORK_ITEMS ]]; then\n    _PLIST_ENTRY_KEYS+=(\"SKAdNetworkItems\")\n    _PLIST_ENTRY_TYPES+=(\"array\")\n    _PLIST_ENTRY_VALUES+=(\"\")\n\n    oldifs=$IFS\n    IFS=\"\n\"\n    array=($(echo \"$_SK_AD_NETWORK_ITEMS\"))\n    IFS=$oldifs\n    for i in \"${!array[@]}\"; do\n      _PLIST_ENTRY_KEYS+=(\"SKAdNetworkItems:$i:SKAdNetworkIdentifier\")\n      _PLIST_ENTRY_TYPES+=(\"string\")\n      _PLIST_ENTRY_VALUES+=(\"${array[i]}\")  \n    done\n  fi\n\n    # config.user_tracking_usage_description\n  _USER_TRACKING_USAGE_DESCRIPTION=$(getJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"user_tracking_usage_description\")\n  if [[ $_USER_TRACKING_USAGE_DESCRIPTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"NSUserTrackingUsageDescription\")\n    _PLIST_ENTRY_TYPES+=(\"string\")\n    _PLIST_ENTRY_VALUES+=(\"$_USER_TRACKING_USAGE_DESCRIPTION\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"google_mobile_ads_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"note:   An ${_JSON_FILE_NAME} file was not found, whilst this file is optional it is recommended to include it to auto-configure services.\"\nfi;\n\necho \"note: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nif ! [[ -f \"${_TARGET_PLIST}\" ]]; then\n  echo \"error: unable to locate Info.plist to set properties. App will crash without GADApplicationIdentifier set.\"\n  exit 1\nfi\n\nif ! [[ $_IOS_APP_ID ]]; then\n  echo \"warning:  ios_app_id key not found in react-native-google-mobile-ads key in app.json. App will crash without it. You may safely ignore this warning if you are using our Expo config plugin.\"\n  exit 0\nfi\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"note: <- ${_PROJECT_ABBREVIATION} build script finished\"\n";
+		};
+		ABF158CF5AAA079F1B324E3C /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"note:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"note:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"note: -> RNFB build script started\"\necho \"note: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"note:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"note:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  if ! _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\"); then\n    echo \"error: Failed to parse firebase.json, check for syntax errors.\"\n    exit 1\n  fi\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"error: python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"note: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"note: <- RNFB build script finished\"\n";
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -483,7 +513,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -548,7 +581,9 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
