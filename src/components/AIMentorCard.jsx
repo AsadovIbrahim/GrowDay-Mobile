@@ -119,10 +119,8 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
-      className="mx-4 rounded-2xl overflow-hidden"
+      className="mx-4"
       style={{
-        borderWidth: 1,
-        borderColor: cardBorderColor,
         shadowColor: isLocked ? "#000" : "#8b5cf6",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: isLocked ? 0.05 : 0.1,
@@ -130,12 +128,20 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
         elevation: 2,
       }}
     >
-      <LinearGradient
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="p-3.5 flex-row items-center justify-between"
+      <View
+        style={{
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: cardBorderColor,
+          overflow: "hidden",
+        }}
       >
+        <LinearGradient
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View className="p-3.5 flex-row items-center justify-between">
         <View className="flex-row items-center flex-1 pr-2">
           {/* Animated AI Icon container */}
           <Animated.View
@@ -229,9 +235,11 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
             size={12}
             color={colors.textMuted}
           />
+          </View>
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
   );
 };
 

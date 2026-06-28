@@ -10,44 +10,44 @@ import TabBar from './components/TabBar';
 const Tab = createBottomTabNavigator();
 
 const TabStack = () => {
-    const [isFirstTimeExplore, setIsFirstTimeExplore] = useMMKVBoolean("isFirstTimeExplore");
-    
-    const initialRoute = isFirstTimeExplore ? "Explore" : "Home";
+  const [isFirstTimeExplore, setIsFirstTimeExplore] = useMMKVBoolean("isFirstTimeExplore");
 
-    useEffect(() => {
-        if (isFirstTimeExplore) {
-            // Delay slightly or do it immediately
-            setIsFirstTimeExplore(false);
+  const initialRoute = isFirstTimeExplore ? "Explore" : "Home";
+
+  useEffect(() => {
+    if (isFirstTimeExplore) {
+      // Delay slightly or do it immediately
+      setIsFirstTimeExplore(false);
+    }
+  }, []);
+
+  return (
+    <Tab.Navigator
+      initialRouteName={initialRoute}
+      tabBar={({ state, navigation }) => {
+        const route = state.routes[state.index];
+        const routeName = getFocusedRouteNameFromRoute(route);
+
+        const hideOnScreens = ["UserPref0", "UserPref1", "UserPref2", "UserPref3", "UserPref4", "UserPref5", "UserPref6", "UserPref7", "HabitCelebration", "MemoryGame", "SequenceGame", "StroopGame", "GameLeaderboard", "ReactionGame", "AIMentorChat"];
+
+        if (hideOnScreens.includes(routeName)) {
+          return null;
         }
-    }, []);
 
-    return (
-      <Tab.Navigator
-        initialRouteName={initialRoute}
-        tabBar={({ state, navigation }) => {
-          const route = state.routes[state.index];
-          const routeName = getFocusedRouteNameFromRoute(route);
-          
-          const hideOnScreens = ["UserPref0", "UserPref1", "UserPref2", "UserPref3", "UserPref4", "UserPref5", "UserPref6", "UserPref7", "HabitCelebration", "MemoryGame", "SequenceGame", "StroopGame", "GameLeaderboard", "ReactionGame", "AIMentorChat"];
-          
-          if (hideOnScreens.includes(routeName)) {
-            return null;
-          }
+        return (
+          <TabBar
+            state={state}
+            navigation={navigation}
+          />
+        );
+      }}
+      screenOptions={{ headerShown: false }}>
+      <Tab.Screen name='Home' component={HomeStack} />
+      <Tab.Screen name='Explore' component={ExploreStack} />
+      <Tab.Screen name='Achievements' component={AchievementsStack} />
+      <Tab.Screen name='Profile' component={ProfileStack} />
+    </Tab.Navigator>
+  )
+}
 
-          return (
-            <TabBar
-              state={state}
-              navigation={navigation}
-            />
-          );
-        }}
-        screenOptions={{ headerShown: false }}>
-        <Tab.Screen name='Home' component={HomeStack} />
-        <Tab.Screen name='Explore' component={ExploreStack} />
-        <Tab.Screen name='Achievements' component={AchievementsStack} />
-        <Tab.Screen name='Profile' component={ProfileStack} />
-      </Tab.Navigator>
-    )
-  }
-  
 export default TabStack;

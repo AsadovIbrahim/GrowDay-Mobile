@@ -1,10 +1,10 @@
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef, DefaultTheme } from '@react-navigation/native';
 import { useMMKVString, useMMKVBoolean } from 'react-native-mmkv';
 import TabStack from "./TabStack";
 import AuthStack from './AuthStack';
 import UserPreferencesStack from './UserPreferencesStack';
 import { MenuContext } from '../context/MenuContext';
-import { ThemeProvider } from '../context/ThemeContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
 import { AppState, Alert, BackHandler } from 'react-native';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
@@ -18,7 +18,7 @@ import mobileAds from 'react-native-google-mobile-ads';
 
 export const navigationRef = createNavigationContainerRef();
 
-const Navigation = () => {
+const AppNavigator = () => {
     const [accessToken] = useMMKVString('accessToken');
     const [isOnBoardingShown] = useMMKVBoolean("isOnBoardingShown");
     const [hasCompletedPreferences] = useMMKVBoolean("hasCompletedPreferences");
@@ -27,6 +27,22 @@ const Navigation = () => {
     const [isSplashVisible, setIsSplashVisible] = useState(true);
     const [isNavReady, setIsNavReady] = useState(false);
     const [pendingLevelUp, setPendingLevelUp] = useState(0);
+
+    const { theme, isDark } = useTheme();
+    const { colors } = theme;
+
+    const navTheme = {
+        dark: isDark,
+        colors: {
+            primary: colors.primary,
+            background: colors.background,
+            card: colors.card,
+            text: colors.text,
+            border: colors.border,
+            notification: colors.danger,
+        },
+        fonts: DefaultTheme.fonts,
+    };
 
     useEffect(() => {
         mobileAds()
@@ -224,32 +240,38 @@ const Navigation = () => {
     }, []);
 
     return (
-        <ThemeProvider>
-            <MenuContext.Provider value={{
-                isMenuOpen,
-                setIsMenuOpen,
-                isCreateModalOpen,
-                setIsCreateModalOpen
-            }}>
-                <NavigationContainer ref={navigationRef} onReady={() => setIsNavReady(true)}>
-                    {!accessToken ? (
-                        <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
-                    ) : !hasCompletedPreferences ? (
-                        <UserPreferencesStack />
-                    ) : (
-                        <TabStack />
-                    )}
-                    <CreateHabitBottomSheet />
-                </NavigationContainer>
-                {isNavReady && isSplashVisible && (
-                    <AnimatedSplashScreen onAnimationEnd={() => setIsSplashVisible(false)} />
+        <MenuContext.Provider value={{
+            isMenuOpen,
+            setIsMenuOpen,
+            isCreateModalOpen,
+            setIsCreateModalOpen
+        }}>
+            <NavigationContainer ref={navigationRef} theme={navTheme} onReady={() => setIsNavReady(true)}>
+                {!accessToken ? (
+                    <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
+                ) : !hasCompletedPreferences ? (
+                    <UserPreferencesStack />
+                ) : (
+                    <TabStack />
                 )}
-                <LevelUpModal
-                    visible={pendingLevelUp > 0}
-                    level={pendingLevelUp}
-                    onClose={handleCloseLevelUp}
-                />
-            </MenuContext.Provider>
+                <CreateHabitBottomSheet />
+            </NavigationContainer>
+            {isNavReady && isSplashVisible && (
+                <AnimatedSplashScreen onAnimationEnd={() => setIsSplashVisible(false)} />
+            )}
+            <LevelUpModal
+                visible={pendingLevelUp > 0}
+                level={pendingLevelUp}
+                onClose={handleCloseLevelUp}
+            />
+        </MenuContext.Provider>
+    );
+};
+
+const Navigation = () => {
+    return (
+        <ThemeProvider>
+            <AppNavigator />
         </ThemeProvider>
     );
 };

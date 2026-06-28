@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image, StyleSheet as RNStyleSheet } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Dimensions, Modal, ActivityIndicator, Alert, Image, StyleSheet as RNStyleSheet, StatusBar } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getUserHabitFetch, getAccountDataFetch, getTodaysUserHabitFetch, getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch, submitMoodFetch, updateAccountFetch, getMoodHistoryFetch } from "../../utils/fetch";
@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useContext, useCallback, useMemo } from "r
 import { useMMKVString } from "react-native-mmkv";
 import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { saveLocalMood } from "../../utils/MoodLocalStore";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ICONS } from "../../constants/icons";
 import {
@@ -52,6 +53,7 @@ const getLocalDateString = (d) => {
 
 const Home = () => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today.getDate());
   const [selectedDateObject, setSelectedDateObject] = useState(today);
@@ -582,7 +584,12 @@ const Home = () => {
   };
 
   return (
-    <LinearGradient colors={colors.backgroundGradient} className="flex-1 px-1 pt-12">
+    <LinearGradient
+      colors={colors.backgroundGradient}
+      style={{ flex: 1, paddingTop: insets.top > 0 ? insets.top : 16 }}
+      className="flex-1 px-1"
+    >
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} translucent backgroundColor="transparent" />
       {isMenuOpen && (
         <Animated.View
           style={{
@@ -721,7 +728,7 @@ const Home = () => {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 160 }}
       >
         <View className="pt-4 flex-row justify-between items-center gap-2 px-4">
           <Text style={{ color: colors.text }} className="text-2xl font-redditsans-bold mb-1">

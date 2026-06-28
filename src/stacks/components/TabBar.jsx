@@ -5,6 +5,7 @@ import { useContext, useState, useEffect } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import { getAchievementStatsFetch } from '../../utils/fetch';
 import { useTheme } from '../../context/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   faHome,
   faCompass,
@@ -19,6 +20,7 @@ const TabBar = ({ state, navigation }) => {
     const { colors } = theme;
     const [token] = useMMKVString('accessToken');
     const [hasNewAchievements, setHasNewAchievements] = useState(false);
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const checkAchievements = async () => {
@@ -64,6 +66,7 @@ const TabBar = ({ state, navigation }) => {
                     shadowOpacity: theme.isDark ? 0.4 : 0.12,
                     borderWidth: theme.isDark ? 1 : 0,
                     borderColor: theme.isDark ? colors.border : 'transparent',
+                    marginBottom: insets.bottom > 0 ? insets.bottom + 6 : 16,
                 }
             ]}
         >

@@ -375,18 +375,21 @@ const Login = () => {
               onPress={handleLogin}
               disabled={loading}
               activeOpacity={0.8}
+              style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
             >
-              <LinearGradient
-                colors={[colors.primaryLight || '#4caf66', colors.primary]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className="py-3.5"
-                style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
-              >
-                <Text className="text-white text-center font-redditsans-bold text-lg">
-                  {loading ? t("auth.signing_in") : t("auth.sign_in")}
-                </Text>
-              </LinearGradient>
+              <View style={{ borderRadius: 20, overflow: "hidden" }}>
+                <LinearGradient
+                  colors={[colors.primaryLight || '#4caf66', colors.primary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <View style={{ paddingVertical: 14 }}>
+                    <Text className="text-white text-center font-redditsans-bold text-lg">
+                      {loading ? t("auth.signing_in") : t("auth.sign_in")}
+                    </Text>
+                  </View>
+                </LinearGradient>
+              </View>
             </TouchableOpacity>
 
             {/* Register */}

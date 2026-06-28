@@ -64,27 +64,27 @@ const ForgotPassword = () => {
         onHide={() => setToast((prev) => ({ ...prev, visible: false }))}
       />
 
-    <LinearGradient
-      colors={colors.backgroundGradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      className="flex-1"
-    >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <LinearGradient
+        colors={colors.backgroundGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="flex-1"
       >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ 
-            paddingHorizontal: 24, 
-            paddingTop: insets.top + 20, 
-            paddingBottom: insets.bottom + 60,
-            flexGrow: 1,
-            justifyContent: 'center'
-          }}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: insets.top + 20,
+              paddingBottom: insets.bottom + 60,
+              flexGrow: 1,
+              justifyContent: 'center'
+            }}
+            keyboardShouldPersistTaps="handled"
+          >
 
             {/* Back */}
             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ alignSelf: 'flex-start', marginBottom: 10 }}>
@@ -204,18 +204,21 @@ const ForgotPassword = () => {
                   onPress={handleForgotPassword}
                   disabled={loading}
                   activeOpacity={0.8}
+                  style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
                 >
-                  <LinearGradient
-                    colors={[colors.primaryLight || '#4caf66', colors.primary]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    className="py-3.5"
-                    style={[styles.modernButton, { opacity: loading ? 0.75 : 1 }]}
-                  >
-                    <Text className="text-white text-center font-redditsans-bold text-lg">
-                      {loading ? t("auth.sending") : t("auth.send_reset")}
-                    </Text>
-                  </LinearGradient>
+                  <View style={{ borderRadius: 20, overflow: "hidden" }}>
+                    <LinearGradient
+                      colors={[colors.primaryLight || '#4caf66', colors.primary]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                    >
+                      <View style={{ paddingVertical: 14 }}>
+                        <Text className="text-white text-center font-redditsans-bold text-lg">
+                          {loading ? t("auth.sending") : t("auth.send_reset")}
+                        </Text>
+                      </View>
+                    </LinearGradient>
+                  </View>
                 </TouchableOpacity>
               </>
             )}
@@ -228,9 +231,9 @@ const ForgotPassword = () => {
               </TouchableOpacity>
             </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
     </View>
   );
 }

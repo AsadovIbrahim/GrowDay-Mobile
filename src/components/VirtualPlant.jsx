@@ -2029,10 +2029,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
   return (
     <View
-      className="mx-4 mb-4 rounded-2xl overflow-hidden shadow-sm"
+      className="mx-4 mb-4"
       style={{
-        borderWidth: 1,
-        borderColor: borderGlowColor,
         shadowColor: healthState === "blooming" ? "#f59e0b" : colors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
@@ -2040,7 +2038,20 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
         elevation: 2,
       }}
     >
-      <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="p-4">
+      <View
+        style={{
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: borderGlowColor,
+          overflow: "hidden",
+        }}
+      >
+        <LinearGradient
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={{ padding: 16 }}>
         {/* Title, Badge and Customize Icon */}
         <View className="flex-row justify-between items-center mb-2">
           <View className="flex-1 mr-2 flex-row items-center gap-1.5">
@@ -2144,6 +2155,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
             {/* Floating and Bouncing Plant Emoji */}
             <Animated.Text
+              allowFontScaling={false}
               style={{
                 fontSize: 56,
                 transform: [
@@ -2327,8 +2339,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
               {tLocal("virtual_plant.actions.fertilize")}
             </Text>
           </TouchableOpacity>
+          </View>
         </View>
       </LinearGradient>
+    </View>
 
       <Modal
         visible={isCustomizeModalVisible}
@@ -2850,7 +2864,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                       ) : isNextEmpty ? (
                         <View style={{ alignItems: 'center', justifyContent: 'center', position: 'relative', width: '100%', height: '100%' }}>
                           {/* Growing Active Plant Emoji */}
-                          <Text style={{ fontSize: 30, marginBottom: 2 }}>{plantEmoji}</Text>
+                          <Text allowFontScaling={false} style={{ fontSize: 30, marginBottom: 2 }}>{plantEmoji}</Text>
 
                           {/* Active Pot Style */}
                           <View
@@ -3011,7 +3025,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                           justifyContent: 'center'
                         }}
                       >
-                        <Text style={{ fontSize: 20 }}>{details.emoji}</Text>
+                        <Text allowFontScaling={false} style={{ fontSize: 20 }}>{details.emoji}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text className="text-[13px] font-redditsans-bold" style={{ color: colors.text }}>
@@ -3062,13 +3076,14 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         </Text>
                       </View>
                       <View className="w-full h-1 rounded-full overflow-hidden mb-2 bg-slate-200 dark:bg-slate-700">
-                        <LinearGradient
-                          colors={["#0ea5e9", "#38bdf8"]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 0 }}
-                          style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%` }}
-                          className="h-full rounded-full"
-                        />
+                        <View style={{ flex: 1 }}>
+                          <LinearGradient
+                            colors={["#0ea5e9", "#38bdf8"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%`, height: '100%' }}
+                          />
+                        </View>
                       </View>
 
                       {/* Plant Level Growth Bar */}
@@ -3104,13 +3119,14 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         )}
                       </View>
                       <View className="w-full h-1 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-                        <LinearGradient
-                          colors={["#10b981", "#34d399"]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 0 }}
-                          style={{ width: `${Math.max(plantXPPercentage, 2)}%` }}
-                          className="h-full rounded-full"
-                        />
+                        <View style={{ flex: 1 }}>
+                          <LinearGradient
+                            colors={["#10b981", "#34d399"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ width: `${Math.max(plantXPPercentage, 2)}%`, height: '100%' }}
+                          />
+                        </View>
                       </View>
                     </View>
                   ) : (
@@ -3225,7 +3241,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             </Text>
             {/* Visual Plant Preview for Naming */}
             <View style={{ alignItems: "center", marginBottom: 20, marginTop: 10 }}>
-              <Text style={{ fontSize: 64, transform: [{ scale: 1.1 }] }}>{plantEmoji}</Text>
+              <Text allowFontScaling={false} style={{ fontSize: 64, transform: [{ scale: 1.1 }] }}>{plantEmoji}</Text>
               <View
                 style={{
                   width: 56,
