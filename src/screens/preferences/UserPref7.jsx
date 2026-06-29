@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Modal, Animated } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Modal, Animated, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -167,8 +167,9 @@ const UserPref7 = () => {
   };
 
   return (
-    <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
-      <SafeAreaView className="flex-1">
+    <View style={{ flex: 1 }}>
+      <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
+      <SafeAreaView style={{ flex: 1 }} className="px-5">
         <View className="flex-row items-center mt-4 mb-8">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
@@ -295,7 +296,7 @@ const UserPref7 = () => {
           </View>
         </View>
       </Modal>
-    </LinearGradient>
+    </View>
   );
 };
 

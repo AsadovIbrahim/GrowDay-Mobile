@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal, Alert, Share, Linking } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, RefreshControl, Modal, Alert, Share, Linking, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faChartLine, faCalendarAlt, faCalendarCheck, faChevronLeft, faChevronRight, faTrophy, faFire, faChartBar, faBrain } from '@fortawesome/free-solid-svg-icons';
@@ -446,8 +446,9 @@ const Statistics = () => {
   const mostConsistentHabit = sortedHabits.length > 0 ? sortedHabits[0].title : null;
 
   return (
-    <LinearGradient colors={colors.backgroundGradient} className="flex-1">
-      <SafeAreaView className="flex-1">
+    <View style={{ flex: 1 }}>
+      <LinearGradient colors={colors.backgroundGradient} style={StyleSheet.absoluteFillObject} />
+      <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 pt-2 mb-6">
           <View className="flex-row items-center">
@@ -846,7 +847,7 @@ const Statistics = () => {
 
 
 
-    </LinearGradient>
+    </View>
   );
 };
 

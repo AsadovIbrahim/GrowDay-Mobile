@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Modal, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -16,17 +16,17 @@ import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit, getTranslatedCategory } from '../../utils/habitTranslations';
 
 const CATEGORY_ICON_MAP = {
-  default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
-  productivity: '📈', learning: '📚', social: '👥', finance: '💰',
-  nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
-  hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
-  nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
+    default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
+    productivity: '📈', learning: '📚', social: '👥', finance: '💰',
+    nutrition: '🍎', sleep: '😴', creativity: '🎨', selfcare: '💅',
+    hydration: '💧', work: '💼', music: '🎵', sports: '⚽',
+    nature: '🌱', meditation: '🕊️', coding: '💻', travel: '✈️',
 };
 
 const getCategoryIcon = (iconKey) => {
-  if (!iconKey) return '⭐';
-  if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
-  return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
+    if (!iconKey) return '⭐';
+    if ([...iconKey].length <= 2 && iconKey.codePointAt(0) > 255) return iconKey;
+    return CATEGORY_ICON_MAP[iconKey.toLowerCase()] || '⭐';
 };
 
 const UserHabits = ({ route }) => {
@@ -38,10 +38,10 @@ const UserHabits = ({ route }) => {
     const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
     const [displayLimit, setDisplayLimit] = useState(10);
     const [pageSize] = useState(10);
-    
+
     // Default to 'Today' if coming from Home's VIEW ALL, otherwise 'All'
     const [selectedFrequency, setSelectedFrequency] = useState(route.params?.initialFilter || 'All');
-    
+
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [selectedHabits, setSelectedHabits] = useState(new Set());
@@ -67,14 +67,14 @@ const UserHabits = ({ route }) => {
         setDisplayLimit(10);
         try {
             let habits = [];
-            
+
             if (selectedFrequency === 'Today') {
                 const today = new Date();
                 const year = today.getFullYear();
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
                 const dateStr = `${year}-${month}-${day}`;
-                
+
                 const response = await getTodaysUserHabitFetch(token, dateStr, 0, 100);
                 habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : [];
             } else if (selectedFrequency === 'All') {
@@ -82,8 +82,8 @@ const UserHabits = ({ route }) => {
                 habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : [];
             } else {
                 const response = await getUserHabitByFrequencyFetch(token, selectedFrequency);
-                habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) : 
-                         (Array.isArray(response) ? response : []);
+                habits = response && response.data ? (Array.isArray(response.data) ? response.data : []) :
+                    (Array.isArray(response) ? response : []);
             }
 
             // Deduplication
@@ -145,7 +145,7 @@ const UserHabits = ({ route }) => {
         if (!isSelectionMode) {
             const today = new Date();
             const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            
+
             navigation.navigate("UserHabitDetails", {
                 habitId: habit.userHabitId || habit.id || habit.habitId,
                 date: dateStr,
@@ -278,7 +278,7 @@ const UserHabits = ({ route }) => {
         return allFilteredHabits;
     }, [allFilteredHabits, searchQuery, displayLimit]);
 
-    const isAllSelected = (filteredHabits && filteredHabits.length > 0) && filteredHabits.every(habit => 
+    const isAllSelected = (filteredHabits && filteredHabits.length > 0) && filteredHabits.every(habit =>
         selectedHabits.has(habit.userHabitId || habit.id || habit.habitId)
     );
 
@@ -304,8 +304,9 @@ const UserHabits = ({ route }) => {
     const hasMore = !searchQuery.trim() && allFilteredHabits.length > displayLimit;
 
     return (
-        <LinearGradient colors={colors.backgroundGradient} className="flex-1">
-            <SafeAreaView className="flex-1">
+        <View style={{ flex: 1 }}>
+            <LinearGradient colors={colors.backgroundGradient} style={StyleSheet.absoluteFillObject} />
+            <SafeAreaView style={{ flex: 1 }}>
                 {/* Header */}
                 <View className="flex-row items-center justify-between px-4 pt-4 mb-4">
                     <View className="flex-row items-center flex-1">
@@ -340,17 +341,17 @@ const UserHabits = ({ route }) => {
                             setFilterModalVisible(true);
                         }}
                         className="p-3.5 rounded-xl justify-center items-center"
-                        style={{ 
+                        style={{
                             backgroundColor: (selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? colors.primary : colors.card,
                             borderWidth: 1,
                             borderColor: (selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? colors.primary : colors.border
                         }}
                         activeOpacity={0.8}
                     >
-                        <FontAwesomeIcon 
-                            icon={faFilter} 
-                            color={(selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? '#FFFFFF' : colors.text} 
-                            size={18} 
+                        <FontAwesomeIcon
+                            icon={faFilter}
+                            color={(selectedCategoryId !== 'All' || selectedFrequency !== 'All') ? '#FFFFFF' : colors.text}
+                            size={18}
                         />
                     </TouchableOpacity>
                 </View>
@@ -359,14 +360,14 @@ const UserHabits = ({ route }) => {
                 <View className="px-4 mb-3">
                     {isSelectionMode ? (
                         <View className="flex-row items-center justify-between">
-                            <TouchableOpacity 
-                                onPress={handleToggleSelectAll} 
+                            <TouchableOpacity
+                                onPress={handleToggleSelectAll}
                                 className="flex-row items-center gap-2"
                                 activeOpacity={0.7}
                             >
-                                <View 
+                                <View
                                     className="w-5 h-5 rounded items-center justify-center border"
-                                    style={{ 
+                                    style={{
                                         borderColor: isAllSelected ? colors.primary : colors.textSecondary,
                                         backgroundColor: isAllSelected ? colors.primary : 'transparent',
                                         borderRadius: 4,
@@ -415,12 +416,12 @@ const UserHabits = ({ route }) => {
                                         setSelectedFrequency('All');
                                         setDisplayLimit(pageSize);
                                     }}
-                                    style={{ 
-                                        flexDirection: 'row', 
-                                        alignItems: 'center', 
-                                        gap: 6, 
-                                        backgroundColor: colors.primary + '15', 
-                                        borderWidth: 1, 
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        backgroundColor: colors.primary + '15',
+                                        borderWidth: 1,
                                         borderColor: colors.primary,
                                         paddingHorizontal: 12,
                                         paddingVertical: 5,
@@ -439,12 +440,12 @@ const UserHabits = ({ route }) => {
                                         setSelectedCategoryId('All');
                                         setDisplayLimit(pageSize);
                                     }}
-                                    style={{ 
-                                        flexDirection: 'row', 
-                                        alignItems: 'center', 
-                                        gap: 6, 
-                                        backgroundColor: colors.primary + '15', 
-                                        borderWidth: 1, 
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        backgroundColor: colors.primary + '15',
+                                        borderWidth: 1,
                                         borderColor: colors.primary,
                                         paddingHorizontal: 12,
                                         paddingVertical: 5,
@@ -589,18 +590,18 @@ const UserHabits = ({ route }) => {
                                 onRequestClose={() => setFilterModalVisible(false)}
                             >
                                 <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-                                    <TouchableOpacity 
-                                        style={{ flex: 1 }} 
-                                        activeOpacity={1} 
-                                        onPress={() => setFilterModalVisible(false)} 
+                                    <TouchableOpacity
+                                        style={{ flex: 1 }}
+                                        activeOpacity={1}
+                                        onPress={() => setFilterModalVisible(false)}
                                     />
-                                    <View 
-                                        style={{ 
-                                            backgroundColor: colors.card, 
-                                            borderTopLeftRadius: 30, 
-                                            borderTopRightRadius: 30, 
-                                            paddingHorizontal: 24, 
-                                            paddingTop: 16, 
+                                    <View
+                                        style={{
+                                            backgroundColor: colors.card,
+                                            borderTopLeftRadius: 30,
+                                            borderTopRightRadius: 30,
+                                            paddingHorizontal: 24,
+                                            paddingTop: 16,
                                             paddingBottom: 40,
                                             maxHeight: '80%'
                                         }}
@@ -611,7 +612,7 @@ const UserHabits = ({ route }) => {
                                             <Text className="font-redditsans-bold" style={{ color: colors.text, fontSize: 20 }}>
                                                 {t('my_habits.filters_title', 'Filters')}
                                             </Text>
-                                            <TouchableOpacity 
+                                            <TouchableOpacity
                                                 onPress={() => {
                                                     setTempFrequency('All');
                                                     setTempCategoryId('All');
@@ -655,8 +656,8 @@ const UserHabits = ({ route }) => {
                                         <Text className="font-redditsans-medium" style={{ color: colors.textSecondary, fontSize: 14, marginBottom: 12 }}>
                                             {t('my_habits.category', 'Category')}
                                         </Text>
-                                        <ScrollView 
-                                            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }} 
+                                        <ScrollView
+                                            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}
                                             style={{ maxHeight: 200, marginBottom: 24 }}
                                             showsVerticalScrollIndicator={false}
                                         >
@@ -733,7 +734,7 @@ const UserHabits = ({ route }) => {
                     )}
                 </ScrollView>
             </SafeAreaView>
-        </LinearGradient>
+        </View>
     );
 };
 

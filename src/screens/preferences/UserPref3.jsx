@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -113,8 +113,9 @@ const UserPref3 = () => {
   };
 
   return (
-    <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-6">
-      <SafeAreaView className="flex-1">
+    <View style={{ flex: 1 }}>
+      <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
+      <SafeAreaView style={{ flex: 1 }} className="px-6">
 
         {/* HEADER */}
         <View className="flex-row items-center mt-6 mb-10">
@@ -243,7 +244,7 @@ const UserPref3 = () => {
         </TouchableOpacity>
 
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Modal, Animated, Easing } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Modal, Animated, Easing, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -169,8 +169,9 @@ const UserPref6 = () => {
   };
 
   return (
-    <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
-      <SafeAreaView className="flex-1">
+    <View style={{ flex: 1 }}>
+      <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
+      <SafeAreaView style={{ flex: 1 }} className="px-5">
         {/* HEADER */}
         <View className="flex-row items-center mt-4 mb-8">
           <TouchableOpacity onPress={handleGoBack}>
@@ -216,8 +217,8 @@ const UserPref6 = () => {
                   key={option.id}
                   onPress={() => toggleOption(option.id)}
                   className={`rounded-2xl p-4 mb-3 flex-row items-center justify-between ${isSelected
-                      ? "border-2 border-green-500"
-                      : isDark ? "border border-white/10" : "border border-green-100"
+                    ? "border-2 border-green-500"
+                    : isDark ? "border border-white/10" : "border border-green-100"
                     }`}
                   style={{
                     backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
@@ -277,7 +278,7 @@ const UserPref6 = () => {
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 };
 

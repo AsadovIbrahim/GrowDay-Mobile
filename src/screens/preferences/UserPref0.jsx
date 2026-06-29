@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, TextInput, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -27,8 +27,9 @@ const UserPref0 = () => {
   ];
 
   return (
-    <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} className="flex-1 px-5">
-      <SafeAreaView className="flex-1">
+    <View style={{ flex: 1 }}>
+      <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
+      <SafeAreaView style={{ flex: 1 }} className="px-5">
         <View className="flex-row items-center mt-4 mb-8">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
@@ -55,47 +56,47 @@ const UserPref0 = () => {
           <View className="mb-8">
             <Text style={{ color: colors.text }} className="text-[18px] font-redditsans-bold mb-4 px-1">{t("preferences.step0.question")}</Text>
             {genders.map((g) => {
-                const isSelected = gender === g.id;
-                return (
-                    <TouchableOpacity
-                        key={g.id}
-                        onPress={() => setGender(g.id)}
-                        className={`flex-row items-center p-4 mb-3 rounded-2xl ${isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
-                            }`}
-                        style={{
-                            backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: isSelected ? 0.2 : 0.05,
-                            shadowRadius: 4,
-                            elevation: 3
-                        }}
+              const isSelected = gender === g.id;
+              return (
+                <TouchableOpacity
+                  key={g.id}
+                  onPress={() => setGender(g.id)}
+                  className={`flex-row items-center p-4 mb-3 rounded-2xl ${isSelected ? "border-2 border-green-500" : isDark ? "border border-white/10" : "border border-green-100"
+                    }`}
+                  style={{
+                    backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: isSelected ? 0.2 : 0.05,
+                    shadowRadius: 4,
+                    elevation: 3
+                  }}
+                >
+                  <View className={`w-5 h-5 rounded-full border-2 mr-3 items-center justify-center ${isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
+                    }`}>
+                    {isSelected && <View className="w-2 h-2 bg-white rounded-full" />}
+                  </View>
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      style={{
+                        backgroundColor: isSelected
+                          ? `${g.iconColor}20`
+                          : (isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")
+                      }}
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
                     >
-                        <View className={`w-5 h-5 rounded-full border-2 mr-3 items-center justify-center ${isSelected ? "border-green-500 bg-green-500" : "border-gray-400"
-                            }`}>
-                            {isSelected && <View className="w-2 h-2 bg-white rounded-full" />}
-                        </View>
-                        <View className="flex-row items-center flex-1">
-                            <View 
-                                style={{
-                                    backgroundColor: isSelected 
-                                        ? `${g.iconColor}20` 
-                                        : (isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")
-                                }}
-                                className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                            >
-                                <FontAwesomeIcon icon={g.icon} size={20} color={isSelected ? g.iconColor : (isDark ? "#9ca3af" : "#4b5563")} />
-                            </View>
-                            <Text style={{
-                                color: colors.text,
-                                fontSize: 16,
-                                fontWeight: isSelected ? "700" : "500"
-                            }} className="font-redditsans-bold">
-                                {g.label}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                );
+                      <FontAwesomeIcon icon={g.icon} size={20} color={isSelected ? g.iconColor : (isDark ? "#9ca3af" : "#4b5563")} />
+                    </View>
+                    <Text style={{
+                      color: colors.text,
+                      fontSize: 16,
+                      fontWeight: isSelected ? "700" : "500"
+                    }} className="font-redditsans-bold">
+                      {g.label}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
             })}
           </View>
 
@@ -121,7 +122,7 @@ const UserPref0 = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 };
 

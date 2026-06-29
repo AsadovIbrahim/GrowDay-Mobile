@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef,useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useMMKVString } from 'react-native-mmkv';
 import {
   View,
@@ -58,21 +58,21 @@ const CreateHabitBottomSheet = () => {
   const navigation = useNavigation();
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-   const [accessToken] = useMMKVString('accessToken');
-   const [popularHabits, setPopularHabits] = useState([]);
-   const [categories, setCategories] = useState([]);
-   const [pageIndex, setPageIndex] = useState(0);
-   const [isLoading, setIsLoading] = useState(false);
-   const [isLoadingMore, setIsLoadingMore] = useState(false);
-   const [hasMore, setHasMore] = useState(true);
-   const [pageSize, setPageSize] = useState(3);
-   const { theme } = useTheme();
-   const { colors } = theme;
-   const { t, i18n } = useTranslation();
+  const [accessToken] = useMMKVString('accessToken');
+  const [popularHabits, setPopularHabits] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [pageSize, setPageSize] = useState(3);
+  const { theme } = useTheme();
+  const { colors } = theme;
+  const { t, i18n } = useTranslation();
 
   const fetchPopularHabits = async (isLoadMore = false) => {
     if (!accessToken || (!hasMore && isLoadMore) || (isLoading || isLoadingMore)) return;
-    
+
     try {
       if (isLoadMore) {
         setIsLoadingMore(true);
@@ -83,7 +83,7 @@ const CreateHabitBottomSheet = () => {
 
       const currentIndex = isLoadMore ? pageIndex + 1 : 0;
       const response = await getAllHabitsFetch(accessToken, currentIndex, pageSize);
-      
+
       if (response && response.data) {
         const newData = response.data;
         if (isLoadMore) {
@@ -93,7 +93,7 @@ const CreateHabitBottomSheet = () => {
           setPopularHabits(newData);
           setPageIndex(0);
         }
-        
+
         if (newData.length < pageSize) {
           setHasMore(false);
         } else {
@@ -126,8 +126,8 @@ const CreateHabitBottomSheet = () => {
       console.log("Error fetching categories in bottom sheet:", error);
     }
   };
-      
-      
+
+
   useEffect(() => {
     if (isCreateModalOpen) {
       fetchPopularHabits();
@@ -178,7 +178,7 @@ const CreateHabitBottomSheet = () => {
 
   if (!isCreateModalOpen) return null;
 
-  
+
 
   return (
     <Modal
@@ -191,7 +191,7 @@ const CreateHabitBottomSheet = () => {
         <TouchableWithoutFeedback onPress={closeModal}>
           <Animated.View style={[styles.overlay, { opacity }]} />
         </TouchableWithoutFeedback>
-        
+
         <Animated.View
           style={[
             styles.sheet,
@@ -204,15 +204,15 @@ const CreateHabitBottomSheet = () => {
 
           <View style={styles.content}>
             <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>{t("create_habit.new_good_habit")}</Text>
-            
+
             <View style={styles.inputContainer}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => {
                   closeModal();
-                  navigation.navigate('Home', { 
+                  navigation.navigate('Home', {
                     screen: 'CreateCustomHabit',
-                    params: { isCustom: true } 
+                    params: { isCustom: true }
                   });
                 }}
                 style={[styles.inputShadowContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
@@ -221,13 +221,13 @@ const CreateHabitBottomSheet = () => {
                   {t("create_habit.create_custom")}
                 </Text>
                 <View style={[styles.addIconContainer, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
-                   <FontAwesomeIcon icon={faPlus} size={14} color={colors.text} />
+                  <FontAwesomeIcon icon={faPlus} size={14} color={colors.text} />
                 </View>
               </TouchableOpacity>
             </View>
 
             <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>{t("create_habit.popular_habits")}</Text>
-            
+
             <FlatList
               horizontal
               data={popularHabits}
@@ -245,7 +245,7 @@ const CreateHabitBottomSheet = () => {
               )}
               renderItem={({ item: habit }) => {
                 const habitCategory = categories.find(c => c.id === habit.categoryId || c.name === habit.category);
-                
+
                 return (
                   <TouchableOpacity
                     key={habit.id}
@@ -253,9 +253,9 @@ const CreateHabitBottomSheet = () => {
                     style={[styles.habitCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                     onPress={() => {
                       closeModal();
-                      navigation.navigate('Home', { 
+                      navigation.navigate('Home', {
                         screen: 'CreateCustomHabit',
-                        params: { habitData: habit, isCustom: false, isSuggested: false } 
+                        params: { habitData: habit, isCustom: false, isSuggested: false }
                       });
                     }}
                   >
@@ -275,7 +275,7 @@ const CreateHabitBottomSheet = () => {
               }}
             />
           </View>
-          
+
           <View style={styles.bottomSpacing} />
         </Animated.View>
       </View>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionTitle: {
-    
+
   },
   inputContainer: {
     marginBottom: 8,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   },
   popularHabitsList: {
     paddingRight: 28,
-    marginBottom:2,
+    marginBottom: 2,
   },
   habitCard: {
     width: 170,
@@ -387,9 +387,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   habitTitle: {
-  
+
   },
-  
+
   bottomSpacing: {
     height: 20,
   },
