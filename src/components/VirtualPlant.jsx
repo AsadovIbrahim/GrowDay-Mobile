@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, ScrollView, TextInput, Pressable, Alert } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
@@ -891,6 +892,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const { t, i18n } = useTranslation();
   const { theme, isDark } = useTheme();
   const { colors } = theme;
+  const insets = useSafeAreaInsets();
 
   const getStorageKey = useCallback((subKey) => {
     return userId ? `growy.${userId.toLowerCase()}.${subKey}` : `growy.${subKey}`;
@@ -2489,7 +2491,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           <ScrollView 
             ref={gardenScrollRef}
             showsVerticalScrollIndicator={false} 
-            contentContainerStyle={{ alignItems: 'center', paddingTop: 76, paddingBottom: 160 }}
+            contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top > 0 ? insets.top + 56 : 76, paddingBottom: 160 }}
             style={StyleSheet.absoluteFillObject}
           >
             <View style={{ width: MAP_WIDTH, height: mapHeight, position: 'relative' }}>
@@ -2964,7 +2966,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
               justifyContent: "space-between", 
               alignItems: "center", 
               paddingHorizontal: 20, 
-              paddingTop: 16, 
+              paddingTop: insets.top > 0 ? insets.top + 8 : 16, 
               paddingBottom: 16,
               backgroundColor: isDark ? "#022c22" : "#16a34a",
               borderBottomWidth: 1,

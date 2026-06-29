@@ -296,8 +296,8 @@ const AIMentorChatScreen = () => {
 
       {/* Header */}
       <View
-        className="flex-row items-center justify-between px-4 py-3 border-b"
-        style={{ backgroundColor: colors.card, borderColor: colors.border }}
+        className="flex-row items-center justify-between px-4 pb-3 border-b"
+        style={{ backgroundColor: colors.card, borderColor: colors.border, paddingTop: insets.top > 0 ? insets.top + 8 : 12 }}
       >
         <View className="flex-row items-center">
           <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 -ml-2">
@@ -421,8 +421,12 @@ const AIMentorChatScreen = () => {
 
         {/* Input Bar */}
         <View
-          className="flex-row items-center px-4 py-3 border-t"
-          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+          className="flex-row items-center px-4 pt-3 border-t"
+          style={{ 
+            backgroundColor: colors.card, 
+            borderColor: colors.border,
+            paddingBottom: (keyboardHeight === 0 && insets.bottom > 0) ? insets.bottom + 8 : 12
+          }}
         >
           <TextInput
             placeholder={

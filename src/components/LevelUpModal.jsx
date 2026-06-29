@@ -484,6 +484,7 @@ const styles = StyleSheet.create({
   },
   primaryBtn: {
     width: '100%',
+    height: 52,
     borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#22c55e',
@@ -494,7 +495,7 @@ const styles = StyleSheet.create({
   },
   primaryGradient: {
     width: '100%',
-    paddingVertical: 15,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
