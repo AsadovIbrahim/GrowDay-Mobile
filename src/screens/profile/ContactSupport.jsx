@@ -275,45 +275,46 @@ const ContactSupport = ({ navigation }) => {
       >
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={[styles.container, { paddingTop: insets.top + 16 }]}
+          contentContainerStyle={[styles.container, { paddingTop: (insets.top > 0 ? insets.top : (Platform.OS === 'ios' ? 47 : 20)) + 16 }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={[styles.backBtn, { backgroundColor: colors.card }]}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} size={16} color={colors.text} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('support.title')}</Text>
-          <View style={{ width: 40 }} />
-        </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={[styles.backBtn, { backgroundColor: colors.card }]}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} size={16} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('support.title')}</Text>
+            <View style={{ width: 40 }} />
+          </View>
 
-        {/* Premium Hero Banner */}
-        <View style={[styles.heroContainer, { backgroundColor: colors.card, borderColor: colors.primary + '30' }]}>
-          <LinearGradient
-            colors={[colors.primary + '18', colors.primary + '05']}
-            style={styles.heroGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View style={[styles.headsetOuterCircle, { borderColor: colors.primary + '20' }]}>
-              <View style={[styles.headsetCircle, { backgroundColor: colors.primary + '20' }]}>
-                <FontAwesomeIcon icon={faHeadset} size={30} color={colors.primary} />
+          {/* Premium Hero Banner */}
+          <View style={[styles.heroContainer, { backgroundColor: colors.card, borderColor: colors.primary + '30' }]}>
+            <View style={styles.heroGradient}>
+              <LinearGradient
+                colors={[colors.primary + '18', colors.primary + '05']}
+                style={StyleSheet.absoluteFillObject}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              />
+              <View style={[styles.headsetOuterCircle, { borderColor: colors.primary + '20' }]}>
+                <View style={[styles.headsetCircle, { backgroundColor: colors.primary + '20' }]}>
+                  <FontAwesomeIcon icon={faHeadset} size={30} color={colors.primary} />
+                </View>
+              </View>
+              <View style={styles.heroTextContainer}>
+                <Text style={[styles.heroTitleText, { color: colors.text }]}>
+                  {trans.hero_title}
+                </Text>
+                <Text style={[styles.heroSubtitleText, { color: colors.textSecondary }]}>
+                  {t('support.footer', { defaultValue: 'Have a question or feedback? Send us a message and we will get back to you as soon as possible.' })}
+                </Text>
               </View>
             </View>
-            <View style={styles.heroTextContainer}>
-              <Text style={[styles.heroTitleText, { color: colors.text }]}>
-                {trans.hero_title}
-              </Text>
-              <Text style={[styles.heroSubtitleText, { color: colors.textSecondary }]}>
-                {t('support.footer', { defaultValue: 'Have a question or feedback? Send us a message and we will get back to you as soon as possible.' })}
-              </Text>
-            </View>
-          </LinearGradient>
-        </View>
+          </View>
 
         {/* Mövzu seçin (Chips) */}
         <View style={styles.sectionHeader}>
