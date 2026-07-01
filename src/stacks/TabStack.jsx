@@ -28,7 +28,11 @@ const TabStack = () => {
         const route = state.routes[state.index];
         const routeName = getFocusedRouteNameFromRoute(route);
 
-        const hideOnScreens = ["UserPref0", "UserPref1", "UserPref2", "UserPref3", "UserPref4", "UserPref5", "UserPref6", "UserPref7", "HabitCelebration", "MemoryGame", "SequenceGame", "StroopGame", "GameLeaderboard", "ReactionGame", "AIMentorChat"];
+        const hideOnScreens = [
+          "UserPref0", "UserPref1", "UserPref2", "UserPref3", "UserPref4", "UserPref5", "UserPref6", "UserPref7",
+          "HabitCelebration", "MemoryGame", "SequenceGame", "StroopGame", "GameLeaderboard", "ReactionGame", "AIMentorChat",
+          "Notification", "NotificationDetail", "NotificationsSettings", "LanguageSettings", "ChangePassword", "ContactSupport"
+        ];
 
         if (hideOnScreens.includes(routeName)) {
           return null;

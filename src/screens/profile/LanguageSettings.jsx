@@ -80,19 +80,21 @@ const LanguageSettings = ({ navigation }) => {
           end={{ x: 1, y: 1 }}
           style={styles.activeBanner}
         >
-          <View style={styles.activeBannerLeft}>
-            <View style={styles.globeIcon}>
-              <FontAwesomeIcon icon={faGlobe} size={18} color="#fff" />
+          <View style={styles.activeBannerInner}>
+            <View style={styles.activeBannerLeft}>
+              <View style={styles.globeIcon}>
+                <FontAwesomeIcon icon={faGlobe} size={18} color="#fff" />
+              </View>
+              <View>
+                <Text style={styles.activeBannerLabel}>{t('profile.language_settings_screen.active_language')}</Text>
+                <Text style={styles.activeBannerLang}>
+                  {selectedLang?.flag}  {selectedLang?.native}
+                </Text>
+              </View>
             </View>
-            <View>
-              <Text style={styles.activeBannerLabel}>{t('profile.language_settings_screen.active_language')}</Text>
-              <Text style={styles.activeBannerLang}>
-                {selectedLang?.flag}  {selectedLang?.native}
-              </Text>
+            <View style={styles.activeBadge}>
+              <Text style={styles.activeBadgeText}>✓</Text>
             </View>
-          </View>
-          <View style={styles.activeBadge}>
-            <Text style={styles.activeBadgeText}>✓</Text>
           </View>
         </LinearGradient>
 
@@ -175,17 +177,20 @@ const styles = StyleSheet.create({
   /* Active Banner */
   activeBanner: {
     borderRadius: 20,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: 28,
     shadowColor: '#4ea854',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
     elevation: 8,
+  },
+  activeBannerInner: {
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   activeBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   globeIcon: {
