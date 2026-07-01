@@ -6,6 +6,7 @@ import { ICONS } from "../constants/icons";
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../utils/habitTranslations';
+import Svg, { Circle } from 'react-native-svg';
 
 const CATEGORY_ICON_MAP = {
   default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
@@ -37,6 +38,16 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
 
   const isCompleted = !isFuture && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
   const navigation = useNavigation();
+
+  // Circular progress calculations
+  const size = 48;
+  const strokeWidth = 3;
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
+  const target = habit.targetValue || 1;
+  const current = habit.currentValue || 0;
+  const progressRate = Math.min(1, Math.max(0, current / target));
+  const strokeDashoffset = circumference * (1 - progressRate);
 
   const handlePress = (() => {
     navigation.navigate("UserHabitDetails", {
@@ -90,14 +101,55 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
       <View
         style={{ opacity: isFuture ? 0.85 : 1, backgroundColor: colors.card }}
         className="rounded-xl p-4 mb-3 flex-row items-center">
-        <View
-          style={{ backgroundColor: isCompleted ? colors.primarySurface : colors.cardSecondary }}
-          className="w-12 h-12 rounded-full items-center justify-center mr-3"
-        >
-          {isCompleted ? (
-            <FontAwesomeIcon icon={faCheck} color={colors.primary} size={20} />
-          ) : (
-            <Text className="text-2xl">{ICONS[habit.icon]}</Text>
+        <View style={{ width: size, height: size, position: 'relative', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+          <View
+            style={{ 
+              backgroundColor: isCompleted ? colors.primarySurface : colors.cardSecondary,
+              width: 38, // Leaves 3.5px clean gap for progress ring path (radius 22, stroke 3)
+              height: 38,
+              borderRadius: 19,
+            }}
+            className="items-center justify-center"
+          >
+            {isCompleted ? (
+              <FontAwesomeIcon icon={faCheck} color={colors.primary} size={16} />
+            ) : (
+              <Text className="text-lg">{ICONS[habit.icon]}</Text>
+            )}
+          </View>
+          {target > 1 && (
+            <View style={{ 
+              position: 'absolute', 
+              width: size, 
+              height: size, 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              transform: [{ rotate: '-90deg' }] 
+            }}>
+              <Svg width={size} height={size}>
+                {/* Background Ring */}
+                <Circle
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={radius}
+                  stroke={colors.border + "25"}
+                  strokeWidth={strokeWidth}
+                  fill="none"
+                />
+                {/* Progress Ring */}
+                <Circle
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={radius}
+                  stroke={isCompleted ? "#22c55e" : colors.primary}
+                  strokeWidth={strokeWidth}
+                  fill="none"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                />
+              </Svg>
+            </View>
           )}
         </View>
 

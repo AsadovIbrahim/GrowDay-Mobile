@@ -55,23 +55,56 @@ const Home = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const today = new Date();
+  const todayStr = getLocalDateString(today);
+  const cachedDate = storage.getString("home.cached.date");
+  const isCacheValid = cachedDate === todayStr;
+
   const [selectedDate, setSelectedDate] = useState(today.getDate());
   const [selectedDateObject, setSelectedDateObject] = useState(today);
   const [token] = useMMKVString('accessToken');
-  const [todaysUserHabit, setTodaysUserHabit] = useState([]);
-  const [userHabitCount, setUserHabitCount] = useState(0);
+  
+  const [todaysUserHabit, setTodaysUserHabit] = useState(() => {
+    if (isCacheValid) {
+      const cached = storage.getString("home.cached.todaysUserHabit");
+      return cached ? JSON.parse(cached) : [];
+    }
+    return [];
+  });
+  
+  const [userHabitCount, setUserHabitCount] = useState(() => {
+    return storage.getNumber("home.cached.userHabitCount") || 0;
+  });
+  
   const [userHabits, setUserHabits] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  
+  const [isInitialLoading, setIsInitialLoading] = useState(() => {
+    const cachedAcc = storage.getString("home.cached.accountData");
+    const cachedCount = storage.getNumber("home.cached.userHabitCount") || 0;
+    return !cachedAcc || cachedCount === 0;
+  });
+  
   const [error, setError] = useState(null);
   const [pageIndex, setPageIndex] = useState(0);
-  const [dailyStatistics, setDailyStatistics] = useState(null);
+  
+  const [dailyStatistics, setDailyStatistics] = useState(() => {
+    if (isCacheValid) {
+      const cached = storage.getString("home.cached.dailyStatistics");
+      return cached ? JSON.parse(cached) : null;
+    }
+    return null;
+  });
+  
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(() => {
+    return storage.getNumber("home.cached.unreadNotificationCount") || 0;
+  });
+  
   const { isMenuOpen, setIsMenuOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -80,7 +113,11 @@ const Home = () => {
   const { colors } = theme;
   const { t } = useTranslation();
 
-  const [accountData, setAccountData] = useState(null);
+  const [accountData, setAccountData] = useState(() => {
+    const cached = storage.getString("home.cached.accountData");
+    return cached ? JSON.parse(cached) : null;
+  });
+  
   const firstName = accountData?.firstName;
   const email = accountData?.email;
 
@@ -92,7 +129,6 @@ const Home = () => {
   const moodFadeAnim = useRef(new Animated.Value(0)).current;
   const moodScaleAnim = useRef(new Animated.Value(0.3)).current;
 
-  const todayStr = getLocalDateString(new Date());
   const activeEmoji = lastMoodDate === todayStr ? (userMoodEmoji || '😊') : '😊';
   const [isSyncingMood, setIsSyncingMood] = useState(lastMoodDate !== todayStr);
 
@@ -294,6 +330,7 @@ const Home = () => {
       const token = storage.getString("accessToken");
       const accountData = await getAccountDataFetch(token);
       setAccountData(accountData.data);
+      storage.set("home.cached.accountData", JSON.stringify(accountData.data));
       return accountData.data;
     } catch (error) {
       console.error("Failed to fetch account data", error);
@@ -444,6 +481,12 @@ const Home = () => {
       const response = await getTodaysUserHabitFetch(token, dateStr, pageIndex, pageSize);
       console.log('Todays user habit response:', response);
       setTodaysUserHabit(response.data);
+      // Save to cache only if we are querying today's date
+      const todayStr = getLocalDateString(new Date());
+      if (dateStr === todayStr) {
+        storage.set("home.cached.todaysUserHabit", JSON.stringify(response.data));
+        storage.set("home.cached.date", todayStr);
+      }
       // Run the sync utility to auto-complete background-completed timers
       import('../../utils/HabitTimerSync').then(({ syncActiveHabitTimers }) => {
         syncActiveHabitTimers(response.data, token, dateStr, navigation, () => {
@@ -462,6 +505,10 @@ const Home = () => {
       const dateStr = getLocalDateString(selectedDateObject);
       const response = await getDailyStatisticsFetch(token, dateStr);
       setDailyStatistics(response.data);
+      const todayStr = getLocalDateString(new Date());
+      if (dateStr === todayStr) {
+        storage.set("home.cached.dailyStatistics", JSON.stringify(response.data));
+      }
     } catch (error) {
       setError(error);
     }
@@ -485,6 +532,7 @@ const Home = () => {
       }
 
       setUserHabitCount(count);
+      storage.set("home.cached.userHabitCount", count);
     } catch (error) {
       setError(error);
     }
@@ -494,6 +542,7 @@ const Home = () => {
       const response = await getUnreadNotificationCountFetch(token);
       console.log(response);
       setUnreadNotificationCount(response);
+      storage.set("home.cached.unreadNotificationCount", response || 0);
     } catch (error) {
       console.log(error);
       setError(error);

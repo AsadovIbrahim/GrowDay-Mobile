@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, Scro
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree } from "@fortawesome/free-solid-svg-icons";
+import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useMMKVString } from "react-native-mmkv";
@@ -29,6 +29,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Günəş vermək üçün bu gün vərdişlərinin ən azı 50%-ni tamamlamalısan! ☀️",
       fertilize_disabled: "Gübrələmək üçün bu gün bütün vərdişlərini tamamlamalısan! ⚡",
       sun_already: "Bu gün artıq kifayət qədər günəş vannası qəbul etmişəm! ☀️",
+      water_already: "Bu gün artıq kifayət qədər sulanmışam! 💧",
       fertilize_already: "Bu gün artıq gübrələnmişəm! 🌿",
       level_up: "Ura! Mən böyüdüm və Level {{level}} oldum! 🌱✨",
       all_done: "Bu gün bütün vərdişlərini tamamladın! Möhtəşəmsən! 🌟",
@@ -52,12 +53,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Möhtəşəm Ağac 🌳✨"
     },
     customizer: {
+      customize_btn: "Fərdiləşdir",
       header: "{{name}} Sazla 🎨",
       streak_info: "Hazırkı ən yüksək ardıcıllığınız: {{streak}} gün. Ardıcıllığınız artdıqca yeni görünüşlər açılır!",
       pots_title: "Dibçək Dizaynları",
       species_title: "Bitki Növləri",
       active: "Aktiv",
       unlocked: "Kilid açıq",
+      select: "Seç",
       locked_by: "Kilidli: {{val}}",
       streak_days: "{{count}} gün streak",
       rename_title: "Bitkinin adını dəyiş",
@@ -78,7 +81,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Kaktus 🌵",
       rose: "Qızılgül 🌹",
       bonsai: "Bonsay 🌳",
-      rare: "Nadir Bitki 🌴✨"
+      rare: "Nadir Bitki 🌴"
     },
     garden: {
       title: "Mənim Bağım 🌳",
@@ -113,6 +116,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Güneş vermek için bugün alışkanlıklarının en az %50'sini tamamlamalısın! ☀️",
       fertilize_disabled: "Gübrelemek için bugün tüm alışkanlıklarını tamamlamalısın! ⚡",
       sun_already: "Bugün zaten yeterince güneş aldım! ☀️",
+      water_already: "Bugün zaten yeterince sulandım! 💧",
       fertilize_already: "Bugün zaten gübrelendim! 🌿",
       level_up: "Harika! Büyüdüm ve Seviye {{level}} oldum! 🌱✨",
       all_done: "Bugün tüm alışkanlıklarını tamamladın! Harikasın! 🌟",
@@ -136,12 +140,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Nadir Bitki 🌳✨"
     },
     customizer: {
+      customize_btn: "Özelleştir",
       header: "{{name}} Özelleştir 🎨",
       streak_info: "Mevcut en yüksek seriniz: {{streak}} gün. Seriniz arttıkça yeni görünümler açılır!",
       pots_title: "Saksı Tasarımları",
       species_title: "Bitki Türleri",
       active: "Aktif",
       unlocked: "Kilit Açık",
+      select: "Seç",
       locked_by: "Kilitli: {{val}}",
       streak_days: "{{count}} gün seri",
       rename_title: "Bitkinin adını değiştir",
@@ -162,7 +168,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Kaktüs 🌵",
       rose: "Gül 🌹",
       bonsai: "Bonsai 🌳",
-      rare: "Nadir Bitki 🌴✨"
+      rare: "Nadir Bitki 🌴"
     },
     garden: {
       title: "Benim Bahçem 🌳",
@@ -197,6 +203,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Выполни хотя бы 50% сегодняшних привычек, чтобы дать мне солнца! ☀️",
       fertilize_disabled: "Выполни все сегодняшние привычки на 100%, чтобы удобрить меня! ⚡",
       sun_already: "Я уже погрелся на солнышке сегодня! ☀️",
+      water_already: "Я уже достаточно полит сегодня! 💧",
       fertilize_already: "Меня уже удобрили сегодня! 🌿",
       level_up: "Ура! Я вырос и достиг Уровня {{level}}! 🌱✨",
       all_done: "Сегодня ты выполнил все привычки! Ты супер! 🌟",
@@ -220,12 +227,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Редкое растение 🌳✨"
     },
     customizer: {
+      customize_btn: "Скин",
       header: "Настроить {{name}} 🎨",
       streak_info: "Ваша лучшая серия: {{streak}} дн. Увеличивайте серию для разблокировки нового!",
       pots_title: "Дизайн горшков",
       species_title: "Виды растений",
       active: "Активен",
       unlocked: "Доступно",
+      select: "Выбрать",
       locked_by: "Закрыто: {{val}}",
       streak_days: "Серия {{count}} дн.",
       rename_title: "Переименовать растение",
@@ -246,7 +255,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Кактус 🌵",
       rose: "Роза 🌹",
       bonsai: "Бонсай 🌳",
-      rare: "Редкое растение 🌴✨"
+      rare: "Редкое растение 🌴"
     },
     garden: {
       title: "Мой Сад 🌳",
@@ -281,6 +290,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "You need to complete at least 50% of today's habits to give me sun! ☀️",
       fertilize_disabled: "You need to complete all of today's habits to fertilize me! ⚡",
       sun_already: "I've had enough sun today! ☀️",
+      water_already: "I've already been watered enough today! 💧",
       fertilize_already: "I've already been fertilized today! 🌿",
       level_up: "Hooray! I grew and reached Level {{level}}! 🌱✨",
       all_done: "You completed all your habits today! You're amazing! 🌟",
@@ -304,12 +314,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Rare Plant 🌳✨"
     },
     customizer: {
+      customize_btn: "Customize",
       header: "Customize {{name}} 🎨",
       streak_info: "Your current best streak: {{streak}} days. Reach higher streaks to unlock new looks!",
       pots_title: "Pot Designs",
       species_title: "Plant Species",
       active: "Active",
       unlocked: "Unlocked",
+      select: "Select",
       locked_by: "Locked: {{val}}",
       streak_days: "{{count}} day streak",
       rename_title: "Rename your plant",
@@ -330,7 +342,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Cactus 🌵",
       rose: "Rose 🌹",
       bonsai: "Bonsai 🌳",
-      rare: "Rare Plant 🌴✨"
+      rare: "Rare Plant 🌴"
     },
     garden: {
       title: "My Garden 🌳",
@@ -365,6 +377,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Du musst mindestens 50 % der heutigen Gewohnheiten abschließen, um mir Sonne zu geben! ☀️",
       fertilize_disabled: "Du musst alle heutigen Gewohnheiten abschließen, um mich zu düngen! ⚡",
       sun_already: "Ich hatte heute schon genug Sonne! ☀️",
+      water_already: "Ich wurde heute bereits genug gegossen! 💧",
       fertilize_already: "Ich wurde heute bereits gedüngt! 🌿",
       level_up: "Hurra! Ich bin gewachsen und habe Level {{level}} erreicht! 🌱✨",
       all_done: "Du hast heute alle Gewohnheiten abgeschlossen! Du bist fantastisch! 🌟",
@@ -388,12 +401,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Seltene Pflanze 🌳✨"
     },
     customizer: {
+      customize_btn: "Anpassen",
       header: "{{name}} anpassen 🎨",
       streak_info: "Deine beste Serie: {{streak}} Tage. Erhöhe deine Serie für neue Designs!",
       pots_title: "Topf-Designs",
       species_title: "Pflanzenarten",
       active: "Aktiv",
       unlocked: "Freigeschaltet",
+      select: "Wählen",
       locked_by: "Gesperrt: {{val}}",
       streak_days: "{{count}} Tage Serie",
       rename_title: "Pflanze umbenennen",
@@ -414,7 +429,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Kaktus 🌵",
       rose: "Rose 🌹",
       bonsai: "Bonsai 🌳",
-      rare: "Seltene Pflanze 🌴✨"
+      rare: "Seltene Pflanze 🌴"
     },
     garden: {
       title: "Mein Garten 🌳",
@@ -449,6 +464,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "¡Debes completar al menos el 50% de los hábitos de hoy para darme sol! ☀️",
       fertilize_disabled: "¡Debes completar todos los hábitos de hoy para fertilizarme! ⚡",
       sun_already: "¡Ya he tomado suficiente sol hoy! ☀️",
+      water_already: "¡Ya he sido regado lo suficiente hoy! 💧",
       fertilize_already: "¡Ya he sido fertilizado hoy! 🌿",
       level_up: "¡Hurra! ¡Crecí y alcancé el Nivel {{level}}! 🌱✨",
       all_done: "¡Completaste todos tus hábitos hoy! ¡Eres increíble! 🌟",
@@ -472,12 +488,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Planta Rara 🌳✨"
     },
     customizer: {
+      customize_btn: "Personalizar",
       header: "Personalizar {{name}} 🎨",
       streak_info: "Tu mejor racha: {{streak}} días. ¡Aumenta tu racha para desbloquear nuevos aspectos!",
       pots_title: "Diseños de macetas",
       species_title: "Especies de plantas",
       active: "Activo",
       unlocked: "Desbloqueado",
+      select: "Seleccionar",
       locked_by: "Bloqueado: {{val}}",
       streak_days: "racha de {{count}} días",
       rename_title: "Renombrar planta",
@@ -498,7 +516,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Cactus 🌵",
       rose: "Rosa 🌹",
       bonsai: "Bonsái 🌳",
-      rare: "Planta Rara 🌴✨"
+      rare: "Planta Rara 🌴"
     },
     garden: {
       title: "Mi Jardín 🌳",
@@ -533,6 +551,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Vous devez compléter au moins 50% des habitudes d'aujourd'hui pour me donner du soleil! ☀️",
       fertilize_disabled: "Vous devez compléter toutes les habitudes d'aujourd'hui pour me fertiliser! ⚡",
       sun_already: "J'ai eu assez de soleil aujourd'hui! ☀️",
+      water_already: "J'ai déjà été assez arrosé aujourd'hui ! 💧",
       fertilize_already: "J'ai déjà été fertilisé aujourd'hui! 🌿",
       level_up: "Hourra! J'ai grandi et atteint le Niveau {{level}}! 🌱✨",
       all_done: "Tu as complété toutes tes habitudes aujourd'hui! Tu es génial! 🌟",
@@ -556,12 +575,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Plante Rare 🌳✨"
     },
     customizer: {
+      customize_btn: "Personnaliser",
       header: "Personnaliser {{name}} 🎨",
       streak_info: "Votre meilleure série: {{streak}} jours. Augmentez-la pour débloquer de nouveaux styles!",
       pots_title: "Modèles de pots",
       species_title: "Espèces de plantes",
       active: "Actif",
       unlocked: "Déverrouillé",
+      select: "Sélectionner",
       locked_by: "Verrouillé: {{val}}",
       streak_days: "série de {{count}} jours",
       rename_title: "Renommer la plante",
@@ -582,7 +603,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Cactus 🌵",
       rose: "Rose 🌹",
       bonsai: "Bonsaï 🌳",
-      rare: "Plante Rare 🌴✨"
+      rare: "Plante Rare 🌴"
     },
     garden: {
       title: "Mon Jardin 🌳",
@@ -617,6 +638,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "Devi completare almeno il 50% delle abitudini di oggi per darmi il sole! ☀️",
       fertilize_disabled: "Devi completare tutte le abitudini di oggi per concimarmi! ⚡",
       sun_already: "Ho già preso abbastanza sole oggi! ☀️",
+      water_already: "Sono già stato annaffiato abbastanza oggi! 💧",
       fertilize_already: "Sono già stato concimato oggi! 🌿",
       level_up: "Evviva! Sono cresciuto e ho raggiunto il Livello {{level}}! 🌱✨",
       all_done: "Hai completato tutte le tue abitudini oggi! Sei fantastico! 🌟",
@@ -640,12 +662,14 @@ const LOCAL_TRANSLATIONS = {
       5: "Pianta Rara 🌳✨"
     },
     customizer: {
+      customize_btn: "Personalizza",
       header: "Personalizza {{name}} 🎨",
       streak_info: "La tua serie migliore: {{streak}} giorni. Continua per sbloccare nuovi stili!",
       pots_title: "Design dei vasi",
       species_title: "Specie di piante",
       active: "Attivo",
       unlocked: "Sbloccato",
+      select: "Seleziona",
       locked_by: "Bloccato: {{val}}",
       streak_days: "serie di {{count}} giorni",
       rename_title: "Rinomina la pianta",
@@ -666,7 +690,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "Cactus 🌵",
       rose: "Rosa 🌹",
       bonsai: "Bonsai 🌳",
-      rare: "Piante Rare 🌴✨"
+      rare: "Piante Rare 🌴"
     },
     garden: {
       title: "Il Mio Giardino 🌳",
@@ -701,6 +725,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "你需要完成今天至少 50% 的习惯才能让我晒太阳！ ☀️",
       fertilize_disabled: "你需要完成今天所有的习惯才能为我施肥！ ⚡",
       sun_already: "今天晒的太阳已经够多了！ ☀️",
+      water_already: "今天我已经被浇过足够的水了！ 💧",
       fertilize_already: "今天已经施过肥了！ 🌿",
       level_up: "太好了！我长大并达到了等级 {{level}}！ 🌱✨",
       all_done: "你今天完成了所有的习惯！太棒了！ 🌟",
@@ -724,12 +749,14 @@ const LOCAL_TRANSLATIONS = {
       5: "稀有植物 🌳✨"
     },
     customizer: {
+      customize_btn: "个性化",
       header: "自定义 {{name}} 🎨",
       streak_info: "你当前最高连续天数: {{streak}} 天。连续天数越高，解锁的外观越多！",
       pots_title: "花盆设计",
       species_title: "植物种类",
       active: "已启用",
       unlocked: "已解锁",
+      select: "选择",
       locked_by: "未解锁: {{val}}",
       streak_days: "连续 {{count}} 天",
       rename_title: "重命名植物",
@@ -750,7 +777,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "仙人掌 🌵",
       rose: "玫瑰 🌹",
       bonsai: "盆景树 🌳",
-      rare: "珍稀植物 🌴✨"
+      rare: "珍稀植物 🌴"
     },
     garden: {
       title: "我的花园 🌳",
@@ -785,6 +812,7 @@ const LOCAL_TRANSLATIONS = {
       sun_disabled: "تحتاج إلى إكمال 50% على الأقل من عادات اليوم لتعطيني شمسًا! ☀️",
       fertilize_disabled: "تحتاج إلى إكمال جميع عادات اليوم لتسميدي! ⚡",
       sun_already: "لقد حصلت على ما يكفي من الشمس اليوم! ☀️",
+      water_already: "لقد تم ريي بما فيه الكفاية اليوم! 💧",
       fertilize_already: "لقد تم تسميدي اليوم بالفعل! 🌿",
       level_up: "مرحى! لقد كبرت ووصلت للمستوى {{level}}! 🌱✨",
       all_done: "لقد أكملت جميع عاداتك اليوم! أنت رائع! 🌟",
@@ -808,12 +836,14 @@ const LOCAL_TRANSLATIONS = {
       5: "نبتة نادرة 🌳✨"
     },
     customizer: {
+      customize_btn: "تخصيص",
       header: "تخصيص {{name}} 🎨",
       streak_info: "أفضل سلسلة متتالية حالية: {{streak}} أيام. حقق سلاسل أطول لفتح أشكال جديدة!",
       pots_title: "تصاميم الأحواض",
       species_title: "أنواع النباتات",
       active: "نشط",
       unlocked: "تم إلغاء القفل",
+      select: "اختر",
       locked_by: "مغلق: {{val}}",
       streak_days: "سلسلة {{count}} أيام",
       rename_title: "إعادة تسمية النبات",
@@ -834,7 +864,7 @@ const LOCAL_TRANSLATIONS = {
       cactus: "صبار 🌵",
       rose: "وردة 🌹",
       bonsai: "بونساي 🌳",
-      rare: "نبتة نادرة 🌴✨"
+      rare: "نبتة نادرة 🌴"
     },
     garden: {
       title: "حديقتي 🌳",
@@ -1383,32 +1413,32 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   // Selected Plant Emojis Mapping
   const plantEmoji = useMemo(() => {
     if (selectedPlant === "cactus") {
-      if (plantLevel === 1) return "🌵";
-      if (plantLevel === 2) return "🌵";
-      if (plantLevel === 3) return "🏜️";
-      if (plantLevel === 4) return "🌵✨";
-      return "🌵👑";
+      if (plantLevel === 1) return "🌱"; // Seedling Sprout
+      if (plantLevel === 2) return "🪴"; // Baby plant in pot
+      if (plantLevel === 3) return "🌵"; // Cactus
+      if (plantLevel === 4) return "🌵"; // Big Cactus
+      return "🌵"; // Giant Cactus
     }
     if (selectedPlant === "rose") {
-      if (plantLevel === 1) return "🌱";
-      if (plantLevel === 2) return "🌿";
-      if (plantLevel === 3) return "🌹";
-      if (plantLevel === 4) return "💐";
-      return "🌺✨";
+      if (plantLevel === 1) return "🌱"; // Seedling Sprout
+      if (plantLevel === 2) return "🥀"; // Single stem rose bud
+      if (plantLevel === 3) return "🌹"; // Bloomed rose
+      if (plantLevel === 4) return "🌺"; // Giant bloom flower
+      return "💐"; // Rose bouquet
     }
     if (selectedPlant === "bonsai") {
-      if (plantLevel === 1) return "🌱";
-      if (plantLevel === 2) return "🪴";
-      if (plantLevel === 3) return "🌳";
-      if (plantLevel === 4) return "🌲";
-      return "🌳✨";
+      if (plantLevel === 1) return "🌱"; // Seedling Sprout
+      if (plantLevel === 2) return "🪴"; // Baby potted tree
+      if (plantLevel === 3) return "🌲"; // Pine bonsai
+      if (plantLevel === 4) return "🌳"; // Maple bonsai
+      return "🌸"; // Cherry blossom bonsai
     }
     if (selectedPlant === "rare") {
-      if (plantLevel === 1) return "🌱";
-      if (plantLevel === 2) return "🌿";
-      if (plantLevel === 3) return "🌴";
-      if (plantLevel === 4) return "🌴✨";
-      return "🌴👑";
+      if (plantLevel === 1) return "🌱"; // Balaca 2 yarpaq (Sprout)
+      if (plantLevel === 2) return "🌿"; // 4 yarpaq (Small leaves)
+      if (plantLevel === 3) return "🪴"; // Ilk dəlikli yarpaq (Potted plant)
+      if (plantLevel === 4) return "🍀"; // Böyük yarpaqlar (Big leaves)
+      return "🌴"; // Nəhəng otaq bitkisi (Giant room plant)
     }
     // Default: Fern
     if (plantLevel === 1) return "🌱";
@@ -1661,7 +1691,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
   const handleWater = () => {
     if (waterChargesLeft <= 0) {
-      setSpeechText(tLocal("virtual_plant.dialogues.water_disabled"));
+      if (wateredCount > 0) {
+        setSpeechText(tLocal("virtual_plant.dialogues.water_already"));
+      } else {
+        setSpeechText(tLocal("virtual_plant.dialogues.water_disabled"));
+      }
       return;
     }
     const newCount = wateredCount + 1;
@@ -1835,11 +1869,75 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const isGoldPotUnlocked = bestStreak >= 30;
   const isGoldGlowPotUnlocked = bestStreak >= 100;
 
-  const isCactusUnlocked = bestStreak >= 30;
-  const isRoseUnlocked = bestStreak >= 30;
-  const isBonsaiUnlocked = bestStreak >= 50;
-  const isRareUnlocked = bestStreak >= 100;
+  const isCactusUnlocked = true;
+  const isRoseUnlocked = true;
+  const isBonsaiUnlocked = true;
+  const isRareUnlocked = true;
 
+  // Plant options and carousel animation hooks
+  const plantOptions = useMemo(() => [
+    { id: "fern", name: tLocal("virtual_plant.species.fern"), unlock: "Default", isUnlocked: true, emoji: "🌿" },
+    { id: "cactus", name: tLocal("virtual_plant.species.cactus"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 30 }), isUnlocked: isCactusUnlocked, emoji: "🌵" },
+    { id: "rose", name: tLocal("virtual_plant.species.rose"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 30 }), isUnlocked: isRoseUnlocked, emoji: "🌹" },
+    { id: "bonsai", name: tLocal("virtual_plant.species.bonsai"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 50 }), isUnlocked: isBonsaiUnlocked, emoji: "🌸" },
+    { id: "rare", name: tLocal("virtual_plant.species.rare"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 100 }), isUnlocked: isRareUnlocked, emoji: "🪷" },
+  ], [isCactusUnlocked, isRoseUnlocked, isBonsaiUnlocked, isRareUnlocked, tLocal]);
+
+  const [carouselPlantIndex, setCarouselPlantIndex] = useState(0);
+  const selectScaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Sync index when selectedPlant changes or modal becomes visible
+  useEffect(() => {
+    if (isCustomizeModalVisible) {
+      const idx = plantOptions.findIndex(p => p.id === selectedPlant);
+      if (idx !== -1) {
+        setCarouselPlantIndex(idx);
+      }
+    }
+  }, [isCustomizeModalVisible, selectedPlant, plantOptions]);
+
+  // Spring animation to scale plant emoji based on selection state
+  useEffect(() => {
+    if (plantOptions && plantOptions[carouselPlantIndex]) {
+      const isSelected = selectedPlant === plantOptions[carouselPlantIndex].id;
+      Animated.spring(selectScaleAnim, {
+        toValue: isSelected ? 1.25 : 0.95,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  }, [selectedPlant, carouselPlantIndex, plantOptions, selectScaleAnim]);
+  const carouselFloatAnim = useRef(new Animated.Value(0)).current;
+  const carouselRotateAnim = useRef(new Animated.Value(0)).current;
+
+  // Slow 3D floating and swaying rotation loop inside the customizer modal
+  useEffect(() => {
+    if (isCustomizeModalVisible) {
+      const floatLoop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(carouselFloatAnim, { toValue: -8, duration: 2200, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(carouselFloatAnim, { toValue: 0, duration: 2200, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])
+      );
+
+      const swayLoop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(carouselRotateAnim, { toValue: 1, duration: 1500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(carouselRotateAnim, { toValue: -1, duration: 3000, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(carouselRotateAnim, { toValue: 0, duration: 1500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])
+      );
+
+      floatLoop.start();
+      swayLoop.start();
+
+      return () => {
+        floatLoop.stop();
+        swayLoop.stop();
+      };
+    }
+  }, [isCustomizeModalVisible, carouselFloatAnim, carouselRotateAnim]);
   // Theme gradient colors
   const gradientColors = useMemo(() => {
     if (healthState === "blooming") {
@@ -2089,10 +2187,13 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             {/* Customize Palette Trigger */}
             <TouchableOpacity
               onPress={() => setCustomizeModalVisible(true)}
-              className="w-7 h-7 rounded-full items-center justify-center bg-black/5 dark:bg-white/10"
+              className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 border border-violet-500/25"
               activeOpacity={0.7}
             >
-              <FontAwesomeIcon icon={faPalette} size={12} color={colors.textSecondary} />
+              <FontAwesomeIcon icon={faPalette} size={10} color={isDark ? "#c084fc" : "#7c3aed"} />
+              <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#c084fc" : "#7c3aed" }}>
+                {tLocal("virtual_plant.customizer.customize_btn")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -2159,7 +2260,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             <Animated.Text
               allowFontScaling={false}
               style={{
-                fontSize: 56,
+                fontSize: 58,
+                textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                textShadowOffset: { width: 2, height: 4 },
+                textShadowRadius: 6,
                 transform: [
                   { translateY: floatAnim },
                   { scale: bounceAnim },
@@ -2353,12 +2457,23 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
         onRequestClose={() => setCustomizeModalVisible(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          style={[styles.modalOverlay, { justifyContent: "center" }]}
           activeOpacity={1}
           onPress={() => setCustomizeModalVisible(false)}
         >
           <Pressable
-            style={[styles.modalContent, { backgroundColor: colors.card }]}
+            style={[
+              styles.modalContent,
+              { 
+                backgroundColor: colors.card,
+                marginHorizontal: 32,
+                borderRadius: 24,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.15,
+                shadowRadius: 20,
+              }
+            ]}
             onPress={() => { }}
           >
             {/* Header */}
@@ -2372,100 +2487,138 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-              {/* Streak Info */}
-              <View className="p-3 rounded-2xl mb-5 flex-row items-center gap-2" style={{ backgroundColor: colors.cardSecondary }}>
-                <Text className="text-lg">🔥</Text>
-                <Text className="text-xs font-redditsans-medium leading-4 flex-1" style={{ color: colors.textSecondary }}>
-                  {tLocal("virtual_plant.customizer.streak_info", { streak: bestStreak })}
-                </Text>
-              </View>
+              <View className="flex-row items-center justify-between my-2">
+                {/* Left/Prev Arrow Button */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setCarouselPlantIndex(prev => (prev === 0 ? plantOptions.length - 1 : prev - 1));
+                  }}
+                  activeOpacity={0.7}
+                  className="p-3.5 rounded-2xl justify-center items-center active:scale-95"
+                  style={{ backgroundColor: colors.cardSecondary, borderWidth: 1, borderColor: colors.border }}
+                >
+                  <FontAwesomeIcon icon={faChevronLeft} color={colors.text} size={18} />
+                </TouchableOpacity>
 
-              {/* Category 1: Pot Designs */}
-              <Text className="text-[13px] font-redditsans-bold uppercase tracking-wider mb-3" style={{ color: colors.textSecondary }}>
-                {tLocal("virtual_plant.customizer.pots_title")}
-              </Text>
-              <View className="gap-2.5 mb-6">
-                {[
-                  { id: "classic", name: tLocal("virtual_plant.pots.classic"), unlock: "Default", isUnlocked: true },
-                  { id: "bronze", name: tLocal("virtual_plant.pots.bronze"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 7 }), isUnlocked: isBronzePotUnlocked },
-                  { id: "silver", name: tLocal("virtual_plant.pots.silver"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 15 }), isUnlocked: isSilverPotUnlocked },
-                  { id: "gold", name: tLocal("virtual_plant.pots.gold"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 30 }), isUnlocked: isGoldPotUnlocked },
-                  { id: "gold_glow", name: tLocal("virtual_plant.pots.gold_glow"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 100 }), isUnlocked: isGoldGlowPotUnlocked },
-                ].map((pot) => (
-                  <Pressable
-                    key={pot.id}
-                    onPress={() => {
-                      if (!pot.isUnlocked) return;
-                      storage.set(getStorageKey("selectedPot"), pot.id);
-                      setSelectedPot(pot.id);
+                {/* Plant Selection Card */}
+                <Pressable
+                  onPress={() => {
+                    const currentPlant = plantOptions[carouselPlantIndex];
+                    if (!currentPlant.isUnlocked) return;
+                    storage.set(getStorageKey("selectedPlant"), currentPlant.id);
+                    setSelectedPlant(currentPlant.id);
+                    setCustomizeModalVisible(false);
+                  }}
+                  android_ripple={plantOptions[carouselPlantIndex].isUnlocked ? { color: colors.border } : null}
+                  style={{
+                    flex: 1,
+                    marginHorizontal: 12,
+                    borderWidth: 1.5,
+                    borderColor: selectedPlant === plantOptions[carouselPlantIndex].id ? colors.primary : colors.border,
+                    backgroundColor: selectedPlant === plantOptions[carouselPlantIndex].id ? colors.primary + "12" : colors.background,
+                    opacity: plantOptions[carouselPlantIndex].isUnlocked ? 1 : 0.65,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingVertical: 24,
+                    borderRadius: 24,
+                  }}
+                >
+                  {/* 3D Plant Display Area */}
+                  <View className="items-center justify-center h-28 w-full relative mb-1">
+                    {/* 3D Pedestal Platform */}
+                    <View 
+                      style={{
+                        position: 'absolute',
+                        bottom: 4,
+                        width: 80,
+                        height: 14,
+                        borderRadius: 20,
+                        backgroundColor: selectedPlant === plantOptions[carouselPlantIndex].id ? colors.primary + "20" : colors.border + "60",
+                        borderWidth: 1,
+                        borderColor: selectedPlant === plantOptions[carouselPlantIndex].id ? colors.primary + "40" : colors.border,
+                        transform: [{ scaleX: 1.5 }],
+                        opacity: 0.8,
+                        shadowColor: selectedPlant === plantOptions[carouselPlantIndex].id ? colors.primary : '#000',
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      }}
+                    />
+                    
+                    {/* Plant Emoji Container */}
+                    <Animated.View 
+                      style={{ 
+                        transform: [
+                          { scale: selectScaleAnim },
+                          { translateY: carouselFloatAnim },
+                          { rotateY: carouselRotateAnim.interpolate({ inputRange: [-1, 1], outputRange: ["-14deg", "14deg"] }) },
+                          { rotateZ: carouselRotateAnim.interpolate({ inputRange: [-1, 1], outputRange: ["-4deg", "4deg"] }) }
+                        ], 
+                        marginBottom: 12 
+                      }}
+                    >
+                      <Text 
+                        allowFontScaling={false} 
+                        style={{ 
+                          fontSize: 72, 
+                          textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                          textShadowOffset: { width: 2, height: 5 },
+                          textShadowRadius: 6,
+                        }}
+                      >
+                        {plantOptions[carouselPlantIndex].emoji}
+                      </Text>
+                    </Animated.View>
+                  </View>
+                  
+                  {/* Plant Name */}
+                  <Text className="font-redditsans-bold text-base mt-2" style={{ color: colors.text }}>
+                    {plantOptions[carouselPlantIndex].name}
+                  </Text>
+                  
+                  {/* Plant Status / Active badge */}
+                  <View 
+                    className="mt-2.5 px-3 py-1 rounded-full flex-row items-center gap-1.5"
+                    style={{ 
+                      backgroundColor: selectedPlant === plantOptions[carouselPlantIndex].id 
+                        ? colors.primary + "20" 
+                        : (plantOptions[carouselPlantIndex].isUnlocked ? colors.border + "40" : "rgba(239, 68, 68, 0.1)") 
                     }}
-                    android_ripple={pot.isUnlocked ? { color: colors.border } : null}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: selectedPot === pot.id ? colors.primary : colors.border,
-                      backgroundColor: selectedPot === pot.id ? colors.primary + "12" : colors.background,
-                      opacity: pot.isUnlocked ? 1 : 0.65,
-                    }}
-                    className="flex-row justify-between items-center p-3.5 rounded-2xl"
                   >
-                    <View>
-                      <Text className="font-redditsans-bold text-sm" style={{ color: colors.text }}>
-                        {pot.name}
-                      </Text>
-                      <Text className="text-[10px] font-redditsans-medium mt-0.5" style={{ color: colors.textMuted }}>
-                        {pot.isUnlocked
-                          ? (selectedPot === pot.id ? tLocal("virtual_plant.customizer.active") : tLocal("virtual_plant.customizer.unlocked"))
-                          : tLocal("virtual_plant.customizer.locked_by", { val: pot.unlock })}
-                      </Text>
-                    </View>
-                    {!pot.isUnlocked && <Text className="text-xs">🔒</Text>}
-                  </Pressable>
-                ))}
+                    {!plantOptions[carouselPlantIndex].isUnlocked && (
+                      <Text style={{ fontSize: 10 }}>🔒</Text>
+                    )}
+                    <Text 
+                      className="text-[10px] font-redditsans-bold uppercase tracking-wider" 
+                      style={{ 
+                        color: selectedPlant === plantOptions[carouselPlantIndex].id 
+                          ? colors.primary 
+                          : (plantOptions[carouselPlantIndex].isUnlocked ? colors.textSecondary : "#ef4444") 
+                      }}
+                    >
+                      {plantOptions[carouselPlantIndex].isUnlocked
+                        ? (selectedPlant === plantOptions[carouselPlantIndex].id 
+                            ? tLocal("virtual_plant.customizer.active") 
+                            : tLocal("virtual_plant.customizer.select"))
+                        : tLocal("virtual_plant.customizer.locked_by", { val: plantOptions[carouselPlantIndex].unlock })}
+                    </Text>
+                  </View>
+                </Pressable>
+
+                {/* Right/Next Arrow Button */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setCarouselPlantIndex(prev => (prev === plantOptions.length - 1 ? 0 : prev + 1));
+                  }}
+                  activeOpacity={0.7}
+                  className="p-3.5 rounded-2xl justify-center items-center active:scale-95"
+                  style={{ backgroundColor: colors.cardSecondary, borderWidth: 1, borderColor: colors.border }}
+                >
+                  <FontAwesomeIcon icon={faChevronRight} color={colors.text} size={18} />
+                </TouchableOpacity>
               </View>
 
-              {/* Category 2: Plant Types */}
-              <Text className="text-[13px] font-redditsans-bold uppercase tracking-wider mb-3" style={{ color: colors.textSecondary }}>
-                {tLocal("virtual_plant.customizer.species_title")}
-              </Text>
-              <View className="gap-2.5">
-                {[
-                  { id: "fern", name: tLocal("virtual_plant.species.fern"), unlock: "Default", isUnlocked: true },
-                  { id: "cactus", name: tLocal("virtual_plant.species.cactus"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 30 }), isUnlocked: isCactusUnlocked },
-                  { id: "rose", name: tLocal("virtual_plant.species.rose"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 30 }), isUnlocked: isRoseUnlocked },
-                  { id: "bonsai", name: tLocal("virtual_plant.species.bonsai"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 50 }), isUnlocked: isBonsaiUnlocked },
-                  { id: "rare", name: tLocal("virtual_plant.species.rare"), unlock: tLocal("virtual_plant.customizer.streak_days", { count: 100 }), isUnlocked: isRareUnlocked },
-                ].map((plant) => (
-
-                  <Pressable
-                    key={plant.id}
-                    onPress={() => {
-                      if (!plant.isUnlocked) return;
-                      storage.set(getStorageKey("selectedPlant"), plant.id);
-                      setSelectedPlant(plant.id);
-                    }}
-                    android_ripple={plant.isUnlocked ? { color: colors.border } : null}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: selectedPlant === plant.id ? colors.primary : colors.border,
-                      backgroundColor: selectedPlant === plant.id ? colors.primary + "12" : colors.background,
-                      opacity: plant.isUnlocked ? 1 : 0.65,
-                    }}
-                    className="flex-row justify-between items-center p-3.5 rounded-2xl"
-                  >
-                    <View>
-                      <Text className="font-redditsans-bold text-sm" style={{ color: colors.text }}>
-                        {plant.name}
-                      </Text>
-                      <Text className="text-[10px] font-redditsans-medium mt-0.5" style={{ color: colors.textMuted }}>
-                        {plant.isUnlocked
-                          ? (selectedPlant === plant.id ? tLocal("virtual_plant.customizer.active") : tLocal("virtual_plant.customizer.unlocked"))
-                          : tLocal("virtual_plant.customizer.locked_by", { val: plant.unlock })}
-                      </Text>
-                    </View>
-                    {!plant.isUnlocked && <Text className="text-xs">🔒</Text>}
-                  </Pressable>
-                ))}
-              </View>
             </ScrollView>
           </Pressable>
         </TouchableOpacity>

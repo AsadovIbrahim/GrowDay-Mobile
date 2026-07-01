@@ -32,6 +32,14 @@ export const clearUserSession = () => {
     storage.delete('user.checklist.played_game_xp_awarded_server');
     storage.delete('user.checklist.complete_habit_xp_awarded');
     storage.delete('user.checklist.complete_habit_xp_awarded_server');
+    
+    // Clear home screen caches
+    storage.delete('home.cached.accountData');
+    storage.delete('home.cached.todaysUserHabit');
+    storage.delete('home.cached.userHabitCount');
+    storage.delete('home.cached.dailyStatistics');
+    storage.delete('home.cached.unreadNotificationCount');
+    storage.delete('home.cached.date');
 
     // Clear all virtual plant (growy) keys dynamically
     const keys = storage.getAllKeys();
