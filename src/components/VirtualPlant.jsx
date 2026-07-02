@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, ScrollView, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, ScrollView, TextInput, Pressable, Alert, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -1776,7 +1776,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             };
 
             const updatedGarden = [...garden, newPlantedItem];
-            
+
             // Update garden state and storage
             storage.set(getStorageKey("garden"), JSON.stringify(updatedGarden));
             setGarden(updatedGarden);
@@ -1841,7 +1841,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   // Garden map animations (butterflies, swaying flowers, clouds, active node pulsing glow)
   useEffect(() => {
     const loop = (anim, dur) => Animated.loop(Animated.timing(anim, { toValue: 1, duration: dur, easing: Easing.linear, useNativeDriver: true }));
-    
+
     const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
@@ -2028,7 +2028,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     const list = [];
     const count = totalNodes * 28; // Rich density for thick forest canopy
     const forestEmojis = ["🌲", "🌳", "🌲", "🌳", "🌲", "🌳"];
-    
+
     // Helper to calculate smooth road path X coordinate at a given Y coordinate
     const getPathX = (yVal) => {
       if (!nodes || nodes.length === 0) return MAP_WIDTH / 2;
@@ -2051,18 +2051,18 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       // Deterministic pseudo-random placements using sine hash
       const rawX = Math.sin(i * 17.11 + 3.1) * 43758.5453;
       const initialX = Math.floor((rawX - Math.floor(rawX)) * (MAP_WIDTH - 20));
-      
+
       const rawY = Math.sin(i * 87.43 + 7.5) * 43758.5453;
       const y = Math.floor((rawY - Math.floor(rawY)) * (mapHeight - 40));
-      
+
       const emoji = forestEmojis[i % forestEmojis.length];
       const size = 20 + (i % 6) * 5; // Sizes: 20, 25, 30, 35, 40, 45
-      
+
       // Make sure trees stay clear of the road path center
       let x = initialX;
       const pathX = getPathX(y);
       const minDistance = 45; // clearance from road center
-      
+
       if (Math.abs(x - pathX) < minDistance) {
         // Push tree away from the road center
         if (x < pathX) {
@@ -2071,11 +2071,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           x = pathX + minDistance + ((i * 3) % 20) + 10;
         }
       }
-      
+
       // Allow trees to slightly overlap the edge of the map layout for a full-bleed look
       if (x < -20) x = -20;
       if (x > MAP_WIDTH - 15) x = MAP_WIDTH - 15;
-      
+
       list.push({
         id: `forest-${i}`,
         emoji,
@@ -2152,303 +2152,303 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           end={{ x: 1, y: 1 }}
         >
           <View style={{ padding: 16 }}>
-        {/* Title, Badge and Customize Icon */}
-        <View className="flex-row justify-between items-center mb-2">
-          <View className="flex-1 mr-2 flex-row items-center gap-1.5">
-            <FontAwesomeIcon icon={faLeaf} size={15} color={healthState === "blooming" ? "#f59e0b" : "#10b981"} />
-            <TouchableOpacity
-              onPress={() => {
-                setRenameInput(plantName);
-                setRenameModalVisible(true);
-              }}
-              activeOpacity={0.7}
-              className="flex-row items-center gap-1 flex-1"
-            >
-              <Text numberOfLines={1} className="font-redditsans-bold text-[15px] flex-shrink" style={{ color: colors.text }}>
-                {plantName}
-              </Text>
-              <FontAwesomeIcon icon={faPen} size={9} color={colors.textMuted} />
-            </TouchableOpacity>
-          </View>
-
-          <View className="flex-row items-center gap-2">
-            {/* Garden Trigger */}
-            <TouchableOpacity
-              onPress={() => setGardenModalVisible(true)}
-              className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/25"
-              activeOpacity={0.7}
-            >
-              <FontAwesomeIcon icon={faTree} size={11} color={isDark ? "#34d399" : "#059669"} />
-              <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#34d399" : "#059669" }}>
-                {tLocal("virtual_plant.garden.title")}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Customize Palette Trigger */}
-            <TouchableOpacity
-              onPress={() => setCustomizeModalVisible(true)}
-              className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 border border-violet-500/25"
-              activeOpacity={0.7}
-            >
-              <FontAwesomeIcon icon={faPalette} size={10} color={isDark ? "#c084fc" : "#7c3aed"} />
-              <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#c084fc" : "#7c3aed" }}>
-                {tLocal("virtual_plant.customizer.customize_btn")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Main Plant & Speech Bubble Container */}
-        <View className="flex-row items-center justify-between min-h-[120px] py-1">
-          <TouchableOpacity activeOpacity={0.9} onPress={handlePet} className="w-[100px] h-[100px] items-center justify-end relative">
-            {/* Sun Glow Behind Plant */}
-            <Animated.View
-              style={{
-                position: "absolute",
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                backgroundColor: "rgba(253, 224, 71, 0.4)",
-                transform: [{ scale: sunScaleAnim }],
-                opacity: sunOpacityAnim,
-                bottom: 15,
-                zIndex: -1,
-              }}
-            />
-
-            {/* Glowing stars for blooming/gold pots */}
-            {(healthState === "blooming" || selectedPot === "gold_glow") && (
-              <View className="absolute top-1 left-2 flex-row gap-8">
-                <FontAwesomeIcon icon={faStar} size={10} color="#f59e0b" style={{ opacity: 0.6 }} />
-                <FontAwesomeIcon icon={faStar} size={14} color="#f59e0b" style={{ opacity: 0.8 }} />
-              </View>
-            )}
-
-            {/* Falling Water Drops */}
-            {dropAnims.map((drop, idx) => (
-              <Animated.View
-                key={`drop-${idx}`}
-                style={{
-                  position: "absolute",
-                  top: "20%",
-                  transform: [{ translateY: drop.y }, { scale: drop.scale }],
-                  opacity: drop.opacity,
-                  zIndex: 2,
-                }}
-              >
-                <FontAwesomeIcon icon={faTint} color="#0ea5e9" size={14} />
-              </Animated.View>
-            ))}
-
-            {/* Falling Fertilize Sparkles */}
-            {sparkleAnims.map((sparkle, idx) => (
-              <Animated.View
-                key={`sparkle-${idx}`}
-                style={{
-                  position: "absolute",
-                  top: "20%",
-                  transform: [{ translateY: sparkle.y }, { translateX: sparkle.x }, { scale: sparkle.scale }],
-                  opacity: sparkle.opacity,
-                  zIndex: 2,
-                }}
-              >
-                <FontAwesomeIcon icon={faStar} color="#22c55e" size={12} />
-              </Animated.View>
-            ))}
-
-            {/* Floating and Bouncing Plant Emoji */}
-            <Animated.Text
-              allowFontScaling={false}
-              style={{
-                fontSize: 58,
-                textShadowColor: 'rgba(0, 0, 0, 0.15)',
-                textShadowOffset: { width: 2, height: 4 },
-                textShadowRadius: 6,
-                transform: [
-                  { translateY: floatAnim },
-                  { scale: bounceAnim },
-                  { rotate: petRotation }
-                ],
-              }}
-            >
-              {plantEmoji}
-            </Animated.Text>
-
-            {/* Configured Pot Graphic */}
-            <View
-              className="w-14 h-5 rounded-b-lg border-t items-center justify-center mt-0.5 shadow-sm"
-              style={{
-                backgroundColor: potStyle.bg,
-                borderColor: potStyle.border,
-                shadowColor: selectedPot === "gold_glow" ? "#fbbf24" : "transparent",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.5,
-                shadowRadius: 4,
-              }}
-            />
-          </TouchableOpacity>
-
-          {/* Speech Dialogue Bubble */}
-          <Animated.View style={{ opacity: bubbleOpacity }} className="flex-1 ml-4 justify-center">
-            <TouchableOpacity activeOpacity={0.9} onPress={cycleDialogue} className="p-3 rounded-2xl relative shadow-sm border" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
-              <View
-                style={[
-                  styles.bubbleTriangle,
-                  {
-                    backgroundColor: colors.card,
-                    borderColor: colors.border,
-                    borderBottomWidth: 1,
-                    borderLeftWidth: 1,
-                  },
-                ]}
-              />
-              <Text className="font-redditsans-medium text-[12px] leading-4" style={{ color: colors.text }}>
-                {speechText}
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-
-        {/* Dashboard Progress Details */}
-        <View className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
-          {/* Today's Watering Progress Bar */}
-          <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-[11px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
-              💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{maxHabitsToday})
-            </Text>
-
-
-            <Text className="text-[10px] font-redditsans-medium italic" style={{ color: colors.textMuted }}>
-              {maxCompletedHabitsToday > 0
-                ? tLocal("virtual_plant.status.watered_today", { completed: Math.min(wateredCount, maxCompletedHabitsToday), total: maxCompletedHabitsToday })
-                : tLocal("virtual_plant.status.thirsty_today")
-              }
-            </Text>
-          </View>
-
-          <View className="w-full h-1.5 rounded-full overflow-hidden mb-3 bg-slate-200 dark:bg-slate-700">
-            <LinearGradient
-              colors={["#0ea5e9", "#38bdf8"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%` }}
-              className="h-full rounded-full"
-            />
-          </View>
-
-
-          {/* Plant Level Growth Bar */}
-          <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-[10px] font-redditsans-medium" style={{ color: colors.textSecondary }}>
-              🌱 {t("virtual_plant.stageName")} {plantLevel} ({currentLevelReq.name})
-            </Text>
-
-            {plantLevel < 5 ? (
-              <Text className="text-[10px] font-redditsans-bold" style={{ color: colors.textMuted }}>
-                {tLocal("virtual_plant.xp_remaining", { count: xpRemaining, level: plantLevel + 1 })}
-              </Text>
-            ) : (
-              <View className="flex-row items-center gap-2">
-                <Text className="text-[10px] font-redditsans-bold" style={{ color: "#fbbf24" }}>
-                  {tLocal("virtual_plant.max_level")}
-                </Text>
+            {/* Title, Badge and Customize Icon */}
+            <View className="flex-row justify-between items-center mb-2">
+              <View className="flex-1 mr-2 flex-row items-center gap-1.5">
+                <FontAwesomeIcon icon={faLeaf} size={15} color={healthState === "blooming" ? "#f59e0b" : "#10b981"} />
                 <TouchableOpacity
-                  onPress={handlePlantInGarden}
-                  style={{
-                    backgroundColor: "#10b981",
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    borderRadius: 8,
+                  onPress={() => {
+                    setRenameInput(plantName);
+                    setRenameModalVisible(true);
                   }}
                   activeOpacity={0.7}
+                  className="flex-row items-center gap-1 flex-1"
                 >
-                  <Text style={{ color: "#fff", fontSize: 9, fontFamily: "RedditSans-Bold" }}>
-                    {tLocal("virtual_plant.garden.plant_btn")}
+                  <Text numberOfLines={1} className="font-redditsans-bold text-[15px] flex-shrink" style={{ color: colors.text }}>
+                    {plantName}
+                  </Text>
+                  <FontAwesomeIcon icon={faPen} size={9} color={colors.textMuted} />
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row items-center gap-2">
+                {/* Garden Trigger */}
+                <TouchableOpacity
+                  onPress={() => setGardenModalVisible(true)}
+                  className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/25"
+                  activeOpacity={0.7}
+                >
+                  <FontAwesomeIcon icon={faTree} size={11} color={isDark ? "#34d399" : "#059669"} />
+                  <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#34d399" : "#059669" }}>
+                    {tLocal("virtual_plant.garden.title")}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Customize Palette Trigger */}
+                <TouchableOpacity
+                  onPress={() => setCustomizeModalVisible(true)}
+                  className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 border border-violet-500/25"
+                  activeOpacity={0.7}
+                >
+                  <FontAwesomeIcon icon={faPalette} size={10} color={isDark ? "#c084fc" : "#7c3aed"} />
+                  <Text className="text-[10px] font-redditsans-bold" style={{ color: isDark ? "#c084fc" : "#7c3aed" }}>
+                    {tLocal("virtual_plant.customizer.customize_btn")}
                   </Text>
                 </TouchableOpacity>
               </View>
-            )}
+            </View>
+
+            {/* Main Plant & Speech Bubble Container */}
+            <View className="flex-row items-center justify-between min-h-[120px] py-1">
+              <TouchableOpacity activeOpacity={0.9} onPress={handlePet} className="w-[100px] h-[100px] items-center justify-end relative">
+                {/* Sun Glow Behind Plant */}
+                <Animated.View
+                  style={{
+                    position: "absolute",
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: "rgba(253, 224, 71, 0.4)",
+                    transform: [{ scale: sunScaleAnim }],
+                    opacity: sunOpacityAnim,
+                    bottom: 15,
+                    zIndex: -1,
+                  }}
+                />
+
+                {/* Glowing stars for blooming/gold pots */}
+                {(healthState === "blooming" || selectedPot === "gold_glow") && (
+                  <View className="absolute top-1 left-2 flex-row gap-8">
+                    <FontAwesomeIcon icon={faStar} size={10} color="#f59e0b" style={{ opacity: 0.6 }} />
+                    <FontAwesomeIcon icon={faStar} size={14} color="#f59e0b" style={{ opacity: 0.8 }} />
+                  </View>
+                )}
+
+                {/* Falling Water Drops */}
+                {dropAnims.map((drop, idx) => (
+                  <Animated.View
+                    key={`drop-${idx}`}
+                    style={{
+                      position: "absolute",
+                      top: "20%",
+                      transform: [{ translateY: drop.y }, { scale: drop.scale }],
+                      opacity: drop.opacity,
+                      zIndex: 2,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTint} color="#0ea5e9" size={14} />
+                  </Animated.View>
+                ))}
+
+                {/* Falling Fertilize Sparkles */}
+                {sparkleAnims.map((sparkle, idx) => (
+                  <Animated.View
+                    key={`sparkle-${idx}`}
+                    style={{
+                      position: "absolute",
+                      top: "20%",
+                      transform: [{ translateY: sparkle.y }, { translateX: sparkle.x }, { scale: sparkle.scale }],
+                      opacity: sparkle.opacity,
+                      zIndex: 2,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faStar} color="#22c55e" size={12} />
+                  </Animated.View>
+                ))}
+
+                {/* Floating and Bouncing Plant Emoji */}
+                <Animated.Text
+                  allowFontScaling={false}
+                  style={{
+                    fontSize: 58,
+                    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                    textShadowOffset: { width: 2, height: 4 },
+                    textShadowRadius: 6,
+                    transform: [
+                      { translateY: floatAnim },
+                      { scale: bounceAnim },
+                      { rotate: petRotation }
+                    ],
+                  }}
+                >
+                  {plantEmoji}
+                </Animated.Text>
+
+                {/* Configured Pot Graphic */}
+                <View
+                  className="w-14 h-5 rounded-b-lg border-t items-center justify-center mt-0.5 shadow-sm"
+                  style={{
+                    backgroundColor: potStyle.bg,
+                    borderColor: potStyle.border,
+                    shadowColor: selectedPot === "gold_glow" ? "#fbbf24" : "transparent",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                  }}
+                />
+              </TouchableOpacity>
+
+              {/* Speech Dialogue Bubble */}
+              <Animated.View style={{ opacity: bubbleOpacity }} className="flex-1 ml-4 justify-center">
+                <TouchableOpacity activeOpacity={0.9} onPress={cycleDialogue} className="p-3 rounded-2xl relative shadow-sm border" style={{ backgroundColor: colors.card, borderColor: colors.border }}>
+                  <View
+                    style={[
+                      styles.bubbleTriangle,
+                      {
+                        backgroundColor: colors.card,
+                        borderColor: colors.border,
+                        borderBottomWidth: 1,
+                        borderLeftWidth: 1,
+                      },
+                    ]}
+                  />
+                  <Text className="font-redditsans-medium text-[12px] leading-4" style={{ color: colors.text }}>
+                    {speechText}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+
+            {/* Dashboard Progress Details */}
+            <View className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
+              {/* Today's Watering Progress Bar */}
+              <View className="flex-row justify-between items-center mb-1">
+                <Text className="text-[11px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
+                  💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{maxHabitsToday})
+                </Text>
+
+
+                <Text className="text-[10px] font-redditsans-medium italic" style={{ color: colors.textMuted }}>
+                  {maxCompletedHabitsToday > 0
+                    ? tLocal("virtual_plant.status.watered_today", { completed: Math.min(wateredCount, maxCompletedHabitsToday), total: maxCompletedHabitsToday })
+                    : tLocal("virtual_plant.status.thirsty_today")
+                  }
+                </Text>
+              </View>
+
+              <View className="w-full h-1.5 rounded-full overflow-hidden mb-3 bg-slate-200 dark:bg-slate-700">
+                <LinearGradient
+                  colors={["#0ea5e9", "#38bdf8"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%` }}
+                  className="h-full rounded-full"
+                />
+              </View>
+
+
+              {/* Plant Level Growth Bar */}
+              <View className="flex-row justify-between items-center mb-1">
+                <Text className="text-[10px] font-redditsans-medium" style={{ color: colors.textSecondary }}>
+                  🌱 {t("virtual_plant.stageName")} {plantLevel} ({currentLevelReq.name})
+                </Text>
+
+                {plantLevel < 5 ? (
+                  <Text className="text-[10px] font-redditsans-bold" style={{ color: colors.textMuted }}>
+                    {tLocal("virtual_plant.xp_remaining", { count: xpRemaining, level: plantLevel + 1 })}
+                  </Text>
+                ) : (
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-[10px] font-redditsans-bold" style={{ color: "#fbbf24" }}>
+                      {tLocal("virtual_plant.max_level")}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={handlePlantInGarden}
+                      style={{
+                        backgroundColor: "#10b981",
+                        paddingHorizontal: 8,
+                        paddingVertical: 3,
+                        borderRadius: 8,
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={{ color: "#fff", fontSize: 9, fontFamily: "RedditSans-Bold" }}>
+                        {tLocal("virtual_plant.garden.plant_btn")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+              <View className="w-full h-1 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+                <LinearGradient
+                  colors={["#10b981", "#34d399"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ width: `${Math.max(plantXPPercentage, 2)}%` }}
+                  className="h-full rounded-full"
+                />
+              </View>
+            </View>
+
+            {/* Gamified Pet Action Button Row */}
+            <View className="flex-row justify-between items-center gap-1.5 mt-3.5 pt-3 border-t" style={{ borderColor: colors.border }}>
+              {/* Action 1: Pet */}
+              <TouchableOpacity
+                onPress={handlePet}
+                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 active:scale-95"
+                activeOpacity={0.7}
+              >
+                <FontAwesomeIcon icon={faHeart} size={11} color="#ef4444" />
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
+                  {tLocal("virtual_plant.actions.pet")}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Action 2: Water */}
+              <TouchableOpacity
+                onPress={handleWater}
+                disabled={false}
+                style={{
+                  backgroundColor: isWaterable ? "rgba(14, 165, 233, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                  opacity: isWaterable ? 1 : 0.45,
+                }}
+                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                activeOpacity={0.7}
+              >
+                <FontAwesomeIcon icon={faTint} size={11} color={isWaterable ? "#0ea5e9" : "#94a3b8"} />
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isWaterable ? (isDark ? "#38bdf8" : "#0284c7") : "#94a3b8" }}>
+                  {tLocal("virtual_plant.actions.water")}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Action 3: Sun */}
+              <TouchableOpacity
+                onPress={handleSun}
+                disabled={false}
+                style={{
+                  backgroundColor: isSunable ? "rgba(234, 179, 8, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                  opacity: isSunable ? 1 : 0.45,
+                }}
+                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                activeOpacity={0.7}
+              >
+                <FontAwesomeIcon icon={faSun} size={11} color={isSunable ? "#eab308" : "#94a3b8"} />
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isSunable ? (isDark ? "#fde047" : "#a16207") : "#94a3b8" }}>
+                  {tLocal("virtual_plant.actions.sun")}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Action 4: Fertilize */}
+              <TouchableOpacity
+                onPress={handleFertilize}
+                disabled={false}
+                style={{
+                  backgroundColor: isFertilizable ? "rgba(34, 197, 94, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                  opacity: isFertilizable ? 1 : 0.45,
+                }}
+                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                activeOpacity={0.7}
+              >
+                <FontAwesomeIcon icon={faStar} size={11} color={isFertilizable ? "#22c55e" : "#94a3b8"} />
+                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isFertilizable ? (isDark ? "#4ade80" : "#16a34a") : "#94a3b8" }}>
+                  {tLocal("virtual_plant.actions.fertilize")}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <View className="w-full h-1 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
-            <LinearGradient
-              colors={["#10b981", "#34d399"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: `${Math.max(plantXPPercentage, 2)}%` }}
-              className="h-full rounded-full"
-            />
-          </View>
-        </View>
-
-        {/* Gamified Pet Action Button Row */}
-        <View className="flex-row justify-between items-center gap-1.5 mt-3.5 pt-3 border-t" style={{ borderColor: colors.border }}>
-          {/* Action 1: Pet */}
-          <TouchableOpacity
-            onPress={handlePet}
-            className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 active:scale-95"
-            activeOpacity={0.7}
-          >
-            <FontAwesomeIcon icon={faHeart} size={11} color="#ef4444" />
-            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
-              {tLocal("virtual_plant.actions.pet")}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Action 2: Water */}
-          <TouchableOpacity
-            onPress={handleWater}
-            disabled={false}
-            style={{
-              backgroundColor: isWaterable ? "rgba(14, 165, 233, 0.12)" : "rgba(148, 163, 184, 0.05)",
-              opacity: isWaterable ? 1 : 0.45,
-            }}
-            className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-            activeOpacity={0.7}
-          >
-            <FontAwesomeIcon icon={faTint} size={11} color={isWaterable ? "#0ea5e9" : "#94a3b8"} />
-            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isWaterable ? (isDark ? "#38bdf8" : "#0284c7") : "#94a3b8" }}>
-              {tLocal("virtual_plant.actions.water")}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Action 3: Sun */}
-          <TouchableOpacity
-            onPress={handleSun}
-            disabled={false}
-            style={{
-              backgroundColor: isSunable ? "rgba(234, 179, 8, 0.12)" : "rgba(148, 163, 184, 0.05)",
-              opacity: isSunable ? 1 : 0.45,
-            }}
-            className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-            activeOpacity={0.7}
-          >
-            <FontAwesomeIcon icon={faSun} size={11} color={isSunable ? "#eab308" : "#94a3b8"} />
-            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isSunable ? (isDark ? "#fde047" : "#a16207") : "#94a3b8" }}>
-              {tLocal("virtual_plant.actions.sun")}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Action 4: Fertilize */}
-          <TouchableOpacity
-            onPress={handleFertilize}
-            disabled={false}
-            style={{
-              backgroundColor: isFertilizable ? "rgba(34, 197, 94, 0.12)" : "rgba(148, 163, 184, 0.05)",
-              opacity: isFertilizable ? 1 : 0.45,
-            }}
-            className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-            activeOpacity={0.7}
-          >
-            <FontAwesomeIcon icon={faStar} size={11} color={isFertilizable ? "#22c55e" : "#94a3b8"} />
-            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isFertilizable ? (isDark ? "#4ade80" : "#16a34a") : "#94a3b8" }}>
-              {tLocal("virtual_plant.actions.fertilize")}
-            </Text>
-          </TouchableOpacity>
-          </View>
-        </View>
-      </LinearGradient>
-    </View>
+        </LinearGradient>
+      </View>
 
       <Modal
         visible={isCustomizeModalVisible}
@@ -2464,7 +2464,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           <Pressable
             style={[
               styles.modalContent,
-              { 
+              {
                 backgroundColor: colors.card,
                 marginHorizontal: 32,
                 borderRadius: 24,
@@ -2526,7 +2526,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                   {/* 3D Plant Display Area */}
                   <View className="items-center justify-center h-28 w-full relative mb-1">
                     {/* 3D Pedestal Platform */}
-                    <View 
+                    <View
                       style={{
                         position: 'absolute',
                         bottom: 4,
@@ -2545,23 +2545,23 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         elevation: 2,
                       }}
                     />
-                    
+
                     {/* Plant Emoji Container */}
-                    <Animated.View 
-                      style={{ 
+                    <Animated.View
+                      style={{
                         transform: [
                           { scale: selectScaleAnim },
                           { translateY: carouselFloatAnim },
                           { rotateY: carouselRotateAnim.interpolate({ inputRange: [-1, 1], outputRange: ["-14deg", "14deg"] }) },
                           { rotateZ: carouselRotateAnim.interpolate({ inputRange: [-1, 1], outputRange: ["-4deg", "4deg"] }) }
-                        ], 
-                        marginBottom: 12 
+                        ],
+                        marginBottom: 12
                       }}
                     >
-                      <Text 
-                        allowFontScaling={false} 
-                        style={{ 
-                          fontSize: 72, 
+                      <Text
+                        allowFontScaling={false}
+                        style={{
+                          fontSize: 72,
                           textShadowColor: 'rgba(0, 0, 0, 0.15)',
                           textShadowOffset: { width: 2, height: 5 },
                           textShadowRadius: 6,
@@ -2571,36 +2571,36 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                       </Text>
                     </Animated.View>
                   </View>
-                  
+
                   {/* Plant Name */}
                   <Text className="font-redditsans-bold text-base mt-2" style={{ color: colors.text }}>
                     {plantOptions[carouselPlantIndex].name}
                   </Text>
-                  
+
                   {/* Plant Status / Active badge */}
-                  <View 
+                  <View
                     className="mt-2.5 px-3 py-1 rounded-full flex-row items-center gap-1.5"
-                    style={{ 
-                      backgroundColor: selectedPlant === plantOptions[carouselPlantIndex].id 
-                        ? colors.primary + "20" 
-                        : (plantOptions[carouselPlantIndex].isUnlocked ? colors.border + "40" : "rgba(239, 68, 68, 0.1)") 
+                    style={{
+                      backgroundColor: selectedPlant === plantOptions[carouselPlantIndex].id
+                        ? colors.primary + "20"
+                        : (plantOptions[carouselPlantIndex].isUnlocked ? colors.border + "40" : "rgba(239, 68, 68, 0.1)")
                     }}
                   >
                     {!plantOptions[carouselPlantIndex].isUnlocked && (
                       <Text style={{ fontSize: 10 }}>🔒</Text>
                     )}
-                    <Text 
-                      className="text-[10px] font-redditsans-bold uppercase tracking-wider" 
-                      style={{ 
-                        color: selectedPlant === plantOptions[carouselPlantIndex].id 
-                          ? colors.primary 
-                          : (plantOptions[carouselPlantIndex].isUnlocked ? colors.textSecondary : "#ef4444") 
+                    <Text
+                      className="text-[10px] font-redditsans-bold uppercase tracking-wider"
+                      style={{
+                        color: selectedPlant === plantOptions[carouselPlantIndex].id
+                          ? colors.primary
+                          : (plantOptions[carouselPlantIndex].isUnlocked ? colors.textSecondary : "#ef4444")
                       }}
                     >
                       {plantOptions[carouselPlantIndex].isUnlocked
-                        ? (selectedPlant === plantOptions[carouselPlantIndex].id 
-                            ? tLocal("virtual_plant.customizer.active") 
-                            : tLocal("virtual_plant.customizer.select"))
+                        ? (selectedPlant === plantOptions[carouselPlantIndex].id
+                          ? tLocal("virtual_plant.customizer.active")
+                          : tLocal("virtual_plant.customizer.select"))
                         : tLocal("virtual_plant.customizer.locked_by", { val: plantOptions[carouselPlantIndex].unlock })}
                     </Text>
                   </View>
@@ -2641,10 +2641,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           />
 
           {/* Scrollable Meadow Winding Map (full screen) */}
-          <ScrollView 
+          <ScrollView
             ref={gardenScrollRef}
-            showsVerticalScrollIndicator={false} 
-            contentContainerStyle={{ alignItems: 'center', paddingTop: insets.top > 0 ? insets.top + 56 : 76, paddingBottom: 160 }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ alignItems: 'center', paddingTop: Platform.OS === 'ios' ? (insets.top > 0 ? insets.top + 48 : 64) : 56, paddingBottom: 160 }}
             style={StyleSheet.absoluteFillObject}
           >
             <View style={{ width: MAP_WIDTH, height: mapHeight, position: 'relative' }}>
@@ -2962,15 +2962,15 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         borderRadius: 34,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: isOccupied 
-                          ? "#ffffff" 
+                        backgroundColor: isOccupied
+                          ? "#ffffff"
                           : (isNextEmpty ? "#ffffff" : (isDark ? "#374151" : "#e5e7eb")),
                         borderWidth: isSelected ? 4 : 3,
-                        borderColor: isSelected 
-                          ? "#d97706" 
-                          : (isOccupied 
-                              ? "#10b981" 
-                              : (isNextEmpty ? "#f59e0b" : (isDark ? "#4b5563" : "#9ca3af"))),
+                        borderColor: isSelected
+                          ? "#d97706"
+                          : (isOccupied
+                            ? "#10b981"
+                            : (isNextEmpty ? "#f59e0b" : (isDark ? "#4b5563" : "#9ca3af"))),
                         borderStyle: isNextEmpty ? "dashed" : "solid",
                         shadowColor: "#000",
                         shadowOffset: { width: 0, height: 3 },
@@ -2980,12 +2980,12 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                       }}
                     >
                       {isOccupied ? (
-                        <Animated.View 
-                          style={{ 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            position: 'relative', 
-                            width: '100%', 
+                        <Animated.View
+                          style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'relative',
+                            width: '100%',
                             height: '100%',
                             transform: [{
                               translateY: decorSwayAnim.interpolate({
@@ -3043,7 +3043,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
                     {/* Brown Plate with Roman Numeral underneath (for completed or active nodes) */}
                     {!isLocked && (
-                      <View 
+                      <View
                         style={{
                           position: "absolute",
                           bottom: -14,
@@ -3062,11 +3062,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                           zIndex: 5,
                         }}
                       >
-                        <Text 
-                          style={{ 
-                            color: "#fef3c7", 
-                            fontSize: 7.5, 
-                            fontFamily: "RedditSans-Bold", 
+                        <Text
+                          style={{
+                            color: "#fef3c7",
+                            fontSize: 7.5,
+                            fontFamily: "RedditSans-Bold",
                             textAlign: "center",
                             letterSpacing: 0.5
                           }}
@@ -3109,41 +3109,41 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           </ScrollView>
 
           {/* Floating Glassy Header */}
-          <View 
-            style={{ 
+          <View
+            style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
-              flexDirection: "row", 
-              justifyContent: "space-between", 
-              alignItems: "center", 
-              paddingHorizontal: 20, 
-              paddingTop: insets.top > 0 ? insets.top + 8 : 16, 
-              paddingBottom: 16,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: 16,
+              paddingTop: Platform.OS === 'ios' ? (insets.top > 0 ? insets.top + 6 : 12) : 12,
+              paddingBottom: 12,
               backgroundColor: isDark ? "#022c22" : "#16a34a",
               borderBottomWidth: 1,
               borderColor: isDark ? "rgba(6, 95, 70, 0.3)" : "rgba(134, 239, 172, 0.3)",
               zIndex: 10,
             }}
           >
-            <Text className="text-lg font-redditsans-bold" style={{ color: "#fff" }}>
+            <Text className="text-base font-redditsans-bold" style={{ color: "#fff" }}>
               {tLocal("virtual_plant.garden.title")}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setGardenModalVisible(false);
                 setSelectedSlotIndex(null);
-              }} 
+              }}
               className="p-1"
             >
-              <FontAwesomeIcon icon={faTimes} color="#fff" size={20} />
+              <FontAwesomeIcon icon={faTimes} color="#fff" size={16} />
             </TouchableOpacity>
           </View>
 
           {/* Floating Bottom Panel */}
-          <View 
-            style={{ 
+          <View
+            style={{
               position: 'absolute',
               bottom: 16,
               left: 16,
@@ -3154,7 +3154,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             {selectedSlotIndex !== null ? (() => {
               const details = getSlotDetails(selectedSlotIndex);
               return (
-                <View 
+                <View
                   className="p-3 rounded-2xl border"
                   style={{
                     backgroundColor: colors.card,
@@ -3168,13 +3168,13 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                 >
                   <View className="flex-row justify-between items-center">
                     <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
-                      <View 
-                        style={{ 
-                          width: 36, 
-                          height: 36, 
-                          borderRadius: 18, 
-                          backgroundColor: selectedSlotIndex < garden.length 
-                            ? (isDark ? "#065f46" : "#dcfce7") 
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          backgroundColor: selectedSlotIndex < garden.length
+                            ? (isDark ? "#065f46" : "#dcfce7")
                             : (isDark ? "#78350f" : "#fef3c7"),
                           alignItems: 'center',
                           justifyContent: 'center'
@@ -3191,7 +3191,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         </Text>
                       </View>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={() => setSelectedSlotIndex(null)}
                       className="w-5 h-5 rounded-full items-center justify-center"
                       style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)" }}
@@ -3202,11 +3202,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
                   {/* Speech bubble / feedback box inside the details card for active growing plant */}
                   {selectedSlotIndex === garden.length && speechText ? (
-                    <View 
-                      className="p-2 rounded-xl border mt-2.5" 
-                      style={{ 
-                        backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", 
-                        borderColor: colors.border + "20" 
+                    <View
+                      className="p-2 rounded-xl border mt-2.5"
+                      style={{
+                        backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                        borderColor: colors.border + "20"
                       }}
                     >
                       <Text className="text-[11px] font-redditsans-medium italic" style={{ color: colors.textSecondary }}>

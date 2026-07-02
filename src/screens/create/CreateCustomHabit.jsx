@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -92,6 +93,13 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
 const MINUTES = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 
+const ITEM_HEIGHT = 64;
+const VISIBLE_ITEMS = 5;
+const CENTER_OFFSET = Math.floor(VISIBLE_ITEMS / 2) * ITEM_HEIGHT;
+
+const REPEATED_HOURS = [...HOURS, ...HOURS, ...HOURS];
+const REPEATED_MINUTES = [...MINUTES, ...MINUTES, ...MINUTES];
+
 const getLocalDateString = (d = new Date()) => {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -158,6 +166,94 @@ const CreateCustomHabit = () => {
   // Time Picker Temp State
   const [tempHours, setTempHours] = useState("09");
   const [tempMinutes, setTempMinutes] = useState("30");
+
+  const hourRef = useRef(null);
+  const minuteRef = useRef(null);
+
+  const [hourIndex, setHourIndex] = useState(HOURS.length + 9);
+  const [minuteIndex, setMinuteIndex] = useState(MINUTES.length + 30);
+
+  useEffect(() => {
+    if (showTimeModal) {
+      setTimeout(() => {
+        const hourIdx = HOURS.indexOf(tempHours);
+        const minuteIdx = MINUTES.indexOf(tempMinutes);
+
+        if (hourIdx !== -1) {
+          const initialHourIndex = hourIdx + HOURS.length;
+          setHourIndex(initialHourIndex);
+          hourRef.current?.scrollTo({
+            y: initialHourIndex * ITEM_HEIGHT,
+            animated: false,
+          });
+        }
+
+        if (minuteIdx !== -1) {
+          const initialMinuteIndex = minuteIdx + MINUTES.length;
+          setMinuteIndex(initialMinuteIndex);
+          minuteRef.current?.scrollTo({
+            y: initialMinuteIndex * ITEM_HEIGHT,
+            animated: false,
+          });
+        }
+      }, 100);
+    }
+  }, [showTimeModal]);
+
+  const handleHourScroll = (event) => {
+    const y = event.nativeEvent.contentOffset.y;
+    const index = Math.round(y / ITEM_HEIGHT);
+    setHourIndex(index);
+
+    const actual = index % HOURS.length;
+    setTempHours(HOURS[actual]);
+
+    if (index < HOURS.length || index >= HOURS.length * 2) {
+      const newIndex = actual + HOURS.length;
+      setHourIndex(newIndex);
+      hourRef.current?.scrollTo({
+        y: newIndex * ITEM_HEIGHT,
+        animated: false,
+      });
+    }
+  };
+
+  const handleMinuteScroll = (event) => {
+    const y = event.nativeEvent.contentOffset.y;
+    const index = Math.round(y / ITEM_HEIGHT);
+    setMinuteIndex(index);
+
+    const actual = index % MINUTES.length;
+    setTempMinutes(MINUTES[actual]);
+
+    if (index < MINUTES.length || index >= MINUTES.length * 2) {
+      const newIndex = actual + MINUTES.length;
+      setMinuteIndex(newIndex);
+      minuteRef.current?.scrollTo({
+        y: newIndex * ITEM_HEIGHT,
+        animated: false,
+      });
+    }
+  };
+
+  const renderTimeItem = (value, selected) => (
+    <View style={{ height: ITEM_HEIGHT }} className="items-center justify-center">
+      <Text
+        style={{
+          fontSize: selected ? 36 : 20,
+          fontWeight: selected ? "800" : "500",
+          color: selected ? (isDark ? "#ffffff" : "#1f2937") : (isDark ? "rgba(255,255,255,0.35)" : "rgba(31,41,55,0.35)"),
+          includeFontPadding: false,
+          textAlignVertical: "center",
+          letterSpacing: selected ? 1 : 0,
+        }}
+        className={selected ? "font-redditsans-bold" : "font-redditsans-regular"}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorModalTitle, setErrorModalTitle] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
@@ -896,77 +992,112 @@ const CreateCustomHabit = () => {
         animationType="slide"
         onRequestClose={() => setShowTimeModal(false)}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowTimeModal(false)}
-        >
-          <View style={[styles.modalContent, { paddingBottom: 30, backgroundColor: colors.card }]}>
-            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>Set Reminder Time</Text>
-            <View style={styles.timePickerContainer}>
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>Hour</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {HOURS.map((h) => (
-                    <TouchableOpacity
-                      key={h}
-                      style={[
-                        styles.timeSlot,
-                        tempHours === h && { backgroundColor: colors.primarySurface },
-                      ]}
-                      onPress={() => setTempHours(h)}
-                    >
-                      <Text
-                        className="font-redditsans-medium"
-                        style={[
-                          styles.timeSlotText,
-                          { color: colors.textSecondary },
-                          tempHours === h && styles.timeSlotTextSelected,
-                        ]}
-                      >
-                        {h}
-                      </Text>
-                    </TouchableOpacity>
+        <View style={styles.modalOverlay}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => setShowTimeModal(false)}
+          />
+          <View 
+            style={[
+              styles.modalContent, 
+              { 
+                paddingBottom: 24, 
+                backgroundColor: colors.card,
+                paddingHorizontal: 20,
+                paddingTop: 24,
+                borderRadius: 32,
+                borderWidth: 1,
+                borderColor: colors.border
+              }
+            ]}
+          >
+            {/* Header with Title */}
+            <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text, marginBottom: 20 }]}>
+              {t('create_habit.set_reminder_time')}
+            </Text>
+
+            {/* Selector Columns Box (Exact UserPref alarm picker layout) */}
+            <View className="items-center mb-6">
+              <View
+                className="relative flex-row justify-center items-center rounded-3xl overflow-hidden"
+                style={{
+                  height: ITEM_HEIGHT * VISIBLE_ITEMS,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.7)',
+                  width: '100%',
+                  maxWidth: 280,
+                  borderWidth: 1,
+                  borderColor: colors.border
+                }}
+              >
+                {/* CENTER INDICATOR */}
+                <View
+                  pointerEvents="none"
+                  className="absolute z-10"
+                  style={{
+                    top: CENTER_OFFSET,
+                    height: ITEM_HEIGHT,
+                    width: '85%',
+                    borderTopWidth: 2,
+                    borderBottomWidth: 2,
+                    borderColor: '#22c55e',
+                    borderRadius: 16,
+                  }}
+                />
+
+                {/* COLON SEPARATOR */}
+                <View pointerEvents="none" className="absolute z-20" style={{ top: CENTER_OFFSET + (ITEM_HEIGHT / 2) - 17 }}>
+                  <Text className="text-3xl font-bold font-redditsans-bold" style={{ color: isDark ? "#ffffff" : "#1f2937" }}>:</Text>
+                </View>
+
+                {/* HOURS */}
+                <ScrollView
+                  ref={hourRef}
+                  onScroll={handleHourScroll}
+                  scrollEventThrottle={16}
+                  snapToInterval={ITEM_HEIGHT}
+                  decelerationRate="fast"
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{
+                    paddingTop: CENTER_OFFSET,
+                    paddingBottom: CENTER_OFFSET,
+                  }}
+                  style={{ width: 120 }}
+                >
+                  {REPEATED_HOURS.map((h, i) => (
+                    <View key={i}>{renderTimeItem(h, i === hourIndex)}</View>
                   ))}
                 </ScrollView>
-              </View>
 
-              <View style={styles.timeColumn}>
-                <Text style={[styles.pickerLabel, { color: colors.textSecondary }]}>Minute</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {MINUTES.map((m) => (
-                    <TouchableOpacity
-                      key={m}
-                      style={[
-                        styles.timeSlot,
-                        tempMinutes === m && { backgroundColor: colors.primarySurface },
-                      ]}
-                      onPress={() => setTempMinutes(m)}
-                    >
-                      <Text
-                        className="font-redditsans-medium"
-                        style={[
-                          styles.timeSlotText,
-                          { color: colors.textSecondary },
-                          tempMinutes === m && styles.timeSlotTextSelected,
-                        ]}
-                      >
-                        {m}
-                      </Text>
-                    </TouchableOpacity>
+                {/* MINUTES */}
+                <ScrollView
+                  ref={minuteRef}
+                  onScroll={handleMinuteScroll}
+                  scrollEventThrottle={16}
+                  snapToInterval={ITEM_HEIGHT}
+                  decelerationRate="fast"
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{
+                    paddingTop: CENTER_OFFSET,
+                    paddingBottom: CENTER_OFFSET,
+                  }}
+                  style={{ width: 120 }}
+                >
+                  {REPEATED_MINUTES.map((m, i) => (
+                    <View key={i}>{renderTimeItem(m, i === minuteIndex)}</View>
                   ))}
                 </ScrollView>
               </View>
             </View>
 
+            {/* Confirm Button */}
             <TouchableOpacity
-              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
+              style={[styles.confirmButton, { backgroundColor: colors.primary, marginTop: 0 }]}
               onPress={handleConfirmTime}
             >
               <Text className="font-redditsans-bold" style={styles.confirmButtonText}>{t('common.confirm')}</Text>
             </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
       {/* Start Date Picker Modal */}
 

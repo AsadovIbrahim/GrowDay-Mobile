@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { MenuContext } from '../../context/MenuContext';
 import { useContext, useState, useEffect } from 'react';
@@ -66,7 +66,7 @@ const TabBar = ({ state, navigation }) => {
                     shadowOpacity: theme.isDark ? 0.4 : 0.12,
                     borderWidth: theme.isDark ? 1 : 0,
                     borderColor: theme.isDark ? colors.border : 'transparent',
-                    marginBottom: insets.bottom > 0 ? insets.bottom + 6 : 16,
+                    marginBottom: insets.bottom > 0 ? (Platform.OS === 'ios' ? insets.bottom - 10 : insets.bottom - 25) : 12,
                 }
             ]}
         >
