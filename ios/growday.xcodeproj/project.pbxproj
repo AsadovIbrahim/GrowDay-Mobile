@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		657C28F4E751078421ADDD14 /* card.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36F0D3C6AEA3D8E18B5A9C73 /* card.mp3 */; };
+		6BBE88466A08A5E620732D9C /* congrats.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 49C6FF401211682F1EE27FD4 /* congrats.mp3 */; };
+		499B8230B0C00B7CB1BDCB4D /* focus_fireplace.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3F0E93431D639FD59C85BCF5 /* focus_fireplace.mp3 */; };
+		0A574345ACCC4126B7AEA373 /* focus_forest.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6795A028C57E1693E4B8C3D1 /* focus_forest.mp3 */; };
+		ED0F041283DF9C643D69D3C1 /* focus_night.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FA28DA3F0660676DCDB649C8 /* focus_night.mp3 */; };
+		C8A717B1386FE41C03AB06B3 /* focus_ocean.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34B752C07D5B58759C1EA87F /* focus_ocean.mp3 */; };
+		D2E52C8AB645A589F31BF1DE /* focus_rain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FF4A90821F11311D64D0D235 /* focus_rain.mp3 */; };
+		F0AE9077CF22958B5EC1F1E0 /* focus_river.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AC660931B1634091B69D66E1 /* focus_river.mp3 */; };
+		58A817EA84C4EB7C63681E82 /* success.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A976033BC74A3886BE2D93CE /* success.mp3 */; };
+		DA3BDE60CD344192E5E11576 /* tap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7BAC7E568D969ECC148E57F5 /* tap.mp3 */; };
+		56B2064617358BCE9B24E2BE /* wrong.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D64789FE5C49B76D8BCF07C9 /* wrong.mp3 */; };
 		081F3CDB46AA455891C6CC4C /* RedditSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB78C2BA6F1649E984F27AB4 /* RedditSans-ExtraBoldItalic.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-growday.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-growday.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -40,6 +51,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		36F0D3C6AEA3D8E18B5A9C73 /* card.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "card.mp3"; path = "../Resources/card.mp3"; sourceTree = "<group>"; };
+		49C6FF401211682F1EE27FD4 /* congrats.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "congrats.mp3"; path = "../Resources/congrats.mp3"; sourceTree = "<group>"; };
+		3F0E93431D639FD59C85BCF5 /* focus_fireplace.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_fireplace.mp3"; path = "../Resources/focus_fireplace.mp3"; sourceTree = "<group>"; };
+		6795A028C57E1693E4B8C3D1 /* focus_forest.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_forest.mp3"; path = "../Resources/focus_forest.mp3"; sourceTree = "<group>"; };
+		FA28DA3F0660676DCDB649C8 /* focus_night.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_night.mp3"; path = "../Resources/focus_night.mp3"; sourceTree = "<group>"; };
+		34B752C07D5B58759C1EA87F /* focus_ocean.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_ocean.mp3"; path = "../Resources/focus_ocean.mp3"; sourceTree = "<group>"; };
+		FF4A90821F11311D64D0D235 /* focus_rain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_rain.mp3"; path = "../Resources/focus_rain.mp3"; sourceTree = "<group>"; };
+		AC660931B1634091B69D66E1 /* focus_river.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "focus_river.mp3"; path = "../Resources/focus_river.mp3"; sourceTree = "<group>"; };
+		A976033BC74A3886BE2D93CE /* success.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "success.mp3"; path = "../Resources/success.mp3"; sourceTree = "<group>"; };
+		7BAC7E568D969ECC148E57F5 /* tap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "tap.mp3"; path = "../Resources/tap.mp3"; sourceTree = "<group>"; };
+		D64789FE5C49B76D8BCF07C9 /* wrong.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "wrong.mp3"; path = "../Resources/wrong.mp3"; sourceTree = "<group>"; };
 		0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-Bold.ttf"; path = "../assets/fonts/RedditSans-Bold.ttf"; sourceTree = "<group>"; };
 		05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RedditSans-BlackItalic.ttf"; path = "../assets/fonts/RedditSans-BlackItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* growday.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = growday.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,6 +138,17 @@
 		65959AB70DD54B7E85DBD938 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				36F0D3C6AEA3D8E18B5A9C73 /* card.mp3 */,
+				49C6FF401211682F1EE27FD4 /* congrats.mp3 */,
+				3F0E93431D639FD59C85BCF5 /* focus_fireplace.mp3 */,
+				6795A028C57E1693E4B8C3D1 /* focus_forest.mp3 */,
+				FA28DA3F0660676DCDB649C8 /* focus_night.mp3 */,
+				34B752C07D5B58759C1EA87F /* focus_ocean.mp3 */,
+				FF4A90821F11311D64D0D235 /* focus_rain.mp3 */,
+				AC660931B1634091B69D66E1 /* focus_river.mp3 */,
+				A976033BC74A3886BE2D93CE /* success.mp3 */,
+				7BAC7E568D969ECC148E57F5 /* tap.mp3 */,
+				D64789FE5C49B76D8BCF07C9 /* wrong.mp3 */,
 				292D8AA4DAFE452B94C28405 /* RedditSans-Black.ttf */,
 				05490D11C13B4C53AD66233D /* RedditSans-BlackItalic.ttf */,
 				0245B1450CD3463B9A428A7D /* RedditSans-Bold.ttf */,
@@ -244,6 +277,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				657C28F4E751078421ADDD14 /* card.mp3 in Resources */,
+				6BBE88466A08A5E620732D9C /* congrats.mp3 in Resources */,
+				499B8230B0C00B7CB1BDCB4D /* focus_fireplace.mp3 in Resources */,
+				0A574345ACCC4126B7AEA373 /* focus_forest.mp3 in Resources */,
+				ED0F041283DF9C643D69D3C1 /* focus_night.mp3 in Resources */,
+				C8A717B1386FE41C03AB06B3 /* focus_ocean.mp3 in Resources */,
+				D2E52C8AB645A589F31BF1DE /* focus_rain.mp3 in Resources */,
+				F0AE9077CF22958B5EC1F1E0 /* focus_river.mp3 in Resources */,
+				58A817EA84C4EB7C63681E82 /* success.mp3 in Resources */,
+				DA3BDE60CD344192E5E11576 /* tap.mp3 in Resources */,
+				56B2064617358BCE9B24E2BE /* wrong.mp3 in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FC01A68108700A75B9A /* GoogleService-Info.plist in Resources */,
