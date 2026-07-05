@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   Dimensions
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faPaperPlane, faLightbulb, faBrain, faStar } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../../context/ThemeContext";
@@ -29,6 +29,7 @@ import LinearGradient from "react-native-linear-gradient";
 
 const AIMentorChatScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
   const { colors } = theme;
@@ -62,8 +63,16 @@ const AIMentorChatScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const params = route.params;
+    if (params?.initialPrompt) {
+      setInputMessage(params.initialPrompt);
+      navigation.setParams({ initialPrompt: undefined });
+    }
+  }, [route.params, navigation]);
+
   // Gündəlik limiti yükləyirik
-  const syncRemainingMessages = async () => {
+  const syncRemainingMessages = useCallback(async () => {
     try {
       const today = new Date().toISOString().split("T")[0];
       const lastDate = storage.getString(getAiMentorLastActiveDateKey(token));
@@ -91,7 +100,7 @@ const AIMentorChatScreen = () => {
       console.log("Error syncing limit:", e);
       setRemainingMessages(5);
     }
-  };
+  }, [token]);
 
   // Söhbət tarixçəsini yükləyirik
   useEffect(() => {
@@ -123,7 +132,7 @@ const AIMentorChatScreen = () => {
     } catch (e) {
       console.log("Error loading chat history:", e);
     }
-  }, [t, token]);
+  }, [t, token, syncRemainingMessages]);
 
   // Dil dəyişəndə salamlaşma mesajını yenilə (köhnə dildə qalmaması üçün)
   useEffect(() => {

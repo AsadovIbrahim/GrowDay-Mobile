@@ -323,7 +323,11 @@
     "read": "Okundu",
     "ai_disclaimer": "✨ Bu kişiselleştirilmiş öğrenme içeriği, gelişiminize yardımcı olmak için hedef ve tercihlerinize göre yapay zeka tarafından oluşturulmuştur.",
     "suggested_habits_desc": "Yapay zeka tarafından günlük hayatınıza uyacak şekilde seçilen alışkanlıklar",
-    "tasks_desc": "Seviyenizi yükseltmek ve XP kazanmak için görevleri tamamlayın"
+    "tasks_desc": "Seviyenizi yükseltmek ve XP kazanmak için görevleri tamamlayın",
+    "related_habits": "İlgili Alışkanlıklar",
+    "ask_ai_mentor": "Yapay Zeka Mentörüne Sor",
+    "ask_ai_mentor_desc": "Bu makale hakkında sorularınız mı var? Kişiselleştirilmiş tavsiyeler için Yapay Zeka Mentörünüze sorun.",
+    "ask_ai_prompt": "'{{title}}' makalesi hakkında konuşalım. Bu konuda bana nasıl yardımcı olabilirsin?"
   },
   "tasks": {
     "header": "Görevlerim",

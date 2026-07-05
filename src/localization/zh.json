@@ -323,7 +323,11 @@
     "read": "已读",
     "ai_disclaimer": "✨ 此个性化学习内容由 AI 根据您的目标和偏好生成，帮助您今天成长。",
     "suggested_habits_desc": "人工智能挑选的适合你日常生活的好习惯",
-    "tasks_desc": "完成任务以提升等级并赚取经验值"
+    "tasks_desc": "完成任务以提升等级并赚取经验值",
+    "related_habits": "相关习惯",
+    "ask_ai_mentor": "咨询 AI 导师",
+    "ask_ai_mentor_desc": "对这篇文章有疑问吗？向您的 AI 导师寻求个性化建议。",
+    "ask_ai_prompt": "让我们谈谈这篇文章：'{{title}}'。您能为此提供什么帮助？"
   },
   "tasks": {
     "header": "我的任务",

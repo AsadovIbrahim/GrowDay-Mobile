@@ -323,7 +323,11 @@
     "read": "Letto",
     "ai_disclaimer": "✨ Questo contenuto di apprendimento personalizzato è stato generato dall'IA in base ai tuoi obiettivi e preferenze per aiutarti a crescere oggi.",
     "suggested_habits_desc": "Abitudini selezionate dall'IA su misura per la tua vita quotidiana",
-    "tasks_desc": "Completa le attività per aumentare il tuo livello e guadagnare XP"
+    "tasks_desc": "Completa le attività per aumentare il tuo livello e guadagnare XP",
+    "related_habits": "Abitudini correlate",
+    "ask_ai_mentor": "Chiedi al mentore IA",
+    "ask_ai_mentor_desc": "Hai domande su questo articolo? Chiedi consigli personalizzati al tuo mentore IA.",
+    "ask_ai_prompt": "Parliamo dell'articolo: '{{title}}'. Come puoi aiutarmi in questo?"
   },
   "tasks": {
     "header": "Le mie Attività",

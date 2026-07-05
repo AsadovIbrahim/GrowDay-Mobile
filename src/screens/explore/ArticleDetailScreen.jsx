@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { getTranslatedCategory } from '../../utils/habitTranslations';
+import { getTranslatedCategory, getTranslatedHabit } from '../../utils/habitTranslations';
 import { useMMKVString } from 'react-native-mmkv';
-import { markLearningContentAsReadFetch } from '../../utils/fetch';
+import { markLearningContentAsReadFetch, getUserSuggestedHabitsFetch, getUserHabitFetch } from '../../utils/fetch';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faCheckCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCheckCircle, faClock, faBrain } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import SuggestedHabitCard from '../../components/SuggestedHabitCard';
 
 const ArticleDetailScreen = () => {
   const { theme } = useTheme();
   const { colors } = theme;
   const navigation = useNavigation();
   const route = useRoute();
-  
+
   // Extract article data passed from Explore screen
   const { article } = route.params || {};
   const { t, i18n } = useTranslation();
 
   const { height } = Dimensions.get('window');
 
-  if (!article) return null;
-
   const [token] = useMMKVString('accessToken');
-  const [isReadLocal, setIsReadLocal] = useState(article.isRead);
+  const [isReadLocal, setIsReadLocal] = useState(article?.isRead || false);
 
   useEffect(() => {
-    if (!article.isRead && token && article.id) {
+    if (article && !article.isRead && token && article.id) {
       markLearningContentAsReadFetch(token, article.id)
         .then(res => {
           if (res.success !== false) { // it might just return the updated DTO, checking strictly false is safer if format varies
@@ -46,7 +46,105 @@ const ArticleDetailScreen = () => {
         })
         .catch(err => console.log('Error marking as read:', err));
     }
-  }, [article.id, token]);
+  }, [article, token]);
+
+  const [relatedHabits, setRelatedHabits] = useState([]);
+  const [loadingHabits, setLoadingHabits] = useState(true);
+
+  useEffect(() => {
+    if (!token || !article.category) return;
+
+    const loadRelatedHabits = async () => {
+      try {
+        setLoadingHabits(true);
+        const suggestedRes = await getUserSuggestedHabitsFetch(token, 0, 100);
+        const suggestedList = suggestedRes?.data || [];
+
+        const userHabitsRes = await getUserHabitFetch(token, 0, 100);
+        const userHabitsList = userHabitsRes?.data || [];
+
+        const isHabitAlreadyAdded = (suggestedHabit, currentUserHabits) => {
+          if (!currentUserHabits || currentUserHabits.length === 0) return false;
+          const normalize = (str) => {
+            if (!str) return "";
+            return str.toString()
+              .toLowerCase()
+              .replace(/[.,/#!$%^&*;:{}=\-_`~()\s]/g, "")
+              .trim();
+          };
+          const { title: suggestedTitle } = getTranslatedHabit(suggestedHabit, i18n.language, t);
+          const normalizedSuggested = normalize(suggestedTitle);
+          const normalizedSuggestedRaw = normalize(suggestedHabit.title);
+          const suggestedId = String(suggestedHabit.id);
+
+          return currentUserHabits.some(userHabit => {
+            if (
+              String(userHabit.suggestedHabitId) === suggestedId ||
+              String(userHabit.habitId) === suggestedId ||
+              String(userHabit.id) === suggestedId
+            ) {
+              return true;
+            }
+            const { title: userHabitTitle } = getTranslatedHabit(userHabit, i18n.language, t);
+            const normalizedUserHabit = normalize(userHabitTitle);
+            const normalizedUserHabitRaw = normalize(userHabit.title);
+
+            if (normalizedSuggested && normalizedUserHabit && normalizedSuggested === normalizedUserHabit) return true;
+            if (normalizedSuggestedRaw && normalizedUserHabitRaw && normalizedSuggestedRaw === normalizedUserHabitRaw) return true;
+            if (normalizedSuggested && normalizedUserHabitRaw && normalizedSuggested === normalizedUserHabitRaw) return true;
+            if (normalizedSuggestedRaw && normalizedUserHabit && normalizedSuggestedRaw === normalizedUserHabit) return true;
+
+            if (userHabit.habit) {
+              const nestedHabitTitle = normalize(userHabit.habit.title);
+              if (nestedHabitTitle && (nestedHabitTitle === normalizedSuggested || nestedHabitTitle === normalizedSuggestedRaw)) return true;
+            }
+            return false;
+          });
+        };
+
+        const articleCategory = (article.category || 'General').toLowerCase().trim();
+        const filtered = suggestedList.filter(h => {
+          if (!h) return false;
+          if (isHabitAlreadyAdded(h, userHabitsList)) return false;
+          const habitCategory = (h.category || h.categoryDetails?.name || '').toLowerCase().trim();
+          return habitCategory === articleCategory;
+        });
+
+        setRelatedHabits(filtered);
+      } catch (err) {
+        console.log('Error loading related habits:', err);
+      } finally {
+        setLoadingHabits(false);
+      }
+    };
+
+    loadRelatedHabits();
+  }, [article.category, token, i18n.language, t]);
+
+  const handleSuggestedHabitPress = (habit) => {
+    navigation.navigate("CreateCustomHabit", {
+      habitData: {
+        id: habit.id,
+        title: habit.title,
+        description: habit.description || habit.title,
+        icon: habit.icon || "star",
+        category: habit.category || "General",
+        categoryId: habit.categoryId || null,
+        frequency: habit.frequency || "Daily",
+        targetValue: habit.targetValue || 1,
+        unit: habit.unit || "times",
+        incrementValue: habit.incrementValue || 1,
+        durationInMinutes: habit.durationInMinutes,
+        notificationTime: habit.notificationTime || habit.NotificationTime,
+        titleTranslations: habit.titleTranslations || habit.TitleTranslations,
+        descriptionTranslations: habit.descriptionTranslations || habit.DescriptionTranslations,
+      },
+      isCustom: false,
+      isSuggested: true
+    });
+  };
+
+  if (!article) return null;
 
   // Calculate read time based on word count (avg 200 words per minute)
   const wordCount = article.content ? article.content.trim().split(/\s+/).length : 0;
@@ -67,11 +165,11 @@ const ArticleDetailScreen = () => {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} />
-      
+
       {/* ── Fixed Header ── */}
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <TouchableOpacity 
-          style={styles.backButton} 
+        <TouchableOpacity
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -81,14 +179,14 @@ const ArticleDetailScreen = () => {
         <View style={styles.headerRight} />
       </View>
 
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* ── Hero Image ── */}
         <View style={[styles.imageContainer, { height: height * 0.32 }]}>
-          <Image 
-            source={{ uri: highResImage }} 
+          <Image
+            source={{ uri: highResImage }}
             style={styles.image}
             resizeMode="cover"
           />
@@ -126,12 +224,63 @@ const ArticleDetailScreen = () => {
             {article.content}
           </Text>
 
-          {/* AI Disclaimer or Extra Info */}
-          <View style={[styles.aiDisclaimer, { backgroundColor: colors.card, borderColor: colors.border || '#333' }]}>
-            <Text style={[styles.aiText, { color: colors.textSecondary || '#aaa' }]}>
-              {t('explore.ai_disclaimer')}
-            </Text>
-          </View>
+          {/* Related Habits Carousel */}
+          {loadingHabits ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="small" color={colors.primary} />
+            </View>
+          ) : (
+            relatedHabits.length > 0 && (
+              <View style={styles.relatedSection}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  {t('explore.related_habits')}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.relatedList}
+                >
+                  {relatedHabits.map((habit) => (
+                    <SuggestedHabitCard
+                      key={habit.id}
+                      habit={habit}
+                      icon={habit.icon}
+                      name={habit.title}
+                      frequency={habit.frequency}
+                      onPress={() => handleSuggestedHabitPress(habit)}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )
+          )}
+
+          {/* Ask AI Mentor Card */}
+          <TouchableOpacity
+            style={[styles.aiMentorCard, { backgroundColor: colors.card, borderColor: colors.border || '#333' }]}
+            onPress={() => {
+              navigation.navigate('Home', {
+                screen: 'AIMentorChat',
+                params: {
+                  initialPrompt: t('explore.ask_ai_prompt', { title: article.title })
+                }
+              });
+            }}
+          >
+            <View style={styles.aiMentorHeader}>
+              <View style={[styles.aiMentorIconContainer, { backgroundColor: colors.primary + '15' }]}>
+                <FontAwesomeIcon icon={faBrain} size={20} color={colors.primary} />
+              </View>
+              <View style={styles.aiMentorTextContainer}>
+                <Text style={[styles.aiMentorTitle, { color: colors.text }]}>
+                  {t('explore.ask_ai_mentor')}
+                </Text>
+                <Text style={[styles.aiMentorDesc, { color: colors.textSecondary }]}>
+                  {t('explore.ask_ai_mentor_desc')}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
 
         </View>
       </ScrollView>
@@ -226,19 +375,60 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'RedditSans-Regular',
     lineHeight: 28,
+    marginBottom: 20,
+  },
+  loaderContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  relatedSection: {
+    marginTop: 20,
     marginBottom: 30,
   },
-  aiDisclaimer: {
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'RedditSans-Bold',
+    marginBottom: 15,
+  },
+  relatedList: {
+    paddingRight: 20,
+  },
+  aiMentorCard: {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    marginTop: 20,
+    marginTop: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
-  aiText: {
-    fontSize: 13,
+  aiMentorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  aiMentorIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiMentorTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  aiMentorTitle: {
+    fontSize: 16,
+    fontFamily: 'RedditSans-Bold',
+  },
+  aiMentorDesc: {
+    fontSize: 12,
     fontFamily: 'RedditSans-Regular',
-    lineHeight: 20,
-    fontStyle: 'italic',
+    lineHeight: 16,
   }
 });
 

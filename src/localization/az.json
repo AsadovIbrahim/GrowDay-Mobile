@@ -323,7 +323,11 @@
     "read": "Oxunub",
     "ai_disclaimer": "✨ Bu fərdiləşdirilmiş öyrənmə məzmunu inkişafınıza kömək etmək üçün məqsəd və üstünlüklərinizə əsasən süni intellekt tərəfindən yaradılmışdır.",
     "suggested_habits_desc": "Süni intellekt tərəfindən gündəlik həyatınıza uyğun seçilmiş vərdişlər",
-    "tasks_desc": "Səviyyənizi artırmaq və XP qazanmaq üçün tapşırıqları tamamlayın"
+    "tasks_desc": "Səviyyənizi artırmaq və XP qazanmaq üçün tapşırıqları tamamlayın",
+    "related_habits": "Əlaqəli Vərdişlər",
+    "ask_ai_mentor": "AI Mentordan Soruş",
+    "ask_ai_mentor_desc": "Bu məqalə ilə bağlı suallarınız var? Fərdi məsləhət üçün AI Mentorunuzdan soruşun.",
+    "ask_ai_prompt": "'{{title}}' məqaləsi haqqında danışaq. Bu mövzuda mənə necə kömək edə bilərsən?"
   },
   "tasks": {
     "header": "Tapşırıqlarım",

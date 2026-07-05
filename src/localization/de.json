@@ -323,7 +323,11 @@
     "read": "Gelesen",
     "ai_disclaimer": "✨ Dieser personalisierte Lerninhalt wurde von einer KI basierend auf deinen Zielen und Vorlieben erstellt, um dir beim Wachsen zu helfen.",
     "suggested_habits_desc": "Von KI ausgewählte Gewohnheiten, die zu Ihrem Alltag passen",
-    "tasks_desc": "Erledigen Sie Aufgaben, um Ihr Level zu erhöhen und XP zu verdienen"
+    "tasks_desc": "Erledigen Sie Aufgaben, um Ihr Level zu erhöhen und XP zu verdienen",
+    "related_habits": "Ähnliche Gewohnheiten",
+    "ask_ai_mentor": "KI-Mentor fragen",
+    "ask_ai_mentor_desc": "Haben Sie Fragen zu diesem Artikel? Fragen Sie Ihren KI-Mentor nach einer persönlichen Beratung.",
+    "ask_ai_prompt": "Lassen Sie uns über den Artikel sprechen: '{{title}}'. Wie können Sie mir dabei helfen?"
   },
   "tasks": {
     "header": "Meine Aufgaben",
