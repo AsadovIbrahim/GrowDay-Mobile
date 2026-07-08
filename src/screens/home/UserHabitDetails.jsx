@@ -145,7 +145,7 @@ const UserHabitDetails = () => {
                         if (NativeModules.RNSound && typeof NativeModules.RNSound.stopAllPlayers === 'function') {
                             NativeModules.RNSound.stopAllPlayers();
                         }
-                    } catch (e) {}
+                    } catch (e) { }
 
                     const updatedHabit = { ...newData, currentValue: newData.targetValue || 1 };
                     navigation.navigate("HabitCelebration", { habit: updatedHabit });

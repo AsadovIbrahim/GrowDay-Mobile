@@ -8,6 +8,9 @@ import { cssInterop } from 'nativewind';
 import LinearGradient from 'react-native-linear-gradient';
 import { storage } from './src/utils/MMKVStore';
 
+// Reset splash finished status at bundle load before any screen renders
+storage.set("app.is_splash_finished", false);
+
 cssInterop(LinearGradient, {
     className: 'style',
 });

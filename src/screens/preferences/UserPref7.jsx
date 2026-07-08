@@ -290,7 +290,7 @@ const UserPref7 = () => {
             <Text style={{ fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: 30 }}>
               {isUpdate ? t("preferences.success.updated_desc") : t("preferences.success.ready_desc")}
             </Text>
-            <TouchableOpacity onPress={() => { if (isUpdate) { setShowSuccessModal(false); navigation.navigate("Profile"); } else { storage.set("isFirstTimeExplore", true); storage.set("hasCompletedPreferences", true); } }} className="bg-[#2f6f3f] w-full py-4 rounded-2xl">
+            <TouchableOpacity onPress={() => { if (isUpdate) { setShowSuccessModal(false); navigation.navigate("Explore"); } else { storage.set("hasCompletedPreferences", true); } }} className="bg-[#2f6f3f] w-full py-4 rounded-2xl">
               <Text className="text-white text-center font-redditsans-bold text-[18px]">{t("preferences.success.explore")}</Text>
             </TouchableOpacity>
           </View>

@@ -257,7 +257,10 @@ const AppNavigator = () => {
                 <CreateHabitBottomSheet />
             </NavigationContainer>
             {isNavReady && isSplashVisible && (
-                <AnimatedSplashScreen onAnimationEnd={() => setIsSplashVisible(false)} />
+                <AnimatedSplashScreen onAnimationEnd={() => {
+                    setIsSplashVisible(false);
+                    storage.set("app.is_splash_finished", true);
+                }} />
             )}
             <LevelUpModal
                 visible={pendingLevelUp > 0}

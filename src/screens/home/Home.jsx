@@ -124,6 +124,7 @@ const Home = () => {
   // Mood Tracking States & Functions
   const [userMoodEmoji, setUserMoodEmoji] = useMMKVString('user.moodEmoji');
   const [lastMoodDate, setLastMoodDate] = useMMKVString('user.lastMoodDate');
+  const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
   const [moodModalVisible, setMoodModalVisible] = useState(false);
   const [moodToastMsg, setMoodToastMsg] = useState("");
   const moodFadeAnim = useRef(new Animated.Value(0)).current;
@@ -756,14 +757,20 @@ const Home = () => {
       <View className="flex-row justify-between items-center mb-4 px-4">
         <TouchableOpacity
           onPress={toggleMenu}
-          style={{ backgroundColor: colors.card }}
+          disabled={checklistCompleted !== "true"}
+          style={{ backgroundColor: colors.card, opacity: checklistCompleted !== "true" ? 0.35 : 1 }}
           className="w-10 h-10 rounded-lg items-center justify-center"
         >
           <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
         </TouchableOpacity>
 
         <View className="relative">
-          <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={{ backgroundColor: colors.card }} className="w-10 h-10 rounded-full items-center justify-center">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Notification')}
+            disabled={checklistCompleted !== "true"}
+            style={{ backgroundColor: colors.card, opacity: checklistCompleted !== "true" ? 0.35 : 1 }}
+            className="w-10 h-10 rounded-full items-center justify-center"
+          >
             <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />
           </TouchableOpacity>
           {unreadNotificationCount > 0 && (
@@ -831,7 +838,7 @@ const Home = () => {
               todaysUserHabit={todaysUserHabit}
             />
 
-            {accountData?.email ? (
+            {accountData?.email && checklistCompleted === "true" ? (
               <VirtualPlant
                 key={accountData.email.toLowerCase()}
                 userId={accountData.email.toLowerCase()}

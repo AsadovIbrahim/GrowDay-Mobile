@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { useMMKVBoolean } from 'react-native-mmkv';
+import { useMMKVBoolean, useMMKVString } from 'react-native-mmkv';
 import React, { useEffect } from 'react';
 import HomeStack from './HomeStack';
 import ExploreStack from './ExploreStack';
@@ -10,21 +10,16 @@ import TabBar from './components/TabBar';
 const Tab = createBottomTabNavigator();
 
 const TabStack = () => {
-  const [isFirstTimeExplore, setIsFirstTimeExplore] = useMMKVBoolean("isFirstTimeExplore");
-
-  const initialRoute = isFirstTimeExplore ? "Explore" : "Home";
-
-  useEffect(() => {
-    if (isFirstTimeExplore) {
-      // Delay slightly or do it immediately
-      setIsFirstTimeExplore(false);
-    }
-  }, []);
+  const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
 
   return (
     <Tab.Navigator
-      initialRouteName={initialRoute}
+      initialRouteName="Home"
       tabBar={({ state, navigation }) => {
+        if (checklistCompleted !== "true") {
+          return null;
+        }
+
         const route = state.routes[state.index];
         const routeName = getFocusedRouteNameFromRoute(route);
 

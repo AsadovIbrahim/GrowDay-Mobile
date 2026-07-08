@@ -24,6 +24,14 @@ const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
         </View>
       </View>
 
+      {/* Getting Started Checklist Section */}
+      <GettingStartedChecklist
+        accountData={accountData}
+        onLogMoodPress={onLogMoodPress}
+        userHabitCount={0}
+        onAwardBonusXP={onAwardBonusXP}
+      />
+
       {/* Empty State Card */}
       <View className="px-4 mb-6">
         <View
@@ -64,14 +72,6 @@ const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
           </Text>
         </View>
       </View>
-
-      {/* Getting Started Checklist Section */}
-      <GettingStartedChecklist
-        accountData={accountData}
-        onLogMoodPress={onLogMoodPress}
-        userHabitCount={0}
-        onAwardBonusXP={onAwardBonusXP}
-      />
 
       {/* Progress Today placeholder */}
       <View className="px-4 mb-20">

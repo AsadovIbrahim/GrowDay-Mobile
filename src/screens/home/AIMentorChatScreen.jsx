@@ -11,7 +11,8 @@ import {
   SafeAreaView,
   StatusBar,
   Keyboard,
-  Dimensions
+  Dimensions,
+  Modal
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -35,6 +36,85 @@ const AIMentorChatScreen = () => {
   const { colors } = theme;
   const { t, i18n } = useTranslation();
   const [token] = useMMKVString("accessToken");
+
+  // AI Mentor Tutorial states and refs
+  const [isTutorialActive, setIsTutorialActive] = useState(() => !storage.getBoolean("user.mentor_tutorial_completed"));
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [activeLayout, setActiveLayout] = useState(null);
+
+  const limitBadgeRef = useRef(null);
+  const quickPromptsRef = useRef(null);
+  const inputBarRef = useRef(null);
+
+  // Auto-measure target components when tutorial step changes
+  useEffect(() => {
+    if (isTutorialActive) {
+      // Clear layout instantly to prevent stale coordinates highlight jump
+      setActiveLayout(null);
+
+      const delay = tutorialStep === 0 ? 800 : 80;
+      const timer = setTimeout(() => {
+        let activeRef = null;
+        if (tutorialStep === 0) activeRef = quickPromptsRef;
+        else if (tutorialStep === 1) activeRef = limitBadgeRef;
+        else if (tutorialStep === 2) activeRef = inputBarRef;
+
+        if (activeRef && activeRef.current) {
+          activeRef.current.measureInWindow((x, y, width, height) => {
+            if (width > 0 && height > 0) {
+              setActiveLayout({ x, y, width, height });
+            }
+          });
+        }
+      }, delay);
+      return () => clearTimeout(timer);
+    } else {
+      setActiveLayout(null);
+    }
+  }, [tutorialStep, isTutorialActive]);
+
+  const getTutorialText = (step) => {
+    const lang = i18n.language || "en";
+    const isAz = lang.substring(0, 2) === "az";
+    const isTr = lang.substring(0, 2) === "tr";
+    const isRu = lang.substring(0, 2) === "ru";
+
+    if (step === 0) {
+      if (isAz) return "Sürətli sual şablonları ilə AI Mentora bir kliklə sual verə bilərsiniz!";
+      if (isTr) return "Hızlı soru şablonlarıyla yapay zeka mentörüne tek tıkla soru sorabilirsiniz!";
+      if (isRu) return "Задайте вопрос ИИ-Ментору в один клик с помощью быстрых шаблонов!";
+      return "Ask the AI Mentor with one click using quick prompt templates!";
+    } else if (step === 1) {
+      if (isAz) return "Gündəlik pulsuz mesaj limitinizi buradan izləyə bilərsiniz.";
+      if (isTr) return "Günlük ücretsiz mesaj limitinizi buradan takip edebilirsiniz.";
+      if (isRu) return "Отслеживайте свой ежедневный лимит бесплатных сообщений здесь.";
+      return "Track your daily free AI messages limit here.";
+    } else {
+      if (isAz) return "Yaxud bura toxunaraq tamamilə özünüzə aid sualları yazıb göndərə bilərsiniz!";
+      if (isTr) return "Veya buraya dokunarak tamamen kendi özel sorularınızı yazıp gönderin!";
+      if (isRu) return "Или нажмите здесь, чтобы написать и отправить свои собственные вопросы!";
+      return "Or type your custom questions here and start chatting!";
+    }
+  };
+
+  const getTutorialButtonText = (step) => {
+    const lang = i18n.language || "en";
+    const isAz = lang.substring(0, 2) === "az";
+    const isTr = lang.substring(0, 2) === "tr";
+    const isRu = lang.substring(0, 2) === "ru";
+
+    if (step < 2) {
+      if (isAz) return "Növbəti >";
+      if (isTr) return "Sonraki >";
+      if (isRu) return "Далее >";
+      return "Next >";
+    } else {
+      if (isAz) return "Söhbətə Başla 🌱";
+      if (isTr) return "Sohbete Başla 🌱";
+      if (isRu) return "Начать чат 🌱";
+      return "Start Chatting 🌱";
+    }
+  };
 
   const screenHeight = Dimensions.get("screen").height;
   const windowHeight = Dimensions.get("window").height;
@@ -306,7 +386,7 @@ const AIMentorChatScreen = () => {
       {/* Header */}
       <View
         className="flex-row items-center justify-between px-4 pb-3 border-b"
-        style={{ backgroundColor: colors.card, borderColor: colors.border, paddingTop: insets.top > 0 ? insets.top + 8 : 12 }}
+        style={{ backgroundColor: colors.card, borderColor: colors.border, paddingTop: 10 }}
       >
         <View className="flex-row items-center">
           <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 -ml-2">
@@ -339,6 +419,7 @@ const AIMentorChatScreen = () => {
           </TouchableOpacity>
 
           <View
+            ref={limitBadgeRef}
             className="px-2.5 py-1 rounded-full"
             style={{ backgroundColor: colors.primarySurface }}
           >
@@ -398,7 +479,7 @@ const AIMentorChatScreen = () => {
 
         {/* Quick Action Chips */}
         {messages.length <= 1 && !isTyping && (
-          <View className="py-2.5">
+          <View ref={quickPromptsRef} className="py-2.5">
             <Text className="text-center text-xs font-semibold mb-2" style={{ color: colors.textMuted }}>
               {t("ai_mentor.select_prompt", "Select one to start the conversation:")}
             </Text>
@@ -430,11 +511,12 @@ const AIMentorChatScreen = () => {
 
         {/* Input Bar */}
         <View
+          ref={inputBarRef}
           className="flex-row items-center px-4 pt-3 border-t"
           style={{ 
             backgroundColor: colors.card, 
             borderColor: colors.border,
-            paddingBottom: (keyboardHeight === 0 && insets.bottom > 0) ? insets.bottom + 8 : 12
+            paddingBottom: 12
           }}
         >
           <TextInput
@@ -482,6 +564,208 @@ const AIMentorChatScreen = () => {
           <View style={{ height: keyboardHeight > 0 ? keyboardHeight - insets.bottom + navBarHeight + 45 : 0 }} />
         )}
       </KeyboardAvoidingView>
+
+      {/* Full-Screen AI Mentor Tutorial Overlay */}
+      <Modal
+        visible={isTutorialActive && activeLayout !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {}}
+      >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.72)" }}>
+          {/* Highlight step 0: Quick action prompts */}
+          {tutorialStep === 0 && activeLayout && (
+            <View
+              style={{
+                position: "absolute",
+                left: activeLayout.x,
+                top: activeLayout.y,
+                width: activeLayout.width,
+                height: activeLayout.height,
+                backgroundColor: colors.card,
+                borderColor: colors.primary,
+                borderWidth: 1.5,
+                borderRadius: 20,
+                paddingVertical: 10,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+                zIndex: 10000,
+              }}
+            >
+              <View style={{ flexDirection: "row", paddingHorizontal: 12, gap: 8 }}>
+                {quickPrompts.map((p, idx) => (
+                  <View
+                    key={idx}
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingVertical: 10,
+                      borderRadius: 20,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: colors.card,
+                      borderColor: colors.border,
+                      borderWidth: 1,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={p.icon} size={13} color={colors.primary} />
+                    <Text style={{ marginLeft: 6, fontSize: 12, fontFamily: "RedditSans-Bold", color: colors.text }}>
+                      {p.label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Highlight step 1: Free limit badge */}
+          {tutorialStep === 1 && activeLayout && (
+            <View
+              style={{
+                position: "absolute",
+                left: activeLayout.x,
+                top: activeLayout.y,
+                width: activeLayout.width,
+                height: activeLayout.height,
+                backgroundColor: colors.primarySurface,
+                borderColor: colors.primary,
+                borderWidth: 1.5,
+                borderRadius: 20,
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+                zIndex: 10000,
+              }}
+            >
+              <Text style={{ fontSize: 11, fontFamily: "RedditSans-Bold", color: colors.primary }}>
+                {t("ai_mentor.remaining_badge", { remaining: remainingMessages })}
+              </Text>
+            </View>
+          )}
+
+          {/* Highlight step 2: Custom input text bar */}
+          {tutorialStep === 2 && activeLayout && (
+            <View
+              style={{
+                position: "absolute",
+                left: activeLayout.x,
+                top: activeLayout.y,
+                width: activeLayout.width,
+                height: activeLayout.height,
+                backgroundColor: colors.card,
+                borderColor: colors.primary,
+                borderWidth: 1.5,
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: 16,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+                zIndex: 10000,
+              }}
+            >
+              <TextInput
+                editable={false}
+                placeholder={t("ai_mentor.input_placeholder", "Type your message...")}
+                placeholderTextColor={colors.placeholder}
+                className="flex-1 px-4 py-2.5 rounded-full border text-[14px]"
+                style={{
+                  backgroundColor: colors.inputBackground,
+                  borderColor: colors.border,
+                  color: colors.text,
+                }}
+              />
+            </View>
+          )}
+
+          {/* Tutorial Bubble spoken by Growy */}
+          {activeLayout && (
+            <View
+              style={{
+                position: "absolute",
+                left: 20,
+                right: 20,
+                backgroundColor: colors.card,
+                borderRadius: 24,
+                padding: 20,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 10,
+                elevation: 10,
+                zIndex: 10001,
+                ...(tutorialStep === 1
+                  ? { top: activeLayout.y + activeLayout.height + 16 }
+                  : { bottom: (Dimensions.get("window").height - activeLayout.y) + 16 }),
+              }}
+            >
+              {/* Growy Avatar Header */}
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: "rgba(16, 185, 129, 0.12)", alignItems: "center", justifyContent: "center" }}>
+                    <FontAwesomeIcon icon={faBrain} size={12} color="#10b981" />
+                  </View>
+                  <Text style={{ fontSize: 12, fontFamily: "RedditSans-Bold", color: "#10b981", letterSpacing: 0.5 }}>
+                    AI Mentor
+                  </Text>
+                </View>
+                {/* Steps indicators */}
+                <View style={{ flexDirection: "row", gap: 4 }}>
+                  {[0, 1, 2].map((i) => (
+                    <View
+                      key={i}
+                      style={{
+                        width: i === tutorialStep ? 16 : 6,
+                        height: 6,
+                        borderRadius: 3,
+                        backgroundColor: i <= tutorialStep ? "#10b981" : (isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"),
+                      }}
+                    />
+                  ))}
+                </View>
+              </View>
+
+              {/* Instruction dialogue text */}
+              <Text style={{ fontFamily: "RedditSans-Medium", fontSize: 14, lineHeight: 20, color: colors.text, marginBottom: 16 }}>
+                {getTutorialText(tutorialStep)}
+              </Text>
+
+              {/* Action buttons */}
+              <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (tutorialStep < 2) {
+                      setTutorialStep(tutorialStep + 1);
+                    } else {
+                      storage.set("user.mentor_tutorial_completed", true);
+                      setIsTutorialActive(false);
+                    }
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    backgroundColor: colors.primary,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 16,
+                  }}
+                >
+                  <Text style={{ color: "#ffffff", fontFamily: "RedditSans-Bold", fontSize: 14 }}>
+                    {getTutorialButtonText(tutorialStep)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };

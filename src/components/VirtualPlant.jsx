@@ -3,13 +3,14 @@ import { View, Text, TouchableOpacity, Animated, StyleSheet, Easing, Modal, Scro
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faTint, faStar, faLeaf, faPalette, faSun, faHeart, faTimes, faPen, faTree, faChevronLeft, faChevronRight, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { useMMKVString } from "react-native-mmkv";
+import { useMMKVString, useMMKVBoolean } from "react-native-mmkv";
 import { storage } from "../utils/MMKVStore";
 import { schedulePlantWateringReminder } from "../utils/NotificationService";
 import Svg, { Polyline } from "react-native-svg";
+import { useIsFocused } from "@react-navigation/native";
 
 const LOCAL_TRANSLATIONS = {
   az: {
@@ -97,6 +98,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Kilidli sahə 🔒",
       not_accessible: "Hələlik istifadəyə verilmir",
       unlock_instructions: "Öncəki boş sahələri doldurduqca növbəti sahələrin kilidi açılacaq."
+    },
+    tutorial: {
+      welcome: "Salam! Mən Growy 🌱 — sənin virtual bitkinəm. Birlikdə böyüyəcəyik!",
+      pet: "Məni sığalla — hər gün 3 dəfə sığallayıb XP qazan! 👋",
+      water: "Məni sula 💧 — torpağımı nəm saxla ki, susuz qalmayım!",
+      sun: "Mənə günəş işığı ver ☀️ — fotosintez edib sürətlə böyüyüm!",
+      fertilize: "Məni gübrələ ⚡ — əlavə böyümə gücü və XP qazan!",
+      garden: "Səviyyə 5-də məni Bağa ək 🌳 — yeni bitkilər kəşf et!",
+      customize: "Məni fərdiləşdir 🎨 — dibçəyimi və görünüşümü dəyiş!",
+      complete: "Hazırsan! Al +10 XP başlanğıc hədiyyəsi! 🌟",
+      next_btn: "Növbəti",
+      skip_btn: "Keç",
+      start_btn: "Böyüməyə Başla 🌱"
     }
   },
   tr: {
@@ -184,6 +198,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Kilitli alan 🔒",
       not_accessible: "Henüz kullanılamaz",
       unlock_instructions: "Önceki boş alanları doldurdukça bu alanın kilidi açılacaktır."
+    },
+    tutorial: {
+      welcome: "Merhaba! Ben Growy 🌱 — senin sanal bitkinim. Birlikte büyüyeceğiz!",
+      pet: "Beni sev — her gün 3 kez sevip XP kazan! 👋",
+      water: "Beni sula 💧 — toprağımı nemli tut ki susuz kalmayayım!",
+      sun: "Bana güneş ver ☀️ — fotosentez yapıp hızlı büyüyeyim!",
+      fertilize: "Beni gübrele ⚡ — ekstra büyüme gücü ve XP kazan!",
+      garden: "5. Seviyede beni Bahçeye dik 🌳 — yeni bitkiler keşfet!",
+      customize: "Beni özelleştir 🎨 — saksımı ve bitki tarzımı değiştir!",
+      complete: "Hazırsın! Al +10 XP başlangıç hediyesi! 🌟",
+      next_btn: "Sonraki",
+      skip_btn: "Atla",
+      start_btn: "Büyümeye Başla 🌱"
     }
   },
   ru: {
@@ -271,6 +298,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Закрытый участок 🔒",
       not_accessible: "Пока недоступно",
       unlock_instructions: "Этот участок разблокируется по мере заполнения предыдущих пустых участков."
+    },
+    tutorial: {
+      welcome: "Привет! Я Гроуи 🌱 — твоё виртуальное растение. Будем расти вместе!",
+      pet: "Погладь меня — до 3 раз в день, чтобы получить XP! 👋",
+      water: "Полей меня 💧 — держи мою почву влажной, чтобы я не засох!",
+      sun: "Дай мне солнце ☀️ — помоги мне расти быстрее с помощью света!",
+      fertilize: "Удобри меня ⚡ — получи мощный толчок к росту и бонусные XP!",
+      garden: "На 5-м уровне посади меня в Сад 🌳 — открой новые виды!",
+      customize: "Настрой меня 🎨 — измени мой горшок и стиль растения!",
+      complete: "Готово! Держи +10 XP в подарок! 🌟",
+      next_btn: "Далее",
+      skip_btn: "Пропустить",
+      start_btn: "Начать рост 🌱"
     }
   },
   en: {
@@ -358,6 +398,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Locked Plot 🔒",
       not_accessible: "Not accessible yet",
       unlock_instructions: "This plot will unlock as you fill the preceding empty plots."
+    },
+    tutorial: {
+      welcome: "Hey there! I'm Growy 🌱 — your virtual plant buddy. Let's grow together!",
+      pet: "Pet me 👋 — stroke me up to 3 times daily to earn XP!",
+      water: "Water me 💧 — keep my soil moist so I don't get thirsty!",
+      sun: "Give me sun ☀️ — help me photosynthesize and grow faster!",
+      fertilize: "Fertilize me ⚡ — get extra growth boost and bonus XP!",
+      garden: "Hit Level 5 and plant me in the Garden 🌳 to unlock new species!",
+      customize: "Customize me 🎨 — change my pot and plant style!",
+      complete: "All set! Here's +10 XP to get you started! 🌟",
+      next_btn: "Next",
+      skip_btn: "Skip",
+      start_btn: "Start Growing 🌱"
     }
   },
   de: {
@@ -445,6 +498,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Gesperrtes Grundstück 🔒",
       not_accessible: "Noch nicht zugänglich",
       unlock_instructions: "Dieses Grundstück wird freigeschaltet, wenn du die vorherigen leeren Grundstücke ausfüllst."
+    },
+    tutorial: {
+      welcome: "Hallo! Ich bin Growy 🌱 — deine virtuelle Pflanze. Lass uns gemeinsam wachsen!",
+      pet: "Streichle mich — bis zu 3-mal täglich für XP! 👋",
+      water: "Gieße mich 💧 — halte meine Erde feucht, damit ich keinen Durst habe!",
+      sun: "Gib mir Sonne ☀️ — hilf mir, mit Licht schneller zu wachsen!",
+      fertilize: "Dünge mich ⚡ — erhalte einen Wachstumsschub und Bonus-XP!",
+      garden: "Pflanze mich ab Level 5 im Garten 🌳 — entdecke neue Arten!",
+      customize: "Passe mich an 🎨 — ändere meinen Topf und Pflanzenstil!",
+      complete: "Startklar! Hier sind +10 XP zum Start! 🌟",
+      next_btn: "Weiter",
+      skip_btn: "Überspringen",
+      start_btn: "Wachsen starten 🌱"
     }
   },
   es: {
@@ -532,6 +598,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Terreno Bloqueado 🔒",
       not_accessible: "No accesible todavía",
       unlock_instructions: "Este terreno se desbloqueará a medida que llenes los terrenos vacíos anteriores."
+    },
+    tutorial: {
+      welcome: "¡Hola! Soy Growy 🌱 — tu planta virtual. ¡Crezcamos juntos!",
+      pet: "¡Acaríciame — hasta 3 veces al día para ganar XP! 👋",
+      water: "¡Riégame 💧 — mantén mi tierra húmeda para que no tenga sed!",
+      sun: "¡Dame sol ☀️ — ayúdame a hacer la fotosíntesis y crecer rápido!",
+      fertilize: "¡Fertilízame ⚡ — obtén un impulso extra de crecimiento y XP!",
+      garden: "¡En el Nivel 5, plántame en el Jardín 🌳 para descubrir nuevas especies!",
+      customize: "¡Personalízame 🎨 — cambia mi maceta y mi estilo!",
+      complete: "¡Listo! ¡Aquí tienes +10 XP de bienvenida! 🌟",
+      next_btn: "Siguiente",
+      skip_btn: "Saltar",
+      start_btn: "Empezar a crecer 🌱"
     }
   },
   fr: {
@@ -619,6 +698,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Terrain Verrouillé 🔒",
       not_accessible: "Pas encore accessible",
       unlock_instructions: "Ce terrain se déverrouillera au fur et à mesure que vous remplirez les terrains vides précédents."
+    },
+    tutorial: {
+      welcome: "Salut ! Je suis Growy 🌱 — ta plante virtuelle. Grandissons ensemble !",
+      pet: "Caresse-moi — jusqu'à 3 fois par jour pour des XP ! 👋",
+      water: "Arrose-moi 💧 — garde ma terre humide pour ne pas avoir soif !",
+      sun: "Donne-moi du soleil ☀️ — aide-moi à grandir plus vite !",
+      fertilize: "Fertilise-moi ⚡ — obtiens un boost de croissance et des XP !",
+      garden: "Au Niveau 5, plante-moi au Jardin 🌳 pour découvrir de nouvelles espèces !",
+      customize: "Personnalise-moi 🎨 — change mon pot et mon style !",
+      complete: "C'est parti ! Voici +10 XP de bienvenue ! 🌟",
+      next_btn: "Suivant",
+      skip_btn: "Passer",
+      start_btn: "Commencer à grandir 🌱"
     }
   },
   it: {
@@ -706,6 +798,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "Terreno Bloccato 🔒",
       not_accessible: "Non ancora accessibile",
       unlock_instructions: "Questo terreno si sbloccherà man mano che riempirai i terreni vuoti precedenti."
+    },
+    tutorial: {
+      welcome: "Ciao! Sono Growy 🌱 — la tua pianta virtuale. Cresciamo insieme!",
+      pet: "Accarezzami — fino a 3 volte al giorno per XP! 👋",
+      water: "Bagna mi 💧 — mantieni la terra umida per non avere sete!",
+      sun: "Dammi sole ☀️ — aiutami a fare la fotosintesi per crescere in fretta!",
+      fertilize: "Concima mi ⚡ — ottieni una spinta in più per la crescita e XP!",
+      garden: "Al Livello 5, piantami nel Giardino 🌳 per scoprire nuove specie!",
+      customize: "Personalizzami 🎨 — cambia il mio vaso e stile!",
+      complete: "Tutto pronto! Ecco +10 XP di benvenuto! 🌟",
+      next_btn: "Avanti",
+      skip_btn: "Salta",
+      start_btn: "Inizia a crescere 🌱"
     }
   },
   zh: {
@@ -793,6 +898,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "未解锁区域 🔒",
       not_accessible: "尚不可访问",
       unlock_instructions: "当你填满前面的空区域时，该区域将被解锁。"
+    },
+    tutorial: {
+      welcome: "嗨！我是 Growy 🌱 —— 你的虚拟植物伙伴。一起成长吧！",
+      pet: "抚摸我吧 —— 每天最多3次，赚取XP！👋",
+      water: "浇灌我 💧 —— 保持土壤湿润，别让我口渴！",
+      sun: "照耀我 ☀️ —— 帮助我光合作用，快速生长！",
+      fertilize: "施肥我 ⚡ —— 获得额外的成长加速和奖励XP！",
+      garden: "达到5级时将我种在花园 🌳 —— 发现新物种！",
+      customize: "装扮我 🎨 —— 改变我的花盆和植物样式！",
+      complete: "准备好了！送你 +10 XP 作为开始！🌟",
+      next_btn: "下一步",
+      skip_btn: "跳过",
+      start_btn: "开始成长 🌱"
     }
   },
   ar: {
@@ -880,6 +998,19 @@ const LOCAL_TRANSLATIONS = {
       locked_plot: "موقع مغلق 🔒",
       not_accessible: "غير متاح بعد",
       unlock_instructions: "سيتم فتح هذا الموقع عندما تملأ المواقع الفارغة السابقة."
+    },
+    tutorial: {
+      welcome: "مرحباً! أنا Growy 🌱 — نبتتك الافتراضية. لننمو معاً!",
+      pet: "داعبني — حتى 3 مرات يومياً لكسب XP! 👋",
+      water: "اسقني 💧 — حافظ على رطوبة تربتي لكي لا أعطش!",
+      sun: "عرضني للشمس ☀️ — ساعدني على البناء الضوئي والنمو أسرع!",
+      fertilize: "سمّدني ⚡ — احصل على دفعة نمو إضافية ونقاط XP!",
+      garden: "عند المستوى 5، ازرعني في الحديقة 🌳 لاكتشاف أنواع جديدة!",
+      customize: "خصّصني 🎨 — غيّر حوضي ومظهر نبتتي!",
+      complete: "جاهز! إليك +10 XP هدية البداية! 🌟",
+      next_btn: "التالي",
+      skip_btn: "تخطي",
+      start_btn: "ابدأ النمو 🌱"
     }
   }
 };
@@ -930,13 +1061,23 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
   const tLocal = useCallback((key, options = {}) => {
     const hasTranslation = i18n.exists(key);
+    let result;
     if (hasTranslation) {
-      return t(key, options);
+      result = t(key, options);
+    } else {
+      const localKey = key.startsWith("virtual_plant.") ? key.replace("virtual_plant.", "") : key;
+      const currentLang = i18n.language || "az";
+      result = translateLocal(localKey, currentLang, options);
     }
-    const localKey = key.startsWith("virtual_plant.") ? key.replace("virtual_plant.", "") : key;
-    const currentLang = i18n.language || "az";
-    return translateLocal(localKey, currentLang, options);
-  }, [t, i18n]);
+
+    if (typeof result === "string") {
+      const storedName = storage.getString(getStorageKey("plantName")) || "Growy";
+      if (storedName && storedName !== "...") {
+        result = result.replace(/Growy/g, storedName);
+      }
+    }
+    return result;
+  }, [t, i18n, getStorageKey]);
 
   // Migrate any mixed-case growy keys to lowercase (synchronous on first render)
   const isMigrated = useRef(false);
@@ -1083,6 +1224,29 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   });
   const [plantName, setPlantName] = useState(() => storage.getString(getStorageKey("plantName")) || "...");
   const [hasNamedPlant, setHasNamedPlant] = useState(() => storage.getBoolean(getStorageKey("hasNamedPlant")) || false);
+  const isFocused = useIsFocused();
+  const [isSplashFinished] = useMMKVBoolean("app.is_splash_finished");
+  const [tutorialCompleted, setTutorialCompletedState] = useState(() => storage.getBoolean(getStorageKey("tutorialCompleted")) || false);
+  const [isTutorialActive, setIsTutorialActive] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+
+  const [petBtnLayout, setPetBtnLayout] = useState(null);
+  const [waterBtnLayout, setWaterBtnLayout] = useState(null);
+  const [sunBtnLayout, setSunBtnLayout] = useState(null);
+  const [fertilizeBtnLayout, setFertilizeBtnLayout] = useState(null);
+  const [gardenBtnLayout, setGardenBtnLayout] = useState(null);
+  const [customizeBtnLayout, setCustomizeBtnLayout] = useState(null);
+  const [headerButtonsLayout, setHeaderButtonsLayout] = useState(null);
+  const [habitsWrapperLayout, setHabitsWrapperLayout] = useState(null);
+
+  const completeTutorial = () => {
+    storage.set(getStorageKey("tutorialCompleted"), true);
+    setTutorialCompletedState(true);
+    setIsTutorialActive(false);
+    if (onAwardXP) {
+      onAwardXP(10, "Virtual Plant Tutorial completed! 🌟");
+    }
+  };
   const [isRenameModalVisible, setRenameModalVisible] = useState(false);
   const [renameInput, setRenameInput] = useState("");
 
@@ -1160,11 +1324,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   useEffect(() => {
     // Auto-prompt naming modal for new plants on mount
     const alreadyNamed = storage.getBoolean(getStorageKey("hasNamedPlant")) || false;
-    if (!alreadyNamed) {
+    if (!alreadyNamed && isFocused && isSplashFinished === true) {
       setRenameInput("");
       setRenameModalVisible(true);
     }
-  }, [userId, getStorageKey]);
+  }, [userId, getStorageKey, isFocused, isSplashFinished]);
 
   useEffect(() => {
     // Schedule a plant watering push notification reminder based on watered status
@@ -1174,6 +1338,20 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       console.error("Error scheduling plant watering reminder:", e);
     }
   }, [wateredCount, plantName]);
+
+  useEffect(() => {
+    // Start tutorial if plant is level 1, named, and tutorial not completed
+    const isCompleted = storage.getBoolean(getStorageKey("tutorialCompleted")) || false;
+    const level = storage.getNumber(getStorageKey("level")) || 1;
+    const hasName = storage.getBoolean(getStorageKey("hasNamedPlant")) || false;
+    if (!isCompleted && level === 1 && hasName && isFocused && isSplashFinished === true) {
+      const timer = setTimeout(() => {
+        setIsTutorialActive(true);
+        setTutorialStep(0);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userId, plantLevel, hasNamedPlant, getStorageKey, isFocused, isSplashFinished]);
 
   // Note: We no longer synchronize totalExperiencePoints directly to plantXP and plantLevel.
   // The plant now has its own separate XP and Level progression.
@@ -1544,6 +1722,63 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const petRotateAnim = useRef(new Animated.Value(0)).current;
   const sunScaleAnim = useRef(new Animated.Value(0)).current;
   const sunOpacityAnim = useRef(new Animated.Value(0)).current;
+  const tutorialArrowAnim = useRef(new Animated.Value(0)).current;
+  const tutorialPulseAnim = useRef(new Animated.Value(0)).current;
+  const tutorialFadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (isTutorialActive) {
+      // Bouncing chevron
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(tutorialArrowAnim, { toValue: 8, duration: 500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(tutorialArrowAnim, { toValue: 0, duration: 500, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])
+      ).start();
+      // Pulsing highlight glow
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(tutorialPulseAnim, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(tutorialPulseAnim, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      tutorialArrowAnim.setValue(0);
+      tutorialPulseAnim.setValue(0);
+    }
+  }, [isTutorialActive, tutorialArrowAnim, tutorialPulseAnim]);
+
+  const animateTutorialStepTransition = useCallback((nextStep) => {
+    Animated.timing(tutorialFadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+      if (nextStep === 2) {
+        triggerPetAnimation();
+        const msg = tLocal("virtual_plant.dialogues.pet_happy");
+        addPlantXP(2, msg);
+        setSpeechText(msg);
+      } else if (nextStep === 3) {
+        triggerWatering();
+        const msg = tLocal("virtual_plant.dialogues.water_happy");
+        addPlantXP(5, msg);
+        setSpeechText(msg);
+      } else if (nextStep === 4) {
+        triggerSunAnimation();
+        const msg = tLocal("virtual_plant.dialogues.sun_happy");
+        addPlantXP(8, msg);
+        setSpeechText(msg);
+      } else if (nextStep === 5) {
+        triggerFertilizeAnimation();
+        const msg = tLocal("virtual_plant.dialogues.fertilize_happy");
+        addPlantXP(15, msg);
+        setSpeechText(msg);
+      } else if (nextStep === 6) {
+        setGardenModalVisible(true);
+      } else if (nextStep === 7) {
+        setCustomizeModalVisible(true);
+      }
+      setTutorialStep(nextStep);
+      Animated.timing(tutorialFadeAnim, { toValue: 1, duration: 250, useNativeDriver: true }).start();
+    });
+  }, [tutorialFadeAnim, tLocal, addPlantXP, triggerPetAnimation, triggerWatering, triggerSunAnimation, triggerFertilizeAnimation, setGardenModalVisible, setCustomizeModalVisible, setSpeechText]);
 
   // Rain/Water drops
   const dropAnims = useRef([
@@ -1690,7 +1925,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const waterChargesLeft = Math.max(0, completedHabits - wateredCount);
 
   const handleWater = () => {
-    if (waterChargesLeft <= 0) {
+    if (waterChargesLeft <= 0 && !isTutorialActive) {
       if (wateredCount > 0) {
         setSpeechText(tLocal("virtual_plant.dialogues.water_already"));
       } else {
@@ -1710,11 +1945,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   };
 
   const handleSun = () => {
-    if (sunnedToday) {
+    if (sunnedToday && !isTutorialActive) {
       setSpeechText(tLocal("virtual_plant.dialogues.sun_already"));
       return;
     }
-    if (completionRate < 0.5) {
+    if (completionRate < 0.5 && !isTutorialActive) {
       setSpeechText(tLocal("virtual_plant.dialogues.sun_disabled"));
       return;
     }
@@ -1729,11 +1964,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   };
 
   const handleFertilize = () => {
-    if (fertilizedToday) {
+    if (fertilizedToday && !isTutorialActive) {
       setSpeechText(tLocal("virtual_plant.dialogues.fertilize_already"));
       return;
     }
-    if (completionRate < 1.0) {
+    if (completionRate < 1.0 && !isTutorialActive) {
       setSpeechText(tLocal("virtual_plant.dialogues.fertilize_disabled"));
       return;
     }
@@ -2174,6 +2409,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
               <View className="flex-row items-center gap-2">
                 {/* Garden Trigger */}
                 <TouchableOpacity
+                  onLayout={(e) => {
+                    const { x, y, width, height } = e.nativeEvent.layout;
+                    setGardenBtnLayout({ x, y, width, height });
+                  }}
                   onPress={() => setGardenModalVisible(true)}
                   className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/25"
                   activeOpacity={0.7}
@@ -2186,6 +2425,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
                 {/* Customize Palette Trigger */}
                 <TouchableOpacity
+                  onLayout={(e) => {
+                    const { x, y, width, height } = e.nativeEvent.layout;
+                    setCustomizeBtnLayout({ x, y, width, height });
+                  }}
                   onPress={() => setCustomizeModalVisible(true)}
                   className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 border border-violet-500/25"
                   activeOpacity={0.7}
@@ -2385,6 +2628,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             <View className="flex-row justify-between items-center gap-1.5 mt-3.5 pt-3 border-t" style={{ borderColor: colors.border }}>
               {/* Action 1: Pet */}
               <TouchableOpacity
+                onLayout={(e) => {
+                  const { x, y, width, height } = e.nativeEvent.layout;
+                  setPetBtnLayout({ x, y, width, height });
+                }}
                 onPress={handlePet}
                 className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 active:scale-95"
                 activeOpacity={0.7}
@@ -2395,58 +2642,462 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                 </Text>
               </TouchableOpacity>
 
-              {/* Action 2: Water */}
-              <TouchableOpacity
-                onPress={handleWater}
-                disabled={false}
-                style={{
-                  backgroundColor: isWaterable ? "rgba(14, 165, 233, 0.12)" : "rgba(148, 163, 184, 0.05)",
-                  opacity: isWaterable ? 1 : 0.45,
+              {/* Wrapper View for Action 2, 3, 4 */}
+              <View
+                onLayout={(e) => {
+                  const { x, y, width, height } = e.nativeEvent.layout;
+                  setHabitsWrapperLayout({ x, y, width, height });
                 }}
-                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-                activeOpacity={0.7}
+                className="flex-row gap-1.5"
+                style={{ flex: 3 }}
               >
-                <FontAwesomeIcon icon={faTint} size={11} color={isWaterable ? "#0ea5e9" : "#94a3b8"} />
-                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isWaterable ? (isDark ? "#38bdf8" : "#0284c7") : "#94a3b8" }}>
-                  {tLocal("virtual_plant.actions.water")}
-                </Text>
-              </TouchableOpacity>
+                {/* Action 2: Water */}
+                <TouchableOpacity
+                  onLayout={(e) => {
+                    const { x, y, width, height } = e.nativeEvent.layout;
+                    setWaterBtnLayout({ x, y, width, height });
+                  }}
+                  onPress={handleWater}
+                  disabled={false}
+                  style={{
+                    backgroundColor: isWaterable ? "rgba(14, 165, 233, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                    opacity: isWaterable ? 1 : 0.45,
+                  }}
+                  className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                  activeOpacity={0.7}
+                >
+                  <FontAwesomeIcon icon={faTint} size={11} color={isWaterable ? "#0ea5e9" : "#94a3b8"} />
+                  <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isWaterable ? (isDark ? "#38bdf8" : "#0284c7") : "#94a3b8" }}>
+                    {tLocal("virtual_plant.actions.water")}
+                  </Text>
+                </TouchableOpacity>
 
-              {/* Action 3: Sun */}
-              <TouchableOpacity
-                onPress={handleSun}
-                disabled={false}
-                style={{
-                  backgroundColor: isSunable ? "rgba(234, 179, 8, 0.12)" : "rgba(148, 163, 184, 0.05)",
-                  opacity: isSunable ? 1 : 0.45,
-                }}
-                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-                activeOpacity={0.7}
-              >
-                <FontAwesomeIcon icon={faSun} size={11} color={isSunable ? "#eab308" : "#94a3b8"} />
-                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isSunable ? (isDark ? "#fde047" : "#a16207") : "#94a3b8" }}>
-                  {tLocal("virtual_plant.actions.sun")}
-                </Text>
-              </TouchableOpacity>
+                {/* Action 3: Sun */}
+                <TouchableOpacity
+                  onLayout={(e) => {
+                    const { x, y, width, height } = e.nativeEvent.layout;
+                    setSunBtnLayout({ x, y, width, height });
+                  }}
+                  onPress={handleSun}
+                  disabled={false}
+                  style={{
+                    backgroundColor: isSunable ? "rgba(234, 179, 8, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                    opacity: isSunable ? 1 : 0.45,
+                  }}
+                  className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                  activeOpacity={0.7}
+                >
+                  <FontAwesomeIcon icon={faSun} size={11} color={isSunable ? "#eab308" : "#94a3b8"} />
+                  <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isSunable ? (isDark ? "#fde047" : "#a16207") : "#94a3b8" }}>
+                    {tLocal("virtual_plant.actions.sun")}
+                  </Text>
+                </TouchableOpacity>
 
-              {/* Action 4: Fertilize */}
-              <TouchableOpacity
-                onPress={handleFertilize}
-                disabled={false}
-                style={{
-                  backgroundColor: isFertilizable ? "rgba(34, 197, 94, 0.12)" : "rgba(148, 163, 184, 0.05)",
-                  opacity: isFertilizable ? 1 : 0.45,
-                }}
-                className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
-                activeOpacity={0.7}
-              >
-                <FontAwesomeIcon icon={faStar} size={11} color={isFertilizable ? "#22c55e" : "#94a3b8"} />
-                <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isFertilizable ? (isDark ? "#4ade80" : "#16a34a") : "#94a3b8" }}>
-                  {tLocal("virtual_plant.actions.fertilize")}
-                </Text>
-              </TouchableOpacity>
+                {/* Action 4: Fertilize */}
+                <TouchableOpacity
+                  onLayout={(e) => {
+                    const { x, y, width, height } = e.nativeEvent.layout;
+                    setFertilizeBtnLayout({ x, y, width, height });
+                  }}
+                  onPress={handleFertilize}
+                  disabled={false}
+                  style={{
+                    backgroundColor: isFertilizable ? "rgba(34, 197, 94, 0.12)" : "rgba(148, 163, 184, 0.05)",
+                    opacity: isFertilizable ? 1 : 0.45,
+                  }}
+                  className="flex-1 flex-row items-center justify-center gap-1 py-1.5 rounded-xl active:scale-95"
+                  activeOpacity={0.7}
+                >
+                  <FontAwesomeIcon icon={faStar} size={11} color={isFertilizable ? "#22c55e" : "#94a3b8"} />
+                  <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} className="text-[10px] font-redditsans-bold" style={{ color: isFertilizable ? (isDark ? "#4ade80" : "#16a34a") : "#94a3b8" }}>
+                    {tLocal("virtual_plant.actions.fertilize")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
+          {isTutorialActive && (
+            <Animated.View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.65)",
+                borderRadius: 16,
+                zIndex: 9999,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 16,
+                opacity: tutorialFadeAnim,
+              }}
+            >
+              {/* Skip button - top right */}
+              {tutorialStep < 7 && (
+                <TouchableOpacity
+                  onPress={completeTutorial}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    zIndex: 10001,
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    paddingHorizontal: 12,
+                    paddingVertical: 5,
+                    borderRadius: 20,
+                  }}
+                  activeOpacity={0.6}
+                >
+                  <Text style={{ color: "rgba(255,255,255,0.8)", fontFamily: "RedditSans-Medium", fontSize: 11 }}>
+                    {tLocal("virtual_plant.tutorial.skip_btn")} ✕
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Active Replica Button Overlays (drawn above dark overlay, clickable) */}
+
+              {/* Step 1: Pet Button Replica */}
+              {tutorialStep === 1 && petBtnLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    triggerPetAnimation();
+                    const msg = tLocal("virtual_plant.dialogues.pet_happy");
+                    addPlantXP(2, msg);
+                    setSpeechText(msg);
+                    animateTutorialStepTransition(2);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: petBtnLayout.x + 16,
+                    bottom: 16,
+                    width: petBtnLayout.width,
+                    height: petBtnLayout.height,
+                    backgroundColor: colors.card,
+                    borderRadius: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#f472b6",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHeart} size={11} color="#ef4444" />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: colors.textSecondary }}>
+                    {tLocal("virtual_plant.actions.pet")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Step 2: Water Button Replica */}
+              {tutorialStep === 2 && waterBtnLayout && habitsWrapperLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleWater();
+                    animateTutorialStepTransition(3);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: waterBtnLayout.x + habitsWrapperLayout.x + 16,
+                    bottom: 16,
+                    width: waterBtnLayout.width,
+                    height: waterBtnLayout.height,
+                    backgroundColor: isDark ? "#1e293b" : "#f0f9ff",
+                    borderRadius: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#60a5fa",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTint} size={11} color="#0ea5e9" />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: isDark ? "#38bdf8" : "#0284c7" }}>
+                    {tLocal("virtual_plant.actions.water")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Step 3: Sun Button Replica */}
+              {tutorialStep === 3 && sunBtnLayout && habitsWrapperLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleSun();
+                    animateTutorialStepTransition(4);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: sunBtnLayout.x + habitsWrapperLayout.x + 16,
+                    bottom: 16,
+                    width: sunBtnLayout.width,
+                    height: sunBtnLayout.height,
+                    backgroundColor: isDark ? "#2d2a15" : "#fef9c3",
+                    borderRadius: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#eab308",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSun} size={11} color="#eab308" />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: isDark ? "#fde047" : "#a16207" }}>
+                    {tLocal("virtual_plant.actions.sun")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Step 4: Fertilize Button Replica */}
+              {tutorialStep === 4 && fertilizeBtnLayout && habitsWrapperLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleFertilize();
+                    animateTutorialStepTransition(5);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: fertilizeBtnLayout.x + habitsWrapperLayout.x + 16,
+                    bottom: 16,
+                    width: fertilizeBtnLayout.width,
+                    height: fertilizeBtnLayout.height,
+                    backgroundColor: isDark ? "#143a24" : "#dcfce7",
+                    borderRadius: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#22c55e",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faStar} size={11} color="#22c55e" />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: isDark ? "#4ade80" : "#16a34a" }}>
+                    {tLocal("virtual_plant.actions.fertilize")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Step 5: Garden Button Replica */}
+              {tutorialStep === 5 && gardenBtnLayout && headerButtonsLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setGardenModalVisible(true);
+                    animateTutorialStepTransition(6);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: gardenBtnLayout.x + headerButtonsLayout.x + 16,
+                    top: gardenBtnLayout.y + headerButtonsLayout.y + 16,
+                    width: gardenBtnLayout.width,
+                    height: gardenBtnLayout.height,
+                    backgroundColor: isDark ? "#143a24" : "#e6f4ea",
+                    borderColor: "rgba(16, 185, 129, 0.25)",
+                    borderWidth: 1,
+                    borderRadius: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#10b981",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTree} size={11} color={isDark ? "#34d399" : "#059669"} />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: isDark ? "#34d399" : "#059669" }}>
+                    {tLocal("virtual_plant.garden.title")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Step 6: Customize Button Replica */}
+              {tutorialStep === 6 && customizeBtnLayout && headerButtonsLayout && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCustomizeModalVisible(true);
+                    animateTutorialStepTransition(7);
+                  }}
+                  activeOpacity={0.7}
+                  style={{
+                    position: "absolute",
+                    left: customizeBtnLayout.x + headerButtonsLayout.x + 16,
+                    top: customizeBtnLayout.y + headerButtonsLayout.y + 16,
+                    width: customizeBtnLayout.width,
+                    height: customizeBtnLayout.height,
+                    backgroundColor: isDark ? "#2e1065" : "#f3e8ff",
+                    borderColor: "rgba(139, 92, 246, 0.25)",
+                    borderWidth: 1,
+                    borderRadius: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    shadowColor: "#8b5cf6",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 8,
+                    elevation: 8,
+                    zIndex: 10000,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPalette} size={10} color={isDark ? "#c084fc" : "#7c3aed"} />
+                  <Text style={{ fontSize: 10, fontFamily: "RedditSans-Bold", color: isDark ? "#c084fc" : "#7c3aed" }}>
+                    {tLocal("virtual_plant.customizer.customize_btn")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Tutorial Tooltip Card */}
+              <View
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 20,
+                  padding: 18,
+                  width: "100%",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 20,
+                  elevation: 12,
+                  borderWidth: 1,
+                  borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+                }}
+              >
+                {/* Header with Growy icon + dot progress */}
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: "rgba(16, 185, 129, 0.12)", alignItems: "center", justifyContent: "center" }}>
+                      <FontAwesomeIcon icon={faLeaf} size={12} color="#10b981" />
+                    </View>
+                    <Text style={{ fontSize: 12, fontFamily: "RedditSans-Bold", color: "#10b981", letterSpacing: 0.5 }}>
+                      {plantName && plantName !== "..." ? plantName : "Growy"}
+                    </Text>
+                  </View>
+                  {/* Dot progress indicator for 8 steps */}
+                  <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+                      <View
+                        key={i}
+                        style={{
+                          width: i === tutorialStep ? 16 : 6,
+                          height: 6,
+                          borderRadius: 3,
+                          backgroundColor: i <= tutorialStep ? "#10b981" : (isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"),
+                        }}
+                      />
+                    ))}
+                  </View>
+                </View>
+
+                {/* Instruction Text */}
+                <Text style={{ fontFamily: "RedditSans-Medium", fontSize: 14, lineHeight: 20, color: colors.text, marginBottom: 16 }}>
+                  {(() => {
+                    switch (tutorialStep) {
+                      case 0:
+                        return tLocal("virtual_plant.tutorial.welcome");
+                      case 1:
+                        return tLocal("virtual_plant.tutorial.pet");
+                      case 2:
+                        return tLocal("virtual_plant.tutorial.water");
+                      case 3:
+                        return tLocal("virtual_plant.tutorial.sun");
+                      case 4:
+                        return tLocal("virtual_plant.tutorial.fertilize");
+                      case 5:
+                        return tLocal("virtual_plant.tutorial.garden");
+                      case 6:
+                        return tLocal("virtual_plant.tutorial.customize");
+                      case 7:
+                      default:
+                        return tLocal("virtual_plant.tutorial.complete");
+                    }
+                  })()}
+                </Text>
+
+                {/* Action button */}
+                <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                  {tutorialStep < 7 ? (
+                    <TouchableOpacity
+                      onPress={() => animateTutorialStepTransition(tutorialStep + 1)}
+                      activeOpacity={0.7}
+                    >
+                      <LinearGradient
+                        colors={["#10b981", "#059669"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                          paddingHorizontal: 20,
+                          paddingVertical: 10,
+                          borderRadius: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 12 }}>
+                          {tLocal("virtual_plant.tutorial.next_btn")}
+                        </Text>
+                        <FontAwesomeIcon icon={faChevronRight} size={10} color="#fff" />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={completeTutorial}
+                      activeOpacity={0.7}
+                    >
+                      <LinearGradient
+                        colors={["#10b981", "#059669"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                          paddingHorizontal: 24,
+                          paddingVertical: 11,
+                          borderRadius: 12,
+                          shadowColor: "#10b981",
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.35,
+                          shadowRadius: 8,
+                          elevation: 6,
+                        }}
+                      >
+                        <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 13 }}>
+                          {tLocal("virtual_plant.tutorial.start_btn")}
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            </Animated.View>
+          )}
         </LinearGradient>
       </View>
 
