@@ -6,7 +6,8 @@ import UserPreferencesStack from './UserPreferencesStack';
 import { MenuContext } from '../context/MenuContext';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
-import { AppState, Alert, BackHandler } from 'react-native';
+import { AppState, Alert, BackHandler, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CreateHabitBottomSheet from '../components/CreateHabitBottomSheet';
 import AnimatedSplashScreen from '../components/AnimatedSplashScreen';
 import { requestUserPermission, getFcmToken, notificationListener, scheduleWinBackReminder, cancelWinBackReminder, scheduleDailyMotivationalQuotes } from '../utils/NotificationService';
@@ -240,34 +241,41 @@ const AppNavigator = () => {
     }, []);
 
     return (
-        <MenuContext.Provider value={{
-            isMenuOpen,
-            setIsMenuOpen,
-            isCreateModalOpen,
-            setIsCreateModalOpen
-        }}>
-            <NavigationContainer ref={navigationRef} theme={navTheme} onReady={() => setIsNavReady(true)}>
-                {!accessToken ? (
-                    <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
-                ) : !hasCompletedPreferences ? (
-                    <UserPreferencesStack />
-                ) : (
-                    <TabStack />
-                )}
-                <CreateHabitBottomSheet />
-            </NavigationContainer>
-            {isNavReady && isSplashVisible && (
-                <AnimatedSplashScreen onAnimationEnd={() => {
-                    setIsSplashVisible(false);
-                    storage.set("app.is_splash_finished", true);
-                }} />
-            )}
-            <LevelUpModal
-                visible={pendingLevelUp > 0}
-                level={pendingLevelUp}
-                onClose={handleCloseLevelUp}
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+            <StatusBar
+                barStyle={isDark ? 'light-content' : 'dark-content'}
+                backgroundColor="transparent"
+                translucent={true}
             />
-        </MenuContext.Provider>
+            <MenuContext.Provider value={{
+                isMenuOpen,
+                setIsMenuOpen,
+                isCreateModalOpen,
+                setIsCreateModalOpen
+            }}>
+                <NavigationContainer ref={navigationRef} theme={navTheme} onReady={() => setIsNavReady(true)}>
+                    {!accessToken ? (
+                        <AuthStack initialRoute={isOnBoardingShown === true ? "Login" : "Onboarding"} />
+                    ) : !hasCompletedPreferences ? (
+                        <UserPreferencesStack />
+                    ) : (
+                        <TabStack />
+                    )}
+                    <CreateHabitBottomSheet />
+                </NavigationContainer>
+                {isNavReady && isSplashVisible && (
+                    <AnimatedSplashScreen onAnimationEnd={() => {
+                        setIsSplashVisible(false);
+                        storage.set("app.is_splash_finished", true);
+                    }} />
+                )}
+                <LevelUpModal
+                    visible={pendingLevelUp > 0}
+                    level={pendingLevelUp}
+                    onClose={handleCloseLevelUp}
+                />
+            </MenuContext.Provider>
+        </SafeAreaView>
     );
 };
 

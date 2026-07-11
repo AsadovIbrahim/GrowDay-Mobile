@@ -3054,18 +3054,24 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={{
-                          paddingHorizontal: 20,
-                          paddingVertical: 10,
                           borderRadius: 12,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 6,
                         }}
                       >
-                        <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 12 }}>
-                          {tLocal("virtual_plant.tutorial.next_btn")}
-                        </Text>
-                        <FontAwesomeIcon icon={faChevronRight} size={10} color="#fff" />
+                        <View
+                          style={{
+                            paddingHorizontal: 20,
+                            paddingVertical: 10,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 6,
+                          }}
+                        >
+                          <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 12 }}>
+                            {tLocal("virtual_plant.tutorial.next_btn")}
+                          </Text>
+                          <FontAwesomeIcon icon={faChevronRight} size={10} color="#fff" />
+                        </View>
                       </LinearGradient>
                     </TouchableOpacity>
                   ) : (
@@ -3078,8 +3084,6 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={{
-                          paddingHorizontal: 24,
-                          paddingVertical: 11,
                           borderRadius: 12,
                           shadowColor: "#10b981",
                           shadowOffset: { width: 0, height: 4 },
@@ -3088,9 +3092,18 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                           elevation: 6,
                         }}
                       >
-                        <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 13 }}>
-                          {tLocal("virtual_plant.tutorial.start_btn")}
-                        </Text>
+                        <View
+                          style={{
+                            paddingHorizontal: 24,
+                            paddingVertical: 11,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ color: "#fff", fontFamily: "RedditSans-Bold", fontSize: 13 }}>
+                            {tLocal("virtual_plant.tutorial.start_btn")}
+                          </Text>
+                        </View>
                       </LinearGradient>
                     </TouchableOpacity>
                   )}

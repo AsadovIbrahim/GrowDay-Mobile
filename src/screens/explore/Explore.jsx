@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert, Modal, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMinus, faChevronRight, faStar, faSearch, faTimes, faBrain, faLock } from '@fortawesome/free-solid-svg-icons';
@@ -35,6 +35,7 @@ const Explore = () => {
   const { theme } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(false);
   const [suggestedHabits, setSuggestedHabits] = useState([]);
@@ -807,7 +808,7 @@ const Explore = () => {
                   borderTopLeftRadius: 30,
                   borderTopRightRadius: 30,
                   padding: 24,
-                  paddingBottom: 40,
+                  paddingBottom: Math.max(insets.bottom + 16, 40),
                   borderWidth: 1,
                   borderColor: colors.border,
                 }}
@@ -1063,7 +1064,6 @@ const Explore = () => {
                     end={{ x: 1, y: 0 }}
                     style={{
                       borderRadius: 20,
-                      paddingVertical: 15,
                       shadowColor: colors.primary,
                       shadowOffset: { width: 0, height: 6 },
                       shadowOpacity: 0.25,
@@ -1071,17 +1071,25 @@ const Explore = () => {
                       elevation: 5,
                     }}
                   >
-                    <Text
+                    <View
                       style={{
-                        color: 'white',
-                        textAlign: 'center',
-                        fontFamily: 'RedditSans-Bold',
-                        fontWeight: '800',
-                        fontSize: 16,
+                        paddingVertical: 15,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
                     >
-                      {t("explore.games_intro_button", "Let's Play!")}
-                    </Text>
+                      <Text
+                        style={{
+                          color: 'white',
+                          textAlign: 'center',
+                          fontFamily: 'RedditSans-Bold',
+                          fontWeight: '800',
+                          fontSize: 16,
+                        }}
+                      >
+                        {t("explore.games_intro_button", "Let's Play!")}
+                      </Text>
+                    </View>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
