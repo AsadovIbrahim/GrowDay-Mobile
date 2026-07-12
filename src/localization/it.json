@@ -1483,5 +1483,15 @@
       "Grazie per il tocco! Fa piacere! 😊",
       "Ricorda, piccoli passi portano a grandi risultati! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Tutorial",
+    "step1_desc": "NOME DELL'ABITUDINE: 'Respirazione profonda' è stata precompilata automaticamente come prima abitudine. Puoi impostare un nome e una descrizione personalizzati per qualsiasi abitudine.",
+    "step2_desc": "OBIETTIVO & MONITORAGGIO: Qui definisci la frequenza (Giornaliero, Settimanale) e l'obiettivo (es. 1 volta, 10 pagine). Per il tutorial, è configurato su '1 volta'.",
+    "step3_desc": "SALVA ABITUDINE: Tutto pronto! Fai clic sul pulsante 'Salva abitudine' in fondo allo schermo per creare la tua prima abitudine e tornare alla lista di controllo!",
+    "back": "Indietro",
+    "next": "Avanti",
+    "got_it": "Capito!",
+    "tap_here": "Tocca qui"
   }
 }

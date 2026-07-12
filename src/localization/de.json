@@ -1483,5 +1483,15 @@
       "Danke fürs Antippen! Das fühlt sich gut an! 😊",
       "Vergiss nicht: Kleine Schritte führen zu großen Erfolgen! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Tutorial",
+    "step1_desc": "GEWOHNHEITSNAME: 'Tiefes Atmen' wurde automatisch als erste Gewohnheit eingetragen. Sie können für jede Gewohnheit einen eigenen Namen und eine Beschreibung festlegen.",
+    "step2_desc": "ZIEL & TRACKING: Hier legen Sie die Häufigkeit (Täglich, Wöchentlich) und das Ziel fest (z. B. 1 Mal, 10 Seiten). Für das Tutorial ist es auf '1 Mal' eingestellt.",
+    "step3_desc": "GEWOHNHEIT SPEICHERN: Alles bereit! Klicken Sie unten auf dem Bildschirm auf 'Gewohnheit speichern', um Ihre erste Gewohnheit zu erstellen und zur Checkliste zurückzukehren!",
+    "back": "Zurück",
+    "next": "Weiter",
+    "got_it": "Verstanden!",
+    "tap_here": "Hier tippen"
   }
 }

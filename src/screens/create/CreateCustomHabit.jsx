@@ -14,6 +14,7 @@ import {
   Alert,
   ActivityIndicator,
   Pressable,
+  Dimensions,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +29,21 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getTranslatedHabit, getTranslatedCategory } from "../../utils/habitTranslations";
 
-
+const getOnboardingHabitTitle = (lang) => {
+  const code = (lang || 'en').substring(0, 2).toLowerCase();
+  switch (code) {
+    case 'az': return 'Dərin Nəfəsalma';
+    case 'tr': return 'Derin Nefes';
+    case 'ru': return 'Глубокое дыхание';
+    case 'es': return 'Respiración profunda';
+    case 'fr': return 'Respiration profonde';
+    case 'it': return 'Respirazione profonda';
+    case 'de': return 'Tiefes Atmen';
+    case 'zh': return '深呼吸';
+    case 'ar': return 'التنفس العميق';
+    default: return 'Deep Breathing';
+  }
+};
 
 const UNITS = [
   "times",
@@ -112,6 +127,9 @@ const CreateCustomHabit = () => {
   const route = useRoute();
   const { habitData = null, isCustom = true, isSuggested = false, isEditMode = false } = route.params || {};
   const [accessToken] = useMMKVString("accessToken");
+  const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const [tutorialStep, setTutorialStep] = useState(checklistCompleted !== "true" && !isEditMode ? 1 : 0);
+
   const { spacing, typography, radius } = useThemeConstants();
   const { theme, isDark } = useTheme();
   const { colors } = theme;
@@ -1221,6 +1239,62 @@ const CreateCustomHabit = () => {
           </View>
         </View>
       </Modal>
+
+      {checklistCompleted !== "true" && !isEditMode && tutorialStep > 0 && (
+        <Modal
+          visible={true}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setTutorialStep(0)}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+            <View style={{ backgroundColor: colors.card, padding: 24, borderRadius: 28, borderWidth: 1, borderColor: colors.border, width: '100%', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10 }}>
+              <>
+                {/* Title / Step */}
+                <Text className="font-redditsans-bold text-xs" style={{ color: colors.primary, marginBottom: 8, letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                  {t("tutorial.title")} {tutorialStep}/3
+                </Text>
+
+                {/* Description */}
+                <Text className="font-redditsans-regular text-sm" style={{ color: colors.text, lineHeight: 22, marginBottom: 24 }}>
+                  {tutorialStep === 1 && t("tutorial.step1_desc")}
+                  {tutorialStep === 2 && t("tutorial.step2_desc")}
+                  {tutorialStep === 3 && t("tutorial.step3_desc")}
+                </Text>
+
+                {/* Action Buttons */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  {tutorialStep > 1 && (
+                    <TouchableOpacity 
+                      onPress={() => setTutorialStep(prev => prev - 1)}
+                      style={{ paddingHorizontal: 16, paddingVertical: 10, marginRight: 12 }}
+                    >
+                      <Text className="font-redditsans-bold text-sm" style={{ color: colors.textSecondary }}>
+                        {t("tutorial.back")}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  
+                  <TouchableOpacity 
+                    onPress={() => {
+                      if (tutorialStep < 3) {
+                        setTutorialStep(prev => prev + 1);
+                      } else {
+                        setTutorialStep(0);
+                      }
+                    }}
+                    style={{ backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 14 }}
+                  >
+                    <Text className="font-redditsans-bold text-sm" style={{ color: colors.white }}>
+                      {tutorialStep < 3 ? t("tutorial.next") : t("tutorial.got_it")}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };

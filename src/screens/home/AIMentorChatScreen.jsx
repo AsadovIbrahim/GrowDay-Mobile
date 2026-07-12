@@ -37,6 +37,10 @@ const AIMentorChatScreen = () => {
   const { t, i18n } = useTranslation();
   const [token] = useMMKVString("accessToken");
 
+  useEffect(() => {
+    storage.set("user.onboarding.has_seen_ai_mentor_intro", "true");
+  }, []);
+
   // AI Mentor Tutorial states and refs
   const [isTutorialActive, setIsTutorialActive] = useState(() => !storage.getBoolean("user.mentor_tutorial_completed"));
   const [tutorialStep, setTutorialStep] = useState(0);

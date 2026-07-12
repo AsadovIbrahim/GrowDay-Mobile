@@ -20,8 +20,25 @@ import { getAllHabitsFetch, getCategoriesFetch } from '../utils/fetch';
 import { ICONS } from '../constants/icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { getTranslatedHabit } from '../utils/habitTranslations';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const getOnboardingHabitTitle = (lang) => {
+  const code = (lang || 'en').substring(0, 2).toLowerCase();
+  switch (code) {
+    case 'az': return 'Dərin Nəfəsalma';
+    case 'tr': return 'Derin Nefes';
+    case 'ru': return 'Глубокое дыхание';
+    case 'es': return 'Respiración profunda';
+    case 'fr': return 'Respiration profonde';
+    case 'it': return 'Respirazione profonda';
+    case 'de': return 'Tiefes Atmen';
+    case 'zh': return '深呼吸';
+    case 'ar': return 'التنفس العميق';
+    default: return 'Deep Breathing';
+  }
+};
 
 const CATEGORY_ICONS = [
   { key: 'default', icon: '⭐' },
@@ -59,6 +76,9 @@ const CreateHabitBottomSheet = () => {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const [accessToken] = useMMKVString('accessToken');
+  const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const guideScale = useRef(new Animated.Value(1)).current;
+  const arrowTranslateY = useRef(new Animated.Value(0)).current;
   const [popularHabits, setPopularHabits] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -66,7 +86,7 @@ const CreateHabitBottomSheet = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [pageSize, setPageSize] = useState(3);
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
 
@@ -82,19 +102,39 @@ const CreateHabitBottomSheet = () => {
       }
 
       const currentIndex = isLoadMore ? pageIndex + 1 : 0;
-      const response = await getAllHabitsFetch(accessToken, currentIndex, pageSize);
+      const currentPageSize = (checklistCompleted !== "true") ? 15 : pageSize;
+      const response = await getAllHabitsFetch(accessToken, currentIndex, currentPageSize);
 
       if (response && response.data) {
         const newData = response.data;
+        
+        // Find if Deep Breathing template exists in the fetched list
+        const deepBreathingIndex = newData.findIndex(h => {
+          const titleLower = (h.title || "").toLowerCase();
+          const matches = [
+            "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+            "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+            "深呼吸", "التنفس العميق"
+          ];
+          return matches.some(m => titleLower.includes(m) || m.includes(titleLower));
+        });
+
+        let sortedData = [...newData];
+        if (deepBreathingIndex !== -1 && checklistCompleted !== "true") {
+          // Remove from original position and prepend to index 0
+          const [deepBreathingItem] = sortedData.splice(deepBreathingIndex, 1);
+          sortedData = [deepBreathingItem, ...sortedData];
+        }
+
         if (isLoadMore) {
-          setPopularHabits(prev => [...prev, ...newData]);
+          setPopularHabits(prev => [...prev, ...sortedData]);
           setPageIndex(currentIndex);
         } else {
-          setPopularHabits(newData);
+          setPopularHabits(sortedData);
           setPageIndex(0);
         }
 
-        if (newData.length < pageSize) {
+        if (newData.length < currentPageSize) {
           setHasMore(false);
         } else {
           setHasMore(true);
@@ -161,6 +201,44 @@ const CreateHabitBottomSheet = () => {
     }
   }, [isCreateModalOpen]);
 
+  useEffect(() => {
+    if (isCreateModalOpen && checklistCompleted !== "true") {
+      const animation = Animated.loop(
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(guideScale, {
+              toValue: 1.05,
+              duration: 1200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(guideScale, {
+              toValue: 1,
+              duration: 1200,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.sequence([
+            Animated.timing(arrowTranslateY, {
+              toValue: 6,
+              duration: 1200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(arrowTranslateY, {
+              toValue: 0,
+              duration: 1200,
+              useNativeDriver: true,
+            }),
+          ])
+        ])
+      );
+      animation.start();
+      return () => animation.stop();
+    } else {
+      guideScale.setValue(1);
+      arrowTranslateY.setValue(0);
+    }
+  }, [isCreateModalOpen, checklistCompleted]);
+
   const closeModal = () => {
     Animated.parallel([
       Animated.timing(translateY, {
@@ -203,38 +281,52 @@ const CreateHabitBottomSheet = () => {
           </View>
 
           <View style={styles.content}>
-            <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>{t("create_habit.new_good_habit")}</Text>
+            {checklistCompleted === "true" && (
+              <>
+                <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>{t("create_habit.new_good_habit")}</Text>
 
-            <View style={styles.inputContainer}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  closeModal();
-                  navigation.navigate('Home', {
-                    screen: 'CreateCustomHabit',
-                    params: { isCustom: true }
-                  });
-                }}
-                style={[styles.inputShadowContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
-              >
-                <Text className="flex-1 font-redditsans-black" style={{ color: colors.textGray }}>
-                  {t("create_habit.create_custom")}
-                </Text>
-                <View style={[styles.addIconContainer, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
-                  <FontAwesomeIcon icon={faPlus} size={14} color={colors.text} />
+                <View style={styles.inputContainer}>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      closeModal();
+                      navigation.navigate('Home', {
+                        screen: 'CreateCustomHabit',
+                        params: { isCustom: true }
+                      });
+                    }}
+                    style={[
+                      styles.inputShadowContainer, 
+                      { 
+                        backgroundColor: colors.card, 
+                        borderColor: colors.border,
+                        opacity: 1
+                      }
+                    ]}
+                  >
+                    <Text className="flex-1 font-redditsans-black" style={{ color: colors.textGray }}>
+                      {t("create_habit.create_custom")}
+                    </Text>
+                    <View style={[styles.addIconContainer, { backgroundColor: colors.cardSecondary, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }]}>
+                      <Text style={{ fontSize: 20, color: colors.text, fontWeight: 'bold', lineHeight: 22, textAlign: 'center' }}>+</Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
-            </View>
+              </>
+            )}
 
-            <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>{t("create_habit.popular_habits")}</Text>
+            {checklistCompleted === "true" && (
+              <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>{t("create_habit.popular_habits")}</Text>
+            )}
 
             <FlatList
-              horizontal
-              data={popularHabits}
-              keyExtractor={(item) => item.id.toString()}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.popularHabitsList}
-              onEndReached={handleLoadMore}
+                horizontal
+                data={popularHabits}
+                keyExtractor={(item) => item.id.toString()}
+                showsHorizontalScrollIndicator={false}
+                style={{ overflow: 'visible' }}
+                contentContainerStyle={styles.popularHabitsList}
+                onEndReached={handleLoadMore}
               onEndReachedThreshold={0.5}
               ListFooterComponent={() => (
                 isLoadingMore && (
@@ -245,32 +337,74 @@ const CreateHabitBottomSheet = () => {
               )}
               renderItem={({ item: habit }) => {
                 const habitCategory = categories.find(c => c.id === habit.categoryId || c.name === habit.category);
+                const titleLower = (habit.title || "").toLowerCase();
+                const matches = [
+                  "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+                  "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+                  "深呼吸", "التنفس العميق"
+                ];
+                const isDeepBreathing = matches.some(m => titleLower.includes(m) || m.includes(titleLower));
+                const isGuidanceActive = checklistCompleted !== "true" && isDeepBreathing;
 
                 return (
-                  <TouchableOpacity
-                    key={habit.id}
-                    activeOpacity={0.8}
-                    style={[styles.habitCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                    onPress={() => {
-                      closeModal();
-                      navigation.navigate('Home', {
-                        screen: 'CreateCustomHabit',
-                        params: { habitData: habit, isCustom: false, isSuggested: false }
-                      });
-                    }}
-                  >
-                    <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
-                      <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
-                    </View>
-                    <View>
-                      <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]} numberOfLines={1}>
-                        {t(`habits.${habit.title.toLowerCase().replace(/\s+/g, '_')}`, { defaultValue: habit.title })}
-                      </Text>
-                      <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
-                        {t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  <View>
+                    {isGuidanceActive && (
+                      <View style={{ height: 35, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+                        <Animated.View 
+                          style={{ 
+                            alignItems: 'center',
+                            transform: [{ translateY: arrowTranslateY }]
+                          }}
+                        >
+                          <Text style={{ fontSize: 20 }}>👇</Text>
+                        </Animated.View>
+                      </View>
+                    )}
+                    {!isGuidanceActive && checklistCompleted !== "true" && (
+                      <View style={{ height: 45 }} />
+                    )}
+                  <Animated.View key={habit.id} style={{ transform: [{ scale: isGuidanceActive ? guideScale : 1 }] }}>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      style={[
+                        styles.habitCard, 
+                        { 
+                          backgroundColor: (checklistCompleted !== "true" && !isDeepBreathing) 
+                            ? (isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)') 
+                            : colors.card, 
+                          borderColor: isGuidanceActive ? colors.primary : colors.border,
+                          borderWidth: isGuidanceActive ? 2 : 1,
+                          opacity: (checklistCompleted !== "true" && !isDeepBreathing) ? 0.3 : 1
+                        }
+                      ]}
+                      onPress={() => {
+                        closeModal();
+                        navigation.navigate('Home', {
+                          screen: 'CreateCustomHabit',
+                          params: { 
+                            habitData: habit, 
+                            isCustom: false, 
+                            isSuggested: false 
+                          }
+                        });
+                      }}
+                      disabled={checklistCompleted !== "true" && !isDeepBreathing}
+                      needsOffscreenAlphaCompositing={checklistCompleted !== "true" && !isDeepBreathing}
+                    >
+                      <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
+                        <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>
+                      </View>
+                      <View>
+                        <Text className='font-redditsans-bold' style={[styles.habitTitle, { color: colors.text }]} numberOfLines={1}>
+                          {getTranslatedHabit(habit, i18n.language, t).title}
+                        </Text>
+                        <Text className='font-redditsans-regular' style={[styles.habitSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+                          {t(`my_habits.filters.${habit.frequency.toLowerCase()}`)}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </Animated.View>
+                  </View>
                 );
               }}
             />
@@ -356,6 +490,8 @@ const styles = StyleSheet.create({
   },
   popularHabitsList: {
     paddingRight: 28,
+    paddingTop: 10,
+    paddingBottom: 10,
     marginBottom: 2,
   },
   habitCard: {

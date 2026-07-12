@@ -1483,5 +1483,15 @@
       "Merci d'avoir tapoté ! C'est agréable ! 😊",
       "Rappelle-toi, les petits pas mènent à de grands résultats ! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Tutoriel",
+    "step1_desc": "NOM DE L'HABITUDE : 'Respiration profonde' a été pré-rempli automatiquement comme votre première habitude. Vous pouvez définir un nom et une description personnalisés pour n'importe quelle habitude.",
+    "step2_desc": "OBJECTIF & SUIVI : Ici, vous définissez la fréquence (Quotidien, Hebdomadaire) et la cible (par exemple, 1 fois, 10 pages). Pour le tutoriel, il est configuré sur '1 fois'.",
+    "step3_desc": "ENREGISTRER L'HABITUDE : Tout est prêt ! Cliquez sur le bouton 'Enregistrer l'habitude' en bas de l'écran pour créer votre première habitude et revenir à la liste !",
+    "back": "Retour",
+    "next": "Suivant",
+    "got_it": "Compris !",
+    "tap_here": "Appuyez ici"
   }
 }

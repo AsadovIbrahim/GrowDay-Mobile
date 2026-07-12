@@ -39,7 +39,7 @@ const HabitCelebration = () => {
 
     useEffect(() => {
         if (isClosed) {
-            navigation.goBack();
+            navigation.navigate('HomeScreen');
         }
     }, [isClosed, navigation]);
 
@@ -102,7 +102,7 @@ const HabitCelebration = () => {
         if (isLoaded) {
             show();
         } else {
-            navigation.goBack();
+            navigation.navigate('HomeScreen');
         }
     };
 

@@ -1480,5 +1480,15 @@
       "Mənə toxunduğun üçün təşəkkürlər! Bu çox xoşdur! 😊",
       "Unutma, kiçik addımlar böyük nəticələrə aparır! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Təlimat",
+    "step1_desc": "VƏRDİŞİN ADI: İlk təlim vərdişiniz olaraq 'Dərin Nəfəsalma' avtomatik doldurulub. İstənilən vərdiş üçün özəl ad və təsvir təyin edə bilərsiniz.",
+    "step2_desc": "HƏDƏF VƏ İZLƏMƏ: Buradan vərdişin tezliyini (Gündəlik, Həftəlik) və hədəfini (məsələn: 1 dəfə, 10 səhifə) təyin edirsiniz. Təlim vərdişi üçün '1 times' (1 dəfə) olaraq təyin edilib.",
+    "step3_desc": "VƏRDİŞİ YARAT: Hər şey hazırdır! İlk vərdişinizi yaratmaq və təlim siyahısına qayıtmaq üçün aşağıdakı 'Save Habit' (Vərdişi saxla) düyməsinə klikləyin!",
+    "back": "Geri",
+    "next": "Növbəti",
+    "got_it": "Anladım!",
+    "tap_here": "Bura toxunun"
   }
 }

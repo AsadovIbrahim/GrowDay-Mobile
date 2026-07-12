@@ -1055,6 +1055,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const { colors } = theme;
   const insets = useSafeAreaInsets();
 
+  const [hasSeenAiMentorIntroLocal] = useMMKVString("user.onboarding.has_seen_ai_mentor_intro");
+  const [mentorTutorialCompletedLocal] = useMMKVBoolean("user.mentor_tutorial_completed");
+
   const getStorageKey = useCallback((subKey) => {
     return userId ? `growy.${userId.toLowerCase()}.${subKey}` : `growy.${subKey}`;
   }, [userId]);
@@ -1410,6 +1413,20 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           }
         }
 
+        if (parsed.hasSeenAiMentorIntro !== undefined) {
+          const localHasSeen = storage.getString("user.onboarding.has_seen_ai_mentor_intro");
+          const incomingVal = parsed.hasSeenAiMentorIntro ? "true" : "false";
+          if (incomingVal !== localHasSeen) {
+            storage.set("user.onboarding.has_seen_ai_mentor_intro", incomingVal);
+          }
+        }
+        if (parsed.mentorTutorialCompleted !== undefined) {
+          const localTutorialDone = storage.getBoolean("user.mentor_tutorial_completed") || false;
+          if (parsed.mentorTutorialCompleted !== localTutorialDone) {
+            storage.set("user.mentor_tutorial_completed", parsed.mentorTutorialCompleted);
+          }
+        }
+
         if (parsed.lastActionDate !== undefined) {
           const localLastActionDate = storage.getString(getStorageKey("lastActionDate")) || "";
           if (parsed.lastActionDate !== localLastActionDate) {
@@ -1483,6 +1500,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     } catch (e) {
       console.error("Error syncing virtualPlantState to local state:", e);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [virtualPlantState, userId, getStorageKey]);
 
   useEffect(() => {
@@ -1507,7 +1525,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       petCountToday: storage.getNumber(getStorageKey("petCountToday")) || 0,
       completedCountTodayMap,
       onboardingChecklistCompleted: checklistCompleted === "true",
-      garden: garden
+      garden: garden,
+      hasSeenAiMentorIntro: hasSeenAiMentorIntroLocal === "true",
+      mentorTutorialCompleted: !!mentorTutorialCompletedLocal
     };
 
     const stateStr = JSON.stringify(stateObj);
@@ -1534,7 +1554,9 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     onSyncState,
     virtualPlantState,
     checklistCompleted,
-    garden
+    garden,
+    hasSeenAiMentorIntroLocal,
+    mentorTutorialCompletedLocal
   ]);
 
 

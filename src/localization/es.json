@@ -1483,5 +1483,15 @@
       "¡Gracias por tocarme! ¡Se siente bien! 😊",
       "¡Recuerda, los pequeños pasos llevan a grandes resultados! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Tutorial",
+    "step1_desc": "NOMBRE DEL HÁBITO: 'Respiración Profunda' se ha completado automáticamente como tu primer hábito. Puedes establecer un nombre y una descripción personalizados para cualquier hábito.",
+    "step2_desc": "META Y SEGUIMIENTO: Aquí defines la frecuencia (Diario, Semanal) y el objetivo (p. ej., 1 vez, 10 páginas). Para el tutorial, está configurado como '1 vez'.",
+    "step3_desc": "GUARDAR HÁBITO: ¡Todo listo! ¡Haz clic en el botón 'Guardar hábito' en la parte inferior de la pantalla para crear tu primer hábito y volver a la lista!",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "got_it": "¡Entendido!",
+    "tap_here": "Presiona aquí"
   }
 }

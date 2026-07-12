@@ -1481,5 +1481,15 @@
       "Dokunduğun için teşekkürler! Bu çok güzel hissettirdi! 😊",
       "Unutma, küçük adımlar büyük sonuçlar doğurur! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Kılavuz",
+    "step1_desc": "ALIŞKANLIK ADI: İlk alışkanlığınız olarak 'Derin Nefes' otomatik doldurulmuştur. Her alışkanlık için isim ve açıklama belirleyebilirsiniz.",
+    "step2_desc": "HEDEF VE TAKİP: Buradan alışkanlığın sıklığını (Günlük, Haftalık) ve hedefini (örneğin: 1 kez) ayarlayabilirsiniz. Eğitim için '1 times' olarak seçilmiştir.",
+    "step3_desc": "ALIŞKANLIĞI OLUŞTUR: Her şey hazır! İlk alışkanlığınızı oluşturup eğitim listesine dönmek için alttaki 'Save Habit' (Kaydet) butonuna tıklayın!",
+    "back": "Geri",
+    "next": "İleri",
+    "got_it": "Anladım!",
+    "tap_here": "Buraya dokunun"
   }
 }

@@ -1483,5 +1483,15 @@
       "Thanks for tapping! That feels nice! 😊",
       "Remember, small steps lead to big results! 🚀"
     ]
+  },
+  "tutorial": {
+    "title": "Tutorial",
+    "step1_desc": "HABIT NAME: 'Deep Breathing' has been automatically pre-filled as your first habit. You can set a custom name and description for any habit.",
+    "step2_desc": "GOAL & TRACKING: Here you define the frequency (Daily, Weekly) and target (e.g., 1 times, 10 pages). For the tutorial, it is pre-configured as '1 times'.",
+    "step3_desc": "SAVE HABIT: All set! Click the 'Save Habit' button at the bottom of the screen to create your first habit and return to the checklist!",
+    "back": "Back",
+    "next": "Next",
+    "got_it": "Got it!",
+    "tap_here": "Tap here"
   }
 }

@@ -341,8 +341,74 @@ const Home = () => {
   const syncOnboardingStateWithServer = async (todaysHabits, fetchedAccountData) => {
     if (!token) return;
     try {
-      // 1. Sync Onboarding Checklist Completion from virtualPlantState if stored on server
+      // 1. Sync Onboarding Checklist Completion from virtualPlantState if stored on server, or if user is Level 3+
       const account = fetchedAccountData || accountData;
+      
+      const calculationPoints = (account?.totalExperiencePoints || 0);
+      const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
+      
+      if (userLevel >= 3) {
+        storage.set("user.checklist.habit_completed", "true");
+        storage.set("user.checklist.create_habit_xp_awarded", "true");
+        storage.set("user.checklist.create_habit_xp_awarded_server", "true");
+        storage.set("user.checklist.complete_habit_xp_awarded", "true");
+        storage.set("user.checklist.complete_habit_xp_awarded_server", "true");
+        storage.set("user.onboarding_checklist_completed", "true");
+        storage.set("user.onboarding_checklist_bonus_awarded", "true");
+        storage.set("user.onboarding_checklist_bonus_awarded_server", "true");
+        storage.set("hasSeenGamesIntro", true);
+      }
+
+      // Sync AI Mentor onboarding states from server's virtualPlantState
+      const isSessionInitialized = storage.getBoolean("user.session_initialized") || false;
+      let hasSeenIntro = storage.getString("user.onboarding.has_seen_ai_mentor_intro") === "true";
+      let mentorTutorialCompleted = storage.getBoolean("user.mentor_tutorial_completed") || false;
+
+      let serverHasSeenIntro = false;
+      let serverMentorTutorialCompleted = false;
+      let hasServerData = false;
+
+      if (account?.virtualPlantState) {
+        try {
+          const plantStateObj = JSON.parse(account.virtualPlantState);
+          if (plantStateObj) {
+            if (plantStateObj.hasSeenAiMentorIntro !== undefined) {
+              serverHasSeenIntro = !!plantStateObj.hasSeenAiMentorIntro;
+              hasServerData = true;
+            }
+            if (plantStateObj.mentorTutorialCompleted !== undefined) {
+              serverMentorTutorialCompleted = !!plantStateObj.mentorTutorialCompleted;
+              hasServerData = true;
+            }
+          }
+        } catch (e) {
+          console.log("Error parsing virtualPlantState for AI Mentor onboarding sync:", e);
+        }
+      }
+
+      if (!isSessionInitialized) {
+        if (userLevel >= 3) {
+          if (hasServerData) {
+            hasSeenIntro = serverHasSeenIntro;
+            mentorTutorialCompleted = serverMentorTutorialCompleted;
+          } else {
+            // Legacy user who is already Level 3+ on reinstall, default to seen/completed
+            hasSeenIntro = true;
+            mentorTutorialCompleted = true;
+          }
+          storage.set("user.onboarding.has_seen_ai_mentor_intro", hasSeenIntro ? "true" : "false");
+          storage.set("user.mentor_tutorial_completed", mentorTutorialCompleted);
+        }
+        storage.set("user.session_initialized", true);
+      } else {
+        if (serverHasSeenIntro && !hasSeenIntro) {
+          storage.set("user.onboarding.has_seen_ai_mentor_intro", "true");
+        }
+        if (serverMentorTutorialCompleted && !mentorTutorialCompleted) {
+          storage.set("user.mentor_tutorial_completed", true);
+        }
+      }
+      
       if (account?.virtualPlantState) {
         try {
           const plantStateObj = JSON.parse(account.virtualPlantState);
@@ -395,6 +461,7 @@ const Home = () => {
       }
 
       if (checklistCompleted !== "true") {
+        // Only check server for habit completion status
         const habitsRes = await getUserHabitFetch(token, 0, 50);
         const habitsList = habitsRes && habitsRes.data ? (Array.isArray(habitsRes.data) ? habitsRes.data : []) : [];
 
@@ -404,6 +471,14 @@ const Home = () => {
 
         if (hasAnyCompletedHabitPast || hasCompletedToday) {
           storage.set("user.checklist.habit_completed", "true");
+        }
+
+        // Only mark entire checklist as completed if ALL 3 tasks are done
+        const moodDone = storage.getString("user.lastMoodDate") === todayStr;
+        const habitCreated = habitsList.length > 0;
+        const habitDone = storage.getString("user.checklist.habit_completed") === "true";
+
+        if (moodDone && habitCreated && habitDone) {
           storage.set("user.checklist.create_habit_xp_awarded", "true");
           storage.set("user.checklist.create_habit_xp_awarded_server", "true");
           storage.set("user.checklist.complete_habit_xp_awarded", "true");
@@ -757,8 +832,7 @@ const Home = () => {
       <View className="flex-row justify-between items-center mb-4 px-4">
         <TouchableOpacity
           onPress={toggleMenu}
-          disabled={checklistCompleted !== "true"}
-          style={{ backgroundColor: colors.card, opacity: checklistCompleted !== "true" ? 0.35 : 1 }}
+          style={{ backgroundColor: colors.card }}
           className="w-10 h-10 rounded-lg items-center justify-center"
         >
           <FontAwesomeIcon icon={faBars} color={colors.text} size={20} />
@@ -767,8 +841,7 @@ const Home = () => {
         <View className="relative">
           <TouchableOpacity
             onPress={() => navigation.navigate('Notification')}
-            disabled={checklistCompleted !== "true"}
-            style={{ backgroundColor: colors.card, opacity: checklistCompleted !== "true" ? 0.35 : 1 }}
+            style={{ backgroundColor: colors.card }}
             className="w-10 h-10 rounded-full items-center justify-center"
           >
             <FontAwesomeIcon icon={faBell} color={colors.text} size={18} />

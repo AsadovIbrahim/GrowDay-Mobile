@@ -34,9 +34,24 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
   const [absoluteLayout, setAbsoluteLayout] = useState(null);
   const activeCardRef = useRef(null);
 
+  const [isFocused, setIsFocused] = useState(true);
+
+  useEffect(() => {
+    const unsubscribeFocus = navigation.addListener("focus", () => {
+      setIsFocused(true);
+    });
+    const unsubscribeBlur = navigation.addListener("blur", () => {
+      setIsFocused(false);
+    });
+    return () => {
+      unsubscribeFocus();
+      unsubscribeBlur();
+    };
+  }, [navigation]);
+
   // Measure active card screen-relative coordinates dynamically
   useEffect(() => {
-    if (isGuidanceActive && activeGuidedItemId && isSplashFinished === true) {
+    if (isGuidanceActive && activeGuidedItemId && isSplashFinished === true && isFocused) {
       const timer = setTimeout(() => {
         if (activeCardRef.current) {
           activeCardRef.current.measureInWindow((x, y, width, height) => {
@@ -50,7 +65,7 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
     } else {
       setAbsoluteLayout(null);
     }
-  }, [activeGuidedItemId, isGuidanceActive, logMoodLayout, createHabitLayout, completeHabitLayout, isSplashFinished]);
+  }, [activeGuidedItemId, isGuidanceActive, logMoodLayout, createHabitLayout, completeHabitLayout, isSplashFinished, isFocused]);
 
   // Horizontal bounce animation for guiding chevron arrow
   useEffect(() => {

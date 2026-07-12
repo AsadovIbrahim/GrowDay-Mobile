@@ -65,6 +65,42 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
     const autoStopTriggered = useRef(false);
     const blockUpdates = useRef(false);
 
+    const arrowTranslateY = useRef(new Animated.Value(0)).current;
+
+    // Guidance arrow bounce animation for onboarding
+    useEffect(() => {
+        const titleLower = (habit.title || "").toLowerCase();
+        const iconLower = (habit.icon || "").toLowerCase();
+        const matches = [
+          "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+          "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+          "深呼吸", "التنفس العميق"
+        ];
+        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" && 
+          (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
+          
+        if (isGuidanceActive) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(arrowTranslateY, {
+                        toValue: 6,
+                        duration: 600,
+                        easing: Easing.inOut(Easing.ease),
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(arrowTranslateY, {
+                        toValue: 0,
+                        duration: 600,
+                        easing: Easing.inOut(Easing.ease),
+                        useNativeDriver: true,
+                    }),
+                ])
+            ).start();
+        } else {
+            arrowTranslateY.setValue(0);
+        }
+    }, [habit.title, arrowTranslateY]);
+
     const unit = habit.unit?.toLowerCase();
 
     // Pulse animation when timer is active
@@ -673,16 +709,74 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             }
         };
 
+        const titleLower = (habit.title || "").toLowerCase();
+        const iconLower = (habit.icon || "").toLowerCase();
+        const matches = [
+          "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+          "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+          "深呼吸", "التنفس العميق"
+        ];
+        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" && 
+          (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
+
         return (
             <View style={styles.numericContainer}>
-                <View style={styles.incrementsRow}>
-                    {incs.map(inc => (
+                <View style={[styles.incrementsRow, isGuidanceActive && { alignItems: 'flex-end' }]}>
+                    {incs.map(inc => {
+                        const isGuidanceButton = isGuidanceActive && inc === 1;
+                        return (
+                            <View key={inc} style={{ alignItems: 'center' }}>
+                                {isGuidanceButton ? (
+                                    <Animated.View style={{ transform: [{ translateY: arrowTranslateY }], marginBottom: 6 }}>
+                                        <Text style={{ fontSize: 20 }}>👇</Text>
+                                    </Animated.View>
+                                ) : (
+                                    isGuidanceActive && <View style={{ height: 26, marginBottom: 6 }} />
+                                )}
+                                <TouchableOpacity
+                                    onPress={() => handleIncrement(inc)}
+                                    disabled={isReporting || cooldownActive}
+                                    activeOpacity={0.7}
+                                    style={[
+                                        styles.incBtn,
+                                        {
+                                            backgroundColor: colors.card,
+                                            borderColor: colors.primary,
+                                            borderWidth: isGuidanceButton ? 2.5 : 1.5,
+                                            opacity: (isReporting || cooldownActive) ? 0.7 : 1
+                                        }
+                                    ]}
+                                >
+                                    {cooldownActive && (
+                                        <Animated.View
+                                            style={[
+                                                styles.cooldownFill,
+                                                {
+                                                    backgroundColor: colors.primary + '20',
+                                                    width: cooldownAnim.interpolate({
+                                                        inputRange: [0, 1],
+                                                        outputRange: ['0%', '100%']
+                                                    })
+                                                }
+                                            ]}
+                                        />
+                                    )}
+                                    <Text className="font-redditsans-bold" style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        );
+                    })}
+                    <View style={{ alignItems: 'center' }}>
+                        {isGuidanceActive && <View style={{ height: 26, marginBottom: 6 }} />}
                         <TouchableOpacity
-                            key={inc}
-                            onPress={() => handleIncrement(inc)}
+                            onPress={() => {
+                                if (isReporting || cooldownActive) return;
+                                Vibration.vibrate(15);
+                                setShowManualModal(true);
+                            }}
                             disabled={isReporting || cooldownActive}
                             activeOpacity={0.7}
-                            style={[styles.incBtn, { backgroundColor: colors.card, borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
+                            style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
                         >
                             {cooldownActive && (
                                 <Animated.View
@@ -698,35 +792,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
                                     ]}
                                 />
                             )}
-                            <Text className="font-redditsans-bold" style={[styles.incText, { color: colors.primary }]}>+{inc}</Text>
+                            <FontAwesomeIcon icon={faKeyboard} color={colors.primary} size={18} />
                         </TouchableOpacity>
-                    ))}
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (isReporting || cooldownActive) return;
-                            Vibration.vibrate(15);
-                            setShowManualModal(true);
-                        }}
-                        disabled={isReporting || cooldownActive}
-                        activeOpacity={0.7}
-                        style={[styles.incBtn, styles.manualBtn, { backgroundColor: colors.primary + '15', borderColor: colors.primary, opacity: (isReporting || cooldownActive) ? 0.7 : 1 }]}
-                    >
-                        {cooldownActive && (
-                            <Animated.View
-                                style={[
-                                    styles.cooldownFill,
-                                    {
-                                        backgroundColor: colors.primary + '20',
-                                        width: cooldownAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: ['0%', '100%']
-                                        })
-                                    }
-                                ]}
-                            />
-                        )}
-                        <FontAwesomeIcon icon={faKeyboard} color={colors.primary} size={18} />
-                    </TouchableOpacity>
+                    </View>
                 </View>
                 <Text className="font-redditsans-medium" style={[styles.helperText, { color: colors.textSecondary }]}>
                     {t("habit_details.action.tap_to_add", { unit: t(`units.${(habit.unit || "").toLowerCase()}`, { defaultValue: habit.unit }) })}
