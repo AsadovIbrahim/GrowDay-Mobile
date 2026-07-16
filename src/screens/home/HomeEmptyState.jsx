@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faCalendarCheck } from "@fortawesome/free-solid-svg-icons";
 import { MenuContext } from "../../context/MenuContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import GettingStartedChecklist from "./components/GettingStartedChecklist";
+import AIMentorCard from "../../components/AIMentorCard";
 
 const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
   const { setIsCreateModalOpen } = useContext(MenuContext);
@@ -15,15 +16,6 @@ const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
 
   return (
     <>
-      {/* Calendar inactive banner */}
-      <View className="px-4 mb-4">
-        <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
-          <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular text-sm">
-            {t("home.calendar_inactive")}
-          </Text>
-        </View>
-      </View>
-
       {/* Getting Started Checklist Section */}
       <GettingStartedChecklist
         accountData={accountData}
@@ -46,7 +38,7 @@ const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
           }}
         >
           <View style={{ backgroundColor: colors.primarySurface }} className="w-24 h-24 rounded-full items-center justify-center mb-4">
-            <Text style={{ fontSize: 40 }}>🌱</Text>
+            <FontAwesomeIcon icon={faCalendarCheck} size={42} color={colors.primary} />
           </View>
 
           <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-1 text-center">
@@ -73,23 +65,9 @@ const HomeEmptyState = ({ accountData, onLogMoodPress, onAwardBonusXP }) => {
         </View>
       </View>
 
-      {/* Progress Today placeholder */}
+      {/* AI Mentor Section */}
       <View className="px-4 mb-20">
-        <View
-          className="rounded-3xl px-4 py-4"
-          style={{
-            backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.3)",
-          }}
-        >
-          <Text style={{ color: colors.text }} className="text-base font-redditsans-bold mb-3">
-            {t("home.progress_today")}
-          </Text>
-          <View style={{ backgroundColor: colors.cardSecondary }} className="rounded-2xl px-4 py-3 items-center justify-center">
-            <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular">
-              {t("home.add_habits_tracking")}
-            </Text>
-          </View>
-        </View>
+        <AIMentorCard totalExperiencePoints={accountData?.totalExperiencePoints || 0} />
       </View>
     </>
   );

@@ -15,8 +15,8 @@ const AdBanner = () => {
   const adUnitId = __DEV__
     ? TestIds.BANNER
     : Platform.OS === "ios"
-      ? "ca-app-pub-7960556279643322/1603816156" // iOS Banner Ad Unit ID
-      : "ca-app-pub-7960556279643322/1603816156"; // Android Banner Ad Unit ID
+      ? TestIds.BANNER // iOS Banner Ad Unit ID (using Test ID for now)
+      : "ca-app-pub-3252694717568082/4135981271"; // Android Banner Ad Unit ID
 
   if (error) {
     return null; // Keep UI clean if loading fails

@@ -111,13 +111,15 @@ const Achievements = () => {
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 pt-4 mb-5">
           <View className="flex-row items-center">
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              className="mr-4 w-9 h-9 rounded-full items-center justify-center"
-              style={{ backgroundColor: colors.cardSecondary }}
-            >
-              <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
-            </TouchableOpacity>
+            {navigation.canGoBack() && (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                className="mr-4 w-9 h-9 rounded-full items-center justify-center"
+                style={{ backgroundColor: colors.cardSecondary }}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} size={18} color={colors.text} />
+              </TouchableOpacity>
+            )}
             <Text className="text-[26px] font-redditsans-bold tracking-tight" style={{ color: colors.text }}>
               {t("achievements.header")}
             </Text>

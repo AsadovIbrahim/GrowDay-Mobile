@@ -927,6 +927,14 @@ export const aiMentorRemainingFetch = async (token) => {
     return handleResponse(response);
 };
 
+export const getPlantCompanionInsightsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/AIMentor/PlantCompanionInsights`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
 export const getCategoriesFetch = async (token) => {
     const response = await fetch(`${VITE_API_URL}/api/Category`, {
         method: "GET",

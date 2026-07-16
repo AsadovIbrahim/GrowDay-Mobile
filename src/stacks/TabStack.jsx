@@ -11,12 +11,13 @@ const Tab = createBottomTabNavigator();
 
 const TabStack = () => {
   const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const [checklistSkipped] = useMMKVBoolean("user.onboarding_checklist_skipped");
 
   return (
     <Tab.Navigator
       initialRouteName="Home"
       tabBar={({ state, navigation }) => {
-        if (checklistCompleted !== "true") {
+        if (checklistCompleted !== "true" && checklistSkipped !== true) {
           return null;
         }
 

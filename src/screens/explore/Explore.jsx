@@ -32,7 +32,7 @@ const AI_COACH_DAILY_LIMIT = 3;
 const Explore = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -597,35 +597,45 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.card,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 4,
-                  elevation: 2
+                  backgroundColor: isDark ? '#0b1d15' : '#e8f8f0',
+                  borderWidth: 1.5,
+                  borderColor: isDark ? '#059669' : '#a7f3d0',
+                  shadowColor: isDark ? '#10b981' : '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.05,
+                  shadowRadius: 6,
+                  elevation: 3
                 }}
               >
                 <View>
                   <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#34d399' : '#065f46' }} numberOfLines={1}>
                       🧩 {t("games.memory_match")}
                     </Text>
-                    <View className="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 items-center justify-center">
+                    <View 
+                      style={{ backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.12)' }} 
+                      className="w-8 h-8 rounded-xl items-center justify-center"
+                    >
                       <Text className="text-base">🧩</Text>
                     </View>
                   </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#047857' }} numberOfLines={2}>
                     {t("games.memory_match_desc")}
                   </Text>
                 </View>
 
                 <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'MemoryMatch' })}
-                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#10b981',
+                    borderColor: isDark ? '#10b981' : 'transparent',
+                    borderWidth: isDark ? 1 : 0
+                  }}
+                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
                 >
-                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                  <Text style={{ color: isDark ? '#34d399' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
+                    🏆 {t("games.leaderboard")}
+                  </Text>
                 </TouchableOpacity>
               </TouchableOpacity>
 
@@ -637,35 +647,45 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.card,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 4,
-                  elevation: 2
+                  backgroundColor: isDark ? '#0b162a' : '#eff6ff',
+                  borderWidth: 1.5,
+                  borderColor: isDark ? '#2563eb' : '#bfdbfe',
+                  shadowColor: isDark ? '#3b82f6' : '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.05,
+                  shadowRadius: 6,
+                  elevation: 3
                 }}
               >
                 <View>
                   <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#60a5fa' : '#1e3a8a' }} numberOfLines={1}>
                       ⚡ {t("games.sequence_memory")}
                     </Text>
-                    <View className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 items-center justify-center">
+                    <View 
+                      style={{ backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.12)' }} 
+                      className="w-8 h-8 rounded-xl items-center justify-center"
+                    >
                       <Text className="text-base">⚡</Text>
                     </View>
                   </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#1d4ed8' }} numberOfLines={2}>
                     {t("games.sequence_memory_desc")}
                   </Text>
                 </View>
 
                 <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'SequenceMemory' })}
-                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : '#3b82f6',
+                    borderColor: isDark ? '#3b82f6' : 'transparent',
+                    borderWidth: isDark ? 1 : 0
+                  }}
+                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
                 >
-                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                  <Text style={{ color: isDark ? '#60a5fa' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
+                    🏆 {t("games.leaderboard")}
+                  </Text>
                 </TouchableOpacity>
               </TouchableOpacity>
 
@@ -677,35 +697,45 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.card,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 4,
-                  elevation: 2
+                  backgroundColor: isDark ? '#140f26' : '#faf5ff',
+                  borderWidth: 1.5,
+                  borderColor: isDark ? '#7c3aed' : '#e9d5ff',
+                  shadowColor: isDark ? '#8b5cf6' : '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.05,
+                  shadowRadius: 6,
+                  elevation: 3
                 }}
               >
                 <View>
                   <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#c084fc' : '#581c87' }} numberOfLines={1}>
                       🎨 {t("games.stroop_test")}
                     </Text>
-                    <View className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 items-center justify-center">
+                    <View 
+                      style={{ backgroundColor: isDark ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.12)' }} 
+                      className="w-8 h-8 rounded-xl items-center justify-center"
+                    >
                       <Text className="text-base">🎨</Text>
                     </View>
                   </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#7e22ce' }} numberOfLines={2}>
                     {t("games.stroop_test_desc")}
                   </Text>
                 </View>
 
                 <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'StroopTest' })}
-                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(139, 92, 246, 0.15)' : '#8b5cf6',
+                    borderColor: isDark ? '#8b5cf6' : 'transparent',
+                    borderWidth: isDark ? 1 : 0
+                  }}
+                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
                 >
-                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                  <Text style={{ color: isDark ? '#c084fc' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
+                    🏆 {t("games.leaderboard")}
+                  </Text>
                 </TouchableOpacity>
               </TouchableOpacity>
 
@@ -717,35 +747,45 @@ const Explore = () => {
                 style={{
                   width: 250,
                   height: 160,
-                  backgroundColor: colors.card,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 4,
-                  elevation: 2
+                  backgroundColor: isDark ? '#1f130b' : '#fff7ed',
+                  borderWidth: 1.5,
+                  borderColor: isDark ? '#ea580c' : '#ffedd5',
+                  shadowColor: isDark ? '#f97316' : '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.05,
+                  shadowRadius: 6,
+                  elevation: 3
                 }}
               >
                 <View>
                   <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: colors.text }} numberOfLines={1}>
+                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#fb923c' : '#7c2d12' }} numberOfLines={1}>
                       ⏱️ {t("games.reaction_game")}
                     </Text>
-                    <View className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 items-center justify-center">
+                    <View 
+                      style={{ backgroundColor: isDark ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.12)' }} 
+                      className="w-8 h-8 rounded-xl items-center justify-center"
+                    >
                       <Text className="text-base">⏱️</Text>
                     </View>
                   </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#c2410c' }} numberOfLines={2}>
                     {t("games.reaction_game_desc")}
                   </Text>
                 </View>
 
                 <TouchableOpacity
                   onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'ReactionTime' })}
-                  className="flex-row items-center gap-1 bg-yellow-100 dark:bg-yellow-950/20 py-1 px-3 rounded-full self-start"
+                  style={{ 
+                    backgroundColor: isDark ? 'rgba(249, 115, 22, 0.15)' : '#f97316',
+                    borderColor: isDark ? '#f97316' : 'transparent',
+                    borderWidth: isDark ? 1 : 0
+                  }}
+                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
                 >
-                  <Text className="text-[10px] text-yellow-600 font-redditsans-bold">🏆 {t("games.leaderboard")}</Text>
+                  <Text style={{ color: isDark ? '#fb923c' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
+                    🏆 {t("games.leaderboard")}
+                  </Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             </ScrollView>

@@ -19,7 +19,7 @@ const AIMentorCard = ({ totalExperiencePoints }) => {
 
   // Level hesablama
   const userLevel = Math.floor(Math.sqrt((totalExperiencePoints || 0) / 50)) + 1;
-  const isLocked = userLevel < 3;
+  const isLocked = false;
 
   const [remainingMessages, setRemainingMessages] = useState(5);
   const pulseAnim = useRef(new Animated.Value(1)).current;

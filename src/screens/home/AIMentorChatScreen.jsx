@@ -517,8 +517,8 @@ const AIMentorChatScreen = () => {
         <View
           ref={inputBarRef}
           className="flex-row items-center px-4 pt-3 border-t"
-          style={{ 
-            backgroundColor: colors.card, 
+          style={{
+            backgroundColor: colors.card,
             borderColor: colors.border,
             paddingBottom: 12
           }}
@@ -574,7 +574,7 @@ const AIMentorChatScreen = () => {
         visible={isTutorialActive && activeLayout !== null}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => {}}
+        onRequestClose={() => { }}
       >
         <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.72)" }}>
           {/* Highlight step 0: Quick action prompts */}

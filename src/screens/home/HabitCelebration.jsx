@@ -19,8 +19,8 @@ const { width } = Dimensions.get('window');
 const interstitialAdUnitId = __DEV__
     ? TestIds.INTERSTITIAL
     : Platform.OS === 'ios'
-        ? "ca-app-pub-7960556279643322/8464737970" // iOS Interstitial Ad Unit ID
-        : "ca-app-pub-7960556279643322/8464737970"; // Android Interstitial Ad Unit ID
+        ? TestIds.INTERSTITIAL // iOS Interstitial Ad Unit ID (using Test ID for now)
+        : "ca-app-pub-3252694717568082/6103669064"; // Android Interstitial Ad Unit ID
 
 const HabitCelebration = () => {
     const navigation = useNavigation();

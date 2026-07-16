@@ -21,6 +21,7 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
   const [lastMoodDate] = useMMKVString("user.lastMoodDate");
   const [habitCompletedCheck] = useMMKVString("user.checklist.habit_completed");
   const [checklistCompleted, setChecklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const [checklistSkipped, setChecklistSkipped] = useMMKVBoolean("user.onboarding_checklist_skipped");
   const [isSplashFinished] = useMMKVBoolean("app.is_splash_finished");
 
   const [showCelebration, setShowCelebration] = useState(false);
@@ -116,7 +117,7 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
       ? "create_habit"
       : (!isHabitCompleted ? "complete_habit" : null));
 
-  const isGuidanceActive = checklistCompleted !== "true" && activeGuidedItemId !== null;
+  const isGuidanceActive = checklistCompleted !== "true" && checklistSkipped !== true && activeGuidedItemId !== null;
 
   const getGuideTapText = () => {
     const lang = i18n.language || "en";
@@ -133,6 +134,24 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
       case "en":
       default:
         return "👉 Tap here to complete!";
+    }
+  };
+
+  const getSkipText = () => {
+    const lang = i18n.language || "en";
+    switch (lang.substring(0, 2)) {
+      case "az": return "Keç";
+      case "tr": return "Atla";
+      case "ru": return "Пропустить";
+      case "de": return "Überspringen";
+      case "fr": return "Passer";
+      case "es": return "Saltar";
+      case "it": return "Salta";
+      case "zh": return "跳过";
+      case "ar": return "تخطي";
+      case "en":
+      default:
+        return "Skip Tutorial";
     }
   };
 
@@ -243,7 +262,7 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
     }
   ];
 
-  if (checklistCompleted === "true") {
+  if (checklistCompleted === "true" || checklistSkipped === true) {
     return null;
   }
 
@@ -259,9 +278,14 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
         onLayout={(e) => {
           if (isReplica) return;
           const { x, y, width, height } = e.nativeEvent.layout;
-          if (item.id === "log_mood") setLogMoodLayout({ x, y, width, height });
-          else if (item.id === "create_habit") setCreateHabitLayout({ x, y, width, height });
-          else if (item.id === "complete_habit") setCompleteHabitLayout({ x, y, width, height });
+          const checkChanged = (curr) => !curr || curr.x !== x || curr.y !== y || curr.width !== width || curr.height !== height;
+          if (item.id === "log_mood") {
+            if (checkChanged(logMoodLayout)) setLogMoodLayout({ x, y, width, height });
+          } else if (item.id === "create_habit") {
+            if (checkChanged(createHabitLayout)) setCreateHabitLayout({ x, y, width, height });
+          } else if (item.id === "complete_habit") {
+            if (checkChanged(completeHabitLayout)) setCompleteHabitLayout({ x, y, width, height });
+          }
         }}
         className="flex-row items-center justify-between p-4 rounded-2xl border mb-3"
         style={(isReplica || isModalReplica) ? {
@@ -407,6 +431,32 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
               if (!activeItem || !absoluteLayout) return null;
               return renderChecklistCard(activeItem, false, absoluteLayout, true);
             })()}
+
+            {/* Skip Guide Button */}
+            {absoluteLayout && (
+              <TouchableOpacity
+                onPress={() => setChecklistSkipped(true)}
+                style={{
+                  position: "absolute",
+                  top: absoluteLayout.y + absoluteLayout.height + 24,
+                  alignSelf: "center",
+                  backgroundColor: "rgba(0, 0, 0, 0.45)",
+                  borderRadius: 999,
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                  shadowColor: "#000000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                  elevation: 5,
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={{ color: "#ffffff", fontWeight: "600" }} className="text-sm font-redditsans-bold">
+                  {getSkipText()} ✕
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </Modal>
       </View>

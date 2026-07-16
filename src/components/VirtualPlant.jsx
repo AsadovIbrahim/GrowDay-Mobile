@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useMMKVString, useMMKVBoolean } from "react-native-mmkv";
 import { storage } from "../utils/MMKVStore";
 import { schedulePlantWateringReminder } from "../utils/NotificationService";
+import { getPlantCompanionInsightsFetch } from "../utils/fetch";
 import Svg, { Polyline } from "react-native-svg";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -111,6 +112,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Növbəti",
       skip_btn: "Keç",
       start_btn: "Böyüməyə Başla 🌱"
+    },
+    insights: {
+      weekend_struggle: "Sən adətən həftəsonları vərdişlərini yerinə yetirməkdə çətinlik çəkirsən. 😴",
+      recovered_streak: "{{days}} gün buraxdıqdan sonra yenidən davam etməyi bacardın! 💪",
+      habit_pairing: "'{{habit1}}' vərdişi '{{habit2}}' ilə birlikdə ediləndə daha uğurlu olur. 🔗",
+      time_of_day_morning: "Səhər edilən {{habit}} vərdişi sənin üçün daha uğurlu görünür. ☀️",
+      time_of_day_afternoon: "Sən adətən {{habit}} vərdişini günorta vaxtı daha yaxşı tamamlayırsan. 🌤️",
+      time_of_day_evening: "Sən adətən {{habit}} vərdişini axşam vaxtı daha yaxşı tamamlayırsan. 🌙",
+      time_of_day_night: "Sən adətən {{habit}} vərdişini gecə vaxtı daha yaxşı tamamlayırsan. 🌌",
+      streak_beaten: "Təbriklər! Sən '{{habit}}' vərdişi üzrə şəxsi rekordunu yenilədin! 🏆",
+      streak_near: "Sənin '{{habit}}' vərdişi üzrə ən uzun seriyana çatmağına cəmi 1 gün qaldı! 🏃‍♂️",
+      trend_improved: "Bu ay sənin stabilliyin {{val}}% yaxşılaşdı! 📈",
+      trend_dropped: "Bu həftə vərdişləri tamamlama faizin aşağı düşdü. 📉",
+      trend_productive: "Bu, sənin ən məhsuldar həftən idi! 🌟",
+      mood_happy: "Özünü xoşbəxt hiss edəndə daha çox vərdiş tamamlayırsan. 😊",
+      mood_stress: "Stress sənin stabilliyini azaldır kimi görünür. 😴",
+      long_term_days: "Biz artıq {{val}} gündür birlikdə böyüyürük! 🌱",
+      long_term_completed: "Sən ümumilikdə {{val}} vərdiş tamamlamısan! 🏆",
+      personality_weekend_struggle: "Həftəsonları bizim üçün adətən daha çətin olur. Gəl seriyanı qoruyaq! ⚔️",
+      personality_inactive: "Sənin üçün darıxıram... Gəl yenidən birlikdə böyüyək. 🥀",
+      personality_large_progress: "Möhtəşəm! Bu gün sənin ən yaxşı günlərindən biri idi! 🎉",
+      advanced_pairing: "Müşahidə etdim ki, '{{habit2}}' vərdişini əvvəlcə etdikdə '{{habit1}}' daha asan olur ({{val}}% ehtimal). Onları birlikdə etməyə davam et! 🔗",
+      recommendation_easier: "Son vaxtlar '{{habit}}' vərdişində çətinlik çəkirsən. Stabilliyi bərpa etmək üçün onu bir az asanlaşdırmağı düşün! 💡",
+      recommendation_reminder: "Sən adətən '{{habit}}' vərdişini gec tamamlayırsan. Xatırlatma vaxtını dəyişməyi düşün! ⏰"
     }
   },
   tr: {
@@ -211,6 +236,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Sonraki",
       skip_btn: "Atla",
       start_btn: "Büyümeye Başla 🌱"
+    },
+    insights: {
+      weekend_struggle: "Genellikle hafta sonları alışkanlıklarını sürdürmekte zorlanıyorsun. 😴",
+      recovered_streak: "{{days}} gün kaçırdıktan sonra tekrar toparlanmayı başardın! 💪",
+      habit_pairing: "'{{habit1}}' alışkanlığı, '{{habit2}}' ile birlikte yapıldığında daha etkili oluyor. 🔗",
+      time_of_day_morning: "Sabah yapılan {{habit}} alışkanlığı senin için daha iyi görünüyor. ☀️",
+      time_of_day_afternoon: "Genellikle {{habit}} alışkanlığını öğleden sonra daha tutarlı yapıyorsun. 🌤️",
+      time_of_day_evening: "Genellikle {{habit}} alışkanlığını akşam saatlerinde daha tutarlı yapıyorsun. 🌙",
+      time_of_day_night: "Genellikle {{habit}} alışkanlığını gece saatlerinde daha tutarlı yapıyorsun. 🌌",
+      streak_beaten: "Tebrikler! '{{habit}}' alışkanlığında kişisel rekorunu kırdın! 🏆",
+      streak_near: "'{{habit}}' alışkanlığında en uzun serine ulaşmana sadece 1 gün kaldı! 🏃‍♂️",
+      trend_improved: "Bu ay tutarlılığın %{{val}} arttı! 📈",
+      trend_dropped: "Bu hafta alışkanlık tamamlama oranında düşüş yaşandı. 📉",
+      trend_productive: "Bu, senin en üretken haftandı! 🌟",
+      mood_happy: "Kendini mutlu hissettiğinde daha fazla alışkanlık tamamlıyorsun. 😊",
+      mood_stress: "Stres tutarlılığını azaltıyor gibi görünür. 😴",
+      long_term_days: "Artık {{val}} gündür birlikte büyüyoruz! 🌱",
+      long_term_completed: "Toplamda {{val}} alışkanlık tamamladın! 🏆",
+      personality_weekend_struggle: "Hafta sonları bizim için genellikle daha zor. Seriyi koruyalım! ⚔️",
+      personality_inactive: "Seni özlüyorum... hadi yine birlikte büyüyelim. 🥀",
+      personality_large_progress: "Harika! Bugün senin en iyi günlerinden biriydi! 🎉",
+      advanced_pairing: "Fark ettim ki, önce '{{habit2}}' yaptığında '{{habit1}}' çok daha kolay oluyor (%{{val}} doğruluk). Eşleştirmeye devam et! 🔗",
+      recommendation_easier: "Son zamanlarda '{{habit}}' alışkanlığında zorlandın. Tutarlılığı yeniden kazanmak için onu biraz kolaylaştırmayı düşünebilirsin! 💡",
+      recommendation_reminder: "Genellikle '{{habit}}' alışkanlığını geç tamamlıyorsun. Hatırlatıcı saatini değiştirmeyi düşünebilirsin! ⏰"
     }
   },
   ru: {
@@ -311,6 +360,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Далее",
       skip_btn: "Пропустить",
       start_btn: "Начать рост 🌱"
+    },
+    insights: {
+      weekend_struggle: "Обычно тебе труднее всего поддерживать привычки по выходным. 😴",
+      recovered_streak: "Ты вернулся в колею после пропуска {{days}} дней! 💪",
+      habit_pairing: "Привычка '{{habit1}}' работает лучше всего в паре с '{{habit2}}'. 🔗",
+      time_of_day_morning: "Утренние занятия '{{habit}}' даются тебе лучше всего. ☀️",
+      time_of_day_afternoon: "Ты выполняешь '{{habit}}' гораздо стабильнее во второй половине дня. 🌤️",
+      time_of_day_evening: "Ты выполняешь '{{habit}}' гораздо стабильнее по вечерам. 🌙",
+      time_of_day_night: "Ты выполняешь '{{habit}}' гораздо стабильнее ночью. 🌌",
+      streak_beaten: "Поздравляем! Ты побил свой личный рекорд по привычке '{{habit}}'! 🏆",
+      streak_near: "Тебе остался всего 1 день до рекорда по привычке '{{habit}}'! 🏃‍♂️",
+      trend_improved: "Твоя стабильность выросла на {{val}}% в этом месяце! 📈",
+      trend_dropped: "На этой неделе процент выполнения привычек снизился. 📉",
+      trend_productive: "Это была твоя самая продуктивная неделя! 🌟",
+      mood_happy: "Ты выполняешь больше привычек, когда ты в хорошем настроении. 😊",
+      mood_stress: "Похоже, стресс мешает тебе поддерживать стабильность. 😴",
+      long_term_days: "Мы растем вместе уже {{val}} дней! 🌱",
+      long_term_completed: "Ты выполнил {{val}} привычек в общей сложности! 🏆",
+      personality_weekend_struggle: "Выходные обычно даются нам нелегко. Давай сохраним серию! ⚔️",
+      personality_inactive: "Я скучаю... давай снова расти вместе. 🥀",
+      personality_large_progress: "Потрясающе! Сегодня был один из твоих лучших дней! 🎉",
+      advanced_pairing: "Заметил, что '{{habit1}}' дается намного проще, если сначала сделать '{{habit2}}' (уверенность {{val}}%). Так держать! 🔗",
+      recommendation_easier: "В последнее время ты часто пропускал '{{habit}}'. Может, облегчишь задачу, чтобы вернуть привычку? 💡",
+      recommendation_reminder: "Обычно ты выполняешь '{{habit}}' поздно. Может, стоит перенести напоминание? ⏰"
     }
   },
   en: {
@@ -411,6 +484,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Next",
       skip_btn: "Skip",
       start_btn: "Start Growing 🌱"
+    },
+    insights: {
+      weekend_struggle: "You usually struggle on weekends. 😴",
+      recovered_streak: "You recovered after missing {{days}} days! 💪",
+      habit_pairing: "'{{habit1}}' works best when paired with '{{habit2}}'. 🔗",
+      time_of_day_morning: "Morning {{habit}} seems to work best for you. ☀️",
+      time_of_day_afternoon: "You complete {{habit}} much more consistently in the afternoon. 🌤️",
+      time_of_day_evening: "You complete {{habit}} much more consistently in the evening. 🌙",
+      time_of_day_night: "You complete {{habit}} much more consistently at night. 🌌",
+      streak_beaten: "Congratulations! You just beat your personal record on '{{habit}}'! 🏆",
+      streak_near: "You're only 1 day away from your longest streak on '{{habit}}'! 🏃‍♂️",
+      trend_improved: "Your consistency improved by {{val}}% this month! 📈",
+      trend_dropped: "Your completion rate dropped this week. 📉",
+      trend_productive: "This was your most productive week! 🌟",
+      mood_happy: "You complete more habits when you're feeling happy. 😊",
+      mood_stress: "Stress seems to reduce your consistency. 😴",
+      long_term_days: "We've been growing together for {{val}} days! 🌱",
+      long_term_completed: "You've completed {{val}} habits in total! 🏆",
+      personality_weekend_struggle: "Weekends are usually harder for us. Let's keep the streak alive! ⚔️",
+      personality_inactive: "I miss you... let's grow together again. 🥀",
+      personality_large_progress: "Amazing! Today was one of your best days! 🎉",
+      advanced_pairing: "I noticed '{{habit1}}' is much easier when you do '{{habit2}}' first ({{val}}% confidence). Keep pairing them! 🔗",
+      recommendation_easier: "You struggled with '{{habit}}' recently. Consider making it slightly easier to rebuild consistency! 💡",
+      recommendation_reminder: "You usually complete '{{habit}}' late. Consider shifting your reminder time! ⏰"
     }
   },
   de: {
@@ -511,6 +608,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Weiter",
       skip_btn: "Überspringen",
       start_btn: "Wachsen starten 🌱"
+    },
+    insights: {
+      weekend_struggle: "Am Wochenende fällt es dir normalerweise schwerer, deine Gewohnheiten einzuhalten. 😴",
+      recovered_streak: "Du hast dich nach {{days}} verpassten Tagen wieder gefangen! 💪",
+      habit_pairing: "'{{habit1}}' funktioniert am besten in Kombination mit '{{habit2}}'. 🔗",
+      time_of_day_morning: "Morgens scheint '{{habit}}' am besten für dich zu funktionieren. ☀️",
+      time_of_day_afternoon: "Du erledigst '{{habit}}' nachmittags viel beständiger. 🌤️",
+      time_of_day_evening: "Du erledigst '{{habit}}' abends viel beständiger. 🌙",
+      time_of_day_night: "Du erledigst '{{habit}}' nachts viel beständiger. 🌌",
+      streak_beaten: "Glückwunsch! Du hast deinen Rekord für '{{habit}}' gebrochen! 🏆",
+      streak_near: "Nur noch 1 Tag bis zu deinem Rekord für '{{habit}}'! 🏃‍♂️",
+      trend_improved: "Deine Beständigkeit hat sich diesen Monat um {{val}}% verbessert! 📈",
+      trend_dropped: "Deine Abschlussquote ist diese Woche gesunken. 📉",
+      trend_productive: "Das war deine produktivste Woche! 🌟",
+      mood_happy: "Du erledigst mehr Gewohnheiten, wenn du glücklich bist. 😊",
+      mood_stress: "Stress scheint deine Beständigkeit zu beeinträchtigen. 😴",
+      long_term_days: "Wir wachsen schon seit {{val}} Tagen zusammen! 🌱",
+      long_term_completed: "Du hast insgesamt {{val}} Gewohnheiten geschafft! 🏆",
+      personality_weekend_struggle: "Wochenenden sind schwer für uns. Lass uns die Serie halten! ⚔️",
+      personality_inactive: "Ich vermisse dich... lass uns wieder zusammen wachsen. 🥀",
+      personality_large_progress: "Unglaublich! Heute war einer deiner besten Tage! 🎉",
+      advanced_pairing: "Mir ist aufgefallen, dass '{{habit1}}' viel einfacher ist, wenn du zuerst '{{habit2}}' machst ({{val}}% Konfidenz). 🔗",
+      recommendation_easier: "Du hattest Probleme mit '{{habit}}'. Mach es etwas einfacher, um wieder reinzukommen! 💡",
+      recommendation_reminder: "Du erledigst '{{habit}}' meist spät. Verschiebe deine Erinnerungszeit! ⏰"
     }
   },
   es: {
@@ -611,6 +732,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Siguiente",
       skip_btn: "Saltar",
       start_btn: "Empezar a crecer 🌱"
+    },
+    insights: {
+      weekend_struggle: "Sueles tener dificultades para mantener tus hábitos los fines de semana. 😴",
+      recovered_streak: "¡Te recuperaste después de perder {{days}} días! 💪",
+      habit_pairing: "'{{habit1}}' funciona mejor cuando se combina con '{{habit2}}'. 🔗",
+      time_of_day_morning: "El hábito '{{habit}}' por la mañana parece funcionar mejor para ti. ☀️",
+      time_of_day_afternoon: "Completas '{{habit}}' con más constancia por la tarde. 🌤️",
+      time_of_day_evening: "Completas '{{habit}}' con más constancia por la noche. 🌙",
+      time_of_day_night: "Completas '{{habit}}' con más constancia tarde en la noche. 🌌",
+      streak_beaten: "¡Felicidades! ¡Rompiste tu récord personal en '{{habit}}'! 🏆",
+      streak_near: "¡Estás a solo 1 día de tu racha más larga en '{{habit}}'! 🏃‍♂️",
+      trend_improved: "¡Tu constancia mejoró un {{val}}% este mes! 📈",
+      trend_dropped: "Tu tasa de finalización bajó esta semana. 📉",
+      trend_productive: "¡Esta fue tu semana más productiva! 🌟",
+      mood_happy: "Completas más hábitos cuando te sientes feliz. 😊",
+      mood_stress: "El estrés parece reducir tu constancia. 😴",
+      long_term_days: "¡Llevamos {{val}} días creciendo juntos! 🌱",
+      long_term_completed: "¡Has completado {{val}} hábitos en total! 🏆",
+      personality_weekend_struggle: "Los fines de semana suelen ser difíciles. ¡Mantengamos la racha! ⚔️",
+      personality_inactive: "Te extraño... crezcamos juntos de nuevo. 🥀",
+      personality_large_progress: "¡Increíble! ¡Hoy fue uno de tus mejores días! 🎉",
+      advanced_pairing: "Noté que '{{habit1}}' es más fácil cuando haces '{{habit2}}' primero ({{val}}% de confianza). ¡Sigue así! 🔗",
+      recommendation_easier: "Te costó hacer '{{habit}}' últimamente. ¡Hazlo un poco más fácil para recuperar el ritmo! 💡",
+      recommendation_reminder: "Sueles completar '{{habit}}' tarde. ¡Considera cambiar la hora del recordatorio! ⏰"
     }
   },
   fr: {
@@ -711,6 +856,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Suivant",
       skip_btn: "Passer",
       start_btn: "Commencer à grandir 🌱"
+    },
+    insights: {
+      weekend_struggle: "Tu as généralement du mal à tenir tes habitudes le week-end. 😴",
+      recovered_streak: "Tu t'es repris après avoir manqué {{days}} jours ! 💪",
+      habit_pairing: "'{{habit1}}' fonctionne le mieux lorsqu'il est associé à '{{habit2}}'. 🔗",
+      time_of_day_morning: "Faire '{{habit}}' le matin semble mieux fonctionner pour toi. ☀️",
+      time_of_day_afternoon: "Tu complètes '{{habit}}' plus régulièrement l'après-midi. 🌤️",
+      time_of_day_evening: "Tu complètes '{{habit}}' plus régulièrement le soir. 🌙",
+      time_of_day_night: "Tu complètes '{{habit}}' plus régulièrement tard dans la nuit. 🌌",
+      streak_beaten: "Félicitations ! Tu as battu ton record personnel pour '{{habit}}' ! 🏆",
+      streak_near: "Plus qu'un jour avant ton record pour '{{habit}}' ! 🏃‍♂️",
+      trend_improved: "Ta régularité s'est améliorée de {{val}}% ce mois-ci ! 📈",
+      trend_dropped: "Ton taux de réussite a baissé cette semaine. 📉",
+      trend_productive: "C'était ta semaine la plus productive ! 🌟",
+      mood_happy: "Tu complètes plus d'habitudes quand tu es heureux. 😊",
+      mood_stress: "Le stress semble réduire ta régularité. 😴",
+      long_term_days: "Nous grandissons ensemble depuis {{val}} jours ! 🌱",
+      long_term_completed: "Tu as complété {{val}} habitudes au total ! 🏆",
+      personality_weekend_struggle: "Le week-end est souvent difficile. Gardons le rythme ! ⚔️",
+      personality_inactive: "Tu me manques... grandissons à nouveau ensemble. 🥀",
+      personality_large_progress: "Incroyable ! Aujourd'hui était l'un de tes meilleurs jours ! 🎉",
+      advanced_pairing: "J'ai remarqué que '{{habit1}}' est plus facile si tu fais '{{habit2}}' d'abord ({{val}}% de confiance). 🔗",
+      recommendation_easier: "Tu as eu du mal avec '{{habit}}' récemment. Simplifie-le pour retrouver ta régularité ! 💡",
+      recommendation_reminder: "Tu finis souvent '{{habit}}' tard. Pense à décaler l'heure du rappel ! ⏰"
     }
   },
   it: {
@@ -811,6 +980,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "Avanti",
       skip_btn: "Salta",
       start_btn: "Inizia a crescere 🌱"
+    },
+    insights: {
+      weekend_struggle: "Di solito fai fatica a mantenere le tue abitudini nei fine settimana. 😴",
+      recovered_streak: "Ti sei ripreso dopo aver saltato {{days}} giorni! 💪",
+      habit_pairing: "'{{habit1}}' funziona al meglio se abbinato a '{{habit2}}'. 🔗",
+      time_of_day_morning: "Fare '{{habit}}' al mattino sembra funzionare meglio per te. ☀️",
+      time_of_day_afternoon: "Completi '{{habit}}' con più costanza nel pomeriggio. 🌤️",
+      time_of_day_evening: "Completi '{{habit}}' con più costanza la sera. 🌙",
+      time_of_day_night: "Completi '{{habit}}' con più costanza a tarda notte. 🌌",
+      streak_beaten: "Congratulazioni! Hai battuto il tuo record personale per '{{habit}}'! 🏆",
+      streak_near: "Manca solo 1 giorno al tuo record per '{{habit}}'! 🏃‍♂️",
+      trend_improved: "La tua costanza è migliorata del {{val}}% questo mese! 📈",
+      trend_dropped: "Il tasso di completamento è sceso questa settimana. 📉",
+      trend_productive: "Questa è stata la tua settimana più produttiva! 🌟",
+      mood_happy: "Completi più abitudini quando ti senti felice. 😊",
+      mood_stress: "Lo stress sembra ridurre la tua costanza. 😴",
+      long_term_days: "Cresciamo insieme da {{val}} giorni! 🌱",
+      long_term_completed: "Hai completato {{val}} abitudini in totale! 🏆",
+      personality_weekend_struggle: "I fine settimana sono difficili per noi. Teniamo duro! ⚔️",
+      personality_inactive: "Mi manchi... torniamo a crescere insieme. 🥀",
+      personality_large_progress: "Incredibile! Oggi è stata una delle tue giornate migliori! 🎉",
+      advanced_pairing: "Ho notato che '{{habit1}}' è più facile se fai prima '{{habit2}}' (confidenza del {{val}}%). Continua così! 🔗",
+      recommendation_easier: "Hai avuto difficoltà con '{{habit}}' di recente. Rendila più semplice per ritrovare il ritmo! 💡",
+      recommendation_reminder: "Di solito completi '{{habit}}' tardi. Valuta di spostare l'orario del promemoria! ⏰"
     }
   },
   zh: {
@@ -911,6 +1104,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "下一步",
       skip_btn: "跳过",
       start_btn: "开始成长 🌱"
+    },
+    insights: {
+      weekend_struggle: "你通常在周末很难坚持习惯。 😴",
+      recovered_streak: "在中断了 {{days}} 天之后，你重新找回了节奏！ 💪",
+      habit_pairing: "“{{habit1}}” 与 “{{habit2}}” 搭配使用时效果最好。 🔗",
+      time_of_day_morning: "早上的 “{{habit}}” 似乎最适合你。 ☀️",
+      time_of_day_afternoon: "你在下午完成 “{{habit}}” 的频率更高。 🌤️",
+      time_of_day_evening: "你在晚上完成 “{{habit}}” 的频率更高。 🌙",
+      time_of_day_night: "你在深夜完成 “{{habit}}” 的频率更高。 🌌",
+      streak_beaten: "恭喜！你刚刚打破了 “{{habit}}” 的个人历史纪录！ 🏆",
+      streak_near: "你距离 “{{habit}}” 的最长连续记录只差 1 天了！ 🏃‍♂️",
+      trend_improved: "这个月你的习惯坚持率提高了 {{val}}%！ 📈",
+      trend_dropped: "本周你的习惯完成率有所下降。 📉",
+      trend_productive: "这是你最富有成效的一周！ 🌟",
+      mood_happy: "你心情好的时候能完成更多习惯。 😊",
+      mood_stress: "压力似乎降低了你的坚持度。 😴",
+      long_term_days: "我们已经一起成长了 {{val}} 天！ 🌱",
+      long_term_completed: "你一共完成了 {{val}} 个习惯！ 🏆",
+      personality_weekend_struggle: "周末对我们来说通常比较困难。保持连续记录吧！ ⚔️",
+      personality_inactive: "我很想你... 让我们再次一起成长吧。 🥀",
+      personality_large_progress: "太棒了！今天是表现最好的一天之一！ 🎉",
+      advanced_pairing: "我发现先做 “{{habit2}}” 时，做 “{{habit1}}” 会容易得多（置信度 {{val}}%）。继续搭配它们！ 🔗",
+      recommendation_easier: "最近你在 “{{habit}}” 上有些吃力。考虑稍微降低点难度以重建规律！ 💡",
+      recommendation_reminder: "你通常很晚才完成 “{{habit}}”。考虑调整一下提醒时间吧！ ⏰"
     }
   },
   ar: {
@@ -1011,6 +1228,30 @@ const LOCAL_TRANSLATIONS = {
       next_btn: "التالي",
       skip_btn: "تخطي",
       start_btn: "ابدأ النمو 🌱"
+    },
+    insights: {
+      weekend_struggle: "عادة ما تواجه صعوبة في الالتزام بعاداتك في عطلات نهاية الأسبوع. 😴",
+      recovered_streak: "لقد استعدت نشاطك بعد تفويت {{days}} أيام! 💪",
+      habit_pairing: "عادة '{{habit1}}' تعمل بشكل أفضل عند قرنها بـ '{{habit2}}'. 🔗",
+      time_of_day_morning: "القيام بـ '{{habit}}' في الصباح يبدو أفضل بالنسبة لك. ☀️",
+      time_of_day_afternoon: "تكمل '{{habit}}' باستمرار أكبر في فترة بعد الظهر. 🌤️",
+      time_of_day_evening: "تكمل '{{habit}}' باستمرار أكبر في المساء. 🌙",
+      time_of_day_night: "تكمل '{{habit}}' باستمرار أكبر في الليل. 🌌",
+      streak_beaten: "تهانينا! لقد حطمت رقمك القياسي الشخصي في '{{habit}}'! 🏆",
+      streak_near: "أنت على بعد يوم واحد فقط من أطول سلسلة لك في '{{habit}}'! 🏃‍♂️",
+      trend_improved: "تحسن التزامك بنسبة {{val}}% هذا الشهر! 📈",
+      trend_dropped: "انخفض معدل إكمال عاداتك هذا الأسبوع. 📉",
+      trend_productive: "كان هذا الأسبوع الأكثر إنتاجية بالنسبة لك! 🌟",
+      mood_happy: "تكمل المزيد من العادات عندما تكون سعيداً. 😊",
+      mood_stress: "يبدو أن التوتر يقلل من التزامك. 😴",
+      long_term_days: "لقد نمونا معاً لمدة {{val}} يوماً! 🌱",
+      long_term_completed: "لقد أكملت {{val}} عادات إجمالاً! 🏆",
+      personality_weekend_struggle: "عطلات نهاية الأسبوع صعبة بالنسبة لنا عادةً. دعنا نحافظ على السلسلة! ⚔️",
+      personality_inactive: "أفتقدك... دعنا ننمو معاً مجدداً. 🥀",
+      personality_large_progress: "رائع! كان اليوم أحد أفضل أيامك على الإطلاق! 🎉",
+      advanced_pairing: "لاحظت أن '{{habit1}}' أسهل بكثير عندما تقوم بـ '{{habit2}}' أولاً (ثقة بنسبة {{val}}%). استمر في قرنهما! 🔗",
+      recommendation_easier: "لقد واجهت صعوبة في '{{habit}}' مؤخراً. فكر في جعلها أسهل قليلاً لاستعادة التزامك! 💡",
+      recommendation_reminder: "تكمل '{{habit}}' متأخراً عادةً. فكر في تغيير وقت التنبيه! ⏰"
     }
   }
 };
@@ -1228,10 +1469,20 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   const [plantName, setPlantName] = useState(() => storage.getString(getStorageKey("plantName")) || "...");
   const [hasNamedPlant, setHasNamedPlant] = useState(() => storage.getBoolean(getStorageKey("hasNamedPlant")) || false);
   const isFocused = useIsFocused();
+  const handleNameLater = () => {
+    const defaultName = "Growy";
+    storage.set(getStorageKey("plantName"), defaultName);
+    storage.set(getStorageKey("hasNamedPlant"), true);
+    setPlantName(defaultName);
+    setHasNamedPlant(true);
+    setRenameModalVisible(false);
+  };
   const [isSplashFinished] = useMMKVBoolean("app.is_splash_finished");
   const [tutorialCompleted, setTutorialCompletedState] = useState(() => storage.getBoolean(getStorageKey("tutorialCompleted")) || false);
   const [isTutorialActive, setIsTutorialActive] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [token] = useMMKVString("accessToken");
+  const [companionInsights, setCompanionInsights] = useState([]);
 
   const [petBtnLayout, setPetBtnLayout] = useState(null);
   const [waterBtnLayout, setWaterBtnLayout] = useState(null);
@@ -1341,6 +1592,29 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       console.error("Error scheduling plant watering reminder:", e);
     }
   }, [wateredCount, plantName]);
+
+  useEffect(() => {
+    let active = true;
+    const fetchInsights = async () => {
+      if (!token) return;
+      try {
+        const res = await getPlantCompanionInsightsFetch(token);
+        if (active && res && res.success && Array.isArray(res.data)) {
+          setCompanionInsights(res.data);
+        }
+      } catch (e) {
+        console.log("Error fetching plant companion insights:", e);
+      }
+    };
+
+    if (isFocused) {
+      fetchInsights();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [token, isFocused]);
 
   useEffect(() => {
     // Start tutorial if plant is level 1, named, and tutorial not completed
@@ -1710,8 +1984,49 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     } else if (bestStreak >= 7) {
       list.push(tLocal("virtual_plant.dialogues.streak_7", { streak: bestStreak }));
     }
+
+    // Append smart companion insights if any exist
+    if (companionInsights && companionInsights.length > 0) {
+      companionInsights.forEach(insight => {
+        if (insight.type === "WEEKEND_STRUGGLE") {
+          list.push(tLocal("virtual_plant.insights.weekend_struggle"));
+        } else if (insight.type === "RECOVERED_STREAK") {
+          list.push(tLocal("virtual_plant.insights.recovered_streak", { days: insight.daysMissed || insight.value }));
+        } else if (insight.type === "HABIT_PAIRING" && insight.habit1 && insight.habit2) {
+          list.push(tLocal("virtual_plant.insights.habit_pairing", { habit1: insight.habit1, habit2: insight.habit2 }));
+        } else if (insight.type === "TIME_OF_DAY" && insight.habit1 && insight.habit2) {
+          list.push(tLocal(`virtual_plant.insights.time_of_day_${insight.habit2.toLowerCase()}`, { habit: insight.habit1 }));
+        } else if (insight.type === "STREAK_INSIGHT" && insight.habit1 && insight.habit2) {
+          const key = insight.habit2 === "RECORD_BEATEN" ? "streak_beaten" : "streak_near";
+          list.push(tLocal(`virtual_plant.insights.${key}`, { habit: insight.habit1, val: insight.value }));
+        } else if (insight.type === "TREND_INSIGHT" && insight.habit1 && insight.habit2) {
+          let key = "";
+          if (insight.habit1 === "MONTHLY") {
+            key = insight.habit2 === "IMPROVED" ? "trend_improved" : "trend_dropped";
+          } else {
+            key = insight.habit2 === "PRODUCTIVE" ? "trend_productive" : "trend_dropped";
+          }
+          list.push(tLocal(`virtual_plant.insights.${key}`, { val: insight.value }));
+        } else if (insight.type === "MOOD_INTEGRATION" && insight.habit1) {
+          const key = insight.habit1 === "HAPPY_PERFORMANCE" ? "mood_happy" : "mood_stress";
+          list.push(tLocal(`virtual_plant.insights.${key}`));
+        } else if (insight.type === "LONG_TERM_MILESTONE" && insight.habit1) {
+          const key = insight.habit1 === "DAYS" ? "long_term_days" : "long_term_completed";
+          list.push(tLocal(`virtual_plant.insights.${key}`, { val: insight.value }));
+        } else if (insight.type === "PLANT_PERSONALITY" && insight.habit1) {
+          const key = `personality_${insight.habit1.toLowerCase()}`;
+          list.push(tLocal(`virtual_plant.insights.${key}`));
+        } else if (insight.type === "ADVANCED_PAIRING" && insight.habit1 && insight.habit2) {
+          list.push(tLocal("virtual_plant.insights.advanced_pairing", { habit1: insight.habit1, habit2: insight.habit2, val: insight.value }));
+        } else if (insight.type === "RECOMMENDATION" && insight.habit1 && insight.habit2) {
+          const key = insight.habit1 === "EASIER_HABIT" ? "recommendation_easier" : "recommendation_reminder";
+          list.push(tLocal(`virtual_plant.insights.${key}`, { habit: insight.habit2 }));
+        }
+      });
+    }
+
     return list;
-  }, [healthState, maxCompletedHabitsToday, maxHabitsToday, bestStreak, thirstyDialogues, bloomingDialogues, growingDialogues, generalDialogues, tLocal]);
+  }, [healthState, maxCompletedHabitsToday, maxHabitsToday, bestStreak, thirstyDialogues, bloomingDialogues, growingDialogues, generalDialogues, tLocal, companionInsights]);
 
   useEffect(() => {
     setDialogueList(activeDialogues);
@@ -2424,7 +2739,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                   <Text numberOfLines={1} className="font-redditsans-bold text-[15px] flex-shrink" style={{ color: colors.text }}>
                     {plantName}
                   </Text>
-                  <FontAwesomeIcon icon={faPen} size={9} color={colors.textMuted} />
+                  <FontAwesomeIcon icon={faPen} size={12} color={colors.primary} />
                 </TouchableOpacity>
               </View>
 
@@ -2762,17 +3077,22 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                   style={{
                     position: "absolute",
-                    top: 10,
-                    right: 10,
+                    top: 12,
+                    right: 12,
                     zIndex: 10001,
-                    backgroundColor: "rgba(255,255,255,0.15)",
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
                     paddingHorizontal: 12,
-                    paddingVertical: 5,
-                    borderRadius: 20,
+                    paddingVertical: 6,
+                    borderRadius: 999,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 3,
+                    elevation: 3,
                   }}
-                  activeOpacity={0.6}
+                  activeOpacity={0.7}
                 >
-                  <Text style={{ color: "rgba(255,255,255,0.8)", fontFamily: "RedditSans-Medium", fontSize: 11 }}>
+                  <Text style={{ color: "#1e293b", fontFamily: "RedditSans-Medium", fontWeight: "600", fontSize: 11 }}>
                     {tLocal("virtual_plant.tutorial.skip_btn")} ✕
                   </Text>
                 </TouchableOpacity>
@@ -4061,6 +4381,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
         onRequestClose={() => {
           if (hasNamedPlant) {
             setRenameModalVisible(false);
+          } else {
+            handleNameLater();
           }
         }}
       >
@@ -4070,6 +4392,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           onPress={() => {
             if (hasNamedPlant) {
               setRenameModalVisible(false);
+            } else {
+              handleNameLater();
             }
           }}
         >
@@ -4110,7 +4434,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
               autoFocus
             />
             <View className="flex-row gap-3">
-              {hasNamedPlant && (
+              {hasNamedPlant ? (
                 <TouchableOpacity
                   onPress={() => {
                     setRenameModalVisible(false);
@@ -4121,6 +4445,32 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                 >
                   <Text className="font-redditsans-bold text-sm" style={{ color: colors.textSecondary }}>
                     {tLocal("virtual_plant.customizer.rename_cancel")}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handleNameLater}
+                  className="flex-1 py-2.5 rounded-xl items-center border"
+                  style={{ borderColor: colors.border }}
+                  activeOpacity={0.7}
+                >
+                  <Text className="font-redditsans-bold text-sm" style={{ color: colors.textSecondary }}>
+                    {(() => {
+                      const lang = i18n.language || "en";
+                      const code = lang.substring(0, 2).toLowerCase();
+                      switch (code) {
+                        case "az": return "Sonra";
+                        case "tr": return "Sonra";
+                        case "ru": return "Позже";
+                        case "de": return "Später";
+                        case "es": return "Más tarde";
+                        case "fr": return "Plus tard";
+                        case "it": return "Più tardi";
+                        case "zh": return "稍后";
+                        case "ar": return "لاحقاً";
+                        default: return "Later";
+                      }
+                    })()}
                   </Text>
                 </TouchableOpacity>
               )}

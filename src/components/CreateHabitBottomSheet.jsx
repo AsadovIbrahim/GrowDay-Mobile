@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useMMKVString } from 'react-native-mmkv';
+import { useMMKVString, useMMKVBoolean } from 'react-native-mmkv';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import { ICONS } from '../constants/icons';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../utils/habitTranslations';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -77,6 +78,7 @@ const CreateHabitBottomSheet = () => {
   const opacity = useRef(new Animated.Value(0)).current;
   const [accessToken] = useMMKVString('accessToken');
   const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const [checklistSkipped] = useMMKVBoolean("user.onboarding_checklist_skipped");
   const guideScale = useRef(new Animated.Value(1)).current;
   const arrowTranslateY = useRef(new Animated.Value(0)).current;
   const [popularHabits, setPopularHabits] = useState([]);
@@ -87,6 +89,7 @@ const CreateHabitBottomSheet = () => {
   const [hasMore, setHasMore] = useState(true);
   const [pageSize, setPageSize] = useState(3);
   const { theme, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
 
@@ -102,7 +105,7 @@ const CreateHabitBottomSheet = () => {
       }
 
       const currentIndex = isLoadMore ? pageIndex + 1 : 0;
-      const currentPageSize = (checklistCompleted !== "true") ? 15 : pageSize;
+      const currentPageSize = (checklistCompleted !== "true" && checklistSkipped !== true) ? 15 : pageSize;
       const response = await getAllHabitsFetch(accessToken, currentIndex, currentPageSize);
 
       if (response && response.data) {
@@ -120,7 +123,7 @@ const CreateHabitBottomSheet = () => {
         });
 
         let sortedData = [...newData];
-        if (deepBreathingIndex !== -1 && checklistCompleted !== "true") {
+        if (deepBreathingIndex !== -1 && checklistCompleted !== "true" && checklistSkipped !== true) {
           // Remove from original position and prepend to index 0
           const [deepBreathingItem] = sortedData.splice(deepBreathingIndex, 1);
           sortedData = [deepBreathingItem, ...sortedData];
@@ -202,7 +205,7 @@ const CreateHabitBottomSheet = () => {
   }, [isCreateModalOpen]);
 
   useEffect(() => {
-    if (isCreateModalOpen && checklistCompleted !== "true") {
+    if (isCreateModalOpen && checklistCompleted !== "true" && checklistSkipped !== true) {
       const animation = Animated.loop(
         Animated.parallel([
           Animated.sequence([
@@ -219,16 +222,16 @@ const CreateHabitBottomSheet = () => {
           ]),
           Animated.sequence([
             Animated.timing(arrowTranslateY, {
-              toValue: 6,
-              duration: 1200,
+              toValue: 8,
+              duration: 600,
               useNativeDriver: true,
             }),
             Animated.timing(arrowTranslateY, {
               toValue: 0,
-              duration: 1200,
+              duration: 600,
               useNativeDriver: true,
             }),
-          ])
+          ]),
         ])
       );
       animation.start();
@@ -237,7 +240,7 @@ const CreateHabitBottomSheet = () => {
       guideScale.setValue(1);
       arrowTranslateY.setValue(0);
     }
-  }, [isCreateModalOpen, checklistCompleted]);
+  }, [isCreateModalOpen, checklistCompleted, checklistSkipped]);
 
   const closeModal = () => {
     Animated.parallel([
@@ -264,6 +267,7 @@ const CreateHabitBottomSheet = () => {
       visible={true}
       animationType="none"
       onRequestClose={closeModal}
+      statusBarTranslucent={true}
     >
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={closeModal}>
@@ -273,7 +277,11 @@ const CreateHabitBottomSheet = () => {
         <Animated.View
           style={[
             styles.sheet,
-            { transform: [{ translateY }], backgroundColor: colors.card }
+            {
+              transform: [{ translateY }],
+              backgroundColor: colors.card,
+              paddingBottom: 20 + (insets.bottom > 0 ? insets.bottom : 20)
+            }
           ]}
         >
           <View style={styles.handleContainer}>
@@ -281,7 +289,7 @@ const CreateHabitBottomSheet = () => {
           </View>
 
           <View style={styles.content}>
-            {checklistCompleted === "true" && (
+            {(checklistCompleted === "true" || checklistSkipped === true) && (
               <>
                 <Text className='font-redditsans-bold mb-5' style={{ color: colors.textSecondary }}>{t("create_habit.new_good_habit")}</Text>
 
@@ -315,7 +323,7 @@ const CreateHabitBottomSheet = () => {
               </>
             )}
 
-            {checklistCompleted === "true" && (
+            {(checklistCompleted === "true" || checklistSkipped === true) && (
               <Text className='font-redditsans-bold mb-5 mt-5' style={{ color: colors.textSecondary }}>{t("create_habit.popular_habits")}</Text>
             )}
 
@@ -344,7 +352,7 @@ const CreateHabitBottomSheet = () => {
                   "深呼吸", "التنفس العميق"
                 ];
                 const isDeepBreathing = matches.some(m => titleLower.includes(m) || m.includes(titleLower));
-                const isGuidanceActive = checklistCompleted !== "true" && isDeepBreathing;
+                const isGuidanceActive = checklistCompleted !== "true" && checklistSkipped !== true && isDeepBreathing;
 
                 return (
                   <View>
@@ -360,7 +368,7 @@ const CreateHabitBottomSheet = () => {
                         </Animated.View>
                       </View>
                     )}
-                    {!isGuidanceActive && checklistCompleted !== "true" && (
+                    {!isGuidanceActive && checklistCompleted !== "true" && checklistSkipped !== true && (
                       <View style={{ height: 45 }} />
                     )}
                   <Animated.View key={habit.id} style={{ transform: [{ scale: isGuidanceActive ? guideScale : 1 }] }}>
@@ -369,12 +377,12 @@ const CreateHabitBottomSheet = () => {
                       style={[
                         styles.habitCard, 
                         { 
-                          backgroundColor: (checklistCompleted !== "true" && !isDeepBreathing) 
+                          backgroundColor: (checklistCompleted !== "true" && checklistSkipped !== true && !isDeepBreathing) 
                             ? (isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)') 
                             : colors.card, 
                           borderColor: isGuidanceActive ? colors.primary : colors.border,
                           borderWidth: isGuidanceActive ? 2 : 1,
-                          opacity: (checklistCompleted !== "true" && !isDeepBreathing) ? 0.3 : 1
+                          opacity: (checklistCompleted !== "true" && checklistSkipped !== true && !isDeepBreathing) ? 0.3 : 1
                         }
                       ]}
                       onPress={() => {
@@ -388,8 +396,8 @@ const CreateHabitBottomSheet = () => {
                           }
                         });
                       }}
-                      disabled={checklistCompleted !== "true" && !isDeepBreathing}
-                      needsOffscreenAlphaCompositing={checklistCompleted !== "true" && !isDeepBreathing}
+                      disabled={checklistCompleted !== "true" && checklistSkipped !== true && !isDeepBreathing}
+                      needsOffscreenAlphaCompositing={checklistCompleted !== "true" && checklistSkipped !== true && !isDeepBreathing}
                     >
                       <View style={[styles.habitIconContainer, { backgroundColor: colors.cardSecondary }]}>
                         <Text style={{ fontSize: 24 }}>{ICONS[habit.icon]}</Text>

@@ -3,7 +3,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getUserHabitFetch, getAccountDataFetch, getTodaysUserHabitFetch, getUnreadNotificationCountFetch, getUserHabitCountFetch, getDailyStatisticsFetch, submitMoodFetch, updateAccountFetch, getMoodHistoryFetch } from "../../utils/fetch";
 import { useEffect, useState, useRef, useContext, useCallback, useMemo } from "react";
-import { useMMKVString } from "react-native-mmkv";
+import { useMMKVString, useMMKVBoolean } from "react-native-mmkv";
 import { storage, clearUserSession } from "../../utils/MMKVStore";
 import { saveLocalMood } from "../../utils/MoodLocalStore";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +27,9 @@ import {
   faStar as faStarSolid,
   faQuoteRight,
   faStore,
-  faTimes
+  faTimes,
+  faPlus,
+  faCalendarCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { MenuContext } from '../../context/MenuContext';
 import HomeEmptyState from './HomeEmptyState';
@@ -105,7 +107,7 @@ const Home = () => {
     return storage.getNumber("home.cached.unreadNotificationCount") || 0;
   });
   
-  const { isMenuOpen, setIsMenuOpen } = useContext(MenuContext);
+  const { isMenuOpen, setIsMenuOpen, setIsCreateModalOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -125,6 +127,7 @@ const Home = () => {
   const [userMoodEmoji, setUserMoodEmoji] = useMMKVString('user.moodEmoji');
   const [lastMoodDate, setLastMoodDate] = useMMKVString('user.lastMoodDate');
   const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
+  const [checklistSkipped] = useMMKVBoolean("user.onboarding_checklist_skipped");
   const [moodModalVisible, setMoodModalVisible] = useState(false);
   const [moodToastMsg, setMoodToastMsg] = useState("");
   const moodFadeAnim = useRef(new Animated.Value(0)).current;
@@ -895,7 +898,7 @@ const Home = () => {
               <Text className="text-white font-redditsans-bold">{t('common.retry')}</Text>
             </TouchableOpacity>
           </View>
-        ) : (userHabitCount === 0) ? (
+        ) : (userHabitCount === 0 && checklistCompleted !== "true" && checklistSkipped !== true) ? (
           <HomeEmptyState
             accountData={accountData}
             onLogMoodPress={() => setMoodModalVisible(true)}
@@ -911,7 +914,7 @@ const Home = () => {
               todaysUserHabit={todaysUserHabit}
             />
 
-            {accountData?.email && checklistCompleted === "true" ? (
+            {accountData?.email && (checklistCompleted === "true" || checklistSkipped === true) ? (
               <VirtualPlant
                 key={accountData.email.toLowerCase()}
                 userId={accountData.email.toLowerCase()}
@@ -945,11 +948,114 @@ const Home = () => {
               />
             ) : null}
 
-            {/* 1. Today's Habits Section */}
-            <View className="px-4  mt-2">
-              <View className="flex-row justify-between items-center mb-3">
-                <View className="flex-1 mr-2">
-                  <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1} ellipsizeMode="tail">
+            {/* 1. Today's Habits Section / Empty habits illustration */}
+            {userHabitCount === 0 ? (
+              <View className="px-4 mb-6">
+                <View
+                  className="rounded-3xl px-6 py-8 items-center"
+                  style={{
+                    backgroundColor: colors.card,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 4,
+                  }}
+                >
+                  <View style={{ backgroundColor: colors.primarySurface }} className="w-24 h-24 rounded-full items-center justify-center mb-4">
+                    <FontAwesomeIcon icon={faCalendarCheck} size={42} color={colors.primary} />
+                  </View>
+
+                  <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold mb-1 text-center">
+                    {t("home.empty_title")}
+                  </Text>
+                  <Text style={{ color: colors.textSecondary }} className="text-sm font-redditsans-regular mb-5 text-center">
+                    {t("home.empty_subtitle")}
+                  </Text>
+
+                  <TouchableOpacity
+                    style={{ backgroundColor: colors.primary }}
+                    className="w-full rounded-full py-3 flex-row items-center justify-center mb-4"
+                    onPress={() => setIsCreateModalOpen(true)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} color="#ffffff" size={18} />
+                    <Text className="ml-2 text-white text-base font-redditsans-medium">
+                      {t("home.add_first_habit")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular text-center">
+                    {t("home.empty_hint")}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View className="px-4  mt-2">
+                <View className="flex-row justify-between items-center mb-3">
+                  <View className="flex-1 mr-2">
+                    <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1} ellipsizeMode="tail">
+                      {(() => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                        selected.setHours(0, 0, 0, 0);
+                        const isToday = selected.getTime() === today.getTime();
+
+                        if (isToday) return t('home.todays_habits');
+                        const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                        return t('home.days_habits', { day: t(`home.day_names.${dayKeys[selected.getDay()]}`) });
+                      })()}
+                    </Text>
+                    {(() => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const selected = selectedDateObject ? new Date(selectedDateObject) : today;
+                      selected.setHours(0, 0, 0, 0);
+                      if (selected.getTime() > today.getTime()) {
+                        return (
+                          <Text style={{ color: colors.textMuted }} className="text-xs font-redditsans-regular italic">
+                            {t('home.upcoming_habits')}
+                          </Text>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('UserHabits', { initialFilter: 'Today' })}
+                    className="flex-row items-center gap-1 shrink-0"
+                  >
+                    <Text style={{ color: colors.primary }} className="text-sm font-redditsans-medium">
+                      {t('home.view_all')}
+                    </Text>
+                    <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={14} />
+                  </TouchableOpacity>
+                </View>
+
+                {sortedTodaysHabits && sortedTodaysHabits.slice(0, 4).map((habit, index) => (
+                  <HabitCard
+                    key={habit.userHabitId || `habit-${index}`}
+                    habit={habit}
+                    index={index}
+                    selectedDate={getLocalDateString(selectedDateObject)}
+                  />
+                ))}
+              </View>
+            )}
+
+            {/* 2. Calendar Selector */}
+            {userHabitCount > 0 && (
+              <CalendarSelector
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+              />
+            )}
+
+            {/* 3. Progress Today Section */}
+            {userHabitCount > 0 && (
+              <>
+                <View className="px-4 mb-3 flex-row justify-between items-center">
+                  <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
                     {(() => {
                       const today = new Date();
                       today.setHours(0, 0, 0, 0);
@@ -957,80 +1063,25 @@ const Home = () => {
                       selected.setHours(0, 0, 0, 0);
                       const isToday = selected.getTime() === today.getTime();
 
-                      if (isToday) return t('home.todays_habits');
+                      if (isToday) return t('home.progress_today');
                       const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                      return t('home.days_habits', { day: t(`home.day_names.${dayKeys[selected.getDay()]}`) });
+                      const dayName = t(`home.day_names.${dayKeys[selected.getDay()]}`);
+                      return `${dayName} - ${t('common.progress', { defaultValue: 'Progress' })}`;
                     })()}
                   </Text>
-                  {(() => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const selected = selectedDateObject ? new Date(selectedDateObject) : today;
-                    selected.setHours(0, 0, 0, 0);
-                    if (selected.getTime() > today.getTime()) {
-                      return (
-                        <Text style={{ color: colors.textMuted }} className="text-xs font-redditsans-regular italic">
-                          {t('home.upcoming_habits')}
-                        </Text>
-                      );
-                    }
-                    return null;
-                  })()}
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Statistics')}
+                    className="flex-row items-center gap-1"
+                  >
+                    <Text style={{ color: colors.primary }} className="text-sm font-redditsans-medium">
+                      {t('home.view_all')}
+                    </Text>
+                    <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={12} />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('UserHabits', { initialFilter: 'Today' })}
-                  className="flex-row items-center gap-1 shrink-0"
-                >
-                  <Text style={{ color: colors.primary }} className="text-sm font-redditsans-medium">
-                    {t('home.view_all')}
-                  </Text>
-                  <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={14} />
-                </TouchableOpacity>
-              </View>
-
-              {sortedTodaysHabits && sortedTodaysHabits.slice(0, 4).map((habit, index) => (
-                <HabitCard
-                  key={habit.userHabitId || `habit-${index}`}
-                  habit={habit}
-                  index={index}
-                  selectedDate={getLocalDateString(selectedDateObject)}
-                />
-              ))}
-            </View>
-
-            {/* 2. Calendar Selector */}
-            <CalendarSelector
-              selectedDate={selectedDate}
-              onDateSelect={handleDateSelect}
-            />
-
-            {/* 3. Progress Today Section */}
-            <View className="px-4 mb-3 flex-row justify-between items-center">
-              <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold">
-                {(() => {
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const selected = selectedDateObject ? new Date(selectedDateObject) : today;
-                  selected.setHours(0, 0, 0, 0);
-                  const isToday = selected.getTime() === today.getTime();
-
-                  if (isToday) return t('home.progress_today');
-                  const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-                  const dayName = t(`home.day_names.${dayKeys[selected.getDay()]}`);
-                  return `${dayName} - ${t('common.progress', { defaultValue: 'Progress' })}`;
-                })()}
-              </Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Statistics')}
-                className="flex-row items-center gap-1"
-              >
-                <Text style={{ color: colors.primary }} className="text-sm font-redditsans-medium">
-                  {t('home.view_all')}
-                </Text>
-                <FontAwesomeIcon icon={faChevronRight} color={colors.primary} size={12} />
-              </TouchableOpacity>
-            </View>
-            <ProgressSummary dailyStatistics={dailyStatistics} />
+                <ProgressSummary dailyStatistics={dailyStatistics} />
+              </>
+            )}
 
             {/* 4. AI Mentor Section */}
             <AIMentorCard totalExperiencePoints={accountData?.totalExperiencePoints} />

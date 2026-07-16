@@ -216,12 +216,11 @@ const UserPref6 = () => {
                 <TouchableOpacity
                   key={option.id}
                   onPress={() => toggleOption(option.id)}
-                  className={`rounded-2xl p-4 mb-3 flex-row items-center justify-between ${isSelected
-                    ? "border-2 border-green-500"
-                    : isDark ? "border border-white/10" : "border border-green-100"
-                    }`}
+                  className="rounded-2xl p-4 mb-3 flex-row items-center justify-between"
                   style={{
                     backgroundColor: isDark ? "#1a2e1c" : "#ffffff",
+                    borderWidth: isSelected ? 2 : 1,
+                    borderColor: isSelected ? "#22c55e" : (isDark ? "rgba(255,255,255,0.1)" : "#dcfce7"),
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 1 },
                     shadowOpacity: 0.08,

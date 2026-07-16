@@ -21,7 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faChevronRight, faCalendarAlt, faClock, faLayerGroup, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import LinearGradient from "react-native-linear-gradient";
-import { useMMKVString } from "react-native-mmkv";
+import { useMMKVString, useMMKVBoolean } from "react-native-mmkv";
 import { addCustomUserHabitFetch, addSuggestedHabitFetch, addUserHabitFetch, updateUserHabitFetch, getAccountDataFetch, getCategoriesFetch, createCategoryFetch } from "../../utils/fetch";
 import { ICONS, PREMIUM_ICONS } from "../../constants/icons";
 import { useTheme as useThemeConstants } from "../../constants/theme";
@@ -128,7 +128,8 @@ const CreateCustomHabit = () => {
   const { habitData = null, isCustom = true, isSuggested = false, isEditMode = false } = route.params || {};
   const [accessToken] = useMMKVString("accessToken");
   const [checklistCompleted] = useMMKVString("user.onboarding_checklist_completed");
-  const [tutorialStep, setTutorialStep] = useState(checklistCompleted !== "true" && !isEditMode ? 1 : 0);
+  const [checklistSkipped] = useMMKVBoolean("user.onboarding_checklist_skipped");
+  const [tutorialStep, setTutorialStep] = useState(checklistCompleted !== "true" && checklistSkipped !== true && !isEditMode ? 1 : 0);
 
   const { spacing, typography, radius } = useThemeConstants();
   const { theme, isDark } = useTheme();
@@ -495,9 +496,9 @@ const CreateCustomHabit = () => {
         navigateOnSuccess();
       } else {
         let errorMsg = response?.message;
-        const isDuplicate = errorMsg === "User habit already exists." || 
-                            errorMsg === "User habit with the same title already exists." ||
-                            errorMsg === "User already has this habit.";
+        const isDuplicate = errorMsg === "User habit already exists." ||
+          errorMsg === "User habit with the same title already exists." ||
+          errorMsg === "User already has this habit.";
         if (isDuplicate) {
           errorMsg = t("create_habit.already_exists", "This habit already exists in your list.");
           setErrorModalTitle(t("common.oops", "Oops!"));
@@ -1018,11 +1019,11 @@ const CreateCustomHabit = () => {
             style={StyleSheet.absoluteFillObject}
             onPress={() => setShowTimeModal(false)}
           />
-          <View 
+          <View
             style={[
-              styles.modalContent, 
-              { 
-                paddingBottom: 24, 
+              styles.modalContent,
+              {
+                paddingBottom: 24,
                 backgroundColor: colors.card,
                 paddingHorizontal: 20,
                 paddingTop: 24,
@@ -1243,7 +1244,7 @@ const CreateCustomHabit = () => {
         </View>
       </Modal>
 
-      {checklistCompleted !== "true" && !isEditMode && tutorialStep > 0 && (
+      {checklistCompleted !== "true" && checklistSkipped !== true && !isEditMode && tutorialStep > 0 && (
         <Modal
           visible={true}
           transparent={true}
@@ -1268,7 +1269,7 @@ const CreateCustomHabit = () => {
                 {/* Action Buttons */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
                   {tutorialStep > 1 && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={() => setTutorialStep(prev => prev - 1)}
                       style={{ paddingHorizontal: 16, paddingVertical: 10, marginRight: 12 }}
                     >
@@ -1277,8 +1278,8 @@ const CreateCustomHabit = () => {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  
-                  <TouchableOpacity 
+
+                  <TouchableOpacity
                     onPress={() => {
                       if (tutorialStep < 3) {
                         setTutorialStep(prev => prev + 1);
