@@ -317,6 +317,8 @@ const styles = StyleSheet.create({
         fontSize: width < 380 ? 14 : 15,
         color: '#4b5563',
         fontWeight: '500',
+        textAlign: 'center',
+        paddingHorizontal: 24,
         marginBottom: width < 380 ? 20 : 30,
     },
     // Card

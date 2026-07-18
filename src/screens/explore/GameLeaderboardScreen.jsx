@@ -402,12 +402,14 @@ export default function GameLeaderboardScreen() {
         contentContainerStyle={{ paddingBottom: 30 }}
       >
         {/* Tournament Info Card */}
-        <View
+        <TouchableOpacity
+          onPress={() => setShowRewardsModal(true)}
           className="mx-4 p-4 rounded-3xl mb-4 flex-row items-center justify-between shadow-sm border"
           style={{
             backgroundColor: colors.cardSecondary,
             borderColor: colors.border + "40",
           }}
+          activeOpacity={0.7}
         >
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
@@ -426,14 +428,13 @@ export default function GameLeaderboardScreen() {
             ) : null}
           </View>
 
-          <TouchableOpacity
-            onPress={() => setShowRewardsModal(true)}
+          <View
             className="p-2.5 rounded-full"
             style={{ backgroundColor: colors.card }}
           >
             <FontAwesomeIcon icon={faGift} size={18} color={colors.primary} />
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
 
         {hasPodium && (
           <View

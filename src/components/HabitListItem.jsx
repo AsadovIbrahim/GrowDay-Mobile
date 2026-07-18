@@ -6,6 +6,7 @@ import { ICONS } from "../constants/icons";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getTranslatedHabit, getTranslatedCategory } from "../utils/habitTranslations";
+import { useMMKVString } from "react-native-mmkv";
 
 const CATEGORY_ICON_MAP = {
   default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
@@ -26,6 +27,11 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
   const { t, i18n } = useTranslation();
   const { colors } = theme;
   const scaleValue = useRef(new Animated.Value(1)).current;
+
+  const hId = habit.userHabitId || habit.id;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const startKey = `timer_start_${hId}_${todayStr}`;
+  const [storedStart] = useMMKVString(startKey);
 
   const handlePressIn = () => {
     Animated.spring(scaleValue, {
@@ -207,7 +213,9 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
               style={{
                 backgroundColor: isCompleted
                   ? colors.primary + '15'
-                  : (showStatus ? '#eab30815' : colors.cardSecondary),
+                  : storedStart
+                    ? '#f59e0b15'
+                    : (showStatus ? '#eab30815' : colors.cardSecondary),
                 paddingHorizontal: 6,
                 paddingVertical: 1,
                 borderRadius: 6,
@@ -221,15 +229,19 @@ const HabitListItem = ({ habit, onPress, isSelected, onToggleSelect, isSelection
                   fontSize: 11,
                   color: isCompleted
                     ? colors.primary
-                    : (showStatus ? '#eab308' : colors.textSecondary)
+                    : storedStart
+                      ? '#f59e0b'
+                      : (showStatus ? '#eab308' : colors.textSecondary)
                 }}
               >
                 {isCompleted
                   ? `✓ ${t('common.completed', 'Completed')}`
-                  : (showStatus
-                    ? `⏳ ${t('my_habits.filters.due_today', 'Due Today')}`
-                    : t(`my_habits.filters.${habitType.toLowerCase()}`)
-                  )
+                  : storedStart
+                    ? `⏳ ${t('tasks.filters.in_progress', { defaultValue: 'In Progress' })}`
+                    : (showStatus
+                      ? `⏳ ${t('my_habits.filters.due_today', 'Due Today')}`
+                      : t(`my_habits.filters.${habitType.toLowerCase()}`)
+                    )
                 }
               </Text>
             </View>

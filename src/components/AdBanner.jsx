@@ -23,7 +23,7 @@ const AdBanner = () => {
   }
 
   return (
-    <View 
+    <View
       className="my-4 items-center justify-center rounded-2xl overflow-hidden py-1"
       style={{
         backgroundColor: colors.card,

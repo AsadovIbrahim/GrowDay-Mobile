@@ -123,6 +123,16 @@ const Home = () => {
   const firstName = accountData?.firstName;
   const email = accountData?.email;
 
+  // Level calculations for Sidebar/Drawer
+  const userPoints = accountData?.totalExperiencePoints || 0;
+  const userLevel = Math.floor(Math.sqrt(userPoints / 50)) + 1;
+  const currentLvlPoints = 50 * Math.pow(userLevel - 1, 2);
+  const nextLvlPoints = 50 * Math.pow(userLevel, 2);
+  const xpRemaining = nextLvlPoints - userPoints;
+  const totalLvlRange = nextLvlPoints - currentLvlPoints;
+  const pointsInCurrentLvl = userPoints - currentLvlPoints;
+  const progressRatio = totalLvlRange > 0 ? Math.min(Math.max(pointsInCurrentLvl / totalLvlRange, 0), 1) : 0;
+
   // Mood Tracking States & Functions
   const [userMoodEmoji, setUserMoodEmoji] = useMMKVString('user.moodEmoji');
   const [lastMoodDate, setLastMoodDate] = useMMKVString('user.lastMoodDate');
@@ -760,20 +770,47 @@ const Home = () => {
       >
         <View className="flex-1 pt-14 px-4">
           {/* Profile Header */}
-          <View className="flex-row items-center px-2 mb-8 mt-2">
-            <AvatarWithBorder
-              avatarUrl={accountData?.profilePicture}
-              level={accountData?.hasPremiumBorder ? 999 : (storage.getNumber('user.activeBorder') || 1)}
-              size={50}
-            />
-            <View className="ml-4 flex-1">
-              <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
-                {firstName || 'User'}
-              </Text>
-              <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular">
-                {email || ''}
-              </Text>
+          <View className="px-2 mb-8 mt-2">
+            <View className="flex-row items-center">
+              <AvatarWithBorder
+                avatarUrl={accountData?.profilePicture}
+                level={accountData?.hasPremiumBorder ? 999 : (storage.getNumber('user.activeBorder') || 1)}
+                size={50}
+              />
+              <View className="ml-4 flex-1">
+                <Text style={{ color: colors.text }} className="text-lg font-redditsans-bold" numberOfLines={1}>
+                  {firstName || 'User'}
+                </Text>
+                <Text style={{ color: colors.textSecondary }} className="text-xs font-redditsans-regular" numberOfLines={1}>
+                  {email || ''}
+                </Text>
+              </View>
             </View>
+
+            {/* Level & XP Progress Section */}
+            {accountData && (
+              <View style={{ marginTop: 14 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <View style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                    <Text style={{ color: colors.primary, fontSize: 10, fontFamily: 'RedditSans-Bold', fontWeight: '700' }}>
+                      {t("common.level_short", { level: userLevel })}
+                    </Text>
+                  </View>
+                  <Text style={{ color: colors.textSecondary, fontSize: 10, fontFamily: 'RedditSans-Medium' }}>
+                    {t("profile.xp_to_next_level", { xp: xpRemaining, level: userLevel + 1 })}
+                  </Text>
+                </View>
+                {/* Thin sleek Progress Bar */}
+                <View style={{ width: '100%', height: 4, borderRadius: 2, backgroundColor: colors.border + '40', overflow: 'hidden' }}>
+                  <LinearGradient
+                    colors={[colors.primary, colors.primary + 'B3']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{ width: `${progressRatio > 0 ? Math.max(progressRatio * 100, 2) : 0}%`, height: '100%' }}
+                  />
+                </View>
+              </View>
+            )}
           </View>
 
           <View className="flex-1">

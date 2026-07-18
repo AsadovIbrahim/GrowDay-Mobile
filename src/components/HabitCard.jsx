@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../utils/habitTranslations';
 import Svg, { Circle } from 'react-native-svg';
+import { useMMKVString } from "react-native-mmkv";
 
 const CATEGORY_ICON_MAP = {
   default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
@@ -27,6 +29,8 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
   const { theme } = useTheme();
   const { colors } = theme;
   const { t, i18n } = useTranslation();
+  const navigation = useNavigation();
+
   const isFuture = (() => {
     if (!selectedDate) return false;
     const today = new Date();
@@ -36,17 +40,80 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
     return target > today;
   })();
 
-  const isCompleted = !isFuture && (habit.status?.toLowerCase() === 'completed' || habit.status?.toLowerCase() === 'done');
-  const navigation = useNavigation();
+  const hId = habit.userHabitId || habit.id;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const dateStr = selectedDate ? selectedDate.split('T')[0] : todayStr;
+
+  const startKey = `timer_start_${hId}_${dateStr}`;
+  const accKey = `timer_acc_${hId}_${dateStr}`;
+  const distKey = `dist_acc_${hId}_${dateStr}`;
+
+  const [storedStart] = useMMKVString(startKey);
+  const [storedAcc] = useMMKVString(accKey);
+  const [storedDist] = useMMKVString(distKey);
+
+  const [liveSeconds, setLiveSeconds] = useState(0);
+
+  useEffect(() => {
+    const calculateSeconds = () => {
+      const acc = parseInt(storedAcc || "0", 10);
+      let total = acc;
+      if (storedStart) {
+        const start = new Date(storedStart).getTime();
+        const now = Date.now();
+        total += Math.floor((now - start) / 1000);
+      }
+      setLiveSeconds(total);
+    };
+
+    calculateSeconds();
+
+    let interval;
+    if (storedStart) {
+      interval = setInterval(calculateSeconds, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [storedStart, storedAcc]);
+
+  const unit = habit.unit?.toLowerCase();
+  const isBoolean = !habit.unit || !habit.targetValue || habit.targetValue <= 0;
+  const isDuration = ["minute", "minutes", "hour", "hours", "min", "hr", "mins", "hrs"].includes(unit);
+  const isDistance = ["km", "m", "mile", "miles"].includes(unit);
+  const isKcal = ["kcal", "cal", "calories"].includes(unit);
+
+  let liveDelta = 0;
+  if (isDistance) {
+    liveDelta = parseFloat(storedDist || "0");
+    if (unit === "m") liveDelta = liveDelta * 1000;
+  } else if (isKcal) {
+    liveDelta = liveSeconds * (6.5 / 60);
+  } else if (isDuration) {
+    const unitMod = (unit === "hour" || unit === "hr" || unit === "hrs" || unit === "hours") ? 3600 : 60;
+    liveDelta = liveSeconds / unitMod;
+  } else {
+    if (liveSeconds > 0) {
+      liveDelta = liveSeconds / 60;
+    }
+  }
+
+  const target = habit.targetValue || 1;
+  const current = (habit.currentValue || 0) + liveDelta;
+  const progressRate = Math.min(1, Math.max(0, current / target));
+
+  const isCompleted = !isFuture && (
+    habit.status?.toLowerCase() === 'completed' || 
+    habit.status?.toLowerCase() === 'done' || 
+    progressRate >= 1
+  );
 
   // Circular progress calculations
   const size = 48;
   const strokeWidth = 3;
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
-  const target = habit.targetValue || 1;
-  const current = habit.currentValue || 0;
-  const progressRate = Math.min(1, Math.max(0, current / target));
   const strokeDashoffset = circumference * (1 - progressRate);
 
   const handlePress = (() => {
@@ -117,7 +184,7 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
               <Text className="text-lg">{ICONS[habit.icon]}</Text>
             )}
           </View>
-          {target > 1 && (
+          {!isBoolean && (
             <View style={{ 
               position: 'absolute', 
               width: size, 
@@ -137,17 +204,19 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
                   fill="none"
                 />
                 {/* Progress Ring */}
-                <Circle
-                  cx={size / 2}
-                  cy={size / 2}
-                  r={radius}
-                  stroke={isCompleted ? "#22c55e" : colors.primary}
-                  strokeWidth={strokeWidth}
-                  fill="none"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                />
+                {progressRate > 0 && (
+                  <Circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke={isCompleted ? "#22c55e" : colors.primary}
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                  />
+                )}
               </Svg>
             </View>
           )}
@@ -158,10 +227,22 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
             {habit.title || getTranslatedHabit(habit, i18n.language, t).title}        </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
             <Text
-              style={{ color: colors.textSecondary }}
+              style={{
+                color: isCompleted
+                  ? colors.primary
+                  : storedStart
+                    ? "#eab308"
+                    : colors.textSecondary
+              }}
               className="text-sm font-redditsans-regular"
             >
-              {isFuture ? t('common.upcoming') : (isCompleted ? t('common.completed') : t('common.pending'))}
+              {isFuture
+                ? t('common.upcoming')
+                : isCompleted
+                  ? t('common.completed')
+                  : storedStart
+                    ? t('tasks.filters.in_progress', { defaultValue: 'In Progress' })
+                    : t('common.pending')}
             </Text>
             {formattedTime && (
               <>

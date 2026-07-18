@@ -73,17 +73,19 @@ const CircularProgress = ({
                     strokeWidth={strokeWidth}
                     fill="none"
                 />
-                <Circle
-                    cx={center}
-                    cy={center}
-                    r={radius}
-                    stroke={color}
-                    strokeWidth={strokeWidth}
-                    fill="none"
-                    strokeDasharray={`${circumference} ${circumference}`}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                />
+                {animatedValue > 0 && (
+                    <Circle
+                        cx={center}
+                        cy={center}
+                        r={radius}
+                        stroke={color}
+                        strokeWidth={strokeWidth}
+                        fill="none"
+                        strokeDasharray={`${circumference} ${circumference}`}
+                        strokeDashoffset={strokeDashoffset}
+                        strokeLinecap="round"
+                    />
+                )}
             </Svg>
 
             <Text

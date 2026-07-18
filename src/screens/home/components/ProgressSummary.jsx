@@ -32,18 +32,20 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 strokeWidth="8"
                 fill="none"
               />
-              <Circle
-                cx="32"
-                cy="32"
-                r="28"
-                stroke={colors.primary}
-                strokeWidth="8"
-                fill="none"
-                strokeDasharray={`${2 * Math.PI * 28}`}
-                strokeDashoffset={`${2 * Math.PI * 28 * (1 - (dailyStatistics?.completionRate || 0) / 100)}`}
-                strokeLinecap="round"
-                transform="rotate(-90 32 32)"
-              />
+              {(dailyStatistics?.completionRate || 0) > 0 && (
+                <Circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  stroke={colors.primary}
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={`${2 * Math.PI * 28}`}
+                  strokeDashoffset={`${2 * Math.PI * 28 * (1 - (dailyStatistics?.completionRate || 0) / 100)}`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 32 32)"
+                />
+              )}
             </Svg>
             <Text 
               style={{ color: colors.text }}
@@ -92,18 +94,20 @@ const ProgressSummary = ({ dailyStatistics }) => {
                 strokeWidth="8"
                 fill="none"
               />
-              <Circle
-                cx="32"
-                cy="32"
-                r="28"
-                stroke={colors.danger}
-                strokeWidth="8"
-                fill="none"
-                strokeDasharray={`${2 * Math.PI * 28}`}
-                strokeDashoffset={`${2 * Math.PI * 28 * (1 - (dailyStatistics?.missedRate || 0) / 100)}`}
-                strokeLinecap="round"
-                transform="rotate(-90 32 32)"
-              />
+              {(dailyStatistics?.missedRate || 0) > 0 && (
+                <Circle
+                  cx="32"
+                  cy="32"
+                  r="28"
+                  stroke={colors.danger}
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={`${2 * Math.PI * 28}`}
+                  strokeDashoffset={`${2 * Math.PI * 28 * (1 - (dailyStatistics?.missedRate || 0) / 100)}`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 32 32)"
+                />
+              )}
             </Svg>
             <Text 
               style={{ color: colors.text, fontFamily: 'redditsans-bold' }}

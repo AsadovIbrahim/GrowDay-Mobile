@@ -17,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import Sound from 'react-native-sound';
+import AvatarWithBorder from './AvatarWithBorder';
 
 Sound.setCategory('Playback');
 
@@ -63,6 +64,17 @@ const PREDEFINED_AVATARS = [
   { url: 'https://api.dicebear.com/7.x/adventurer/png?seed=Morgana', level: 40, name: 'Morgana' },
   { url: 'https://api.dicebear.com/7.x/adventurer/png?seed=Phoenix', level: 50, name: 'Phoenix' },
   { url: 'https://api.dicebear.com/7.x/adventurer/png?seed=Valkyrie', level: 50, name: 'Valkyrie' }
+];
+
+const PREDEFINED_BORDERS = [
+  { level: 5, name: 'Bronze' },
+  { level: 10, name: 'Silver' },
+  { level: 15, name: 'Gold' },
+  { level: 20, name: 'Cyber' },
+  { level: 25, name: 'Glacial' },
+  { level: 30, name: 'Devil' },
+  { level: 40, name: 'Dragon' },
+  { level: 50, name: 'Cosmic' }
 ];
 
 const { width } = Dimensions.get('window');
@@ -170,9 +182,10 @@ const LevelUpModal = ({ visible, level, onClose }) => {
 
   if (!visible || !level) return null;
 
-  // Derive unlocked avatars for this specific level
+  // Derive unlocked avatars and borders for this specific level
   const unlockedAvatars = PREDEFINED_AVATARS.filter(a => a.level === level);
-  const hasUnlocked = unlockedAvatars.length > 0;
+  const unlockedBorder = PREDEFINED_BORDERS.find(b => b.level === level);
+  const hasUnlocked = unlockedAvatars.length > 0 || !!unlockedBorder;
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -263,24 +276,54 @@ const LevelUpModal = ({ visible, level, onClose }) => {
               <View style={styles.unlockHeader}>
                 <FontAwesomeIcon icon={faLockOpen} size={16} color="#eab308" />
                 <Text className="font-redditsans-bold" style={[styles.unlockTitle, { color: colors.text }]}>
-                  {t("levelup.unlocked_avatars", { defaultValue: "New Avatars Unlocked!" })}
+                  {unlockedAvatars.length > 0 && unlockedBorder
+                    ? t("levelup.unlocked_all", { defaultValue: "New Avatars & Border Unlocked! 🎉" })
+                    : unlockedBorder
+                    ? t("levelup.unlocked_border", { defaultValue: "New Border Unlocked! 🎉" })
+                    : t("levelup.unlocked_avatars", { defaultValue: "New Avatars Unlocked!" })
+                  }
                 </Text>
               </View>
 
               <View style={styles.avatarRow}>
                 {unlockedAvatars.map((avatar, idx) => (
-                  <View key={idx} style={styles.avatarWrapper}>
+                  <View key={`avatar-${idx}`} style={styles.avatarWrapper}>
                     <LinearGradient
                       colors={['rgba(251, 191, 36, 0.3)', 'transparent']}
                       style={styles.avatarGlow}
                     >
                       <Image source={{ uri: avatar.url }} style={styles.avatarImg} />
                     </LinearGradient>
-                    <Text className="font-redditsans-medium" style={[styles.avatarName, { color: colors.textSecondary }]}>
+                    <Text className="font-redditsans-medium" style={[styles.avatarName, { color: colors.textSecondary }]} numberOfLines={1}>
                       {avatar.name}
                     </Text>
                   </View>
                 ))}
+
+                {unlockedBorder && (
+                  <View style={styles.avatarWrapper}>
+                    <View
+                      style={[
+                        styles.avatarGlow,
+                        {
+                          backgroundColor: 'transparent',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: 0
+                        }
+                      ]}
+                    >
+                      <AvatarWithBorder
+                        avatarUrl="https://api.dicebear.com/7.x/adventurer/png?seed=Felix"
+                        level={unlockedBorder.level}
+                        size={40}
+                      />
+                    </View>
+                    <Text className="font-redditsans-medium" style={[styles.avatarName, { color: colors.textSecondary }]} numberOfLines={1}>
+                      {t(`levelup.border_name_${unlockedBorder.name.toLowerCase()}`, { defaultValue: `${unlockedBorder.name} Border` })}
+                    </Text>
+                  </View>
+                )}
               </View>
             </Animated.View>
           ) : (

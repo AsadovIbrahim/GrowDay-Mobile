@@ -111,7 +111,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "Hazırsan! Al +10 XP başlanğıc hədiyyəsi! 🌟",
       next_btn: "Növbəti",
       skip_btn: "Keç",
-      start_btn: "Böyüməyə Başla 🌱"
+      start_btn: "Böyüməyə Başla 🌱",
+      completed_toast: "Virtual Bitki təlimi tamamlandı! 🌟"
     },
     insights: {
       weekend_struggle: "Sən adətən həftəsonları vərdişlərini yerinə yetirməkdə çətinlik çəkirsən. 😴",
@@ -235,7 +236,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "Hazırsın! Al +10 XP başlangıç hediyesi! 🌟",
       next_btn: "Sonraki",
       skip_btn: "Atla",
-      start_btn: "Büyümeye Başla 🌱"
+      start_btn: "Büyümeye Başla 🌱",
+      completed_toast: "Sanal Bitki eğitimi tamamlandı! 🌟"
     },
     insights: {
       weekend_struggle: "Genellikle hafta sonları alışkanlıklarını sürdürmekte zorlanıyorsun. 😴",
@@ -359,7 +361,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "Готово! Держи +10 XP в подарок! 🌟",
       next_btn: "Далее",
       skip_btn: "Пропустить",
-      start_btn: "Начать рост 🌱"
+      start_btn: "Начать рост 🌱",
+      completed_toast: "Обучение по виртуальному растению пройдено! 🌟"
     },
     insights: {
       weekend_struggle: "Обычно тебе труднее всего поддерживать привычки по выходным. 😴",
@@ -483,7 +486,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "All set! Here's +10 XP to get you started! 🌟",
       next_btn: "Next",
       skip_btn: "Skip",
-      start_btn: "Start Growing 🌱"
+      start_btn: "Start Growing 🌱",
+      completed_toast: "Virtual Plant Tutorial completed! 🌟"
     },
     insights: {
       weekend_struggle: "You usually struggle on weekends. 😴",
@@ -607,7 +611,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "Startklar! Hier sind +10 XP zum Start! 🌟",
       next_btn: "Weiter",
       skip_btn: "Überspringen",
-      start_btn: "Wachsen starten 🌱"
+      start_btn: "Wachsen starten 🌱",
+      completed_toast: "Virtuelles Pflanzen-Tutorial abgeschlossen! 🌟"
     },
     insights: {
       weekend_struggle: "Am Wochenende fällt es dir normalerweise schwerer, deine Gewohnheiten einzuhalten. 😴",
@@ -731,7 +736,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "¡Listo! ¡Aquí tienes +10 XP de bienvenida! 🌟",
       next_btn: "Siguiente",
       skip_btn: "Saltar",
-      start_btn: "Empezar a crecer 🌱"
+      start_btn: "Empezar a crecer 🌱",
+      completed_toast: "¡Tutorial de Planta Virtual completado! 🌟"
     },
     insights: {
       weekend_struggle: "Sueles tener dificultades para mantener tus hábitos los fines de semana. 😴",
@@ -855,7 +861,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "C'est parti ! Voici +10 XP de bienvenue ! 🌟",
       next_btn: "Suivant",
       skip_btn: "Passer",
-      start_btn: "Commencer à grandir 🌱"
+      start_btn: "Commencer à grandir 🌱",
+      completed_toast: "Tutoriel sur la plante virtuelle terminé ! 🌟"
     },
     insights: {
       weekend_struggle: "Tu as généralement du mal à tenir tes habitudes le week-end. 😴",
@@ -979,7 +986,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "Tutto pronto! Ecco +10 XP di benvenuto! 🌟",
       next_btn: "Avanti",
       skip_btn: "Salta",
-      start_btn: "Inizia a crescere 🌱"
+      start_btn: "Inizia a crescere 🌱",
+      completed_toast: "Tutorial della pianta virtuale completato! 🌟"
     },
     insights: {
       weekend_struggle: "Di solito fai fatica a mantenere le tue abitudini nei fine settimana. 😴",
@@ -1103,7 +1111,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "准备好了！送你 +10 XP 作为开始！🌟",
       next_btn: "下一步",
       skip_btn: "跳过",
-      start_btn: "开始成长 🌱"
+      start_btn: "开始成长 🌱",
+      completed_toast: "虚拟植物教程已完成！🌟"
     },
     insights: {
       weekend_struggle: "你通常在周末很难坚持习惯。 😴",
@@ -1227,7 +1236,8 @@ const LOCAL_TRANSLATIONS = {
       complete: "جاهز! إليك +10 XP هدية البداية! 🌟",
       next_btn: "التالي",
       skip_btn: "تخطي",
-      start_btn: "ابدأ النمو 🌱"
+      start_btn: "ابدأ النمو 🌱",
+      completed_toast: "اكتمل التدريب الخاص بالنبات الافتراضي! 🌟"
     },
     insights: {
       weekend_struggle: "عادة ما تواجه صعوبة في الالتزام بعاداتك في عطلات نهاية الأسبوع. 😴",
@@ -1498,7 +1508,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     setTutorialCompletedState(true);
     setIsTutorialActive(false);
     if (onAwardXP) {
-      onAwardXP(10, "Virtual Plant Tutorial completed! 🌟");
+      onAwardXP(10, tLocal("virtual_plant.tutorial.completed_toast", { defaultValue: "Virtual Plant Tutorial completed! 🌟" }));
     }
   };
   const [isRenameModalVisible, setRenameModalVisible] = useState(false);
@@ -2911,7 +2921,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                   colors={["#0ea5e9", "#38bdf8"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%` }}
+                  style={{ width: `${wateringProgressRate > 0 ? Math.max(wateringProgressRate * 100, 3) : 0}%` }}
                   className="h-full rounded-full"
                 />
               </View>
@@ -2955,7 +2965,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                   colors={["#10b981", "#34d399"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={{ width: `${Math.max(plantXPPercentage, 2)}%` }}
+                  style={{ width: `${plantXPPercentage > 0 ? Math.max(plantXPPercentage, 2) : 0}%` }}
                   className="h-full rounded-full"
                 />
               </View>
@@ -4242,7 +4252,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                             colors={["#0ea5e9", "#38bdf8"]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
-                            style={{ width: `${Math.max(wateringProgressRate * 100, 3)}%`, height: '100%' }}
+                            style={{ width: `${wateringProgressRate > 0 ? Math.max(wateringProgressRate * 100, 3) : 0}%`, height: '100%' }}
                           />
                         </View>
                       </View>
@@ -4285,7 +4295,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                             colors={["#10b981", "#34d399"]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
-                            style={{ width: `${Math.max(plantXPPercentage, 2)}%`, height: '100%' }}
+                            style={{ width: `${plantXPPercentage > 0 ? Math.max(plantXPPercentage, 2) : 0}%`, height: '100%' }}
                           />
                         </View>
                       </View>
