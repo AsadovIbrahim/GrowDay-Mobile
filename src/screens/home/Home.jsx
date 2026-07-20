@@ -958,6 +958,7 @@ const Home = () => {
                 virtualPlantState={accountData?.virtualPlantState}
                 onSyncState={async (stateJson) => {
                   try {
+                    setAccountData(prev => prev ? { ...prev, virtualPlantState: stateJson } : null);
                     const payload = {
                       firstName: accountData?.firstName || '',
                       lastName: accountData?.lastName || '',
@@ -970,10 +971,7 @@ const Home = () => {
                       dailyRemindersEnabled: accountData?.dailyRemindersEnabled,
                       virtualPlantState: stateJson
                     };
-                    const response = await updateAccountFetch(token, payload);
-                    if (response && response.success) {
-                      setAccountData(prev => prev ? { ...prev, virtualPlantState: stateJson } : null);
-                    }
+                    await updateAccountFetch(token, payload);
                   } catch (e) {
                     console.error("Error syncing Virtual Plant state:", e);
                   }

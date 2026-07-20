@@ -205,23 +205,17 @@ const UserHabits = ({ route }) => {
             );
 
 
-            const responses = await Promise.all(deletePromises);
-            console.log('Delete responses:', responses);
+            // Optimistically update local list and clear selection mode immediately
+            setUserHabitsByFrequency(prev => prev.filter(h => {
+                const id = h.userHabitId || h.id || h.habitId;
+                return !habitIds.includes(id);
+            }));
+            storage.delete("home.cached.todaysUserHabit");
+            setSelectedHabits(new Set());
+            setIsSelectionMode(false);
 
-            // Check if all deletions were successful
-            const allSuccessful = responses.every(response =>
-                response && (response.success || response.ok || response.status === 200 || response.status === 204)
-            );
-
-
-            if (allSuccessful) {
-                // Clear selections, exit selection mode and refresh the habits list
-                setSelectedHabits(new Set());
-                setIsSelectionMode(false);
-                await getUserHabitsByFrequency();
-            } else {
-                console.log('Some deletions failed');
-            }
+            // Re-fetch habits list in background to ensure sync
+            await getUserHabitsByFrequency();
         } catch (error) {
             console.log('Error deleting habits:', error);
         } finally {

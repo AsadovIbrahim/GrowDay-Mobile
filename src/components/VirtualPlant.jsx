@@ -1527,30 +1527,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     return lastDate === todayStr ? (storage.getBoolean(getStorageKey("fertilizedToday")) || false) : false;
   });
 
-  const [maxHabitsToday, setMaxHabitsToday] = useState(() => {
-    const lastDate = storage.getString(getStorageKey("lastActionDate")) || "";
-    const currentTotal = todaysUserHabit ? todaysUserHabit.length : 0;
-    if (lastDate === todayStr) {
-      const storedMax = storage.getNumber(getStorageKey("maxHabitsToday"));
-      return typeof storedMax === "number" ? Math.max(storedMax, currentTotal) : currentTotal;
-    }
-    return currentTotal;
-  });
-
-  const [maxCompletedHabitsToday, setMaxCompletedHabitsToday] = useState(() => {
-    const lastDate = storage.getString(getStorageKey("lastActionDate")) || "";
-    const currentCompleted = todaysUserHabit
-      ? todaysUserHabit.filter(h => {
-        const s = h.status?.toLowerCase();
-        return s === "completed" || s === "done";
-      }).length
-      : 0;
-    if (lastDate === todayStr) {
-      const storedMax = storage.getNumber(getStorageKey("maxCompletedHabitsToday"));
-      return typeof storedMax === "number" ? Math.max(storedMax, currentCompleted) : currentCompleted;
-    }
-    return currentCompleted;
-  });
+  const maxHabitsToday = totalHabits;
+  const maxCompletedHabitsToday = completedHabits;
 
   useEffect(() => {
     const lastActionDate = storage.getString(getStorageKey("lastActionDate")) || "";
@@ -1564,24 +1542,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       setWateredCount(0);
       setSunnedToday(false);
       setFertilizedToday(false);
-      setMaxHabitsToday(totalHabits);
-      setMaxCompletedHabitsToday(completedHabits);
     }
   }, [todayStr, totalHabits, completedHabits, getStorageKey]);
-
-  useEffect(() => {
-    if (totalHabits > maxHabitsToday) {
-      storage.set(getStorageKey("maxHabitsToday"), totalHabits);
-      setMaxHabitsToday(totalHabits);
-    }
-  }, [totalHabits, maxHabitsToday, getStorageKey]);
-
-  useEffect(() => {
-    if (completedHabits > maxCompletedHabitsToday) {
-      storage.set(getStorageKey("maxCompletedHabitsToday"), completedHabits);
-      setMaxCompletedHabitsToday(completedHabits);
-    }
-  }, [completedHabits, maxCompletedHabitsToday, getStorageKey]);
 
   const lastSyncedRef = useRef(virtualPlantState);
 
@@ -1646,19 +1608,27 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   // Synchronize MMKV storage and React state with incoming virtualPlantState from the server
   useEffect(() => {
     if (!userId || !virtualPlantState) return;
+    if (virtualPlantState === lastSyncedRef.current) return;
     try {
       const parsed = JSON.parse(virtualPlantState);
       if (parsed) {
         const localXP = storage.getNumber(getStorageKey("xp")) || 0;
         const localLevel = storage.getNumber(getStorageKey("level")) || 1;
+        const localGardenStr = storage.getString(getStorageKey("garden")) || "[]";
+        const incomingGardenStr = parsed.garden ? JSON.stringify(parsed.garden) : "[]";
+        const isNewerGarden = incomingGardenStr !== localGardenStr && Array.isArray(parsed.garden) && parsed.garden.length > garden.length;
 
         if (parsed.xp !== undefined && parsed.xp !== localXP) {
-          storage.set(getStorageKey("xp"), parsed.xp);
-          setPlantXP(parsed.xp);
+          if (parsed.xp > localXP || isNewerGarden) {
+            storage.set(getStorageKey("xp"), parsed.xp);
+            setPlantXP(parsed.xp);
+          }
         }
         if (parsed.level !== undefined && parsed.level !== localLevel) {
-          storage.set(getStorageKey("level"), parsed.level);
-          setPlantLevel(parsed.level);
+          if (parsed.level > localLevel || isNewerGarden) {
+            storage.set(getStorageKey("level"), parsed.level);
+            setPlantLevel(parsed.level);
+          }
         }
         if (parsed.garden !== undefined) {
           const localGardenStr = storage.getString(getStorageKey("garden")) || "[]";
@@ -1739,18 +1709,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           }
         }
         if (parsed.maxHabitsToday !== undefined) {
-          const localMaxHabits = storage.getNumber(getStorageKey("maxHabitsToday")) || 0;
-          if (parsed.maxHabitsToday !== localMaxHabits) {
-            storage.set(getStorageKey("maxHabitsToday"), parsed.maxHabitsToday);
-            setMaxHabitsToday(parsed.maxHabitsToday);
-          }
+          storage.set(getStorageKey("maxHabitsToday"), parsed.maxHabitsToday);
         }
         if (parsed.maxCompletedHabitsToday !== undefined) {
-          const localMaxCompleted = storage.getNumber(getStorageKey("maxCompletedHabitsToday")) || 0;
-          if (parsed.maxCompletedHabitsToday !== localMaxCompleted) {
-            storage.set(getStorageKey("maxCompletedHabitsToday"), parsed.maxCompletedHabitsToday);
-            setMaxCompletedHabitsToday(parsed.maxCompletedHabitsToday);
-          }
+          storage.set(getStorageKey("maxCompletedHabitsToday"), parsed.maxCompletedHabitsToday);
         }
         if (parsed.lastCompletedDate !== undefined) {
           const localLastCompletedDate = storage.getString(getStorageKey("lastCompletedDate")) || "";
@@ -1867,10 +1829,12 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     else newLevel = 1;
 
     const currentLevel = storage.getNumber(getStorageKey("level")) || 1;
-    if (newLevel > currentLevel) {
+    if (newLevel !== currentLevel) {
       storage.set(getStorageKey("level"), newLevel);
       setPlantLevel(newLevel);
-      setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
+      if (newLevel > currentLevel) {
+        setSpeechText(tLocal("virtual_plant.dialogues.level_up", { level: newLevel }));
+      }
     }
 
     // 2. Award XP to the user's main profile as a reward for caring for the plant
@@ -1949,16 +1913,24 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     }
   }, [selectedPot, tLocal]);
 
-  const displayWateredCount = Math.min(wateredCount, maxHabitsToday);
-  const wateringProgressRate = maxHabitsToday > 0 ? displayWateredCount / maxHabitsToday : 0;
+  useEffect(() => {
+    if (wateredCount > completedHabits) {
+      storage.set(getStorageKey("wateredCountToday"), completedHabits);
+      setWateredCount(completedHabits);
+    }
+  }, [wateredCount, completedHabits, getStorageKey]);
+
+  const effectiveWateredCount = Math.min(wateredCount, completedHabits);
+  const displayWateredCount = Math.min(effectiveWateredCount, totalHabits);
+  const wateringProgressRate = totalHabits > 0 ? displayWateredCount / totalHabits : 0;
 
   // Determine Plant State (thirsty, growing, blooming)
   const healthState = useMemo(() => {
-    if (maxHabitsToday === 0) return "growing";
+    if (totalHabits === 0) return "growing";
     if (displayWateredCount === 0) return "thirsty";
-    if (displayWateredCount === maxHabitsToday) return "blooming";
+    if (completedHabits === totalHabits && displayWateredCount === totalHabits) return "blooming";
     return "growing";
-  }, [maxHabitsToday, displayWateredCount]);
+  }, [totalHabits, displayWateredCount, completedHabits]);
 
 
   // Handle Speech Bubble Dialogues
@@ -1978,11 +1950,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
     }
     list.push(...generalDialogues);
 
-    if (maxHabitsToday > 0) {
-      if (maxCompletedHabitsToday === maxHabitsToday) {
+    if (totalHabits > 0) {
+      if (completedHabits === totalHabits) {
         list.push(tLocal("virtual_plant.dialogues.all_done"));
       } else {
-        list.push(tLocal("virtual_plant.dialogues.status_water", { completed: maxCompletedHabitsToday, total: maxHabitsToday }));
+        list.push(tLocal("virtual_plant.dialogues.status_water", { completed: completedHabits, total: totalHabits }));
       }
     }
     list.push(tLocal("virtual_plant.dialogues.growing_with_you"));
@@ -2371,11 +2343,6 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             storage.set(getStorageKey("plantName"), "");
             storage.set(getStorageKey("hasNamedPlant"), false);
 
-            storage.set(getStorageKey("wateredCountToday"), 0);
-            storage.set(getStorageKey("sunnedToday"), false);
-            storage.set(getStorageKey("fertilizedToday"), false);
-            storage.set(getStorageKey("maxCompletedHabitsToday"), 0);
-
             // Update local React state
             setPlantXP(0);
             setPlantLevel(1);
@@ -2383,10 +2350,6 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             setSelectedPlant("fern");
             setPlantName("");
             setHasNamedPlant(false);
-            setWateredCount(0);
-            setSunnedToday(false);
-            setFertilizedToday(false);
-            setMaxCompletedHabitsToday(0);
 
             // Trigger naming modal automatically for the new plant
             setRenameInput("");
@@ -2538,8 +2501,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
 
   // Action buttons active states
   const isWaterable = waterChargesLeft > 0;
-  const isSunable = wateringProgressRate >= 0.5 && !sunnedToday;
-  const isFertilizable = wateringProgressRate === 1.0 && !fertilizedToday;
+  const isSunable = completionRate >= 0.5 && !sunnedToday;
+  const isFertilizable = completionRate >= 1.0 && !fertilizedToday;
 
   // Winding roadmap geometry calculations
   const MAP_WIDTH = 320;
@@ -2904,13 +2867,13 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
               {/* Today's Watering Progress Bar */}
               <View className="flex-row justify-between items-center mb-1">
                 <Text className="text-[11px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
-                  💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{maxHabitsToday})
+                  💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{totalHabits})
                 </Text>
 
 
                 <Text className="text-[10px] font-redditsans-medium italic" style={{ color: colors.textMuted }}>
-                  {maxCompletedHabitsToday > 0
-                    ? tLocal("virtual_plant.status.watered_today", { completed: Math.min(wateredCount, maxCompletedHabitsToday), total: maxCompletedHabitsToday })
+                  {completedHabits > 0
+                    ? tLocal("virtual_plant.status.watered_today", { completed: displayWateredCount, total: completedHabits })
                     : tLocal("virtual_plant.status.thirsty_today")
                   }
                 </Text>
@@ -4237,11 +4200,11 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
                       {/* Today's Watering Progress Bar */}
                       <View className="flex-row justify-between items-center mb-1">
                         <Text className="text-[10px] font-redditsans-bold" style={{ color: colors.textSecondary }}>
-                          💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{maxHabitsToday})
+                          💧 {t("virtual_plant.wateringLevel")}: {Math.round(wateringProgressRate * 100)}% ({displayWateredCount}/{totalHabits})
                         </Text>
                         <Text className="text-[9px] font-redditsans-medium italic" style={{ color: colors.textMuted }}>
-                          {maxCompletedHabitsToday > 0
-                            ? tLocal("virtual_plant.status.watered_today", { completed: Math.min(wateredCount, maxCompletedHabitsToday), total: maxCompletedHabitsToday })
+                          {completedHabits > 0
+                            ? tLocal("virtual_plant.status.watered_today", { completed: displayWateredCount, total: completedHabits })
                             : tLocal("virtual_plant.status.thirsty_today")
                           }
                         </Text>
