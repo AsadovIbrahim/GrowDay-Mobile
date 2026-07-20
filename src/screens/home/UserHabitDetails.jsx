@@ -15,6 +15,7 @@ import HabitActionSection from "./components/HabitActionSection";
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from "react-i18next";
 import { getTranslatedHabit } from "../../utils/habitTranslations";
+import { parseLocalDate } from "../../utils/dateUtils";
 
 
 const CATEGORY_ICON_MAP = {
@@ -75,21 +76,19 @@ const UserHabitDetails = () => {
         const dateParam = route.params?.date;
         if (!dateParam) return false;
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = parseLocalDate(new Date());
 
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
 
-        const targetDate = new Date(dateParam.includes('T') ? dateParam.split('T')[0] : dateParam);
-        targetDate.setHours(0, 0, 0, 0);
+        const targetDate = parseLocalDate(dateParam);
 
         return targetDate < yesterday;
     })();
 
-    const targetDateObj = route.params?.date ? new Date(route.params.date) : new Date();
+    const targetDateObj = parseLocalDate(route.params?.date);
     const isAlreadyDone = userHabit?.lastCompletedDate &&
-        new Date(userHabit.lastCompletedDate).toDateString() === targetDateObj.toDateString();
+        parseLocalDate(userHabit.lastCompletedDate).toDateString() === targetDateObj.toDateString();
 
     const isProgressCompleted = userHabit && (userHabit.progressPercentage >= 100);
 

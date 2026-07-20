@@ -13,6 +13,7 @@ import { displayOngoingHabitNotification, cancelOngoingHabitNotification, schedu
 import { isStepCountingSupported, startStepCounterUpdate, stopStepCounterUpdate } from '@dongminyu/react-native-step-counter';
 import { useTranslation } from "react-i18next";
 import FocusSoundsPanel, { stopGlobalFocusSound } from './FocusSoundsPanel';
+import { parseLocalDate } from '../../../utils/dateUtils';
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -201,14 +202,9 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         // If no specific date is provided, we assume today (which is always actionable unless future check fails)
         if (!date) return true;
 
-        const targetDate = new Date(date);
-        targetDate.setHours(0, 0, 0, 0);
-
-        const startDate = new Date(habit.startDate || habit.createdAt);
-        startDate.setHours(0, 0, 0, 0);
-
-        const endDate = habit.endDate ? new Date(habit.endDate) : null;
-        if (endDate) endDate.setHours(0, 0, 0, 0);
+        const targetDate = parseLocalDate(date);
+        const startDate = parseLocalDate(habit.startDate || habit.createdAt);
+        const endDate = habit.endDate ? parseLocalDate(habit.endDate) : null;
 
         // 1. Check date range
         if (targetDate < startDate) return false;
@@ -617,7 +613,7 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
 
     // Strict schedule check
     if (!isScheduledOnSelectedDay) {
-        const targetDate = new Date(date);
+        const targetDate = parseLocalDate(date);
         const dayMap = { 0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' };
         const dayAbbrev = dayMap[targetDate.getDay()];
 
@@ -628,14 +624,13 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
             const scheduledDays = habit.selectedDays ? habit.selectedDays.split(',').map(d => d.trim()).join(', ') : '';
             scheduleText = t("habit_details.action.runs_on", { days: scheduledDays });
         } else if (freq === 'monthly') {
-            const start = new Date(habit.startDate || habit.createdAt);
+            const start = parseLocalDate(habit.startDate || habit.createdAt);
             scheduleText = t("habit_details.action.runs_monthly", { day: start.getDate() });
         } else if (freq === 'custom') {
             scheduleText = t("habit_details.action.runs_custom", { interval: habit.selectedDays });
         }
 
-        const startDate = new Date(habit.startDate || habit.createdAt);
-        startDate.setHours(0, 0, 0, 0);
+        const startDate = parseLocalDate(habit.startDate || habit.createdAt);
         if (targetDate < startDate) {
             scheduleText = t("habit_details.action.starts_on", { date: startDate.toLocaleDateString() });
         }

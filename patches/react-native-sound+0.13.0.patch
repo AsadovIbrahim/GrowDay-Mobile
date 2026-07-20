@@ -121,6 +121,122 @@ index 5324012..16bd239 100644
    abstract fun setVolume(key: Double, left: Double, right: Double)
    abstract fun getSystemVolume(callback: Callback)
    abstract fun setSystemVolume(value: Double)
+diff --git a/node_modules/react-native-sound/ios/RNSound.h b/node_modules/react-native-sound/ios/RNSound.h
+index f3e14d5..9cf471d 100644
+--- a/node_modules/react-native-sound/ios/RNSound.h
++++ b/node_modules/react-native-sound/ios/RNSound.h
+@@ -1,12 +1,26 @@
+ #import <AVFoundation/AVFoundation.h>
++
++#if __has_include(<React/RCTEventEmitter.h>)
+ #import <React/RCTEventEmitter.h>
++#elif __has_include("RCTEventEmitter.h")
++#import "RCTEventEmitter.h"
++#else
++#import <React-Core/RCTEventEmitter.h>
++#endif
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+   #import <RNSoundSpec/RNSoundSpec.h>
+ 
+ @interface RNSound : RCTEventEmitter  <NativeSoundIOSSpec,AVAudioPlayerDelegate>
+ #else
++#if __has_include(<React/RCTBridgeModule.h>)
+ #import <React/RCTBridgeModule.h>
++#elif __has_include("RCTBridgeModule.h")
++#import "RCTBridgeModule.h"
++#else
++#import <React-Core/RCTBridgeModule.h>
++#endif
++
+ @interface RNSound : RCTEventEmitter <RCTBridgeModule, AVAudioPlayerDelegate>
+ #endif
+ 
+diff --git a/node_modules/react-native-sound/ios/RNSound.mm b/node_modules/react-native-sound/ios/RNSound.mm
+index 94b2335..b0d6051 100644
+--- a/node_modules/react-native-sound/ios/RNSound.mm
++++ b/node_modules/react-native-sound/ios/RNSound.mm
+@@ -9,6 +9,7 @@
+ @implementation RNSound {
+     NSMutableDictionary *_playerPool;
+     NSMutableDictionary *_callbackPool;
++    NSMutableDictionary *_stopTimers;
+     double _key;  // Add this line to declare _key
+ }
+ 
+@@ -62,6 +63,13 @@ - (NSMutableDictionary *)callbackPool {
+     return _callbackPool;
+ }
+ 
++- (NSMutableDictionary *)stopTimers {
++    if (!_stopTimers) {
++        _stopTimers = [NSMutableDictionary new];
++    }
++    return _stopTimers;
++}
++
+ - (AVAudioPlayer *)playerForKey:(double)key {
+     NSNumber *keyNumber = @(key);
+     return [[self playerPool] objectForKey:keyNumber];
+@@ -250,6 +258,7 @@ - (NSString *)categoryForName:(NSString *)categoryName {
+ }
+ 
+ RCT_EXPORT_METHOD(stop:(double)key callback:(RCTResponseSenderBlock)callback) {
++    [self cancelStopAfter:key];
+     AVAudioPlayer *player = [self playerForKey:key];
+     if (player) {
+         [player stop];
+@@ -260,6 +269,7 @@ - (NSString *)categoryForName:(NSString *)categoryName {
+ 
+ RCT_EXPORT_METHOD(release:(double)key) {
+     @synchronized(self) {
++        [self cancelStopAfter:key];
+         AVAudioPlayer *player = [self playerForKey:key];
+         if (player) {
+             NSNumber *myNumber = @(key);
+@@ -304,6 +314,42 @@ - (NSString *)categoryForName:(NSString *)categoryName {
+     }
+ }
+ 
++RCT_EXPORT_METHOD(stopAfter:(double)key seconds:(double)seconds) {
++    [self cancelStopAfter:key];
++    
++    NSNumber *keyNumber = @(key);
++    
++    dispatch_async(dispatch_get_main_queue(), ^{
++        @synchronized(self) {
++            NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds
++                                                             repeats:NO
++                                                               block:^(NSTimer * _Nonnull t) {
++                @synchronized(self) {
++                    AVAudioPlayer *player = [self playerForKey:key];
++                    if (player) {
++                        [player stop];
++                        player.currentTime = 0;
++                        [self setOnPlay:NO forPlayerKey:key];
++                    }
++                    [[self stopTimers] removeObjectForKey:keyNumber];
++                }
++            }];
++            [[self stopTimers] setObject:timer forKey:keyNumber];
++        }
++    });
++}
++
++RCT_EXPORT_METHOD(cancelStopAfter:(double)key) {
++    @synchronized(self) {
++        NSNumber *keyNumber = @(key);
++        NSTimer *timer = [[self stopTimers] objectForKey:keyNumber];
++        if (timer) {
++            [timer invalidate];
++            [[self stopTimers] removeObjectForKey:keyNumber];
++        }
++    }
++}
++
+ #pragma mark - Playback Controls
+ 
+ 
 diff --git a/node_modules/react-native-sound/src/NativeSoundAndroid.ts b/node_modules/react-native-sound/src/NativeSoundAndroid.ts
 index ed2b8b5..e060df6 100644
 --- a/node_modules/react-native-sound/src/NativeSoundAndroid.ts
@@ -134,3 +250,16 @@ index ed2b8b5..e060df6 100644
    setVolume: (key: number, left: number, right: number) => void;
    setSpeed: (key: number, speed: number) => void;
    setSystemVolume: (value: number) => void;
+diff --git a/node_modules/react-native-sound/src/NativeSoundIOS.ts b/node_modules/react-native-sound/src/NativeSoundIOS.ts
+index a55307c..642ba02 100644
+--- a/node_modules/react-native-sound/src/NativeSoundIOS.ts
++++ b/node_modules/react-native-sound/src/NativeSoundIOS.ts
+@@ -11,6 +11,8 @@ export interface Spec extends TurboModule {
+     NSLibraryDirectory: string;
+     NSCachesDirectory: string;
+   };
++  stopAfter: (key: number, seconds: number) => void;
++  cancelStopAfter: (key: number) => void;
+   setVolume: (key: number, left: number, right: number) => void;
+   setMode: (value: string) => void;
+   setSpeed: (key: number, speed: number) => void;

@@ -64,7 +64,7 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(today.getDate());
   const [selectedDateObject, setSelectedDateObject] = useState(today);
   const [token] = useMMKVString('accessToken');
-  
+
   const [todaysUserHabit, setTodaysUserHabit] = useState(() => {
     if (isCacheValid) {
       const cached = storage.getString("home.cached.todaysUserHabit");
@@ -72,23 +72,23 @@ const Home = () => {
     }
     return [];
   });
-  
+
   const [userHabitCount, setUserHabitCount] = useState(() => {
     return storage.getNumber("home.cached.userHabitCount") || 0;
   });
-  
+
   const [userHabits, setUserHabits] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   const [isInitialLoading, setIsInitialLoading] = useState(() => {
     const cachedAcc = storage.getString("home.cached.accountData");
     const cachedCount = storage.getNumber("home.cached.userHabitCount") || 0;
     return !cachedAcc || cachedCount === 0;
   });
-  
+
   const [error, setError] = useState(null);
   const [pageIndex, setPageIndex] = useState(0);
-  
+
   const [dailyStatistics, setDailyStatistics] = useState(() => {
     if (isCacheValid) {
       const cached = storage.getString("home.cached.dailyStatistics");
@@ -96,17 +96,17 @@ const Home = () => {
     }
     return null;
   });
-  
+
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  
+
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(() => {
     return storage.getNumber("home.cached.unreadNotificationCount") || 0;
   });
-  
+
   const { isMenuOpen, setIsMenuOpen, setIsCreateModalOpen } = useContext(MenuContext);
   const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.7)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -119,7 +119,7 @@ const Home = () => {
     const cached = storage.getString("home.cached.accountData");
     return cached ? JSON.parse(cached) : null;
   });
-  
+
   const firstName = accountData?.firstName;
   const email = accountData?.email;
 
@@ -356,10 +356,10 @@ const Home = () => {
     try {
       // 1. Sync Onboarding Checklist Completion from virtualPlantState if stored on server, or if user is Level 3+
       const account = fetchedAccountData || accountData;
-      
+
       const calculationPoints = (account?.totalExperiencePoints || 0);
       const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
-      
+
       if (userLevel >= 3) {
         storage.set("user.checklist.habit_completed", "true");
         storage.set("user.checklist.create_habit_xp_awarded", "true");
@@ -421,7 +421,7 @@ const Home = () => {
           storage.set("user.mentor_tutorial_completed", true);
         }
       }
-      
+
       if (account?.virtualPlantState) {
         try {
           const plantStateObj = JSON.parse(account.virtualPlantState);
@@ -724,7 +724,7 @@ const Home = () => {
   return (
     <LinearGradient
       colors={colors.backgroundGradient}
-      style={{ flex: 1, paddingTop: insets.top > 0 ? insets.top : 16 }}
+      style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 8 : (insets.top > 0 ? insets.top : 16) }}
       className="flex-1 px-1"
     >
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} translucent backgroundColor="transparent" />
@@ -1125,51 +1125,55 @@ const Home = () => {
 
             {/* 5. Premium "Quote of the Day" Widget */}
             {accountData?.hasMotivationPack && dailyQuote && (
-              <View style={{ marginHorizontal: 16, marginBottom: 16, marginTop: 4 }}>
+              <View style={{
+                marginHorizontal: 16,
+                marginBottom: 16,
+                marginTop: 4,
+                borderRadius: 18,
+                borderWidth: 1,
+                borderColor: isDark ? '#334155' : '#bae6fd',
+                overflow: 'hidden',
+              }}>
                 <LinearGradient
                   colors={isDark ? ['#1e293b', '#0f172a'] : ['#f0f9ff', '#e0f2fe']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={{
-                    borderRadius: 18,
-                    padding: 14, // Reduced padding from 18
-                    borderWidth: 1,
-                    borderColor: isDark ? '#334155' : '#bae6fd',
-                  }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                    <View style={{
-                      width: 24, height: 24, borderRadius: 8,
-                      backgroundColor: isDark ? '#6366f120' : '#818cf820',
-                      alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <FontAwesomeIcon icon={faQuoteRight} size={12} color={isDark ? '#a5b4fc' : '#6366f1'} />
+                  <View style={{ padding: 14 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      <View style={{
+                        width: 24, height: 24, borderRadius: 8,
+                        backgroundColor: isDark ? '#6366f120' : '#818cf820',
+                        alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <FontAwesomeIcon icon={faQuoteRight} size={12} color={isDark ? '#a5b4fc' : '#6366f1'} />
+                      </View>
+                      <Text style={{
+                        marginLeft: 8, fontSize: 12, fontFamily: 'RedditSans-Bold',
+                        color: isDark ? '#a5b4fc' : '#6366f1',
+                        letterSpacing: 0.5,
+                      }}>
+                        {t('home.quote_of_the_day', '✨ Günün Sitatı')}
+                      </Text>
                     </View>
+
                     <Text style={{
-                      marginLeft: 8, fontSize: 12, fontFamily: 'RedditSans-Bold',
-                      color: isDark ? '#a5b4fc' : '#6366f1',
-                      letterSpacing: 0.5,
+                      fontSize: 14, lineHeight: 20,
+                      fontFamily: 'RedditSans-MediumItalic',
+                      color: isDark ? '#e2e8f0' : '#1e293b',
+                      marginBottom: 4,
                     }}>
-                      {t('home.quote_of_the_day', '✨ Günün Sitatı')}
+                      "{dailyQuote.text}"
+                    </Text>
+
+                    <Text style={{
+                      fontSize: 11, fontFamily: 'RedditSans-Bold',
+                      color: isDark ? '#94a3b8' : '#64748b',
+                      textAlign: 'right',
+                    }}>
+                      — {dailyQuote.author}
                     </Text>
                   </View>
-
-                  <Text style={{
-                    fontSize: 14, lineHeight: 20,
-                    fontFamily: 'RedditSans-MediumItalic',
-                    color: isDark ? '#e2e8f0' : '#1e293b',
-                    marginBottom: 4,
-                  }}>
-                    "{dailyQuote.text}"
-                  </Text>
-
-                  <Text style={{
-                    fontSize: 11, fontFamily: 'RedditSans-Bold',
-                    color: isDark ? '#94a3b8' : '#64748b',
-                    textAlign: 'right',
-                  }}>
-                    — {dailyQuote.author}
-                  </Text>
                 </LinearGradient>
               </View>
             )}

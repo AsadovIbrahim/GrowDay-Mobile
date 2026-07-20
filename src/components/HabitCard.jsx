@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { getTranslatedHabit } from '../utils/habitTranslations';
 import Svg, { Circle } from 'react-native-svg';
 import { useMMKVString } from "react-native-mmkv";
+import { parseLocalDate } from '../utils/dateUtils';
 
 const CATEGORY_ICON_MAP = {
   default: '⭐', health: '❤️', fitness: '💪', mindfulness: '🧘',
@@ -33,10 +34,8 @@ const HabitCard = ({ habit, index, onPress, selectedDate }) => {
 
   const isFuture = (() => {
     if (!selectedDate) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const target = new Date(selectedDate);
-    target.setHours(0, 0, 0, 0);
+    const today = parseLocalDate(new Date());
+    const target = parseLocalDate(selectedDate);
     return target > today;
   })();
 

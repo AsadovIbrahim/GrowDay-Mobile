@@ -37,9 +37,17 @@ const HabitCelebration = () => {
         load();
     }, [load]);
 
+    const handleGoHome = () => {
+        if (navigation.canGoBack()) {
+            navigation.popToTop();
+        } else {
+            navigation.navigate('HomeScreen');
+        }
+    };
+
     useEffect(() => {
         if (isClosed) {
-            navigation.navigate('HomeScreen');
+            handleGoHome();
         }
     }, [isClosed, navigation]);
 
@@ -102,7 +110,7 @@ const HabitCelebration = () => {
         if (isLoaded) {
             show();
         } else {
-            navigation.navigate('HomeScreen');
+            handleGoHome();
         }
     };
 
