@@ -38,8 +38,13 @@ const UserPref1 = () => {
       <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
       <SafeAreaView style={{ flex: 1 }} className="px-5">
         <View className="flex-row items-center mt-4 mb-8">
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className={`w-10 h-10 items-center justify-center rounded-full border ${
+              isDark ? "bg-white/10 border-white/15" : "bg-black/5 border-black/10"
+            }`}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size={18} color={isDark ? "#ffffff" : "#1f2937"} />
           </TouchableOpacity>
           <View className="flex-1 h-2 bg-black/10 rounded-full mx-4">
             <View className="w-[25%] h-full bg-green-500 rounded-full" />

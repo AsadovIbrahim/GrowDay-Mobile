@@ -121,7 +121,12 @@ const UserPref2 = () => {
 
         {/* HEADER */}
         <View className="flex-row items-center mt-6 mb-10">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 items-center justify-center rounded-full bg-black/5">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className={`w-10 h-10 items-center justify-center rounded-full border ${
+              isDark ? "bg-white/10 border-white/15" : "bg-black/5 border-black/10"
+            }`}
+          >
             <FontAwesomeIcon icon={faArrowLeft} size={18} color={isDark ? "#ffffff" : "#1f2937"} />
           </TouchableOpacity>
 

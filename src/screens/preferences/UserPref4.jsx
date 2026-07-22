@@ -44,8 +44,13 @@ const UserPref4 = () => {
       <SafeAreaView style={{ flex: 1 }} className="px-5">
         {/* HEADER */}
         <View className="flex-row items-center mt-4 mb-8">
-          <TouchableOpacity onPress={handleGoBack}>
-            <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
+          <TouchableOpacity
+            onPress={handleGoBack}
+            className={`w-10 h-10 items-center justify-center rounded-full border ${
+              isDark ? "bg-white/10 border-white/15" : "bg-black/5 border-black/10"
+            }`}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size={18} color={isDark ? "#ffffff" : "#1f2937"} />
           </TouchableOpacity>
 
           <View className="flex-1 h-2 bg-black/10 rounded-full mx-4">

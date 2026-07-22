@@ -125,7 +125,7 @@ const UserPref7 = () => {
 
         if (!hasChanged) {
           Alert.alert(t("preferences.alerts.no_changes_title"), t("preferences.alerts.no_changes_desc"));
-          navigation.navigate("Profile");
+          navigation.popToTop();
           return;
         }
       }
@@ -171,8 +171,13 @@ const UserPref7 = () => {
       <LinearGradient colors={isDark ? ["#0a0f0b", "#1a2e1c"] : ["#e7f0df", "#2f6f3f"]} style={StyleSheet.absoluteFillObject} />
       <SafeAreaView style={{ flex: 1 }} className="px-5">
         <View className="flex-row items-center mt-4 mb-8">
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FontAwesomeIcon icon={faArrowLeft} size={20} color={isDark ? "#ffffff" : "#1f2937"} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className={`w-10 h-10 items-center justify-center rounded-full border ${
+              isDark ? "bg-white/10 border-white/15" : "bg-black/5 border-black/10"
+            }`}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size={18} color={isDark ? "#ffffff" : "#1f2937"} />
           </TouchableOpacity>
           <View className="flex-1 h-2 bg-black/10 rounded-full mx-4">
             <View className="w-full h-full bg-green-500 rounded-full" />
@@ -290,7 +295,18 @@ const UserPref7 = () => {
             <Text style={{ fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: 30 }}>
               {isUpdate ? t("preferences.success.updated_desc") : t("preferences.success.ready_desc")}
             </Text>
-            <TouchableOpacity onPress={() => { if (isUpdate) { setShowSuccessModal(false); navigation.navigate("Explore"); } else { storage.set("hasCompletedPreferences", true); } }} className="bg-[#2f6f3f] w-full py-4 rounded-2xl">
+            <TouchableOpacity
+              onPress={() => {
+                if (isUpdate) {
+                  setShowSuccessModal(false);
+                  navigation.popToTop();
+                  navigation.navigate("Explore");
+                } else {
+                  storage.set("hasCompletedPreferences", true);
+                }
+              }}
+              className="bg-[#2f6f3f] w-full py-4 rounded-2xl"
+            >
               <Text className="text-white text-center font-redditsans-bold text-[18px]">{t("preferences.success.explore")}</Text>
             </TouchableOpacity>
           </View>
