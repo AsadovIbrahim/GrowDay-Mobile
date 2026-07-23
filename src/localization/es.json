@@ -743,8 +743,11 @@
       "save_error": "No se pudo actualizar el perfil",
       "validation": {
         "first_name_required": "El nombre es obligatorio",
+        "first_name_invalid": "El nombre solo puede contener letras",
         "last_name_required": "El apellido es obligatorio",
+        "last_name_invalid": "El apellido solo puede contener letras",
         "username_required": "Nombre de usuario requerido",
+        "username_invalid": "El nombre de usuario solo puede contener letras, números, puntos y guiones bajos",
         "username_taken": "El nombre de usuario ya está en uso.",
         "email_required": "Correo electrónico obligatorio",
         "email_invalid": "Formato de correo electrónico no válido",

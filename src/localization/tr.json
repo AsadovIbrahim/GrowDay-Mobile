@@ -743,8 +743,11 @@
       "save_error": "Profil güncellenemedi",
       "validation": {
         "first_name_required": "Ad gereklidir",
+        "first_name_invalid": "Ad sadece harflerden oluşmalıdır",
         "last_name_required": "Soyad gereklidir",
+        "last_name_invalid": "Soyad sadece harflerden oluşmalıdır",
         "username_required": "Kullanıcı adı gereklidir",
+        "username_invalid": "Kullanıcı adı sadece harfler, rakamlar, nokta ve alt çizgi içerebilir",
         "username_taken": "Kullanıcı adı zaten kullanımda.",
         "email_required": "E-posta gereklidir",
         "email_invalid": "Geçersiz e-posta formatı",

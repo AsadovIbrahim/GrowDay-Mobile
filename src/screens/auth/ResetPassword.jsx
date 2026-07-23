@@ -5,7 +5,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/images/main logo.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faCircleExclamation, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCircleExclamation, faLock, faEye, faEyeSlash, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import { resetPasswordFetch } from "../../utils/fetch";
 import { translateAuthError, translateAuthErrors } from "../../utils/translateAuthError";
 import Toast from "../../components/common/Toast";
@@ -29,6 +29,15 @@ const ResetPassword = () => {
   const [serverErrors, setServerErrors] = useState([]);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
 
+  const requirements = [
+    { label: t('profile.change_password_screen.requirements.min_chars', { defaultValue: '8+ chars' }), met: password.length >= 8 },
+    { label: t('profile.change_password_screen.requirements.uppercase', { defaultValue: 'Uppercase' }), met: /[A-Z]/.test(password) },
+    { label: t('profile.change_password_screen.requirements.lowercase', { defaultValue: 'Lowercase' }), met: /[a-z]/.test(password) },
+    { label: t('profile.change_password_screen.requirements.number', { defaultValue: 'Number' }), met: /[0-9]/.test(password) },
+    { label: t('profile.change_password_screen.requirements.special', { defaultValue: 'Special' }), met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
+  ];
+  const allMet = requirements.every(r => r.met);
+
   const showToast = (message, type = "success") => {
     setToast({ visible: true, message, type });
   };
@@ -37,6 +46,10 @@ const ResetPassword = () => {
     setServerErrors([]);
     if (!password) {
         setServerErrors([t("auth.messages.password_required")]);
+        return;
+    }
+    if (!allMet) {
+        setServerErrors([t("profile.change_password_screen.validation.requirements", "Please meet all password requirements")]);
         return;
     }
     if (password !== confirmPassword) {
@@ -150,7 +163,7 @@ const ResetPassword = () => {
             )}
 
             {/* Password input */}
-            <View className="relative mb-4">
+            <View className="relative mb-3">
               <TextInput
                   placeholder={t("auth.new_password")}
                   placeholderTextColor={colors.textSecondary}
@@ -166,6 +179,35 @@ const ResetPassword = () => {
               >
                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
               </TouchableOpacity>
+            </View>
+
+            {/* Password Requirements Pills */}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+              {requirements.map((req, index) => (
+                <View 
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    backgroundColor: req.met ? (colors.success + '20' || 'rgba(74, 222, 128, 0.2)') : (colors.card + '80'),
+                    borderWidth: 1,
+                    borderColor: req.met ? (colors.success || '#4ade80') : 'transparent',
+                  }}
+                >
+                  <FontAwesomeIcon 
+                    icon={req.met ? faCheckCircle : faCircle} 
+                    size={11} 
+                    color={req.met ? (colors.success || '#4ade80') : colors.textSecondary} 
+                  />
+                  <Text style={{ fontSize: 12, fontFamily: req.met ? 'RedditSans-Bold' : 'RedditSans-Medium', color: req.met ? colors.text : colors.textSecondary }}>
+                    {req.label}
+                  </Text>
+                </View>
+              ))}
             </View>
 
             {/* Confirm Password input */}

@@ -106,13 +106,20 @@ export const displayLocalNotification = async (remoteMessage) => {
   const title = remoteMessage.notification?.title || remoteMessage.data?.title || 'GrowDay';
   const body = remoteMessage.notification?.body || remoteMessage.data?.body || '';
 
+  const msgTime = remoteMessage.sentTime || (remoteMessage.data?.timestamp ? Number(remoteMessage.data?.timestamp) : Date.now());
 
   await notifee.displayNotification({
     title,
     body,
+    data: remoteMessage.data || {},
+    ios: {
+      sound: soundEnabled ? 'default' : undefined,
+    },
     android: {
       channelId: channelId,
       pressAction: { id: 'default' },
+      showTimestamp: true,
+      timestamp: msgTime && !isNaN(msgTime) ? msgTime : Date.now(),
     },
   });
 };
@@ -222,9 +229,14 @@ export const scheduleIncompleteReminder = async (habit) => {
         habitId: hId.toString(),
         type: 'reminder',
       },
+      ios: {
+        sound: soundEnabled ? 'default' : undefined,
+      },
       android: {
         channelId: channelId,
         pressAction: { id: 'default' },
+        showTimestamp: true,
+        timestamp: trigger.timestamp,
       },
     },
     trigger
@@ -267,9 +279,14 @@ export const scheduleWinBackReminder = async () => {
       title: t('notifications.push_winback_title'),
       body: t('notifications.push_winback_body'),
       data: { type: 'winback' },
+      ios: {
+        sound: soundEnabled ? 'default' : undefined,
+      },
       android: {
         channelId: channelId,
         pressAction: { id: 'default' },
+        showTimestamp: true,
+        timestamp: trigger.timestamp,
       },
     },
     trigger
@@ -318,10 +335,15 @@ export const scheduleGoalReachedNotification = async (habit, timeRemainingSecond
       currentValue: (habit.currentValue || 0).toString(),
       unit: (habit.unit || '').toString(),
     },
+    ios: {
+      sound: soundEnabled ? 'default' : undefined,
+    },
     android: {
       channelId: channelId,
       pressAction: { id: 'default' },
       autoCancel: true,
+      showTimestamp: true,
+      timestamp: trigger.timestamp,
     },
   }, trigger);
 };
@@ -398,9 +420,14 @@ export const scheduleDailyMotivationalQuotes = async () => {
         title: t('notifications.push_motivation_title'),
         body: `"${quote.text}" — ${quote.author}`,
         data: { type: 'motivation' },
+        ios: {
+          sound: soundEnabled ? 'default' : undefined,
+        },
         android: {
           channelId: channelId,
           pressAction: { id: 'default' },
+          showTimestamp: true,
+          timestamp: scheduledTime.getTime(),
         },
       },
       trigger
@@ -448,9 +475,14 @@ export const schedulePlantWateringReminder = async (isWateredToday = false, plan
       title: t('notifications.push_plant_thirsty_title', { name: plantName, defaultValue: `${plantName} is thirsty! 🥺` }),
       body: t('notifications.push_plant_thirsty_body', { name: plantName, defaultValue: "Don't forget to water your virtual plant today! 💧" }),
       data: { type: 'plant_watering' },
+      ios: {
+        sound: soundEnabled ? 'default' : undefined,
+      },
       android: {
         channelId: channelId,
         pressAction: { id: 'default' },
+        showTimestamp: true,
+        timestamp: scheduledTime.getTime(),
       },
     },
     trigger

@@ -1410,6 +1410,10 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           if (parsed.selectedPlant) storage.set(getStorageKey("selectedPlant"), parsed.selectedPlant);
           if (parsed.plantName) storage.set(getStorageKey("plantName"), parsed.plantName);
           if (typeof parsed.hasNamedPlant === "boolean") storage.set(getStorageKey("hasNamedPlant"), parsed.hasNamedPlant);
+          if (typeof parsed.tutorialCompleted === "boolean") {
+            storage.set(getStorageKey("tutorialCompleted"), parsed.tutorialCompleted);
+            setTutorialCompletedState(parsed.tutorialCompleted);
+          }
           if (parsed.lastActionDate) storage.set(getStorageKey("lastActionDate"), parsed.lastActionDate);
           if (typeof parsed.wateredCountToday === "number") storage.set(getStorageKey("wateredCountToday"), parsed.wateredCountToday);
           if (typeof parsed.sunnedToday === "boolean") storage.set(getStorageKey("sunnedToday"), parsed.sunnedToday);
@@ -1589,18 +1593,19 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
   }, [token, isFocused]);
 
   useEffect(() => {
-    // Start tutorial if plant is level 1, named, and tutorial not completed
+    // Start tutorial if plant is level 1, named, tutorial not completed, and garden is empty
     const isCompleted = storage.getBoolean(getStorageKey("tutorialCompleted")) || false;
     const level = storage.getNumber(getStorageKey("level")) || 1;
     const hasName = storage.getBoolean(getStorageKey("hasNamedPlant")) || false;
-    if (!isCompleted && level === 1 && hasName && isFocused && isSplashFinished === true) {
+    const hasGardenPlants = Array.isArray(garden) && garden.length > 0;
+    if (!isCompleted && !hasGardenPlants && level === 1 && hasName && isFocused && isSplashFinished === true) {
       const timer = setTimeout(() => {
         setIsTutorialActive(true);
         setTutorialStep(0);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [userId, plantLevel, hasNamedPlant, getStorageKey, isFocused, isSplashFinished]);
+  }, [userId, plantLevel, hasNamedPlant, getStorageKey, isFocused, isSplashFinished, garden]);
 
   // Note: We no longer synchronize totalExperiencePoints directly to plantXP and plantLevel.
   // The plant now has its own separate XP and Level progression.
@@ -1678,6 +1683,13 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           const localTutorialDone = storage.getBoolean("user.mentor_tutorial_completed") || false;
           if (parsed.mentorTutorialCompleted !== localTutorialDone) {
             storage.set("user.mentor_tutorial_completed", parsed.mentorTutorialCompleted);
+          }
+        }
+        if (parsed.tutorialCompleted !== undefined) {
+          const localTutorialDone = storage.getBoolean(getStorageKey("tutorialCompleted")) || false;
+          if (parsed.tutorialCompleted !== localTutorialDone) {
+            storage.set(getStorageKey("tutorialCompleted"), !!parsed.tutorialCompleted);
+            setTutorialCompletedState(!!parsed.tutorialCompleted);
           }
         }
 
@@ -1773,7 +1785,8 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
       onboardingChecklistCompleted: checklistCompleted === "true",
       garden: garden,
       hasSeenAiMentorIntro: hasSeenAiMentorIntroLocal === "true",
-      mentorTutorialCompleted: !!mentorTutorialCompletedLocal
+      mentorTutorialCompleted: !!mentorTutorialCompletedLocal,
+      tutorialCompleted: storage.getBoolean(getStorageKey("tutorialCompleted")) || false
     };
 
     const stateStr = JSON.stringify(stateObj);
@@ -2342,6 +2355,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             storage.set(getStorageKey("selectedPlant"), "fern");
             storage.set(getStorageKey("plantName"), "");
             storage.set(getStorageKey("hasNamedPlant"), false);
+            storage.set(getStorageKey("tutorialCompleted"), true);
 
             // Update local React state
             setPlantXP(0);
@@ -2350,6 +2364,7 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
             setSelectedPlant("fern");
             setPlantName("");
             setHasNamedPlant(false);
+            setTutorialCompletedState(true);
 
             // Trigger naming modal automatically for the new plant
             setRenameInput("");

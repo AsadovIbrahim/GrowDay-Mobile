@@ -669,8 +669,11 @@
       "save_error": "فشل تحديث الملف الشخصي",
       "validation": {
         "first_name_required": "الاسم الأول مطلوب",
+        "first_name_invalid": "يجب أن يحتوي الاسم الأول على أحرف فقط",
         "last_name_required": "اسم العائلة مطلوب",
+        "last_name_invalid": "يجب أن يحتوي اسم العائلة على أحرف فقط",
         "username_required": "اسم المستخدم مطلوب",
+        "username_invalid": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام والنقاط وشرطات سفلية فقط",
         "username_taken": "اسم المستخدم مستخدم بالفعل.",
         "email_required": "البريد الإلكتروني مطلوب",
         "email_invalid": "صيغة البريد الإلكتروني غير صحيحة",

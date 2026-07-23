@@ -743,8 +743,11 @@
       "save_error": "Failed to update profile",
       "validation": {
         "first_name_required": "First name is required",
+        "first_name_invalid": "First name can only contain letters",
         "last_name_required": "Last name is required",
+        "last_name_invalid": "Last name can only contain letters",
         "username_required": "Username is required",
+        "username_invalid": "Username can only contain letters, numbers, dots, and underscores",
         "username_taken": "Username is already in use.",
         "email_required": "Email is required",
         "email_invalid": "Invalid email format",

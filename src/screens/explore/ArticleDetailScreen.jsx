@@ -8,18 +8,16 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
-  Dimensions,
-  ActivityIndicator
+  Dimensions
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { getTranslatedCategory, getTranslatedHabit } from '../../utils/habitTranslations';
+import { getTranslatedCategory } from '../../utils/habitTranslations';
 import { useMMKVString } from 'react-native-mmkv';
-import { markLearningContentAsReadFetch, getUserSuggestedHabitsFetch, getUserHabitFetch } from '../../utils/fetch';
+import { markLearningContentAsReadFetch } from '../../utils/fetch';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCheckCircle, faClock, faBrain } from '@fortawesome/free-solid-svg-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import SuggestedHabitCard from '../../components/SuggestedHabitCard';
 
 const ArticleDetailScreen = () => {
   const { theme } = useTheme();
@@ -47,102 +45,6 @@ const ArticleDetailScreen = () => {
         .catch(err => console.log('Error marking as read:', err));
     }
   }, [article, token]);
-
-  const [relatedHabits, setRelatedHabits] = useState([]);
-  const [loadingHabits, setLoadingHabits] = useState(true);
-
-  useEffect(() => {
-    if (!token || !article.category) return;
-
-    const loadRelatedHabits = async () => {
-      try {
-        setLoadingHabits(true);
-        const suggestedRes = await getUserSuggestedHabitsFetch(token, 0, 100);
-        const suggestedList = suggestedRes?.data || [];
-
-        const userHabitsRes = await getUserHabitFetch(token, 0, 100);
-        const userHabitsList = userHabitsRes?.data || [];
-
-        const isHabitAlreadyAdded = (suggestedHabit, currentUserHabits) => {
-          if (!currentUserHabits || currentUserHabits.length === 0) return false;
-          const normalize = (str) => {
-            if (!str) return "";
-            return str.toString()
-              .toLowerCase()
-              .replace(/[.,/#!$%^&*;:{}=\-_`~()\s]/g, "")
-              .trim();
-          };
-          const { title: suggestedTitle } = getTranslatedHabit(suggestedHabit, i18n.language, t);
-          const normalizedSuggested = normalize(suggestedTitle);
-          const normalizedSuggestedRaw = normalize(suggestedHabit.title);
-          const suggestedId = String(suggestedHabit.id);
-
-          return currentUserHabits.some(userHabit => {
-            if (
-              String(userHabit.suggestedHabitId) === suggestedId ||
-              String(userHabit.habitId) === suggestedId ||
-              String(userHabit.id) === suggestedId
-            ) {
-              return true;
-            }
-            const { title: userHabitTitle } = getTranslatedHabit(userHabit, i18n.language, t);
-            const normalizedUserHabit = normalize(userHabitTitle);
-            const normalizedUserHabitRaw = normalize(userHabit.title);
-
-            if (normalizedSuggested && normalizedUserHabit && normalizedSuggested === normalizedUserHabit) return true;
-            if (normalizedSuggestedRaw && normalizedUserHabitRaw && normalizedSuggestedRaw === normalizedUserHabitRaw) return true;
-            if (normalizedSuggested && normalizedUserHabitRaw && normalizedSuggested === normalizedUserHabitRaw) return true;
-            if (normalizedSuggestedRaw && normalizedUserHabit && normalizedSuggestedRaw === normalizedUserHabit) return true;
-
-            if (userHabit.habit) {
-              const nestedHabitTitle = normalize(userHabit.habit.title);
-              if (nestedHabitTitle && (nestedHabitTitle === normalizedSuggested || nestedHabitTitle === normalizedSuggestedRaw)) return true;
-            }
-            return false;
-          });
-        };
-
-        const articleCategory = (article.category || 'General').toLowerCase().trim();
-        const filtered = suggestedList.filter(h => {
-          if (!h) return false;
-          if (isHabitAlreadyAdded(h, userHabitsList)) return false;
-          const habitCategory = (h.category || h.categoryDetails?.name || '').toLowerCase().trim();
-          return habitCategory === articleCategory;
-        });
-
-        setRelatedHabits(filtered);
-      } catch (err) {
-        console.log('Error loading related habits:', err);
-      } finally {
-        setLoadingHabits(false);
-      }
-    };
-
-    loadRelatedHabits();
-  }, [article.category, token, i18n.language, t]);
-
-  const handleSuggestedHabitPress = (habit) => {
-    navigation.navigate("CreateCustomHabit", {
-      habitData: {
-        id: habit.id,
-        title: habit.title,
-        description: habit.description || habit.title,
-        icon: habit.icon || "star",
-        category: habit.category || "General",
-        categoryId: habit.categoryId || null,
-        frequency: habit.frequency || "Daily",
-        targetValue: habit.targetValue || 1,
-        unit: habit.unit || "times",
-        incrementValue: habit.incrementValue || 1,
-        durationInMinutes: habit.durationInMinutes,
-        notificationTime: habit.notificationTime || habit.NotificationTime,
-        titleTranslations: habit.titleTranslations || habit.TitleTranslations,
-        descriptionTranslations: habit.descriptionTranslations || habit.DescriptionTranslations,
-      },
-      isCustom: false,
-      isSuggested: true
-    });
-  };
 
   if (!article) return null;
 
@@ -223,37 +125,6 @@ const ArticleDetailScreen = () => {
           <Text style={[styles.bodyText, { color: colors.text }]}>
             {article.content}
           </Text>
-
-          {/* Related Habits Carousel */}
-          {loadingHabits ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="small" color={colors.primary} />
-            </View>
-          ) : (
-            relatedHabits.length > 0 && (
-              <View style={styles.relatedSection}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  {t('explore.related_habits')}
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.relatedList}
-                >
-                  {relatedHabits.map((habit) => (
-                    <SuggestedHabitCard
-                      key={habit.id}
-                      habit={habit}
-                      icon={habit.icon}
-                      name={habit.title}
-                      frequency={habit.frequency}
-                      onPress={() => handleSuggestedHabitPress(habit)}
-                    />
-                  ))}
-                </ScrollView>
-              </View>
-            )
-          )}
 
           {/* Ask AI Mentor Card */}
           <TouchableOpacity
@@ -376,23 +247,6 @@ const styles = StyleSheet.create({
     fontFamily: 'RedditSans-Regular',
     lineHeight: 28,
     marginBottom: 20,
-  },
-  loaderContainer: {
-    paddingVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  relatedSection: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'RedditSans-Bold',
-    marginBottom: 15,
-  },
-  relatedList: {
-    paddingRight: 20,
   },
   aiMentorCard: {
     padding: 16,

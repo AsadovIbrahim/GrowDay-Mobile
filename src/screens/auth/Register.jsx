@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GrowDayLogo from "../../../assets/images/main logo.png";
 import GoogleIcon from "../../../assets/icons/google-logo.svg";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation, faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faArrowLeft, faCircleExclamation, faEnvelope, faLock, faUser, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { registerfetch, googleLoginFetch, getUserPreferencesFetch } from "../../utils/fetch";
@@ -29,6 +29,16 @@ const Register = () => {
   const [serverErrors, setServerErrors] = useState([]);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
   const [focusedInput, setFocusedInput] = useState(null);
+
+  const passwordVal = formData.password || "";
+  const requirements = [
+    { label: t('profile.change_password_screen.requirements.min_chars', { defaultValue: '8+ chars' }), met: passwordVal.length >= 8 },
+    { label: t('profile.change_password_screen.requirements.uppercase', { defaultValue: 'Uppercase' }), met: /[A-Z]/.test(passwordVal) },
+    { label: t('profile.change_password_screen.requirements.lowercase', { defaultValue: 'Lowercase' }), met: /[a-z]/.test(passwordVal) },
+    { label: t('profile.change_password_screen.requirements.number', { defaultValue: 'Number' }), met: /[0-9]/.test(passwordVal) },
+    { label: t('profile.change_password_screen.requirements.special', { defaultValue: 'Special' }), met: /[!@#$%^&*(),.?":{}|<>]/.test(passwordVal) },
+  ];
+  const allMet = requirements.every(r => r.met);
 
   const scrollViewRef = useRef(null);
   const firstNameRef = useRef(null);
@@ -55,6 +65,43 @@ const Register = () => {
     setServerErrors([]);
   }
   const handleRegister = async () => {
+    const nameRegex = /^[\p{L}\s'\-]+$/u;
+    const usernameRegex = /^[a-zA-Z0-9._]{3,30}$/;
+    const validationErrors = [];
+
+    if (!formData.firstname?.trim()) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.first_name_required", "Ad mütləqdir"));
+    } else if (!nameRegex.test(formData.firstname.trim())) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.first_name_invalid", "Ad yalnız hərflərdən ibarət olmalıdır"));
+    }
+
+    if (!formData.lastname?.trim()) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.last_name_required", "Soyad mütləqdir"));
+    } else if (!nameRegex.test(formData.lastname.trim())) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.last_name_invalid", "Soyad yalnız hərflərdən ibarət olmalıdır"));
+    }
+
+    if (!formData.username?.trim()) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.username_required", "İstifadəçi adı mütləqdir"));
+    } else if (!usernameRegex.test(formData.username.trim())) {
+      validationErrors.push(t("profile.edit_profile_screen.validation.username_invalid", "İstifadəçi adı yalnız hərflər, rəqəmlər, nöqtə və alt xəttdən ibarət olmalıdır"));
+    }
+
+    if (!formData.password) {
+      validationErrors.push(t("auth.messages.password_required", "Şifrə mütləqdir"));
+    } else if (!allMet) {
+      validationErrors.push(t("profile.change_password_screen.validation.requirements", "Bütün şifrə tələblərini yerinə yetirin"));
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      validationErrors.push(t("auth.messages.passwords_dont_match", "Şifrələr uyğun gəlmir"));
+    }
+
+    if (validationErrors.length > 0) {
+      setServerErrors(validationErrors);
+      return;
+    }
+
     setLoading(true);
     setServerErrors([]);
     try {
@@ -420,6 +467,35 @@ const Register = () => {
               >
                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} size={18} color={colors.textSecondary} />
               </TouchableOpacity>
+            </View>
+
+            {/* Password Requirements Badges */}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+              {requirements.map((req, index) => (
+                <View 
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    backgroundColor: req.met ? (colors.success + '20' || 'rgba(74, 222, 128, 0.2)') : (colors.card + '80'),
+                    borderWidth: 1,
+                    borderColor: req.met ? (colors.success || '#4ade80') : 'transparent',
+                  }}
+                >
+                  <FontAwesomeIcon 
+                    icon={req.met ? faCheckCircle : faCircle} 
+                    size={11} 
+                    color={req.met ? (colors.success || '#4ade80') : colors.textSecondary} 
+                  />
+                  <Text style={{ fontSize: 12, fontFamily: req.met ? 'RedditSans-Bold' : 'RedditSans-Medium', color: req.met ? colors.text : colors.textSecondary }}>
+                    {req.label}
+                  </Text>
+                </View>
+              ))}
             </View>
 
             <View

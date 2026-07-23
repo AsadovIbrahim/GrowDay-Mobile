@@ -743,8 +743,11 @@
       "save_error": "更新个人资料失败",
       "validation": {
         "first_name_required": "名字是必填项",
+        "first_name_invalid": "名字只能包含字母",
         "last_name_required": "姓氏是必填项",
+        "last_name_invalid": "姓氏只能包含字母",
         "username_required": "用户名必填",
+        "username_invalid": "用户名只能包含字母、数字、句点和下划线",
         "username_taken": "用户名已被占用。",
         "email_required": "电子邮件必填",
         "email_invalid": "电子邮件格式无效",
