@@ -164,9 +164,27 @@ const EditProfile = ({ navigation, route }) => {
 
   const validate = () => {
     let newErrors = {};
-    if (!formData.firstName.trim()) newErrors.firstName = t("profile.edit_profile_screen.validation.first_name_required");
-    if (!formData.lastName.trim()) newErrors.lastName = t("profile.edit_profile_screen.validation.last_name_required");
-    if (!formData.username.trim()) newErrors.username = t("profile.edit_profile_screen.validation.username_required");
+    const nameRegex = /^[\p{L}\s'\-]+$/u;
+    const usernameRegex = /^[a-zA-Z0-9._]{3,30}$/;
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = t("profile.edit_profile_screen.validation.first_name_required");
+    } else if (!nameRegex.test(formData.firstName.trim())) {
+      newErrors.firstName = t("profile.edit_profile_screen.validation.first_name_invalid", { defaultValue: "Ad yalnız hərflərdən ibarət olmalıdır" });
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = t("profile.edit_profile_screen.validation.last_name_required");
+    } else if (!nameRegex.test(formData.lastName.trim())) {
+      newErrors.lastName = t("profile.edit_profile_screen.validation.last_name_invalid", { defaultValue: "Soyad yalnız hərflərdən ibarət olmalıdır" });
+    }
+
+    if (!formData.username.trim()) {
+      newErrors.username = t("profile.edit_profile_screen.validation.username_required");
+    } else if (!usernameRegex.test(formData.username.trim())) {
+      newErrors.username = t("profile.edit_profile_screen.validation.username_invalid", { defaultValue: "İstifadəçi adı yalnız hərflər, rəqəmlər, nöqtə və alt xəttdən ibarət olmalıdır" });
+    }
+
     if (!formData.email.trim()) {
       newErrors.email = t("profile.edit_profile_screen.validation.email_required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {

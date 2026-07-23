@@ -743,8 +743,11 @@
       "save_error": "Profil konnte nicht aktualisiert werden",
       "validation": {
         "first_name_required": "Vorname ist erforderlich",
+        "first_name_invalid": "Vorname darf nur Buchstaben enthalten",
         "last_name_required": "Nachname ist erforderlich",
+        "last_name_invalid": "Nachname darf nur Buchstaben enthalten",
         "username_required": "Benutzername ist erforderlich",
+        "username_invalid": "Benutzername darf nur Buchstaben, Zahlen, Punkte und Unterstriche enthalten",
         "username_taken": "Benutzername wird bereits verwendet.",
         "email_required": "E-Mail ist erforderlich",
         "email_invalid": "Ungültiges E-Mail-Format",

@@ -743,8 +743,11 @@
       "save_error": "Profil yenilənərkən xəta baş verdi",
       "validation": {
         "first_name_required": "Ad mütləqdir",
+        "first_name_invalid": "Ad yalnız hərflərdən ibarət olmalıdır",
         "last_name_required": "Soyad mütləqdir",
+        "last_name_invalid": "Soyad yalnız hərflərdən ibarət olmalıdır",
         "username_required": "İstifadəçi adı mütləqdir",
+        "username_invalid": "İstifadəçi adı yalnız hərflər, rəqəmlər, nöqtə və alt xəttdən ibarət olmalıdır",
         "username_taken": "İstifadəçi adı artıq istifadə olunur.",
         "email_required": "E-poçt mütləqdir",
         "email_invalid": "Yanlış e-poçt formatı",
