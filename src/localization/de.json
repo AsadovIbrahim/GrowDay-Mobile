@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Lassen Sie uns über den Artikel sprechen: '{{title}}'. Wie können Sie mir dabei helfen?"
   },
   "tasks": {
-    "header": "Meine Aufgaben",
-    "stats": {
-      "total": "Gesamt",
-      "completed": "Abgeschlossen",
-      "pending": "Ausstehend",
-      "rate": "Abschlussrate",
-      "streak": "Tagesserie"
-    },
-    "filters": {
-      "all": "Alle",
-      "pending": "Ausstehend",
-      "in_progress": "In Bearbeitung",
-      "completed": "Abgeschlossen"
-    },
-    "completed_msg": "Aufgabe erfolgreich abgeschlossen:",
-    "reward_earned": "Belohnung erhalten",
-    "empty": "Keine Aufgaben gefunden",
-    "assigned_by_admins": "Aufgaben werden von Administratoren zugewiesen",
-    "failed_to_load": "Aufgaben konnten nicht geladen werden",
-    "try_again": "Erneut versuchen",
-    "could_not_complete": "Aufgabe konnte nicht abgeschlossen werden.",
-    "could_not_uncheck": "Aufgabenauswahl konnte nicht aufgehoben werden.",
-    "failed_to_update": "Aufgabe konnte nicht aktualisiert werden.",
-    "delete_title": "Aufgabe löschen",
-    "delete_confirm": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?",
-    "could_not_delete": "Aufgabe konnte nicht gelöscht werden.",
-    "failed_to_delete": "Aufgabe konnte nicht gelöscht werden.",
-    "delete_action": "Löschen",
-    "completed_stack": "Erledigte Aufgaben",
-    "collapse_stack": "Stapel verkleinern",
-    "completed_count": "Erledigt",
-    "tip_title": "Nützlicher Tipp",
-    "tip_desc": "Verdienen Sie XP durch das Erledigen von Aufgaben, erhöhen Sie Ihr Level und schalten Sie neue KI-Coach-Funktionen frei!"
+    "identify_triggers_and_avoid_them": "Identifizieren und vermeiden Sie Auslöser",
+    "engage_in_alternative_activities": "Alternative Aktivitäten durchführen",
+    "practice_mindfulness_and_self_regulation": "Üben Sie Achtsamkeit und Selbstregulierung",
+    "replace_habit_with_healthy_alternatives": "Ersetzen Sie die Gewohnheit durch gesunde Alternativen",
+    "create_support_system_and_track_progress": "Erstellen Sie ein Unterstützungssystem und verfolgen Sie den Fortschritt",
+    "identify_and_avoid_triggers": "Identifizieren und vermeiden Sie Auslöser",
+    "reflect_on_energy_levels": "Reflektieren Sie Ihr Energieniveau",
+    "complete_daily_exercise_routine": "Absolvieren Sie die tägliche Trainingsroutine",
+    "drink_daily_water_goal": "Trinken Sie das tägliche Wasserziel",
+    "set_reading_targets_track_pages": "Setzen Sie sich Leseziele und verfolgen Sie Seiten",
+    "identify_triggers_and_replacements": "Auslöser und Alternativen identifizieren",
+    "before_you_can_avoid_a_behavior": "Bevor Sie ein Verhalten vermeiden können, müssen Sie verstehen, was es verursacht. Nehmen Sie sich heute 15 Minuten Zeit, um über Ihre Auslöser nachzudenken und gesunde Alternativen zu planen.",
+    "substitute_urges_with_healthy_activities": "Ersetzen Sie das Verlangen durch gesunde Aktivitäten wie Sport, Lesen oder Meditation.",
+    "practice_mindfulness_and_self_compassion": "Achtsamkeit und Selbstmitgefühl üben",
+    "practice_deep_breathing_and_self_awareness": "Üben Sie tiefes Atmen und Selbstwahrnehmung, wann immer Sie ein starkes Verlangen verspüren.",
+    "research_trees_for_your_garden": "Bäume für Ihren Garten recherchieren",
+    "dedicate_15_20_minutes_to_researching": "Nehmen Sie sich 15-20 Minuten Zeit, um einheimische Baumarten zu recherchieren, die für Ihr lokales Klima geeignet sind.",
+    "plan_tree_placement": "Baumplatzierung planen",
+    "spend_10_15_minutes_sketching_out": "Nehmen Sie sich 10-15 Minuten Zeit, um potenzielle Standorte für Ihre Bäume im Garten zu skizzieren."
   },
   "create_habit": {
     "header": "Benutzerdefinierte Gewohnheit erstellen",
@@ -1528,5 +1514,22 @@
     "next": "Weiter",
     "got_it": "Verstanden!",
     "tap_here": "Hier tippen"
+  },
+  "goals": {
+    "title": "Ziele & KI",
+    "add_goal": "Ziel hinzufügen",
+    "ai_quest_for": "KI-Quest für {{goal}}",
+    "tasks_done": "{{done}}/{{total}} Aufgaben erledigt",
+    "delete_title": "Ziel löschen",
+    "delete_confirm": "Sind Sie sicher, dass Sie dieses Ziel löschen möchten?\nDiese Aktion kann nicht rückgängig gemacht werden.",
+    "priority_high": "Hoch",
+    "priority_medium": "Mittel",
+    "priority_low": "Niedrig",
+    "create_modal_title": "🎯 Ziel & KI-Quests erstellen",
+    "create_modal_desc": "Beschreiben Sie Ihr persönliches Ziel. GrowDay KI erstellt zielgerichtete Aufgaben für Sie.",
+    "goal_title_placeholder": "z. B. Jeden Tag 30 Seiten lesen...",
+    "goal_desc_placeholder": "z. B. 2 Bücher diesen Monat fertig lesen...",
+    "select_category": "Kategorie auswählen",
+    "create_btn": "✨ Ziel & KI-Aufgaben erstellen"
   }
 }

@@ -330,39 +330,25 @@
     "ask_ai_prompt": "'{{title}}' makalesi hakkında konuşalım. Bu konuda bana nasıl yardımcı olabilirsin?"
   },
   "tasks": {
-    "header": "Görevlerim",
-    "stats": {
-      "total": "Toplam",
-      "completed": "Tamamlandı",
-      "pending": "Bekliyor",
-      "rate": "Tamamlanma Oranı",
-      "streak": "Gün Serisi"
-    },
-    "filters": {
-      "all": "Tümü",
-      "pending": "Bekliyor",
-      "in_progress": "Devam ediyor",
-      "completed": "Tamamlandı"
-    },
-    "completed_msg": "Görev başarıyla tamamlandı:",
-    "reward_earned": "Ödül kazanıldı",
-    "empty": "Görev bulunamadı",
-    "assigned_by_admins": "Görevler adminler tarafından atanmıştır",
-    "failed_to_load": "Görevler yüklenemedi",
-    "try_again": "Tekrar Deneyin",
-    "could_not_complete": "Görev tamamlanamadı.",
-    "could_not_uncheck": "Görevin işareti kaldırılamadı.",
-    "failed_to_update": "Görev güncellenemedi.",
-    "delete_title": "Görevi Sil",
-    "delete_confirm": "Bu görevi silmek istediğinize emin misiniz?",
-    "could_not_delete": "Görev silinemedi.",
-    "failed_to_delete": "Görev silinirken hata oluştu.",
-    "delete_action": "Sil",
-    "completed_stack": "Tamamlanan Görevler",
-    "collapse_stack": "Yığını Kapat",
-    "completed_count": "Tamamlandı",
-    "tip_title": "Faydalı İpucu",
-    "tip_desc": "Görevleri tamamlayarak XP kazanın, seviyenizi yükseltin ve yeni Yapay Zeka Koçu özelliklerinin kilidini açın!"
+    "identify_triggers_and_avoid_them": "Tetikleyicileri belirleyin ve kaçının",
+    "engage_in_alternative_activities": "Alternatif aktivitelere katılın",
+    "practice_mindfulness_and_self_regulation": "Farkındalık ve öz düzenleme pratiği yapın",
+    "replace_habit_with_healthy_alternatives": "Alışkanlığı sağlıklı alternatiflerle değiştirin",
+    "create_support_system_and_track_progress": "Destek sistemi oluşturun ve gelişimi takip edin",
+    "identify_and_avoid_triggers": "Tetikleyicileri belirleyin ve kaçının",
+    "reflect_on_energy_levels": "Enerji seviyenizi değerlendirin",
+    "complete_daily_exercise_routine": "Günlük egzersiz rutinini tamamlayın",
+    "drink_daily_water_goal": "Günlük su hedefini için",
+    "set_reading_targets_track_pages": "Okuma hedefleri belirleyin ve sayfaları takip edin",
+    "identify_triggers_and_replacements": "Tetikleyicileri ve alternatiflerini belirleyin",
+    "before_you_can_avoid_a_behavior": "Bir davranıştan kaçınmadan önce, ona neyin sebep olduğunu anlamalısınız. Bugün 15 dakikanızı tetikleyicileri ve sağlıklı alternatifleri belirlemeye ayırın.",
+    "substitute_urges_with_healthy_activities": "Dürtülerinizi spor, kitap okuma veya meditasyon gibi sağlıklı aktivitelerle değiştirin.",
+    "practice_mindfulness_and_self_compassion": "Farkındalık ve kendinize şefkat gösterin",
+    "practice_deep_breathing_and_self_awareness": "Her güçlü dürtü hissettiğinizde derin nefes alın ve farkındalık pratiği yapın.",
+    "research_trees_for_your_garden": "Bahçeniz için ağaçları araştırın",
+    "dedicate_15_20_minutes_to_researching": "Yerel ikliminize ve toprak koşullarınıza uygun yerli ağaç türlerini araştırmaya 15-20 dakika ayırın.",
+    "plan_tree_placement": "Ağaç yerleşimini planlayın",
+    "spend_10_15_minutes_sketching_out": "Bahçenizde seçtiğiniz ağaçlar için potansiyel konumları çizmek üzere 10-15 dakika ayırın."
   },
   "create_habit": {
     "header": "Özel Alışkanlık Oluştur",
@@ -1526,5 +1512,22 @@
     "next": "İleri",
     "got_it": "Anladım!",
     "tap_here": "Buraya dokunun"
+  },
+  "goals": {
+    "title": "Hedefler ve AI",
+    "add_goal": "Hedef Ekle",
+    "ai_quest_for": "{{goal}} için AI Görevi",
+    "tasks_done": "{{done}}/{{total}} görev tamamlandı",
+    "delete_title": "Hedefi Sil",
+    "delete_confirm": "Bu hedefi silmek istediğinizden emin misiniz?\nBu işlem geri alınamaz.",
+    "priority_high": "Yüksek",
+    "priority_medium": "Orta",
+    "priority_low": "Düşük",
+    "create_modal_title": "🎯 Hedef ve Yapay Zeka Görevi Oluştur",
+    "create_modal_desc": "Kişisel hedefinizi tanımlayın. GrowDay AI sizin için odaklanmış görevler oluşturacaktır.",
+    "goal_title_placeholder": "ör: Her gün 30 sayfa oku...",
+    "goal_desc_placeholder": "ör: Bu ay 2 kitap bitir...",
+    "select_category": "Kategori Seçin",
+    "create_btn": "✨ Hedef ve Yapay Zeka Görevi Oluştur"
   }
 }

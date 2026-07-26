@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Parliamo dell'articolo: '{{title}}'. Come puoi aiutarmi in questo?"
   },
   "tasks": {
-    "header": "Le mie Attività",
-    "stats": {
-      "total": "Totale",
-      "completed": "Completate",
-      "pending": "In attesa",
-      "rate": "Tasso di completamento",
-      "streak": "Serie di giorni"
-    },
-    "filters": {
-      "all": "Tutte",
-      "pending": "In attesa",
-      "in_progress": "In corso",
-      "completed": "Completate"
-    },
-    "completed_msg": "Attività completata con successo:",
-    "reward_earned": "Premio ottenuto",
-    "empty": "Nessuna attività trovata",
-    "assigned_by_admins": "I compiti vengono assegnati dagli amministratori",
-    "failed_to_load": "Impossibile caricare le attività",
-    "try_again": "Riprova",
-    "could_not_complete": "Impossibile completare l'attività.",
-    "could_not_uncheck": "Impossibile deselezionare l'attività.",
-    "failed_to_update": "Impossibile aggiornare l'attività.",
-    "delete_title": "Elimina attività",
-    "delete_confirm": "Sei sicuro de voler eliminare questa attività?",
-    "could_not_delete": "Impossibile eliminare l'attività.",
-    "failed_to_delete": "Impossibile eliminare l'attività.",
-    "delete_action": "Elimina",
-    "completed_stack": "Attività Completate",
-    "collapse_stack": "Riduci pila",
-    "completed_count": "Completata",
-    "tip_title": "Consiglio utile",
-    "tip_desc": "Guadagna XP completando le attività, aumenta il tuo livello e sblocca nuove funzionalità del Coach IA!"
+    "identify_triggers_and_avoid_them": "Identifica ed evita i fattori scatenanti",
+    "engage_in_alternative_activities": "Dedicati ad attività alternative",
+    "practice_mindfulness_and_self_regulation": "Pratica la consapevolezza e l'autoregolazione",
+    "replace_habit_with_healthy_alternatives": "Sostituisci l'abitudine con alternative sane",
+    "create_support_system_and_track_progress": "Crea un sistema di supporto e monitora i progressi",
+    "identify_and_avoid_triggers": "Identifica ed evita i fattori scatenanti",
+    "reflect_on_energy_levels": "Rifletti sui tuoi livelli di energia",
+    "complete_daily_exercise_routine": "Completa la routine di esercizio giornaliera",
+    "drink_daily_water_goal": "Bevi l'obiettivo giornaliero d'acqua",
+    "set_reading_targets_track_pages": "Imposta obiettivi di lettura e traccia le pagine",
+    "identify_triggers_and_replacements": "Identifica i fattori scatenanti e le alternative",
+    "before_you_can_avoid_a_behavior": "Prima di evitare un comportamento, devi capire cosa lo causa. Dedica 15 minuti oggi a riflettere sui tuoi fattori scatenanti e pianifica attività alternative sane.",
+    "substitute_urges_with_healthy_activities": "Sostituisci gli impulsi con attività sane come lo sport, la lettura o la meditazione.",
+    "practice_mindfulness_and_self_compassion": "Pratica la consapevolezza e l'autocompassione",
+    "practice_deep_breathing_and_self_awareness": "Pratica la respirazione profonda e l'autoconsapevolezza ogni volta que senti un forte impulso.",
+    "research_trees_for_your_garden": "Cerca alberi per il tuo giardino",
+    "dedicate_15_20_minutes_to_researching": "Dedica 15-20 minuti alla ricerca di specie di alberi autoctoni adatti al clima locale e alle condizioni del suolo.",
+    "plan_tree_placement": "Pianifica il posizionamento degli alberi",
+    "spend_10_15_minutes_sketching_out": "Dedica 10-15 minuti a tracciare la posizione degli alberi scelti nel tuo giardino."
   },
   "create_habit": {
     "header": "Crea abitudine personalizzata",
@@ -1528,5 +1514,22 @@
     "next": "Avanti",
     "got_it": "Capito!",
     "tap_here": "Tocca qui"
+  },
+  "goals": {
+    "title": "Obiettivi e IA",
+    "add_goal": "Aggiungi obiettivo",
+    "ai_quest_for": "Quest IA per {{goal}}",
+    "tasks_done": "{{done}}/{{total}} attività completate",
+    "delete_title": "Elimina obiettivo",
+    "delete_confirm": "Sei sicuro di voler eliminare questo obiettivo?\nQuesta azione non può essere annullata.",
+    "priority_high": "Alta",
+    "priority_medium": "Media",
+    "priority_low": "Bassa",
+    "create_modal_title": "🎯 Crea obiettivo e quest IA",
+    "create_modal_desc": "Descrivi il tuo obiettivo personale. GrowDay IA genererà quest mirate per te.",
+    "goal_title_placeholder": "ad es. Leggi 30 pagine ogni giorno...",
+    "goal_desc_placeholder": "ad es. Finisci di leggere 2 libri questo mese...",
+    "select_category": "Seleziona categoria",
+    "create_btn": "✨ Crea obiettivo e attività IA"
   }
 }

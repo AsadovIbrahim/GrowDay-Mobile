@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Parlons de l'article : '{{title}}'. Comment pouvez-vous m'aider avec cela ?"
   },
   "tasks": {
-    "header": "Mes Tâches",
-    "stats": {
-      "total": "Total",
-      "completed": "Terminées",
-      "pending": "En attente",
-      "rate": "Taux de complétion",
-      "streak": "Série de jours"
-    },
-    "filters": {
-      "all": "Toutes",
-      "pending": "En attente",
-      "in_progress": "En cours",
-      "completed": "Terminé"
-    },
-    "completed_msg": "Tâche terminée avec succès :",
-    "reward_earned": "Récompense obtenue",
-    "empty": "Aucune tâche trouvée",
-    "assigned_by_admins": "Les tâches sont attribuées par les administrateurs",
-    "failed_to_load": "Échec du chargement des tâches",
-    "try_again": "Réessayer",
-    "could_not_complete": "Impossible de terminer la tâche.",
-    "could_not_uncheck": "Impossible de décocher la tâche.",
-    "failed_to_update": "Échec de la mise à jour de la tâche.",
-    "delete_title": "Supprimer la tâche",
-    "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
-    "could_not_delete": "Impossible de supprimer la tâche.",
-    "failed_to_delete": "Échec de la suppression de la tâche.",
-    "delete_action": "Supprimer",
-    "completed_stack": "Tâches Terminées",
-    "collapse_stack": "Réduire la Pile",
-    "completed_count": "Terminée",
-    "tip_title": "Conseil utile",
-    "tip_desc": "Gagnez des XP en accomplissant des tâches, augmentez votre niveau et débloquez de nouvelles fonctionnalités du Coach IA !"
+    "identify_triggers_and_avoid_them": "Identifiez et évitez les déclencheurs",
+    "engage_in_alternative_activities": "S'engager dans des activités alternatives",
+    "practice_mindfulness_and_self_regulation": "Pratiquez la pleine conscience et l'autorégulation",
+    "replace_habit_with_healthy_alternatives": "Remplacez l'habitude par des alternatives saines",
+    "create_support_system_and_track_progress": "Créez un système de soutien et suivez les progrès",
+    "identify_and_avoid_triggers": "Identifiez et évitez les déclencheurs",
+    "reflect_on_energy_levels": "Réfléchissez à votre niveau d'énergie",
+    "complete_daily_exercise_routine": "Effectuez votre routine d'exercice quotidienne",
+    "drink_daily_water_goal": "Buvez votre objectif quotidien d'eau",
+    "set_reading_targets_track_pages": "Fixez des objectifs de lecture et suivez les pages",
+    "identify_triggers_and_replacements": "Identifier les déclencheurs et les remplacements",
+    "before_you_can_avoid_a_behavior": "Avant d'éviter un comportement, vous devez comprendre ce qui le cause. Prenez 15 minutes aujourd'hui pour réfléchir à vos déclencheurs et planifier des activités alternatives saines.",
+    "substitute_urges_with_healthy_activities": "Remplacez les impulsions par des activités saines comme le sport, la lecture ou la méditation.",
+    "practice_mindfulness_and_self_compassion": "Pratiquer la pleine conscience et l'autocompassions",
+    "practice_deep_breathing_and_self_awareness": "Pratiquez la respiration profonde et la conscience de soi chaque fois que vous ressentez une forte impulsion.",
+    "research_trees_for_your_garden": "Rechercher des arbres pour votre jardin",
+    "dedicate_15_20_minutes_to_researching": "Consacrez 15 à 20 minutes à la recherche d'espèces d'arbres indigènes adaptées à votre climat et à votre sol.",
+    "plan_tree_placement": "Planifier l'emplacement des arbres",
+    "spend_10_15_minutes_sketching_out": "Passez 10 à 15 minutes à esquisser les emplacements potentiels de vos arbres dans votre jardin."
   },
   "create_habit": {
     "header": "Créer une habitude personnalisée",
@@ -1528,5 +1514,22 @@
     "next": "Suivant",
     "got_it": "Compris !",
     "tap_here": "Appuyez ici"
+  },
+  "goals": {
+    "title": "Objectifs & IA",
+    "add_goal": "Ajouter un objectif",
+    "ai_quest_for": "Quête IA pour {{goal}}",
+    "tasks_done": "{{done}}/{{total}} tâches effectuées",
+    "delete_title": "Supprimer l'objectif",
+    "delete_confirm": "Êtes-vous sûr de vouloir supprimer cet objectif ?\nCette action est irréversible.",
+    "priority_high": "Élevée",
+    "priority_medium": "Moyenne",
+    "priority_low": "Basse",
+    "create_modal_title": "🎯 Créer un objectif & quêtes IA",
+    "create_modal_desc": "Décrivez votre objectif personnel. GrowDay IA générera des quêtes ciblées pour vous.",
+    "goal_title_placeholder": "ex. Lire 30 pages tous les jours...",
+    "goal_desc_placeholder": "ex. Finir de lire 2 livres ce mois-ci...",
+    "select_category": "Sélectionner une catégorie",
+    "create_btn": "✨ Créer l'objectif et les tâches IA"
   }
 }

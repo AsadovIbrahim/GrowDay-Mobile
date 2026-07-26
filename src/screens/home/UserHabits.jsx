@@ -205,6 +205,14 @@ const UserHabits = ({ route }) => {
             );
 
 
+            // Save deleted habit IDs to MMKV so Life Balance Grid filters them out instantly
+            try {
+                const deletedIdsRaw = storage.getString("user_deleted_habit_ids");
+                let deletedIds = deletedIdsRaw ? JSON.parse(deletedIdsRaw) : [];
+                deletedIds = [...new Set([...deletedIds, ...habitIds.map(String)])];
+                storage.set("user_deleted_habit_ids", JSON.stringify(deletedIds));
+            } catch (e) {}
+
             // Optimistically update local list and clear selection mode immediately
             setUserHabitsByFrequency(prev => prev.filter(h => {
                 const id = h.userHabitId || h.id || h.habitId;

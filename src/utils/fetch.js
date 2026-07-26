@@ -1008,3 +1008,62 @@ export const claimTournamentRewardFetch = async (token) => {
     });
     return handleResponse(response);
 };
+
+// AI Mandala Planner APIs
+export const getMandalaGoalFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/goal`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const createMandalaGoalFetch = async (token, goalData) => {
+    const payload = typeof goalData === 'string' ? { goalText: goalData } : goalData;
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/goal`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify(payload),
+    });
+    return handleResponse(response);
+};
+
+export const deleteMandalaGoalFetch = async (token, goalId) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/goal/${goalId}`, {
+        method: "DELETE",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const getMandalaDirectionsFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/directions`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const getDailyMandalaTasksFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/daily-tasks`, {
+        method: "GET",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const completeMandalaTaskFetch = async (token, taskId) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/complete-task/${taskId}`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};
+
+export const triggerAiRebalanceFetch = async (token) => {
+    const response = await fetch(`${VITE_API_URL}/api/Mandala/rebalance`, {
+        method: "POST",
+        headers: getHeaders(token),
+    });
+    return handleResponse(response);
+};

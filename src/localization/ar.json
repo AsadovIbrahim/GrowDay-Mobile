@@ -329,39 +329,25 @@
     "ask_ai_prompt": "دعنا نتحدث عن المقالة: '{{title}}'. كيف يمكنك مساعدتي في هذا؟"
   },
   "tasks": {
-    "header": "مهامي",
-    "stats": {
-      "total": "الإجمالي",
-      "completed": "المكتملة",
-      "pending": "قيد الانتظار",
-      "rate": "معدل الإنجاز",
-      "streak": "سلسلة الأيام"
-    },
-    "filters": {
-      "all": "الكل",
-      "pending": "قيد الانتظار",
-      "in_progress": "قيد التنفيذ",
-      "completed": "مكتمل"
-    },
-    "completed_msg": "تم إكمال المهمة بنجاح:",
-    "reward_earned": "تم الحصول على المكافأة",
-    "empty": "لم يتم العثور على مهام",
-    "assigned_by_admins": "يتم تعيين المهام من قبل المسؤولين",
-    "failed_to_load": "فشل في تحميل المهام",
-    "try_again": "حاول مجدداً",
-    "could_not_complete": "لم نتمكن من إكمال المهمة.",
-    "could_not_uncheck": "لم نتمكن من إلغاء تحديد المهمة.",
-    "failed_to_update": "فشل في تحديث المهمة.",
-    "delete_title": "حذف المهمة",
-    "delete_confirm": "هل أنت متأكد من أنك تريد حذف هذه المهمة؟",
-    "could_not_delete": "لم نتمكن من حذف المهمة.",
-    "failed_to_delete": "فشل في حذف المهمة.",
-    "delete_action": "حذف",
-    "completed_stack": "المهام المكتملة",
-    "collapse_stack": "تصغير المكدس",
-    "completed_count": "مكتمل",
-    "tip_title": "نصيحة مفيدة",
-    "tip_desc": "اكسب نقاط الخبرة بإكمال المهام، وارفع مستواك، وافتح ميزات مدرب الذكاء الاصطناعي الجديدة!"
+    "identify_triggers_and_avoid_them": "حدد المحفزات وتجنبها",
+    "engage_in_alternative_activities": "المشاركة في أنشطة بديلة",
+    "practice_mindfulness_and_self_regulation": "مارس اليقظة والتمكين الذاتي",
+    "replace_habit_with_healthy_alternatives": "استبدل العادة ببدائل صحية",
+    "create_support_system_and_track_progress": "أنشئ نظام دعم وتابع التقدم",
+    "identify_and_avoid_triggers": "حدد المحفزات وتجنبها",
+    "reflect_on_energy_levels": "تأمل في مستويات طاقتك",
+    "complete_daily_exercise_routine": "أكمل روتين التمرين اليومي",
+    "drink_daily_water_goal": "اشرب كمية الماء اليومية",
+    "set_reading_targets_track_pages": "حدد أهداف القراءة وتتبع الصفحات",
+    "identify_triggers_and_replacements": "تحديد المحفزات والبدائل",
+    "before_you_can_avoid_a_behavior": "قبل أن تتمكن من تجنب سلوك ما، عليك أن تفهم أسبابه. خصص 15 دقيقة اليوم للتفكير في المحفزات وتخطيط أنشطة بديلة صحية.",
+    "substitute_urges_with_healthy_activities": "استبدل الرغبات الملحة بأنشطة صحية مثل الرياضة أو القراءة أو التأمل.",
+    "practice_mindfulness_and_self_compassion": "ممارسة اليقظة والتعاطف الذاتي",
+    "practice_deep_breathing_and_self_awareness": "تدرب على التنفس العميق والوعي الذاتي كلما شعرت برغبة قوية.",
+    "research_trees_for_your_garden": "البحث عن الأشجار لحديقتك",
+    "dedicate_15_20_minutes_to_researching": "خصص 15-20 دقيقة للبحث عن أنواع الأشجار الأصلية المناسبة لمناخك المحلي وظروف التربة.",
+    "plan_tree_placement": "تخطيط وضع الأشجار",
+    "spend_10_15_minutes_sketching_out": "يقضي 10-15 دقيقة في رسم المواقع المحتملة للأشجار المختارة في حديقتك."
   },
   "create_habit": {
     "header": "إنشاء عادة مخصصة",
@@ -1515,5 +1501,22 @@
     "next": "التالي",
     "got_it": "فهمت!",
     "tap_here": "اضغط هنا"
+  },
+  "goals": {
+    "title": "الأهداف والذكاء الاصطناعي",
+    "add_goal": "إضافة هدف",
+    "ai_quest_for": "مهمة الذكاء الاصطناعي لـ {{goal}}",
+    "tasks_done": "تم إنجاز {{done}}/{{total}} من المهام",
+    "delete_title": "حذف الهدف",
+    "delete_confirm": "هل أنت تأكد من أنك تريد حذف هذا الهدف؟\nلا يمكن التراجع عن هذا الإجراء.",
+    "priority_high": "عالي",
+    "priority_medium": "متوسط",
+    "priority_low": "منخفض",
+    "create_modal_title": "🎯 إنشاء هدف ومهام ذكاء اصطناعي",
+    "create_modal_desc": "صف هدفك الشخصي. سيقوم GrowDay AI بإنشاء مهام مركزة لك.",
+    "goal_title_placeholder": "مثال: قراءة 30 صفحة كل يوم...",
+    "goal_desc_placeholder": "مثال: إنهاء قراءة كتابين هذا الشهر...",
+    "select_category": "اختر الفئة",
+    "create_btn": "✨ إنشاء الهدف ومهام الذكاء الاصطناعي"
   }
 }

@@ -309,14 +309,17 @@ const Profile = ({ navigation }) => {
     try {
       const token = storage.getString('accessToken');
       const [pointsRes, accountRes] = await Promise.all([
-        getUserTotalXPFetch(token),
-        getAccountDataFetch(token),
+        getUserTotalXPFetch(token).catch(() => null),
+        getAccountDataFetch(token).catch(() => null),
       ]);
       
-      const pts = pointsRes.data ?? 0;
-      const totalPts = accountRes.data?.totalExperiencePoints ?? pts;
-      setPoints(pts);
-      setAccountData(accountRes.data);
+      const serverPts = pointsRes?.data ?? 0;
+      const accountPts = accountRes?.data?.totalExperiencePoints ?? 0;
+      const cachedLocalPts = storage.getNumber('user.totalPoints') || 0;
+
+      const totalPts = Math.max(serverPts, accountPts, cachedLocalPts);
+      setPoints(totalPts);
+      setAccountData(accountRes?.data ? { ...accountRes.data, totalExperiencePoints: totalPts } : null);
       
       const realLevel = Math.floor(Math.sqrt(totalPts / 50)) + 1;
       let savedBorder = storage.getNumber('user.activeBorder');

@@ -330,39 +330,25 @@
     "ask_ai_prompt": "让我们谈谈这篇文章：'{{title}}'。您能为此提供什么帮助？"
   },
   "tasks": {
-    "header": "我的任务",
-    "stats": {
-      "total": "总计",
-      "completed": "已完成",
-      "pending": "待处理",
-      "rate": "完成率",
-      "streak": "连续天数"
-    },
-    "filters": {
-      "all": "全部",
-      "pending": "待处理",
-      "in_progress": "进行中",
-      "completed": "已完成"
-    },
-    "completed_msg": "任务成功完成：",
-    "reward_earned": "获得奖励",
-    "empty": "未找到任务",
-    "assigned_by_admins": "任务由管理员分配",
-    "failed_to_load": "加载任务失败",
-    "try_again": "重试",
-    "could_not_complete": "无法完成任务。",
-    "could_not_uncheck": "无法取消勾选任务。",
-    "failed_to_update": "更新任务失败。",
-    "delete_title": "删除任务",
-    "delete_confirm": "您确定要删除此任务吗？",
-    "could_not_delete": "无法删除任务。",
-    "failed_to_delete": "删除任务失败。",
-    "delete_action": "删除",
-    "completed_stack": "已完成任务",
-    "collapse_stack": "折叠堆栈",
-    "completed_count": "已完成",
-    "tip_title": "温馨提示",
-    "tip_desc": "通过完成任务赚取经验值（XP），提升您的等级，并解锁全新的AI教练功能！"
+    "identify_triggers_and_avoid_them": "识别并避免诱因",
+    "engage_in_alternative_activities": "参与替代活动",
+    "practice_mindfulness_and_self_regulation": "练习正念与自我调节",
+    "replace_habit_with_healthy_alternatives": "用健康的替代方案替换习惯",
+    "create_support_system_and_track_progress": "建立支持系统并跟踪进度",
+    "identify_and_avoid_triggers": "识别并避免诱因",
+    "reflect_on_energy_levels": "反思精力水平",
+    "complete_daily_exercise_routine": "完成每日锻炼计划",
+    "drink_daily_water_goal": "喝够每日饮水目标",
+    "set_reading_targets_track_pages": "设置阅读目标并跟踪页数",
+    "identify_triggers_and_replacements": "识别诱因与替代方案",
+    "before_you_can_avoid_a_behavior": "在避免某种行为之前，你需要了解其起因。今天花15分钟反思你的诱因，并规划健康的替代活动来充实身心。",
+    "substitute_urges_with_healthy_activities": "用运动、阅读或冥想等健康活动代替冲动。",
+    "practice_mindfulness_and_self_compassion": "练习正念与自我关怀",
+    "practice_deep_breathing_and_self_awareness": "每当感到强烈冲动时，练习深呼吸和自我觉察。",
+    "research_trees_for_your_garden": "为你的花园研究树木",
+    "dedicate_15_20_minutes_to_researching": "花15-20分钟研究适合当地气候和土壤条件的本土树木品种。",
+    "plan_tree_placement": "规划树木种植位置",
+    "spend_10_15_minutes_sketching_out": "花10-15分钟在花园中规划所选树木的种植位置。"
   },
   "create_habit": {
     "header": "创建自定义习惯",
@@ -1529,5 +1515,22 @@
     "next": "下一步",
     "got_it": "知道了！",
     "tap_here": "点击这里"
+  },
+  "goals": {
+    "title": "目标与 AI",
+    "add_goal": "添加目标",
+    "ai_quest_for": "{{goal}} 的 AI 任务",
+    "tasks_done": "已完成 {{done}}/{{total}} 项任务",
+    "delete_title": "删除目标",
+    "delete_confirm": "您确定要删除此目标吗？\n此操作无法撤销。",
+    "priority_high": "高",
+    "priority_medium": "中",
+    "priority_low": "低",
+    "create_modal_title": "🎯 创建目标与 AI 任务",
+    "create_modal_desc": "描述您的个人目标。GrowDay AI 将为您生成专注、可执行的任务。",
+    "goal_title_placeholder": "例如：每天阅读 30 页...",
+    "goal_desc_placeholder": "例如：本月读完 2 本书...",
+    "select_category": "选择分类",
+    "create_btn": "✨ 创建目标与 AI 任务"
   }
 }

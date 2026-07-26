@@ -58,12 +58,12 @@ const SuggestedHabitCard = ({ name, frequency, icon, onPress, habit }) => {
         </View>
         <Text
           className="text-base font-redditsans-bold mb-1"
-          style={{ color: colors.text }}
+          style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}
           numberOfLines={2}
         >
           {displayTitle}
         </Text>
-        <Text className="text-[12px] font-redditsans-regular" style={{ color: colors.textSecondary }} numberOfLines={1}>
+        <Text className="text-[12px] font-redditsans-regular" style={{ color: colors.textSecondary, fontFamily: 'RedditSans-Regular' }} numberOfLines={1}>
           {t(`my_habits.filters.${frequencyKey}`, { defaultValue: sanitizedFrequency })}
         </Text>
       </View>

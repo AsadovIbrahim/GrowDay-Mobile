@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Let's talk about the article: '{{title}}'. How can you help me with this?"
   },
   "tasks": {
-    "header": "My Tasks",
-    "stats": {
-      "total": "Total",
-      "completed": "Completed",
-      "pending": "Pending",
-      "rate": "Completion Rate",
-      "streak": "Day Streak"
-    },
-    "filters": {
-      "all": "All",
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "completed": "Completed"
-    },
-    "completed_msg": "You've successfully completed the task:",
-    "reward_earned": "Reward Earned",
-    "empty": "No tasks found",
-    "assigned_by_admins": "Tasks are assigned by admins",
-    "failed_to_load": "Failed to load tasks",
-    "try_again": "Try Again",
-    "could_not_complete": "Could not complete task.",
-    "could_not_uncheck": "Could not uncheck task.",
-    "failed_to_update": "Failed to update task.",
-    "delete_title": "Delete Task",
-    "delete_confirm": "Are you sure you want to delete this task?",
-    "could_not_delete": "Could not delete task.",
-    "failed_to_delete": "Failed to delete task.",
-    "delete_action": "Delete",
-    "completed_stack": "Completed Tasks",
-    "collapse_stack": "Collapse Stack",
-    "completed_count": "Completed",
-    "tip_title": "Useful Tip",
-    "tip_desc": "Earn XP by completing tasks, increase your level, and unlock new AI Coach features!"
+    "identify_triggers_and_avoid_them": "Identify Triggers and Avoid Them",
+    "engage_in_alternative_activities": "Engage in Alternative Activities",
+    "practice_mindfulness_and_self_regulation": "Practice Mindfulness and Self-Regulation",
+    "replace_habit_with_healthy_alternatives": "Replace habit with healthy alternatives",
+    "create_support_system_and_track_progress": "Create support system and track progress",
+    "identify_and_avoid_triggers": "Identify and avoid triggers",
+    "reflect_on_energy_levels": "Reflect on energy levels",
+    "complete_daily_exercise_routine": "Complete daily exercise routine",
+    "drink_daily_water_goal": "Drink daily water goal",
+    "set_reading_targets_track_pages": "Set reading targets & track pages",
+    "identify_triggers_and_replacements": "Identify Triggers and Replacements",
+    "before_you_can_avoid_a_behavior": "Before you can avoid a behavior, you need to understand what causes it. Spend 15 minutes today reflecting on when and why.",
+    "substitute_urges_with_healthy_activities": "Substitute urges with healthy activities like exercise, reading, or meditation.",
+    "practice_mindfulness_and_self_compassion": "Practice Mindfulness and Self-Compassion",
+    "practice_deep_breathing_and_self_awareness": "Practice deep breathing and self-awareness whenever you feel a strong urge.",
+    "research_trees_for_your_garden": "Research Trees for Your Garden",
+    "dedicate_15_20_minutes_to_researching": "Dedicate 15-20 minutes to researching native tree species suitable for your local climate and soil conditions.",
+    "plan_tree_placement": "Plan Tree Placement",
+    "spend_10_15_minutes_sketching_out": "Spend 10-15 minutes sketching out potential locations for your chosen trees in your garden."
   },
   "create_habit": {
     "header": "Create Custom Habit",
@@ -1528,5 +1514,22 @@
     "next": "Next",
     "got_it": "Got it!",
     "tap_here": "Tap here"
+  },
+  "goals": {
+    "title": "Goals & AI Quests",
+    "add_goal": "Add Goal",
+    "ai_quest_for": "AI Quest for {{goal}}",
+    "tasks_done": "{{done}}/{{total}} tasks done",
+    "delete_title": "Delete Goal",
+    "delete_confirm": "Are you sure you want to delete this goal?\nThis action cannot be undone.",
+    "priority_high": "High",
+    "priority_medium": "Medium",
+    "priority_low": "Low",
+    "create_modal_title": "🎯 Create Goal & AI Quests",
+    "create_modal_desc": "Describe your personal goal. GrowDay AI will generate focused, actionable quests for you.",
+    "goal_title_placeholder": "e.g. Read 30 pages everyday...",
+    "goal_desc_placeholder": "e.g. Finish reading 2 books this month...",
+    "select_category": "Select Category",
+    "create_btn": "✨ Create Goal & AI Tasks"
   }
 }

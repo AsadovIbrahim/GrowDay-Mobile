@@ -20,6 +20,8 @@ import SuggestedHabitCard from "../../components/SuggestedHabitCard";
 import HabitAddCard from "../../components/HabitAddCard";
 import AdBanner from "../../components/AdBanner";
 import TournamentClaimPopup from "../../components/TournamentClaimPopup";
+import LifeBalanceGrid from "../../components/LifeBalanceGrid";
+import MyGoalsAiQuests from "../../components/MyGoalsAiQuests";
 
 
 import { useTheme } from "../../context/ThemeContext";
@@ -28,6 +30,68 @@ import { getTranslatedHabit } from "../../utils/habitTranslations";
 
 const AI_COACH_MIN_LEVEL = 3;
 const AI_COACH_DAILY_LIMIT = 3;
+
+const getExploreTabTitle = (tabKey, lang) => {
+  const langKey = lang ? lang.split('-')[0].toLowerCase() : 'en';
+  const translations = {
+    quests: {
+      az: '🎯 Tapşırıqlar',
+      tr: '🎯 Görevler',
+      ru: '🎯 Квесты',
+      en: '🎯 Quests',
+      es: '🎯 Misiones',
+      de: '🎯 Quests',
+      fr: '🎯 Quêtes',
+      it: '🎯 Missioni',
+      ar: '🎯 المهام',
+      zh: '🎯 任务',
+    },
+    life_balance: {
+      az: '📊 Həyat Balansı',
+      tr: '📊 Yaşam Dengesi',
+      ru: '📊 Баланс жизни',
+      en: '📊 Life Balance',
+      es: '📊 Equilibrio de vida',
+      de: '📊 Lebensbalance',
+      fr: '📊 Équilibre de vie',
+      it: '📊 Equilibrio di vita',
+      ar: '📊 توازن الحياة',
+      zh: '📊 生活平衡',
+    },
+    games: {
+      az: '🧠 Oyunlar',
+      tr: '🧠 Oyunlar',
+      ru: '🧠 Игры',
+      en: '🧠 Games',
+      es: '🧠 Juegos',
+      de: '🧠 Spiele',
+      fr: '🧠 Jeux',
+      it: '🧠 Giochi',
+      ar: '🧠 الألعاب',
+      zh: '🧠 游戏',
+    },
+  };
+
+  const tabDict = translations[tabKey];
+  return (tabDict && tabDict[langKey]) || (tabDict && tabDict.en) || tabKey;
+};
+
+const getGamePlayBtnText = (lang) => {
+  const langKey = lang ? lang.split('-')[0].toLowerCase() : 'en';
+  const translations = {
+    az: 'Oyna 🎮',
+    tr: 'Oyna 🎮',
+    ru: 'Играть 🎮',
+    en: 'Play 🎮',
+    es: 'Jugar 🎮',
+    de: 'Spielen 🎮',
+    fr: 'Jouer 🎮',
+    it: 'Gioca 🎮',
+    ar: 'العب 🎮',
+    zh: '开始游戏 🎮',
+  };
+  return translations[langKey] || translations.en;
+};
 
 const Explore = () => {
   const navigation = useNavigation();
@@ -38,12 +102,11 @@ const Explore = () => {
   const insets = useSafeAreaInsets();
 
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('life_balance'); // 'quests', 'life_balance', 'games'
   const [suggestedHabits, setSuggestedHabits] = useState([]);
   const [learningContent, setLearningContent] = useState([]);
   const [learningLoading, setLearningLoading] = useState(false);
   const [token] = useMMKVString('accessToken');
-  const [hasSeenGamesIntro, setHasSeenGamesIntro] = useMMKVBoolean("hasSeenGamesIntro");
-  const [showGamesIntroModal, setShowGamesIntroModal] = useState(false);
   const mainScrollViewRef = useRef(null);
   const [gamesLayoutY, setGamesLayoutY] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
@@ -60,19 +123,28 @@ const Explore = () => {
   const calculationPoints = totalPoints > 0 ? totalPoints : points;
   const userLevel = Math.floor(Math.sqrt(calculationPoints / 50)) + 1;
 
-  const fetchXP = async () => {
+  const fetchXP = async (earnedXP = 0) => {
     try {
+      if (typeof earnedXP === 'number' && earnedXP > 0) {
+        const currentSaved = storage.getNumber('user.totalPoints') || 0;
+        const newLocal = currentSaved + earnedXP;
+        storage.set('user.totalPoints', newLocal);
+        setPoints(newLocal);
+        setTotalPoints(newLocal);
+      }
       const [xpRes, accountRes] = await Promise.all([
-        getUserTotalXPFetch(token),
+        getUserTotalXPFetch(token).catch(() => null),
         getAccountDataFetch(token).catch(() => null)
       ]);
-      if (xpRes && xpRes.success) {
-        setPoints(xpRes.data ?? 0);
-      }
-      if (accountRes && accountRes.success) {
-        setTotalPoints(accountRes.data?.totalExperiencePoints ?? xpRes.data ?? 0);
-      } else {
-        setTotalPoints(xpRes.data ?? 0);
+      const serverXP = xpRes?.data ?? 0;
+      const accountXP = accountRes?.data?.totalExperiencePoints ?? 0;
+      const cachedLocalXP = storage.getNumber('user.totalPoints') || 0;
+      const finalXP = Math.max(serverXP, accountXP, cachedLocalXP);
+
+      if (finalXP > 0) {
+        setPoints(finalXP);
+        setTotalPoints(finalXP);
+        storage.set('user.totalPoints', finalXP);
       }
     } catch (err) {
       console.log("Error loading XP in Explore:", err);
@@ -219,25 +291,6 @@ const Explore = () => {
     if (token) getLearningContent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, token]);
-
-  useEffect(() => {
-    if (token && !hasSeenGamesIntro) {
-      const timer = setTimeout(() => {
-        setShowGamesIntroModal(true);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [token, hasSeenGamesIntro]);
-
-  const handleCloseGamesIntro = () => {
-    setShowGamesIntroModal(false);
-    setHasSeenGamesIntro(true);
-    if (mainScrollViewRef.current && gamesLayoutY > 0) {
-      setTimeout(() => {
-        mainScrollViewRef.current?.scrollTo({ y: gamesLayoutY - 20, animated: true });
-      }, 300);
-    }
-  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -482,12 +535,12 @@ const Explore = () => {
                   onPress={() => { setIsSearching(false); setSearchQuery(""); }}
                   className="ml-4"
                 >
-                  <Text className="font-redditsans-bold" style={{ color: colors.primary }}>{t("common.cancel")}</Text>
+                  <Text className="font-redditsans-bold" style={{ color: colors.primary, fontFamily: 'RedditSans-Bold' }}>{t("common.cancel")}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <>
-                <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text }}>{t("explore.header")}</Text>
+                <Text className="text-3xl font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>{t("explore.header")}</Text>
                 <TouchableOpacity
                   onPress={() => setIsSearching(true)}
                   className="w-10 h-10 rounded-full items-center justify-center"
@@ -499,644 +552,596 @@ const Explore = () => {
             )}
           </View>
 
-
-
-          {/* Suggested Habits Section */}
-          <View className="px-4">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.suggested_habits")}</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('SuggestedHabits')}
-                className="flex-row items-center gap-1"
-              >
-                <Text className="text-sm text-green-600 font-redditsans-medium">{t("explore.view_all")}</Text>
-                <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
-              </TouchableOpacity>
-            </View>
-
-            {loading && pageIndex === 0 ? (
-              <View className="py-10 items-center justify-center">
-                <ActivityIndicator size="small" color={colors.primary} />
-              </View>
-            ) : isGeneratingHabits ? (
-              <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
-                <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
-                <Text style={{ color: colors.textSecondary }} className="font-redditsans-medium">
-                  {t("levelup.generating_new_habits", "Generating new suggested habits...")}
-                </Text>
-              </View>
-            ) : (filteredSuggestedHabits.length === 0) ? (
-              <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
-                <Text style={{ color: colors.textSecondary }} className="font-redditsans-regular italic">
-                  {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
-                </Text>
-              </View>
-            ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                className="mb-6"
-                contentContainerStyle={{ paddingRight: 40 }}
-              >
-                {filteredSuggestedHabits
-                  .slice(0, 5)
-                  .map((habit, index) => (
-                    <SuggestedHabitCard
-                      key={habit.id || `suggested-${index}`}
-                      name={habit.title}
-                      frequency={habit.frequency || "Daily"}
-                      icon={habit.icon || "🎯"}
-                      onPress={() => handleSuggestedHabitPress(habit)}
-                      habit={habit}
-                    />
-                  ))}
-              </ScrollView>
-            )}
-          </View>
-
-          {/* Tasks Section */}
-          <View className="px-4">
-            <View className="flex-row justify-between items-center mb-4">
-              <View className="flex-row items-center gap-2">
-                <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.tasks")}</Text>
-                <FontAwesomeIcon icon={faStar} color="#FBBF24" size={16} />
-              </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('UserTasks')}
-                className="flex-row items-center gap-1"
-              >
-                <Text className="text-green-600 font-redditsans-medium text-sm">{t("explore.view_all")}</Text>
-                <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
-              </TouchableOpacity>
-            </View>
-            <UserTasksList searchQuery={searchQuery} t={t} />
-
-
-          </View>
-
-          {/* Brain Games Section */}
-          <View onLayout={(event) => {
-            const layout = event.nativeEvent.layout;
-            setGamesLayoutY(layout.y);
-          }}>
-            <View className="px-4 mb-4">
-              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>🧠 {t("games.title")}</Text>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="px-4 mb-4"
-              contentContainerStyle={{ paddingRight: 40 }}
+          {/* Sub-navigation Segmented Control Tabs: Quests, Life Balance, Games */}
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(226, 232, 240, 0.8)',
+              borderRadius: 24,
+              padding: 4,
+              marginHorizontal: 16,
+              marginBottom: 20,
+              borderWidth: 1,
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+            }}
+          >
+            {/* Quests Tab */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setActiveTab('quests')}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 20,
+                overflow: 'hidden',
+              }}
             >
-              {/* Memory Game Card */}
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('MemoryGame')}
-                className="mr-3 rounded-2xl p-4 justify-between"
-                style={{
-                  width: 250,
-                  height: 160,
-                  backgroundColor: isDark ? '#0b1d15' : '#e8f8f0',
-                  borderWidth: 1.5,
-                  borderColor: isDark ? '#059669' : '#a7f3d0',
-                  shadowColor: isDark ? '#10b981' : '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.2 : 0.05,
-                  shadowRadius: 6,
-                  elevation: 3
-                }}
-              >
-                <View>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#34d399' : '#065f46' }} numberOfLines={1}>
-                      🧩 {t("games.memory_match")}
-                    </Text>
-                    <View 
-                      style={{ backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.12)' }} 
-                      className="w-8 h-8 rounded-xl items-center justify-center"
-                    >
-                      <Text className="text-base">🧩</Text>
-                    </View>
-                  </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#047857' }} numberOfLines={2}>
-                    {t("games.memory_match_desc")}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'MemoryMatch' })}
-                  style={{ 
-                    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#10b981',
-                    borderColor: isDark ? '#10b981' : 'transparent',
-                    borderWidth: isDark ? 1 : 0
+              {activeTab === 'quests' && (
+                <LinearGradient
+                  colors={['#3B82F6', '#2563EB']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: 20,
                   }}
-                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
-                >
-                  <Text style={{ color: isDark ? '#34d399' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
-                    🏆 {t("games.leaderboard")}
-                  </Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-
-              {/* Sequence Game Card */}
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('SequenceGame')}
-                className="mr-3 rounded-2xl p-4 justify-between"
-                style={{
-                  width: 250,
-                  height: 160,
-                  backgroundColor: isDark ? '#0b162a' : '#eff6ff',
-                  borderWidth: 1.5,
-                  borderColor: isDark ? '#2563eb' : '#bfdbfe',
-                  shadowColor: isDark ? '#3b82f6' : '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.2 : 0.05,
-                  shadowRadius: 6,
-                  elevation: 3
-                }}
-              >
-                <View>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#60a5fa' : '#1e3a8a' }} numberOfLines={1}>
-                      ⚡ {t("games.sequence_memory")}
-                    </Text>
-                    <View 
-                      style={{ backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.12)' }} 
-                      className="w-8 h-8 rounded-xl items-center justify-center"
-                    >
-                      <Text className="text-base">⚡</Text>
-                    </View>
-                  </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#1d4ed8' }} numberOfLines={2}>
-                    {t("games.sequence_memory_desc")}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'SequenceMemory' })}
-                  style={{ 
-                    backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : '#3b82f6',
-                    borderColor: isDark ? '#3b82f6' : 'transparent',
-                    borderWidth: isDark ? 1 : 0
-                  }}
-                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
-                >
-                  <Text style={{ color: isDark ? '#60a5fa' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
-                    🏆 {t("games.leaderboard")}
-                  </Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-
-              {/* Stroop Game Card */}
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('StroopGame')}
-                className="mr-3 rounded-2xl p-4 justify-between"
-                style={{
-                  width: 250,
-                  height: 160,
-                  backgroundColor: isDark ? '#140f26' : '#faf5ff',
-                  borderWidth: 1.5,
-                  borderColor: isDark ? '#7c3aed' : '#e9d5ff',
-                  shadowColor: isDark ? '#8b5cf6' : '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.2 : 0.05,
-                  shadowRadius: 6,
-                  elevation: 3
-                }}
-              >
-                <View>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#c084fc' : '#581c87' }} numberOfLines={1}>
-                      🎨 {t("games.stroop_test")}
-                    </Text>
-                    <View 
-                      style={{ backgroundColor: isDark ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.12)' }} 
-                      className="w-8 h-8 rounded-xl items-center justify-center"
-                    >
-                      <Text className="text-base">🎨</Text>
-                    </View>
-                  </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#7e22ce' }} numberOfLines={2}>
-                    {t("games.stroop_test_desc")}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'StroopTest' })}
-                  style={{ 
-                    backgroundColor: isDark ? 'rgba(139, 92, 246, 0.15)' : '#8b5cf6',
-                    borderColor: isDark ? '#8b5cf6' : 'transparent',
-                    borderWidth: isDark ? 1 : 0
-                  }}
-                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
-                >
-                  <Text style={{ color: isDark ? '#c084fc' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
-                    🏆 {t("games.leaderboard")}
-                  </Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-
-              {/* Reaction Game Card */}
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('ReactionGame')}
-                className="mr-3 rounded-2xl p-4 justify-between"
-                style={{
-                  width: 250,
-                  height: 160,
-                  backgroundColor: isDark ? '#1f130b' : '#fff7ed',
-                  borderWidth: 1.5,
-                  borderColor: isDark ? '#ea580c' : '#ffedd5',
-                  shadowColor: isDark ? '#f97316' : '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.2 : 0.05,
-                  shadowRadius: 6,
-                  elevation: 3
-                }}
-              >
-                <View>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-base font-redditsans-bold flex-1 mr-2" style={{ color: isDark ? '#fb923c' : '#7c2d12' }} numberOfLines={1}>
-                      ⏱️ {t("games.reaction_game")}
-                    </Text>
-                    <View 
-                      style={{ backgroundColor: isDark ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.12)' }} 
-                      className="w-8 h-8 rounded-xl items-center justify-center"
-                    >
-                      <Text className="text-base">⏱️</Text>
-                    </View>
-                  </View>
-                  <Text className="text-xs font-redditsans-regular mb-3" style={{ color: isDark ? colors.textSecondary : '#c2410c' }} numberOfLines={2}>
-                    {t("games.reaction_game_desc")}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'ReactionTime' })}
-                  style={{ 
-                    backgroundColor: isDark ? 'rgba(249, 115, 22, 0.15)' : '#f97316',
-                    borderColor: isDark ? '#f97316' : 'transparent',
-                    borderWidth: isDark ? 1 : 0
-                  }}
-                  className="flex-row items-center gap-1 py-1 px-3 rounded-full self-start"
-                >
-                  <Text style={{ color: isDark ? '#fb923c' : '#ffffff' }} className="text-[10px] font-redditsans-bold">
-                    🏆 {t("games.leaderboard")}
-                  </Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-
-          {/* Learning Section */}
-          <View className="mb-6">
-            <View className="px-4 mb-4">
-              <Text className="text-lg font-redditsans-bold" style={{ color: colors.text }}>{t("explore.learning")}</Text>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
-            >
-              {learningLoading && learningContent.length === 0 ? (
-                <View className="items-center justify-center py-10" style={{ width: 220 }}>
-                  <ActivityIndicator color={colors.primary} />
-                </View>
-              ) : (
-                learningContent
-                  .filter(l => l.title?.toLowerCase().includes(searchQuery.toLowerCase()) || l.category?.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map((item) => (
-                    <View key={item.id} style={{ width: 220 }}>
-                      <LearningCard
-                        title={item.title}
-                        image={item.imageUrl || item.image}
-                        category={item.category}
-                        onPress={() => navigation.navigate("ArticleDetail", { article: item })}
-                      />
-                    </View>
-                  ))
+                />
               )}
-            </ScrollView>
+              <Text
+                style={{
+                  fontFamily: 'RedditSans-Bold',
+                  fontSize: 13,
+                  color: activeTab === 'quests' ? '#FFFFFF' : colors.textSecondary,
+                }}
+              >
+                {getExploreTabTitle('quests', i18n?.language)}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Life Balance Tab */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setActiveTab('life_balance')}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 20,
+                overflow: 'hidden',
+              }}
+            >
+              {activeTab === 'life_balance' && (
+                <LinearGradient
+                  colors={['#6366F1', '#4F46E5']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: 20,
+                  }}
+                />
+              )}
+              <Text
+                style={{
+                  fontFamily: 'RedditSans-Bold',
+                  fontSize: 13,
+                  color: activeTab === 'life_balance' ? '#FFFFFF' : colors.textSecondary,
+                }}
+              >
+                {getExploreTabTitle('life_balance', i18n?.language)}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Games Tab */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setActiveTab('games')}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 20,
+                overflow: 'hidden',
+              }}
+            >
+              {activeTab === 'games' && (
+                <LinearGradient
+                  colors={['#8B5CF6', '#7C3AED']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: 20,
+                  }}
+                />
+              )}
+              <Text
+                style={{
+                  fontFamily: 'RedditSans-Bold',
+                  fontSize: 13,
+                  color: activeTab === 'games' ? '#FFFFFF' : colors.textSecondary,
+                }}
+              >
+                {getExploreTabTitle('games', i18n?.language)}
+              </Text>
+            </TouchableOpacity>
           </View>
+
+          {/* TAB 1: LIFE BALANCE (AI Mandala Matrix & Trends) */}
+          {activeTab === 'life_balance' && (
+            <View style={{ paddingHorizontal: 16 }}>
+              <LifeBalanceGrid colors={colors} isDark={isDark} t={t} searchQuery={searchQuery} />
+            </View>
+          )}
+
+          {/* TAB 2: QUESTS (Suggested Habits & Daily User Tasks) */}
+          {activeTab === 'quests' && (
+            <>
+              {/* Suggested Habits Section */}
+              <View className="px-4">
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-lg font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>{t("explore.suggested_habits")}</Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('SuggestedHabits')}
+                    className="flex-row items-center gap-1"
+                  >
+                    <Text className="text-sm text-green-600 font-redditsans-medium" style={{ fontFamily: 'RedditSans-Medium' }}>{t("explore.view_all")}</Text>
+                    <FontAwesomeIcon icon={faChevronRight} color="#16a34a" size={14} />
+                  </TouchableOpacity>
+                </View>
+
+                {loading && pageIndex === 0 ? (
+                  <View className="py-10 items-center justify-center">
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  </View>
+                ) : isGeneratingHabits ? (
+                  <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginBottom: 8 }} />
+                    <Text style={{ color: colors.textSecondary, fontFamily: 'RedditSans-Medium' }} className="font-redditsans-medium">
+                      {t("levelup.generating_new_habits", "Generating new suggested habits...")}
+                    </Text>
+                  </View>
+                ) : (filteredSuggestedHabits.length === 0) ? (
+                  <View className="py-6 px-4 mb-4 rounded-2xl mx-4 items-center justify-center" style={{ backgroundColor: colors.cardSecondary }}>
+                    <Text style={{ color: colors.textSecondary, fontFamily: 'RedditSans-Regular' }} className="font-redditsans-regular italic">
+                      {searchQuery ? t("my_habits.no_habits_search") : t("explore.no_suggestions")}
+                    </Text>
+                  </View>
+                ) : (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    className="mb-6"
+                    contentContainerStyle={{ paddingRight: 40 }}
+                  >
+                    {filteredSuggestedHabits
+                      .slice(0, 5)
+                      .map((habit, index) => (
+                        <SuggestedHabitCard
+                          key={habit.id || `suggested-${index}`}
+                          name={habit.title}
+                          frequency={habit.frequency || "Daily"}
+                          icon={habit.icon || "🎯"}
+                          onPress={() => handleSuggestedHabitPress(habit)}
+                          habit={habit}
+                        />
+                      ))}
+                  </ScrollView>
+                )}
+              </View>
+
+              {/* My Goals & AI Quests Section */}
+              <View className="px-4">
+                <MyGoalsAiQuests colors={colors} isDark={isDark} t={t} searchQuery={searchQuery} onTaskComplete={fetchXP} />
+              </View>
+
+              {/* Learning Section */}
+              <View className="mb-6">
+                <View className="px-4 mb-4">
+                  <Text className="text-lg font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>{t("explore.learning")}</Text>
+                </View>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
+                >
+                  {learningLoading && learningContent.length === 0 ? (
+                    <View className="items-center justify-center py-10" style={{ width: 220 }}>
+                      <ActivityIndicator color={colors.primary} />
+                    </View>
+                  ) : (
+                    learningContent
+                      .filter(l => l.title?.toLowerCase().includes(searchQuery.toLowerCase()) || l.category?.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map((item) => (
+                        <View key={item.id} style={{ width: 220 }}>
+                          <LearningCard
+                            title={item.title}
+                            image={item.imageUrl || item.image}
+                            category={item.category}
+                            onPress={() => navigation.navigate("ArticleDetail", { article: item })}
+                          />
+                        </View>
+                      ))
+                  )}
+                </ScrollView>
+              </View>
+            </>
+          )}
+
+          {/* TAB 3: BRAIN GAMES */}
+          {activeTab === 'games' && (
+            <View onLayout={(event) => {
+              const layout = event.nativeEvent.layout;
+              setGamesLayoutY(layout.y);
+            }}>
+              <View className="px-4 mb-4">
+                <Text className="text-lg font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>🧠 {t("games.title")}</Text>
+              </View>
+
+              <View style={{ paddingHorizontal: 16, gap: 14, marginBottom: 24 }}>
+                {/* 1. Memory Game Card */}
+                {(!searchQuery || t("games.memory_match").toLowerCase().includes(searchQuery.toLowerCase()) || t("games.memory_match_desc").toLowerCase().includes(searchQuery.toLowerCase()) || "memory match".includes(searchQuery.toLowerCase())) && (
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => navigation.navigate('MemoryGame')}
+                    style={{
+                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      borderRadius: 24,
+                      padding: 18,
+                      borderWidth: 1,
+                      borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)',
+                      shadowColor: '#10B981',
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: isDark ? 0.25 : 0.08,
+                      shadowRadius: 12,
+                      elevation: 5,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                      <LinearGradient
+                        colors={['#10B981', '#059669']}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#10B981',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>🧩</Text>
+                      </LinearGradient>
+
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontFamily: 'RedditSans-Bold', color: colors.text }}>
+                          {t("games.memory_match")}
+                        </Text>
+                        <Text
+                          style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Regular', marginTop: 3 }}
+                          numberOfLines={2}
+                        >
+                          {t("games.memory_match_desc")}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)' }}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'MemoryMatch' })}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.1)',
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: 'rgba(16, 185, 129, 0.25)',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontFamily: 'RedditSans-Bold', color: '#10B981' }}>
+                          🏆 {t("games.leaderboard")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <LinearGradient
+                        colors={['#10B981', '#059669']}
+                        style={{
+                          paddingHorizontal: 16,
+                          paddingVertical: 7,
+                          borderRadius: 12,
+                        }}
+                      >
+                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                          {getGamePlayBtnText(i18n?.language)}
+                        </Text>
+                      </LinearGradient>
+                    </View>
+                  </TouchableOpacity>
+                )}
+
+                {/* 2. Sequence Game Card */}
+                {(!searchQuery || t("games.sequence_memory").toLowerCase().includes(searchQuery.toLowerCase()) || t("games.sequence_memory_desc").toLowerCase().includes(searchQuery.toLowerCase()) || "sequence memory".includes(searchQuery.toLowerCase())) && (
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => navigation.navigate('SequenceGame')}
+                    style={{
+                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      borderRadius: 24,
+                      padding: 18,
+                      borderWidth: 1,
+                      borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
+                      shadowColor: '#3B82F6',
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: isDark ? 0.25 : 0.08,
+                      shadowRadius: 12,
+                      elevation: 5,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                      <LinearGradient
+                        colors={['#3B82F6', '#1D4ED8']}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#3B82F6',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>⚡</Text>
+                      </LinearGradient>
+
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontFamily: 'RedditSans-Bold', color: colors.text }}>
+                          {t("games.sequence_memory")}
+                        </Text>
+                        <Text
+                          style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Regular', marginTop: 3 }}
+                          numberOfLines={2}
+                        >
+                          {t("games.sequence_memory_desc")}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)' }}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'SequenceMemory' })}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: isDark ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.1)',
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: 'rgba(59, 130, 246, 0.25)',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontFamily: 'RedditSans-Bold', color: '#3B82F6' }}>
+                          🏆 {t("games.leaderboard")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <LinearGradient
+                        colors={['#3B82F6', '#1D4ED8']}
+                        style={{
+                          paddingHorizontal: 16,
+                          paddingVertical: 7,
+                          borderRadius: 12,
+                        }}
+                      >
+                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                          {getGamePlayBtnText(i18n?.language)}
+                        </Text>
+                      </LinearGradient>
+                    </View>
+                  </TouchableOpacity>
+                )}
+
+                {/* 3. Stroop Game Card */}
+                {(!searchQuery || t("games.stroop_test").toLowerCase().includes(searchQuery.toLowerCase()) || t("games.stroop_test_desc").toLowerCase().includes(searchQuery.toLowerCase()) || "stroop test".includes(searchQuery.toLowerCase())) && (
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => navigation.navigate('StroopGame')}
+                    style={{
+                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      borderRadius: 24,
+                      padding: 18,
+                      borderWidth: 1,
+                      borderColor: isDark ? 'rgba(139, 92, 246, 0.3)' : 'rgba(139, 92, 246, 0.2)',
+                      shadowColor: '#8B5CF6',
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: isDark ? 0.25 : 0.08,
+                      shadowRadius: 12,
+                      elevation: 5,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                      <LinearGradient
+                        colors={['#8B5CF6', '#6D28D9']}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#8B5CF6',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>🎨</Text>
+                      </LinearGradient>
+
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontFamily: 'RedditSans-Bold', color: colors.text }}>
+                          {t("games.stroop_test")}
+                        </Text>
+                        <Text
+                          style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Regular', marginTop: 3 }}
+                          numberOfLines={2}
+                        >
+                          {t("games.stroop_test_desc")}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)' }}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'StroopTest' })}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: isDark ? 'rgba(139, 92, 246, 0.12)' : 'rgba(139, 92, 246, 0.1)',
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: 'rgba(139, 92, 246, 0.25)',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontFamily: 'RedditSans-Bold', color: '#8B5CF6' }}>
+                          🏆 {t("games.leaderboard")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <LinearGradient
+                        colors={['#8B5CF6', '#6D28D9']}
+                        style={{
+                          paddingHorizontal: 16,
+                          paddingVertical: 7,
+                          borderRadius: 12,
+                        }}
+                      >
+                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                          {getGamePlayBtnText(i18n?.language)}
+                        </Text>
+                      </LinearGradient>
+                    </View>
+                  </TouchableOpacity>
+                )}
+
+                {/* 4. Reaction Game Card */}
+                {(!searchQuery || t("games.reaction_game").toLowerCase().includes(searchQuery.toLowerCase()) || t("games.reaction_game_desc").toLowerCase().includes(searchQuery.toLowerCase()) || "reaction time".includes(searchQuery.toLowerCase())) && (
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => navigation.navigate('ReactionGame')}
+                    style={{
+                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      borderRadius: 24,
+                      padding: 18,
+                      borderWidth: 1,
+                      borderColor: isDark ? 'rgba(249, 115, 22, 0.3)' : 'rgba(249, 115, 22, 0.2)',
+                      shadowColor: '#F97316',
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: isDark ? 0.25 : 0.08,
+                      shadowRadius: 12,
+                      elevation: 5,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                      <LinearGradient
+                        colors={['#F97316', '#C2410C']}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#F97316',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>⏱️</Text>
+                      </LinearGradient>
+
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontFamily: 'RedditSans-Bold', color: colors.text }}>
+                          {t("games.reaction_game")}
+                        </Text>
+                        <Text
+                          style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'RedditSans-Regular', marginTop: 3 }}
+                          numberOfLines={2}
+                        >
+                          {t("games.reaction_game_desc")}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)' }}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('GameLeaderboard', { gameType: 'ReactionTime' })}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 6,
+                          backgroundColor: isDark ? 'rgba(249, 115, 22, 0.12)' : 'rgba(249, 115, 22, 0.1)',
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: 'rgba(249, 115, 22, 0.25)',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontFamily: 'RedditSans-Bold', color: '#F97316' }}>
+                          🏆 {t("games.leaderboard")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <LinearGradient
+                        colors={['#F97316', '#C2410C']}
+                        style={{
+                          paddingHorizontal: 16,
+                          paddingVertical: 7,
+                          borderRadius: 12,
+                        }}
+                      >
+                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                          {getGamePlayBtnText(i18n?.language)}
+                        </Text>
+                      </LinearGradient>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          )}
           <AdBanner />
         </ScrollView>
       </SafeAreaView>
 
-      {/* Games Introduction Bottom Sheet Modal */}
-      <Modal
-        visible={showGamesIntroModal}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={handleCloseGamesIntro}
-      >
-        <TouchableWithoutFeedback onPress={handleCloseGamesIntro}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <TouchableWithoutFeedback onPress={() => { }}>
-              <View
-                style={{
-                  backgroundColor: colors.card,
-                  borderTopLeftRadius: 30,
-                  borderTopRightRadius: 30,
-                  padding: 24,
-                  paddingBottom: Math.max(insets.bottom + 16, 40),
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                }}
-              >
-                {/* Drag Handle */}
-                <View
-                  style={{
-                    width: 40,
-                    height: 5,
-                    backgroundColor: colors.textSecondary + '33',
-                    borderRadius: 3,
-                    alignSelf: 'center',
-                    marginBottom: 20,
-                  }}
-                />
-
-                {/* Title */}
-                <Text
-                  style={{
-                    fontSize: 22,
-                    fontFamily: 'RedditSans-Bold',
-                    fontWeight: '800',
-                    color: colors.text,
-                    textAlign: 'center',
-                    marginBottom: 10,
-                  }}
-                >
-                  {t("explore.games_intro_title", "Discover Brain Games! 🧠")}
-                </Text>
-
-                {/* Description */}
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: 'RedditSans-Medium',
-                    color: colors.textSecondary,
-                    textAlign: 'center',
-                    lineHeight: 20,
-                    marginBottom: 20,
-                  }}
-                >
-                  {t("explore.games_intro_desc", "Welcome to the Explore section! While GrowDay's main goal is to build strong habits, you can also play cognitive games here. Train your focus, memory, and reaction speed to earn extra XP and level up faster!")}
-                </Text>
-
-                {/* Games List Showcase */}
-                <View style={{ gap: 10, marginBottom: 24 }}>
-                  {/* Memory Match */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
-                      padding: 12,
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: colors.border,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 12,
-                        backgroundColor: 'rgba(76, 175, 102, 0.15)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 12,
-                      }}
-                    >
-                      <Text style={{ fontSize: 20 }}>🧩</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          color: colors.text,
-                          fontFamily: 'RedditSans-Bold',
-                          fontWeight: '700',
-                          fontSize: 14,
-                        }}
-                      >
-                        {t("games.memory_match")}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontFamily: 'RedditSans-Regular',
-                          fontSize: 11,
-                          marginTop: 2,
-                        }}
-                        numberOfLines={1}
-                      >
-                        {t("games.memory_match_desc")}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Sequence Memory */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
-                      padding: 12,
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: colors.border,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 12,
-                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 12,
-                      }}
-                    >
-                      <Text style={{ fontSize: 20 }}>⚡</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          color: colors.text,
-                          fontFamily: 'RedditSans-Bold',
-                          fontWeight: '700',
-                          fontSize: 14,
-                        }}
-                      >
-                        {t("games.sequence_memory")}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontFamily: 'RedditSans-Regular',
-                          fontSize: 11,
-                          marginTop: 2,
-                        }}
-                        numberOfLines={1}
-                      >
-                        {t("games.sequence_memory_desc")}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Stroop Test */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
-                      padding: 12,
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: colors.border,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 12,
-                        backgroundColor: 'rgba(168, 85, 247, 0.15)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 12,
-                      }}
-                    >
-                      <Text style={{ fontSize: 20 }}>🎨</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          color: colors.text,
-                          fontFamily: 'RedditSans-Bold',
-                          fontWeight: '700',
-                          fontSize: 14,
-                        }}
-                      >
-                        {t("games.stroop_test")}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontFamily: 'RedditSans-Regular',
-                          fontSize: 11,
-                          marginTop: 2,
-                        }}
-                        numberOfLines={1}
-                      >
-                        {t("games.stroop_test_desc")}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Reaction Time */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      backgroundColor: colors.cardSecondary || 'rgba(0,0,0,0.03)',
-                      padding: 12,
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: colors.border,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 12,
-                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 12,
-                      }}
-                    >
-                      <Text style={{ fontSize: 20 }}>⏱️</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          color: colors.text,
-                          fontFamily: 'RedditSans-Bold',
-                          fontWeight: '700',
-                          fontSize: 14,
-                        }}
-                      >
-                        {t("games.reaction_game")}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontFamily: 'RedditSans-Regular',
-                          fontSize: 11,
-                          marginTop: 2,
-                        }}
-                        numberOfLines={1}
-                      >
-                        {t("games.reaction_game_desc")}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Confirm/Play Button */}
-                <TouchableOpacity onPress={handleCloseGamesIntro} activeOpacity={0.8}>
-                  <LinearGradient
-                    colors={[colors.primaryLight || '#4caf66', colors.primary]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      borderRadius: 20,
-                      shadowColor: colors.primary,
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 8,
-                      elevation: 5,
-                    }}
-                  >
-                    <View
-                      style={{
-                        paddingVertical: 15,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: 'white',
-                          textAlign: 'center',
-                          fontFamily: 'RedditSans-Bold',
-                          fontWeight: '800',
-                          fontSize: 16,
-                        }}
-                      >
-                        {t("explore.games_intro_button", "Let's Play!")}
-                      </Text>
-                    </View>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
       <TournamentClaimPopup colors={colors} onRewardClaimed={fetchXP} />
     </LinearGradient>
   );

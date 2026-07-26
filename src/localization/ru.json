@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Давай поговорим о статье: '{{title}}'. Как ты можешь помочь мне с этим?"
   },
   "tasks": {
-    "header": "Мои задачи",
-    "stats": {
-      "total": "Всего",
-      "completed": "Выполнено",
-      "pending": "Ожидает",
-      "rate": "Процент выполнения",
-      "streak": "Серия дней"
-    },
-    "filters": {
-      "all": "Все",
-      "pending": "Ожидает",
-      "in_progress": "В процессе",
-      "completed": "Завершено"
-    },
-    "completed_msg": "Задание успешно выполнено:",
-    "reward_earned": "Награда получена",
-    "empty": "Заданий не найдено",
-    "assigned_by_admins": "Задания назначаются администраторами",
-    "failed_to_load": "Не удалось загрузить задачи",
-    "try_again": "Повторить попытку",
-    "could_not_complete": "Не удалось выполнить задачу.",
-    "could_not_uncheck": "Не удалось снять отметку с задачи.",
-    "failed_to_update": "Не удалось обновить задачу.",
-    "delete_title": "Удалить задачу",
-    "delete_confirm": "Вы уверены, что хотите удалить эту задачу?",
-    "could_not_delete": "Не удалось удалить задачу.",
-    "failed_to_delete": "Ошибка при удалении задачи.",
-    "delete_action": "Удалить",
-    "completed_stack": "Выполненные задачи",
-    "collapse_stack": "Свернуть стопку",
-    "completed_count": "Выполнено",
-    "tip_title": "Полезный совет",
-    "tip_desc": "Зарабатывайте XP, выполняя задачи, повышайте свой уровень и открывайте новые функции ИИ-коуча!"
+    "identify_triggers_and_avoid_them": "Определите триггеры и избегайте их",
+    "engage_in_alternative_activities": "Занимайтесь альтернативными видами деятельности",
+    "practice_mindfulness_and_self_regulation": "Практикуйте осознанность и саморегуляцию",
+    "replace_habit_with_healthy_alternatives": "Замените привычку на здоровые альтернативы",
+    "create_support_system_and_track_progress": "Создайте систему поддержки и отслеживания прогресса",
+    "identify_and_avoid_triggers": "Определите триггеры и избегайте их",
+    "reflect_on_energy_levels": "Оцените свой уровень энергии",
+    "complete_daily_exercise_routine": "Выполните ежедневную тренировку",
+    "drink_daily_water_goal": "Выпейте дневную норму воды",
+    "set_reading_targets_track_pages": "Установите цели чтения и отслеживайте страницы",
+    "identify_triggers_and_replacements": "Определите триггеры и замены",
+    "before_you_can_avoid_a_behavior": "Прежде чем вы сможете избегать нежелательного поведения, вам нужно понять, что его вызывает. Посвятите сегодня 15 минут анализу триггеров и придумайте здоровые альтернативные занятия.",
+    "substitute_urges_with_healthy_activities": "Заменяйте позывы здоровой деятельностью, такой как спорт, чтение или медитация.",
+    "practice_mindfulness_and_self_compassion": "Практикуйте осознанность и самосострадание",
+    "practice_deep_breathing_and_self_awareness": "Практикуйте глубокое дыхание и самоосознание каждый раз, когда чувствуете сильный порыв.",
+    "research_trees_for_your_garden": "Исследуйте деревья для вашего сада",
+    "dedicate_15_20_minutes_to_researching": "Посвятите 15-20 минут исследованию местных видов деревьев, подходящих для вашего местного климата и условий почвы.",
+    "plan_tree_placement": "Спланируйте размещение деревьев",
+    "spend_10_15_minutes_sketching_out": "Потратьте 10-15 минут на то, чтобы наметить потенциальные места для выбранных деревьев в вашем саду."
   },
   "create_habit": {
     "header": "Создать привычку",
@@ -1528,5 +1514,22 @@
     "next": "Далее",
     "got_it": "Понятно!",
     "tap_here": "Нажмите сюда"
+  },
+  "goals": {
+    "title": "Цели и ИИ",
+    "add_goal": "Добавить цель",
+    "ai_quest_for": "ИИ-квест для {{goal}}",
+    "tasks_done": "Выполнено задач: {{done}}/{{total}}",
+    "delete_title": "Удалить цель",
+    "delete_confirm": "Вы уверены, что хотите удалить эту цель?\nЭто действие нельзя отменить.",
+    "priority_high": "Высокий",
+    "priority_medium": "Средний",
+    "priority_low": "Низкий",
+    "create_modal_title": "🎯 Создать цель и ИИ-задачи",
+    "create_modal_desc": "Опишите вашу личную цель. GrowDay AI создаст для вас фокусные задачи.",
+    "goal_title_placeholder": "напр.: Читать 30 страниц каждый день...",
+    "goal_desc_placeholder": "напр.: Прочитать 2 книги в этом месяце...",
+    "select_category": "Выберите категорию",
+    "create_btn": "✨ Создать цель и ИИ-задачи"
   }
 }

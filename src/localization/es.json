@@ -330,39 +330,25 @@
     "ask_ai_prompt": "Hablemos sobre el artículo: '{{title}}'. ¿Cómo puedes ayudarme con esto?"
   },
   "tasks": {
-    "header": "Mis Tareas",
-    "stats": {
-      "total": "Total",
-      "completed": "Completadas",
-      "pending": "Pendientes",
-      "rate": "Tasa de finalización",
-      "streak": "Racha de días"
-    },
-    "filters": {
-      "all": "Todas",
-      "pending": "Pendientes",
-      "in_progress": "En progreso",
-      "completed": "Completadas"
-    },
-    "completed_msg": "Tarea completada con éxito:",
-    "reward_earned": "Recompensa obtenida",
-    "empty": "No se encontraron tareas",
-    "assigned_by_admins": "Las tareas son asignadas por administradores",
-    "failed_to_load": "Error al cargar las tareas",
-    "try_again": "Intentar de nuevo",
-    "could_not_complete": "No se pudo completar la tarea.",
-    "could_not_uncheck": "No se pudo desmarcar la tarea.",
-    "failed_to_update": "Error al actualizar la tarea.",
-    "delete_title": "Eliminar tarea",
-    "delete_confirm": "¿Está seguro de que desea eliminar esta tarea?",
-    "could_not_delete": "No se pudo eliminar la tarea.",
-    "failed_to_delete": "Error al eliminar la tarea.",
-    "delete_action": "Eliminar",
-    "completed_stack": "Tareas Completadas",
-    "collapse_stack": "Contraer Pila",
-    "completed_count": "Completada",
-    "tip_title": "Consejo útil",
-    "tip_desc": "¡Gana XP completando tareas, aumenta tu nivel y desbloquea nuevas funciones del Entrenador IA!"
+    "identify_triggers_and_avoid_them": "Identifica y evita los desencadenantes",
+    "engage_in_alternative_activities": "Participar en actividades alternativas",
+    "practice_mindfulness_and_self_regulation": "Practica la atención plena y la autorregulación",
+    "replace_habit_with_healthy_alternatives": "Sustituye el hábito por alternativas saludables",
+    "create_support_system_and_track_progress": "Crea un sistema de apoyo y realiza un seguimiento del progreso",
+    "identify_and_avoid_triggers": "Identifica y evita los desencadenantes",
+    "reflect_on_energy_levels": "Reflexiona sobre tus niveles de energía",
+    "complete_daily_exercise_routine": "Completa la rutina diaria de ejercicio",
+    "drink_daily_water_goal": "Bebe el objetivo diario de agua",
+    "set_reading_targets_track_pages": "Establece metas de lectura y sigue las páginas",
+    "identify_triggers_and_replacements": "Identificar desencadenantes y reemplazos",
+    "before_you_can_avoid_a_behavior": "Antes de evitar un comportamiento, debes entender qué lo causa. Dedica 15 minutos hoy a reflexionar sobre tus desencadenantes y planificar actividades alternativas saludables.",
+    "substitute_urges_with_healthy_activities": "Sustituye los impulsos con actividades saludables como ejercicio, lectura o meditación.",
+    "practice_mindfulness_and_self_compassion": "Practicar la atención plena y la autocompasión",
+    "practice_deep_breathing_and_self_awareness": "Practica la respiración profunda y la autoconciencia cada vez que sientas un impulso fuerte.",
+    "research_trees_for_your_garden": "Investigar árboles para tu jardín",
+    "dedicate_15_20_minutes_to_researching": "Dedica 15-20 minutos a investigar especies de árboles nativos adecuados para tu clima y suelo local.",
+    "plan_tree_placement": "Planificar la ubicación de los árboles",
+    "spend_10_15_minutes_sketching_out": "Dedica 10-15 minutos a planificar la ubicación de los árboles elegidos en tu jardín."
   },
   "create_habit": {
     "header": "Crear hábito personalizado",
@@ -1528,5 +1514,22 @@
     "next": "Siguiente",
     "got_it": "¡Entendido!",
     "tap_here": "Presiona aquí"
+  },
+  "goals": {
+    "title": "Metas e IA",
+    "add_goal": "Agregar meta",
+    "ai_quest_for": "Misión de IA para {{goal}}",
+    "tasks_done": "{{done}}/{{total}} tareas completadas",
+    "delete_title": "Eliminar meta",
+    "delete_confirm": "¿Estás seguro de que deseas eliminar esta meta?\nEsta acción no se puede deshacer.",
+    "priority_high": "Alta",
+    "priority_medium": "Media",
+    "priority_low": "Baja",
+    "create_modal_title": "🎯 Crear meta y misiones de IA",
+    "create_modal_desc": "Describe tu meta personal. GrowDay AI generará misiones enfocadas para ti.",
+    "goal_title_placeholder": "ej. Leer 30 páginas todos los días...",
+    "goal_desc_placeholder": "ej. Terminar de leer 2 libros este mes...",
+    "select_category": "Seleccionar categoría",
+    "create_btn": "✨ Crear meta y tareas de IA"
   }
 }

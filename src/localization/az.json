@@ -330,39 +330,25 @@
     "ask_ai_prompt": "'{{title}}' məqaləsi haqqında danışaq. Bu mövzuda mənə necə kömək edə bilərsən?"
   },
   "tasks": {
-    "header": "Tapşırıqlarım",
-    "stats": {
-      "total": "Cəmi",
-      "completed": "Tamamlanıb",
-      "pending": "Gözləyir",
-      "rate": "Tamamlama Faizi",
-      "streak": "Gün Seriyası"
-    },
-    "filters": {
-      "all": "Hamısı",
-      "pending": "Gözləyir",
-      "in_progress": "Davam edir",
-      "completed": "Tamamlanıb"
-    },
-    "completed_msg": "Tapşırığı uğurla tamamladınız:",
-    "reward_earned": "Mükafat qazanıldı",
-    "empty": "Tapşırıq tapılmadı",
-    "assigned_by_admins": "Tapşırıqlar adminlər tərəfindən təyin edilir",
-    "failed_to_load": "Tapşırıqları yükləmək mümkün olmadı",
-    "try_again": "Yenidən cəhd edin",
-    "could_not_complete": "Tapşırığı tamamlamaq mümkün olmadı.",
-    "could_not_uncheck": "Tapşırıq seçimini ləğv etmək mümkün olmadı.",
-    "failed_to_update": "Tapşırığı yeniləmək mümkün olmadı.",
-    "delete_title": "Tapşırığı sil",
-    "delete_confirm": "Bu tapşırığı silmək istədiyinizdən əminsiniz?",
-    "could_not_delete": "Tapşırığı silmək mümkün olmadı.",
-    "failed_to_delete": "Tapşırığın silinməsi zamanı xəta baş verdi.",
-    "delete_action": "Sil",
-    "completed_stack": "Tamamlanmış Tapşırıqlar",
-    "collapse_stack": "Yığcamlaşdır",
-    "completed_count": "Tamamlandı",
-    "tip_title": "Faydalı məsləhət",
-    "tip_desc": "Tapşırıqları tamamlayaraq XP qazanın, səviyyənizi (Level) artırın və AI Məşqçisinin yeni xüsusiyyətlərini açın!"
+    "identify_triggers_and_avoid_them": "Tətikləyici amilləri müəyyən edin və onlardan qaçının",
+    "engage_in_alternative_activities": "Alternativ fəaliyyətlərlə məşğul olun",
+    "practice_mindfulness_and_self_regulation": "Fərqindəlik və özünü nizamlamanı tətbiq edin",
+    "replace_habit_with_healthy_alternatives": "Vərdişi sağlam alternativlərlə əvəz edin",
+    "create_support_system_and_track_progress": "Dəstək sistemi yaradın və irəliləyişi izləyin",
+    "identify_and_avoid_triggers": "Tətikləyici amilləri müəyyən edin və onlardan qaçının",
+    "reflect_on_energy_levels": "Enerji səviyyənizi təhlil edin",
+    "complete_daily_exercise_routine": "Gündəlik idman rejimini tamamlayın",
+    "drink_daily_water_goal": "Gündəlik su normasını için",
+    "set_reading_targets_track_pages": "Oxu hədəfləri təyin edin və səhifələri izləyin",
+    "identify_triggers_and_replacements": "Tətikləyici amilləri və əvəzləyiciləri müəyyən edin",
+    "before_you_can_avoid_a_behavior": "Hər hansı bir davranışdan qaçmaq üçün əvvəlcə onun səbəbini tapmalısınız. Bu gün 15 dəqiqə ayıraraq tətikləyici amilləri və sağlam alternativləri müəyyən edin.",
+    "substitute_urges_with_healthy_activities": "İstəklərinizi idman, mütaliə və ya meditasiya kimi sağlam fəaliyyətlərlə əvəz edin.",
+    "practice_mindfulness_and_self_compassion": "Fərqindəlik və özünə qarşı şəfqət göstərin",
+    "practice_deep_breathing_and_self_awareness": "Hər dəfə güclü istək hiss etdiyinizdə dərindən nəfəs alın və fərqindəlik məşq edin.",
+    "research_trees_for_your_garden": "Bağınız üçün uyğun ağacları araşdırın",
+    "dedicate_15_20_minutes_to_researching": "Yerli iqlimə və torpaq şəraitinə uyğun yerli ağac növlərini araşdırmağa 15-20 dəqiqə vaxt ayırın.",
+    "plan_tree_placement": "Ağacların yerləşdirilməsini planlaşdırın",
+    "spend_10_15_minutes_sketching_out": "Bağınızda seçdiyiniz ağaclar üçün potensial yerləri müəyyən etmək üçün 10-15 dəqiqə vaxt ayırın."
   },
   "create_habit": {
     "header": "Xüsusi Vərdiş Yarat",
@@ -1525,5 +1511,22 @@
     "next": "Növbəti",
     "got_it": "Anladım!",
     "tap_here": "Bura toxunun"
+  },
+  "goals": {
+    "title": "Məqsədlər və AI",
+    "add_goal": "Məqsəd Əlavə Et",
+    "ai_quest_for": "{{goal}} üçün AI Tapşırıq",
+    "tasks_done": "{{done}}/{{total}} tapşırıq icra olunub",
+    "delete_title": "Məqsədi Sil",
+    "delete_confirm": "Bu məqsədi silməyə əminsiniz?\nBu əməliyyat geri qaytarıla bilməz.",
+    "priority_high": "Yüksək",
+    "priority_medium": "Orta",
+    "priority_low": "Aşağı",
+    "create_modal_title": "🎯 Məqsəd və AI Tapşırığı Yarat",
+    "create_modal_desc": "Şəxsi məqsədinizi təsvir edin. GrowDay AI sizin üçün fokuslanmış tapşırıqlar yaradacaq.",
+    "goal_title_placeholder": "məs: Hər gün 30 səhifə oxumaq...",
+    "goal_desc_placeholder": "məs: Bu ay 2 kitab bitirmək...",
+    "select_category": "Kateqoriya Seçin",
+    "create_btn": "✨ Məqsəd və AI Tapşırıqları Yarat"
   }
 }
