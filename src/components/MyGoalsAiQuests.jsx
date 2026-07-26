@@ -28,15 +28,13 @@ import {
 import { useMMKVString } from 'react-native-mmkv';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedTaskTitle, getSyncTaskTitle } from '../utils/aiTaskTranslations';
-import { storage } from '../utils/MMKVStore';
+import { storage, getMyGoalsKey } from '../utils/MMKVStore';
 import {
   createMandalaGoalFetch,
   getMandalaGoalFetch,
   completeMandalaTaskFetch,
   deleteMandalaGoalFetch,
 } from '../utils/fetch';
-
-const STORAGE_KEY = 'user_my_goals_ai_quests';
 
 const CATEGORIES = [
   { id: 'learning', name: 'Learning', icon: '📚' },
@@ -330,7 +328,18 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
   const loadGoals = async () => {
     try {
       const currentLang = (activeLang || 'en').split('-')[0].toLowerCase();
-      const saved = storage.getString(STORAGE_KEY);
+      const currentKey = getMyGoalsKey(token);
+      let saved = storage.getString(currentKey);
+      
+      if (!saved) {
+        const legacySaved = storage.getString('user_my_goals_ai_quests');
+        if (legacySaved) {
+          saved = legacySaved;
+          storage.set(currentKey, legacySaved);
+          storage.delete('user_my_goals_ai_quests');
+        }
+      }
+
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -364,6 +373,8 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
           }));
           setGoals(userOnly);
         }
+      } else {
+        setGoals([]);
       }
 
       if (token) {
@@ -440,7 +451,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
 
   const saveGoals = (updatedGoals) => {
     try {
-      storage.set(STORAGE_KEY, JSON.stringify(updatedGoals));
+      storage.set(getMyGoalsKey(token), JSON.stringify(updatedGoals));
     } catch (e) {
       console.log('Error saving my goals:', e);
     }

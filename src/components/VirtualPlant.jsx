@@ -1412,7 +1412,6 @@ const VirtualPlant = ({ userId = "", virtualPlantState = null, onSyncState = nul
           if (typeof parsed.hasNamedPlant === "boolean") storage.set(getStorageKey("hasNamedPlant"), parsed.hasNamedPlant);
           if (typeof parsed.tutorialCompleted === "boolean") {
             storage.set(getStorageKey("tutorialCompleted"), parsed.tutorialCompleted);
-            setTutorialCompletedState(parsed.tutorialCompleted);
           }
           if (parsed.lastActionDate) storage.set(getStorageKey("lastActionDate"), parsed.lastActionDate);
           if (typeof parsed.wateredCountToday === "number") storage.set(getStorageKey("wateredCountToday"), parsed.wateredCountToday);

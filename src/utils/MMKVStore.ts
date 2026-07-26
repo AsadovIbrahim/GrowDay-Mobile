@@ -47,10 +47,14 @@ export const clearUserSession = () => {
     // Clear all virtual plant (growy) keys dynamically
     const keys = storage.getAllKeys();
     keys.forEach(key => {
-        if (key.startsWith('growy.')) {
+        if (key.startsWith('growy.') || key.startsWith('user_my_goals_ai_quests')) {
             storage.delete(key);
         }
     });
+    storage.delete('userScope');
+    storage.delete('UsernameOrEmail');
+    storage.delete('user_my_goals_ai_quests');
+    storage.delete('user_deleted_habit_ids');
 };
 
 
@@ -63,6 +67,24 @@ export const getStorageScope = (_token?: string) => {
         storage.set('userScope', scope);
         return scope;
     }
+    if (_token) {
+        try {
+            const parts = _token.split('.');
+            if (parts.length >= 2) {
+                const payloadStr = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                const decodedJson = unescape(encodeURIComponent(atob(payloadStr)));
+                const parsed = JSON.parse(decodedJson);
+                const uid = parsed.nameid || parsed.sub || parsed.email || parsed['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+                if (uid) {
+                    const scope = String(uid).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'user';
+                    storage.set('userScope', scope);
+                    return scope;
+                }
+            }
+        } catch (e) {
+            // ignore token parse fallback errors
+        }
+    }
     return 'guest';
 };
 
@@ -70,5 +92,6 @@ export const getAiMentorRemainingMessagesKey = (token?: string) => `aiMentorRema
 export const getAiMentorLastActiveDateKey = (token?: string) => `aiMentorLastActiveDate.${getStorageScope(token)}`;
 export const getAiMentorChatHistoryKey = (token?: string) => `aiMentorChatHistory.${getStorageScope(token)}`;
 export const getMoodHistoryKey = (token?: string) => `user.moodHistory.${getStorageScope(token)}`;
+export const getMyGoalsKey = (token?: string) => `user_my_goals_ai_quests_${getStorageScope(token)}`;
 
 

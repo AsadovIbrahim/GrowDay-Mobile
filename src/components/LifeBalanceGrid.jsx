@@ -36,7 +36,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Svg, { Circle, Line, Path, G, Rect, Defs, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
-import { storage } from '../utils/MMKVStore';
+import { storage, getMyGoalsKey } from '../utils/MMKVStore';
 import { getUserHabitFetch, getTodaysUserHabitFetch } from '../utils/fetch';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -644,7 +644,9 @@ const getInitialCategoryDataMap = () => {
     const deletedIdsRaw = storage.getString('user_deleted_habit_ids');
     const deletedIds = new Set(deletedIdsRaw ? JSON.parse(deletedIdsRaw) : []);
 
-    const savedGoals = storage.getString('user_my_goals_ai_quests');
+    const token = storage.getString('accessToken');
+    const goalsKey = getMyGoalsKey(token);
+    const savedGoals = storage.getString(goalsKey) || storage.getString('user_my_goals_ai_quests');
     if (savedGoals) {
       const goals = JSON.parse(savedGoals);
       if (Array.isArray(goals)) {
@@ -718,7 +720,8 @@ const LifeBalanceGrid = ({ colors, isDark, t: tProp, searchQuery = '' }) => {
       const token = storage.getString('accessToken');
       const catMap = {};
 
-      const savedGoals = storage.getString('user_my_goals_ai_quests');
+      const goalsKey = getMyGoalsKey(token);
+      const savedGoals = storage.getString(goalsKey) || storage.getString('user_my_goals_ai_quests');
       if (savedGoals) {
         const goals = JSON.parse(savedGoals);
         if (Array.isArray(goals)) {
