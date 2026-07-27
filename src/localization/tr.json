@@ -1516,6 +1516,9 @@
   "goals": {
     "title": "Hedefler ve AI",
     "add_goal": "Hedef Ekle",
+    "no_goals_title": "Henüz hedef belirlenmedi",
+    "no_goals_desc": "Hedefinizi belirleyin, AI koçunuz onu günlük görevlere bölsün!",
+    "create_first_goal": "+ İlk Hedefinizi Oluşturun",
     "ai_quest_for": "{{goal}} için AI Görevi",
     "tasks_done": "{{done}}/{{total}} görev tamamlandı",
     "delete_title": "Hedefi Sil",

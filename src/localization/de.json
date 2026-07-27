@@ -1518,6 +1518,9 @@
   "goals": {
     "title": "Ziele & KI",
     "add_goal": "Ziel hinzufügen",
+    "no_goals_title": "Noch keine Ziele festgelegt",
+    "no_goals_desc": "Setze dir ein Ziel und dein KI-Coach teilt es in tägliche Quests auf!",
+    "create_first_goal": "+ Erstelle dein erstes Ziel",
     "ai_quest_for": "KI-Quest für {{goal}}",
     "tasks_done": "{{done}}/{{total}} Aufgaben erledigt",
     "delete_title": "Ziel löschen",

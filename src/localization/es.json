@@ -1517,7 +1517,10 @@
   },
   "goals": {
     "title": "Metas e IA",
-    "add_goal": "Agregar meta",
+    "add_goal": "Añadir Meta",
+    "no_goals_title": "Aún no has establecido metas",
+    "no_goals_desc": "¡Establece tu meta y tu entrenador de IA la dividirá en misiones diarias!",
+    "create_first_goal": "+ Crea tu primera meta",
     "ai_quest_for": "Misión de IA para {{goal}}",
     "tasks_done": "{{done}}/{{total}} tareas completadas",
     "delete_title": "Eliminar meta",

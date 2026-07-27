@@ -1515,6 +1515,9 @@
   "goals": {
     "title": "Məqsədlər və AI",
     "add_goal": "Məqsəd Əlavə Et",
+    "no_goals_title": "Hələ ki heç bir məqsəd qoyulmayıb",
+    "no_goals_desc": "Məqsədinizi təyin edin və AI kouçunuz onu gündəlik tapşırıqlara bölsün!",
+    "create_first_goal": "+ İlk Məqsədinizi Yaradın",
     "ai_quest_for": "{{goal}} üçün AI Tapşırıq",
     "tasks_done": "{{done}}/{{total}} tapşırıq icra olunub",
     "delete_title": "Məqsədi Sil",

@@ -1519,6 +1519,9 @@
   "goals": {
     "title": "目标与 AI",
     "add_goal": "添加目标",
+    "no_goals_title": "尚未设定目标",
+    "no_goals_desc": "设定您的目标，您的 AI 教练会将其分解为每日任务！",
+    "create_first_goal": "+ 创建您的第一个目标",
     "ai_quest_for": "{{goal}} 的 AI 任务",
     "tasks_done": "已完成 {{done}}/{{total}} 项任务",
     "delete_title": "删除目标",

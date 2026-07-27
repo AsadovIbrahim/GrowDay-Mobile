@@ -1518,6 +1518,9 @@
   "goals": {
     "title": "Goals & AI Quests",
     "add_goal": "Add Goal",
+    "no_goals_title": "No goals set yet",
+    "no_goals_desc": "Set your target and your AI coach will break it down into daily quests!",
+    "create_first_goal": "+ Create Your First Goal",
     "ai_quest_for": "AI Quest for {{goal}}",
     "tasks_done": "{{done}}/{{total}} tasks done",
     "delete_title": "Delete Goal",

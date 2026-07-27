@@ -73,13 +73,13 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         const titleLower = (habit.title || "").toLowerCase();
         const iconLower = (habit.icon || "").toLowerCase();
         const matches = [
-          "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
-          "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
-          "深呼吸", "التنفس العميق"
+            "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+            "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+            "深呼吸", "التنفس العميق"
         ];
-        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" && 
-          (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
-          
+        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" &&
+            (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
+
         if (isGuidanceActive) {
             Animated.loop(
                 Animated.sequence([
@@ -707,12 +707,12 @@ const HabitActionSection = ({ habit, token, note, date, onActionComplete, onLive
         const titleLower = (habit.title || "").toLowerCase();
         const iconLower = (habit.icon || "").toLowerCase();
         const matches = [
-          "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
-          "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
-          "深呼吸", "التنفس العميق"
+            "deep breathing", "deep-breathing", "dərin nəfəsalma", "dərin nəfəs", "derin nefes", "derin nefes alma",
+            "глубокое дыхание", "respiración profunda", "respiration profonde", "respirazione profonda", "tiefes atmen",
+            "深呼吸", "التنفس العميق"
         ];
-        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" && 
-          (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
+        const isGuidanceActive = storage.getString("user.onboarding_checklist_completed") !== "true" &&
+            (iconLower === "meditate" || matches.some(m => titleLower.includes(m) || m.includes(titleLower)));
 
         return (
             <View style={styles.numericContainer}>

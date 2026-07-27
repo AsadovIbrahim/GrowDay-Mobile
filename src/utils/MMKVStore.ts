@@ -35,7 +35,7 @@ export const clearUserSession = () => {
     storage.delete('user.onboarding.has_seen_ai_mentor_intro');
     storage.delete('user.mentor_tutorial_completed');
     storage.delete('user.session_initialized');
-    
+
     // Clear home screen caches
     storage.delete('home.cached.accountData');
     storage.delete('home.cached.todaysUserHabit');

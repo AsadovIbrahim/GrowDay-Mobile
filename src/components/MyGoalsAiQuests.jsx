@@ -770,11 +770,11 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
           }}
         >
           <Text style={{ fontSize: 32, marginBottom: 8 }}>🎯</Text>
-          <Text style={{ fontSize: 16, fontFamily: 'RedditSans-Bold', color: colors.text, marginBottom: 4 }}>
-            No goals set yet
+          <Text style={{ fontSize: 16, fontFamily: 'RedditSans-Bold', color: colors.text, marginBottom: 4, textAlign: 'center' }}>
+            {t('goals.no_goals_title', 'No goals set yet')}
           </Text>
           <Text style={{ fontSize: 13, fontFamily: 'RedditSans-Regular', color: colors.textSecondary, textAlign: 'center', marginBottom: 16 }}>
-            Set your target and your AI coach will break it down into daily quests!
+            {t('goals.no_goals_desc', 'Set your target and your AI coach will break it down into daily quests!')}
           </Text>
 
           <TouchableOpacity onPress={() => setShowModal(true)} activeOpacity={0.8}>
@@ -792,7 +792,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
               }}
             >
               <Text style={{ color: '#FFFFFF', fontFamily: 'RedditSans-Bold', fontSize: 13 }}>
-                + Create Your First Goal
+                {t('goals.create_first_goal', '+ Create Your First Goal')}
               </Text>
             </View>
           </TouchableOpacity>

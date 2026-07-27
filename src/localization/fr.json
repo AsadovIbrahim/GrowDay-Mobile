@@ -1518,6 +1518,9 @@
   "goals": {
     "title": "Objectifs & IA",
     "add_goal": "Ajouter un objectif",
+    "no_goals_title": "Aucun objectif défini",
+    "no_goals_desc": "Définissez votre objectif et votre coach IA le divisera en quêtes quotidiennes !",
+    "create_first_goal": "+ Créez votre premier objectif",
     "ai_quest_for": "Quête IA pour {{goal}}",
     "tasks_done": "{{done}}/{{total}} tâches effectuées",
     "delete_title": "Supprimer l'objectif",
