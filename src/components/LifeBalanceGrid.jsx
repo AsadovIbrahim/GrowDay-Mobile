@@ -699,7 +699,7 @@ const LifeBalanceGrid = ({ colors, isDark, t: tProp, searchQuery = '' }) => {
 
   const [categoryDataMap, setCategoryDataMap] = useState(getInitialCategoryDataMap);
   const [selectedDirection, setSelectedDirection] = useState(null);
-  const [selectedDayIndex, setSelectedDayIndex] = useState(6);
+  const [selectedDayIndex, setSelectedDayIndex] = useState(() => (new Date().getDay() + 6) % 7);
   const [selectedPeriod, setSelectedPeriod] = useState('7d'); // '7d' | '1m' | '1y'
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0..11
@@ -865,7 +865,9 @@ const LifeBalanceGrid = ({ colors, isDark, t: tProp, searchQuery = '' }) => {
     };
   });
 
-  const overallProgress = Math.round(radarItems.reduce((sum, item) => sum + item.progress, 0) / radarItems.length);
+  const overallProgress = radarItems.length > 0
+    ? Math.round(radarItems.reduce((sum, item) => sum + item.progress, 0) / radarItems.length)
+    : 0;
 
   // Real 7-day completion tracking for current week
   const todayObj = new Date();
@@ -1374,7 +1376,20 @@ const LifeBalanceGrid = ({ colors, isDark, t: tProp, searchQuery = '' }) => {
                   activeOpacity={0.7}
                   onPress={() => {
                     setSelectedPeriod(p.id);
-                    setSelectedDayIndex(0);
+                    const now = new Date();
+                    if (p.id === '7d') {
+                      setSelectedDayIndex((now.getDay() + 6) % 7);
+                    } else if (p.id === '1m') {
+                      const dayNum = now.getDate();
+                      const checkpoints = [1, 6, 12, 18, 24, 30];
+                      let closestIdx = 0;
+                      checkpoints.forEach((cp, idx) => {
+                        if (dayNum >= cp) closestIdx = idx;
+                      });
+                      setSelectedDayIndex(closestIdx);
+                    } else if (p.id === '1y') {
+                      setSelectedDayIndex(now.getMonth());
+                    }
                   }}
                   style={{
                     paddingHorizontal: 8,

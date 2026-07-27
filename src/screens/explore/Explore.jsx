@@ -792,7 +792,7 @@ const Explore = () => {
               setGamesLayoutY(layout.y);
             }}>
               <View className="px-4 mb-4">
-                <Text className="text-lg font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>🧠 {t("games.title")}</Text>
+                <Text className="text-lg font-redditsans-bold" style={{ color: colors.text, fontFamily: 'RedditSans-Bold' }}>{t("games.title")}</Text>
               </View>
 
               <View style={{ paddingHorizontal: 16, gap: 14, marginBottom: 24 }}>
@@ -865,18 +865,25 @@ const Explore = () => {
                         </Text>
                       </TouchableOpacity>
 
-                      <LinearGradient
-                        colors={['#10B981', '#059669']}
+                      <View
                         style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 7,
-                          borderRadius: 12,
+                          backgroundColor: '#10B981',
+                          paddingHorizontal: 18,
+                          paddingVertical: 8,
+                          borderRadius: 14,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#10B981',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
                         }}
                       >
-                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'RedditSans-Bold', includeFontPadding: false }}>
                           {getGamePlayBtnText(i18n?.language)}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 )}
@@ -950,18 +957,25 @@ const Explore = () => {
                         </Text>
                       </TouchableOpacity>
 
-                      <LinearGradient
-                        colors={['#3B82F6', '#1D4ED8']}
+                      <View
                         style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 7,
-                          borderRadius: 12,
+                          backgroundColor: '#3B82F6',
+                          paddingHorizontal: 18,
+                          paddingVertical: 8,
+                          borderRadius: 14,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#3B82F6',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
                         }}
                       >
-                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'RedditSans-Bold', includeFontPadding: false }}>
                           {getGamePlayBtnText(i18n?.language)}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 )}
@@ -1035,18 +1049,25 @@ const Explore = () => {
                         </Text>
                       </TouchableOpacity>
 
-                      <LinearGradient
-                        colors={['#8B5CF6', '#6D28D9']}
+                      <View
                         style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 7,
-                          borderRadius: 12,
+                          backgroundColor: '#8B5CF6',
+                          paddingHorizontal: 18,
+                          paddingVertical: 8,
+                          borderRadius: 14,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#8B5CF6',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
                         }}
                       >
-                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'RedditSans-Bold', includeFontPadding: false }}>
                           {getGamePlayBtnText(i18n?.language)}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 )}
@@ -1120,18 +1141,25 @@ const Explore = () => {
                         </Text>
                       </TouchableOpacity>
 
-                      <LinearGradient
-                        colors={['#F97316', '#C2410C']}
+                      <View
                         style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 7,
-                          borderRadius: 12,
+                          backgroundColor: '#F97316',
+                          paddingHorizontal: 18,
+                          paddingVertical: 8,
+                          borderRadius: 14,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          shadowColor: '#F97316',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
                         }}
                       >
-                        <Text style={{ color: '#FFFFFF', fontSize: 12, fontFamily: 'RedditSans-Bold' }}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 13, fontFamily: 'RedditSans-Bold', includeFontPadding: false }}>
                           {getGamePlayBtnText(i18n?.language)}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </View>
                   </TouchableOpacity>
                 )}

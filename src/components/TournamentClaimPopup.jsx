@@ -6,6 +6,8 @@ import { useMMKVString } from "react-native-mmkv";
 import { useTranslation } from "react-i18next";
 import { getPendingTournamentRewardFetch, claimTournamentRewardFetch } from "../utils/fetch";
 
+import { storage } from "../utils/MMKVStore";
+
 const getLocalizedRank = (rank, lang) => {
   if (lang === "az") {
     const rem = rank % 10;
@@ -60,8 +62,16 @@ export default function TournamentClaimPopup({ colors, onRewardClaimed }) {
       try {
         const res = await getPendingTournamentRewardFetch(token);
         if (res?.success && res.data) {
-          setReward(res.data);
-          setVisible(true);
+          const rewardObj = res.data;
+          const rewardKey = rewardObj.id || rewardObj.tournamentId || `${rewardObj.gameType}_${rewardObj.league}_${rewardObj.rank}_${rewardObj.xpReward}`;
+          
+          const claimedKeysRaw = storage.getString("user_claimed_tournament_rewards");
+          const claimedKeys = claimedKeysRaw ? JSON.parse(claimedKeysRaw) : [];
+
+          if (!claimedKeys.includes(String(rewardKey))) {
+            setReward(rewardObj);
+            setVisible(true);
+          }
         }
       } catch (err) {
         console.log("Error checking pending tournament rewards:", err);
@@ -74,17 +84,31 @@ export default function TournamentClaimPopup({ colors, onRewardClaimed }) {
   const handleClaim = async () => {
     if (!token || claiming) return;
     setClaiming(true);
+
+    if (reward) {
+      const rewardKey = String(reward.id || reward.tournamentId || `${reward.gameType}_${reward.league}_${reward.rank}_${reward.xpReward}`);
+      try {
+        const claimedKeysRaw = storage.getString("user_claimed_tournament_rewards");
+        const claimedKeys = claimedKeysRaw ? JSON.parse(claimedKeysRaw) : [];
+        if (!claimedKeys.includes(rewardKey)) {
+          claimedKeys.push(rewardKey);
+          storage.set("user_claimed_tournament_rewards", JSON.stringify(claimedKeys));
+        }
+      } catch (e) {
+        console.log("Error saving claimed reward key:", e);
+      }
+    }
+
     try {
       const res = await claimTournamentRewardFetch(token);
-      if (res?.success) {
-        Vibration.vibrate([0, 10, 50, 100]); // Play success haptic
-        setVisible(false);
-        if (onRewardClaimed) {
-          onRewardClaimed();
-        }
+      Vibration.vibrate([0, 10, 50, 100]); // Play success haptic
+      setVisible(false);
+      if (onRewardClaimed) {
+        onRewardClaimed();
       }
     } catch (err) {
       console.log("Error claiming weekly reward:", err);
+      setVisible(false);
     } finally {
       setClaiming(false);
     }

@@ -50,6 +50,32 @@ const CATEGORIES = [
 
 const DEFAULT_GOALS = [];
 
+// Helper: get/set deleted goal IDs to prevent backend from re-adding them
+const getDeletedGoalIds = (token) => {
+  try {
+    const key = `deleted_goal_ids_${token || 'local'}`;
+    const raw = storage.getString(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+};
+const addDeletedGoalId = (token, goalId) => {
+  try {
+    const key = `deleted_goal_ids_${token || 'local'}`;
+    const existing = getDeletedGoalIds(token);
+    if (!existing.includes(goalId)) {
+      existing.push(goalId);
+      storage.set(key, JSON.stringify(existing));
+    }
+  } catch {}
+};
+const removeDeletedGoalId = (token, goalId) => {
+  try {
+    const key = `deleted_goal_ids_${token || 'local'}`;
+    const existing = getDeletedGoalIds(token).filter(id => id !== goalId);
+    storage.set(key, JSON.stringify(existing));
+  } catch {}
+};
+
 const BouncingDots = () => {
   const dot1 = useRef(new Animated.Value(0)).current;
   const dot2 = useRef(new Animated.Value(0)).current;
@@ -330,7 +356,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
       const currentLang = (activeLang || 'en').split('-')[0].toLowerCase();
       const currentKey = getMyGoalsKey(token);
       let saved = storage.getString(currentKey);
-      
+
       if (!saved) {
         const legacySaved = storage.getString('user_my_goals_ai_quests');
         if (legacySaved) {
@@ -378,10 +404,12 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
       }
 
       if (token) {
+        const deletedIds = getDeletedGoalIds(token);
         const res = await getMandalaGoalFetch(token);
         if (res && res.success && res.data) {
           const bg = res.data;
-          if (bg.title) {
+          // Skip if this goal was previously deleted by the user
+          if (bg.title && !deletedIds.includes(bg.id)) {
             const rawTasks = bg.tasks?.length > 0
               ? bg.tasks
               : (bg.directions || []).flatMap((d) => d.tasks || []);
@@ -506,6 +534,9 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
     if (!deletingGoalId) return;
     const targetId = deletingGoalId;
     setDeletingGoalId(null);
+
+    // Add to deleted IDs blocklist so backend can't re-add it
+    addDeletedGoalId(token, targetId);
 
     const updated = goals.filter((g) => g.id !== targetId);
     setGoals(updated);
@@ -644,6 +675,8 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
       };
 
       const updated = [createdGoal, ...goals.filter((g) => g.id !== createdGoal.id)];
+      // Remove from deleted blocklist in case backend reuses the same ID
+      removeDeletedGoalId(token, createdGoal.id);
       setGoals(updated);
       saveGoals(updated);
     } catch (e) {
@@ -675,34 +708,36 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
           marginBottom: 14,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, paddingRight: 8 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: 'RedditSans-Bold',
-              color: colors.text,
-            }}
-            numberOfLines={1}
-          >
-            {t('goals.title', 'Goals & AI')}
-          </Text>
-        </View>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: 'RedditSans-Bold',
+            color: colors.text,
+            flexShrink: 1,
+          }}
+          numberOfLines={1}
+        >
+          {t('goals.title', 'Goals & AI')}
+        </Text>
 
         <TouchableOpacity
-          activeOpacity={0.8}
+          activeOpacity={0.75}
           onPress={() => setShowModal(true)}
         >
-          <LinearGradient
-            colors={['#6366F1', '#4F46E5']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+          <View
             style={{
+              backgroundColor: '#6366F1',
               borderRadius: 20,
-              paddingHorizontal: 12,
-              paddingVertical: 7,
+              paddingHorizontal: 14,
+              paddingVertical: 8,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 5,
+              gap: 6,
+              shadowColor: '#6366F1',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 4,
             }}
           >
             <FontAwesomeIcon icon={faPlus} size={11} color="#FFFFFF" />
@@ -710,12 +745,13 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
               style={{
                 color: '#FFFFFF',
                 fontFamily: 'RedditSans-Bold',
-                fontSize: 12,
+                fontSize: 13,
+                includeFontPadding: false,
               }}
             >
               {t('goals.add_goal', 'Add Goal')}
             </Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -742,14 +778,23 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
           </Text>
 
           <TouchableOpacity onPress={() => setShowModal(true)} activeOpacity={0.8}>
-            <LinearGradient
-              colors={['#6366F1', '#4F46E5']}
-              style={{ borderRadius: 16, paddingHorizontal: 16, paddingVertical: 10 }}
+            <View
+              style={{
+                backgroundColor: '#6366F1',
+                borderRadius: 16,
+                paddingHorizontal: 20,
+                paddingVertical: 11,
+                shadowColor: '#6366F1',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 4,
+              }}
             >
               <Text style={{ color: '#FFFFFF', fontFamily: 'RedditSans-Bold', fontSize: 13 }}>
                 + Create Your First Goal
               </Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </View>
       ) : (
@@ -930,183 +975,183 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                     const langKey = activeLang ? activeLang.split('-')[0].toLowerCase() : 'en';
 
                     return (
-                    <TouchableOpacity
-                      key={task.id}
-                      activeOpacity={0.85}
-                      onPress={() => handleToggleTask(goal.id, task.id)}
-                      style={{
-                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                        borderRadius: 18,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: task.completed
-                          ? 'rgba(76, 175, 102, 0.3)'
-                          : isDark
-                            ? '#334155'
-                            : '#E2E8F0',
-                        borderLeftWidth: 4,
-                        borderLeftColor: diffInfo.color,
-                        position: 'relative',
-                      }}
-                    >
-                      {/* Main Row: Checkbox + Task Title */}
-                      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
-                        <TouchableOpacity
-                          onPress={() => handleToggleTask(goal.id, task.id)}
-                          activeOpacity={0.8}
-                          style={{
-                            width: 22,
-                            height: 22,
-                            borderRadius: 11,
-                            backgroundColor: task.completed ? '#4caf66' : 'transparent',
-                            borderWidth: task.completed ? 0 : 2,
-                            borderColor: task.completed ? '#4caf66' : colors.textSecondary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginTop: 2,
-                          }}
-                        >
-                          {task.completed && (
-                            <FontAwesomeIcon icon={faCheckCircle} size={14} color="#FFFFFF" />
-                          )}
-                        </TouchableOpacity>
-
-                        <View style={{ flex: 1 }}>
-                          <Text
+                      <TouchableOpacity
+                        key={task.id}
+                        activeOpacity={0.85}
+                        onPress={() => handleToggleTask(goal.id, task.id)}
+                        style={{
+                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                          borderRadius: 18,
+                          padding: 14,
+                          borderWidth: 1,
+                          borderColor: task.completed
+                            ? 'rgba(76, 175, 102, 0.3)'
+                            : isDark
+                              ? '#334155'
+                              : '#E2E8F0',
+                          borderLeftWidth: 4,
+                          borderLeftColor: diffInfo.color,
+                          position: 'relative',
+                        }}
+                      >
+                        {/* Main Row: Checkbox + Task Title */}
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+                          <TouchableOpacity
+                            onPress={() => handleToggleTask(goal.id, task.id)}
+                            activeOpacity={0.8}
                             style={{
-                              fontSize: 14,
-                              fontFamily: 'RedditSans-Bold',
-                              color: task.completed ? colors.textSecondary : colors.text,
-                              textDecorationLine: task.completed ? 'line-through' : 'none',
-                            }}
-                          >
-                            {getLocalizedTaskTitle(task, activeLang, t)}
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              fontFamily: 'RedditSans-Regular',
-                              color: colors.textSecondary,
-                              marginTop: 4,
-                              lineHeight: 18,
-                            }}
-                          >
-                            {renderTaskDescription(task)}
-                          </Text>
-
-                          {/* Badges / Tags Row: Priority | Completed | XP | Date */}
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              flexWrap: 'wrap',
+                              width: 22,
+                              height: 22,
+                              borderRadius: 11,
+                              backgroundColor: task.completed ? '#4caf66' : 'transparent',
+                              borderWidth: task.completed ? 0 : 2,
+                              borderColor: task.completed ? '#4caf66' : colors.textSecondary,
                               alignItems: 'center',
-                              gap: 6,
-                              marginTop: 10,
+                              justifyContent: 'center',
+                              marginTop: 2,
                             }}
                           >
-                            {/* Priority Badge */}
+                            {task.completed && (
+                              <FontAwesomeIcon icon={faCheckCircle} size={14} color="#FFFFFF" />
+                            )}
+                          </TouchableOpacity>
+
+                          <View style={{ flex: 1 }}>
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontFamily: 'RedditSans-Bold',
+                                color: task.completed ? colors.textSecondary : colors.text,
+                                textDecorationLine: task.completed ? 'line-through' : 'none',
+                              }}
+                            >
+                              {getLocalizedTaskTitle(task, activeLang, t)}
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontFamily: 'RedditSans-Regular',
+                                color: colors.textSecondary,
+                                marginTop: 4,
+                                lineHeight: 18,
+                              }}
+                            >
+                              {renderTaskDescription(task)}
+                            </Text>
+
+                            {/* Badges / Tags Row: Priority | Completed | XP | Date */}
                             <View
                               style={{
                                 flexDirection: 'row',
+                                flexWrap: 'wrap',
                                 alignItems: 'center',
-                                backgroundColor: diffInfo.bgColor,
-                                paddingHorizontal: 8,
-                                paddingVertical: 3,
-                                borderRadius: 8,
-                                gap: 4,
+                                gap: 6,
+                                marginTop: 10,
                               }}
                             >
-                              <FontAwesomeIcon icon={faFlag} size={9} color={diffInfo.color} />
-                              <Text
+                              {/* Priority Badge */}
+                              <View
                                 style={{
-                                  color: diffInfo.color,
-                                  fontSize: 10,
-                                  fontFamily: 'RedditSans-Bold',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: diffInfo.bgColor,
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 3,
+                                  borderRadius: 8,
+                                  gap: 4,
                                 }}
                               >
-                                {diffInfo.label[langKey] || diffInfo.label.en}
-                              </Text>
-                            </View>
+                                <FontAwesomeIcon icon={faFlag} size={9} color={diffInfo.color} />
+                                <Text
+                                  style={{
+                                    color: diffInfo.color,
+                                    fontSize: 10,
+                                    fontFamily: 'RedditSans-Bold',
+                                  }}
+                                >
+                                  {diffInfo.label[langKey] || diffInfo.label.en}
+                                </Text>
+                              </View>
 
-                            {/* Status Badge */}
-                            <View
-                              style={{
-                                backgroundColor: task.completed
-                                  ? 'rgba(76, 175, 102, 0.15)'
-                                  : isDark
-                                    ? 'rgba(255,255,255,0.08)'
-                                    : 'rgba(0,0,0,0.05)',
-                                paddingHorizontal: 8,
-                                paddingVertical: 3,
-                                borderRadius: 8,
-                              }}
-                            >
-                              <Text
+                              {/* Status Badge */}
+                              <View
                                 style={{
-                                  color: task.completed ? '#4caf66' : colors.textSecondary,
-                                  fontSize: 10,
-                                  fontFamily: 'RedditSans-Bold',
+                                  backgroundColor: task.completed
+                                    ? 'rgba(76, 175, 102, 0.15)'
+                                    : isDark
+                                      ? 'rgba(255,255,255,0.08)'
+                                      : 'rgba(0,0,0,0.05)',
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 3,
+                                  borderRadius: 8,
                                 }}
                               >
-                                {task.completed ? t('common.completed', 'Completed') : t('common.pending', 'Pending')}
-                              </Text>
-                            </View>
+                                <Text
+                                  style={{
+                                    color: task.completed ? '#4caf66' : colors.textSecondary,
+                                    fontSize: 10,
+                                    fontFamily: 'RedditSans-Bold',
+                                  }}
+                                >
+                                  {task.completed ? t('common.completed', 'Completed') : t('common.pending', 'Pending')}
+                                </Text>
+                              </View>
 
-                            {/* XP Badge */}
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: 'rgba(245, 166, 35, 0.15)',
-                                paddingHorizontal: 8,
-                                paddingVertical: 3,
-                                borderRadius: 8,
-                                gap: 3,
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faStar} size={9} color="#F5A623" />
-                              <Text
+                              {/* XP Badge */}
+                              <View
                                 style={{
-                                  color: '#F5A623',
-                                  fontSize: 10,
-                                  fontFamily: 'RedditSans-Bold',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 3,
+                                  borderRadius: 8,
+                                  gap: 3,
                                 }}
                               >
-                                +{task.xp || diffInfo.xp} XP
-                              </Text>
-                            </View>
+                                <FontAwesomeIcon icon={faStar} size={9} color="#F5A623" />
+                                <Text
+                                  style={{
+                                    color: '#F5A623',
+                                    fontSize: 10,
+                                    fontFamily: 'RedditSans-Bold',
+                                  }}
+                                >
+                                  +{task.xp || diffInfo.xp} XP
+                                </Text>
+                              </View>
 
-                            {/* Date Badge */}
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: isDark
-                                  ? 'rgba(255, 255, 255, 0.08)'
-                                  : 'rgba(0, 0, 0, 0.05)',
-                                paddingHorizontal: 8,
-                                paddingVertical: 3,
-                                borderRadius: 8,
-                                gap: 4,
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faClock} size={9} color={colors.textSecondary} />
-                              <Text
+                              {/* Date Badge */}
+                              <View
                                 style={{
-                                  color: colors.textSecondary,
-                                  fontSize: 10,
-                                  fontFamily: 'RedditSans-Medium',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: isDark
+                                    ? 'rgba(255, 255, 255, 0.08)'
+                                    : 'rgba(0, 0, 0, 0.05)',
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 3,
+                                  borderRadius: 8,
+                                  gap: 4,
                                 }}
                               >
-                                {task.date}
-                              </Text>
+                                <FontAwesomeIcon icon={faClock} size={9} color={colors.textSecondary} />
+                                <Text
+                                  style={{
+                                    color: colors.textSecondary,
+                                    fontSize: 10,
+                                    fontFamily: 'RedditSans-Medium',
+                                  }}
+                                >
+                                  {task.date}
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               )}
             </View>
@@ -1129,13 +1174,16 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                   backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
                   borderTopLeftRadius: 28,
                   borderTopRightRadius: 28,
-                  padding: 24,
                   borderWidth: 1,
                   borderColor: colors.border,
                   maxHeight: '85%',
                 }}
               >
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  style={{ padding: 24, paddingBottom: 0 }}
+                  contentContainerStyle={{ paddingBottom: 8 }}
+                >
                   {/* Modal Header */}
                   <View
                     style={{
@@ -1256,7 +1304,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                       flexWrap: 'wrap',
                       gap: 10,
                       justifyContent: 'space-between',
-                      marginBottom: 24,
+                      marginBottom: 8,
                     }}
                   >
                     {CATEGORIES.map((cat) => {
@@ -1321,18 +1369,18 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                       );
                     })}
                   </View>
+                </ScrollView>
 
-                  {/* Create Button */}
+                {/* Create Button - Fixed at bottom, outside ScrollView */}
+                <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: 34 }}>
                   <TouchableOpacity
                     onPress={handleCreateGoal}
                     activeOpacity={0.8}
                     disabled={isGenerating}
                   >
-                    <LinearGradient
-                      colors={['#4F46E5', '#3730A3']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
+                    <View
                       style={{
+                        backgroundColor: '#4F46E5',
                         borderRadius: 20,
                         paddingVertical: 15,
                         alignItems: 'center',
@@ -1369,9 +1417,9 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                           {t('goals.create_btn', getModalText('create_goal_btn', activeLang))}
                         </Text>
                       )}
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
-                </ScrollView>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
