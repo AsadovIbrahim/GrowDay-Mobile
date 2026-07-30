@@ -2128,38 +2128,30 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                   padding: 24,
                   alignItems: 'center',
                   borderWidth: 1,
-                  borderColor: isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.2)',
-                  shadowColor: '#6366F1',
+                  borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.15)',
+                  shadowColor: '#000',
                   shadowOffset: { width: 0, height: 10 },
-                  shadowOpacity: 0.4,
+                  shadowOpacity: 0.25,
                   shadowRadius: 20,
-                  elevation: 12,
+                  elevation: 10,
                 }}
               >
-                {/* Floating Trophy Badge */}
-                <LinearGradient
-                  colors={['#6366F1', '#10B981']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+                {/* Trophy Circle Badge Container */}
+                <View
                   style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: 36,
+                    width: 76,
+                    height: 76,
+                    borderRadius: 38,
+                    backgroundColor: isDark ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginTop: -48,
                     marginBottom: 16,
-                    borderWidth: 4,
-                    borderColor: isDark ? '#0F172A' : '#FFFFFF',
-                    shadowColor: '#10B981',
-                    shadowOffset: { width: 0, height: 6 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 12,
-                    elevation: 8,
+                    borderWidth: 2,
+                    borderColor: isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.25)',
                   }}
                 >
-                  <Text style={{ fontSize: 36 }}>🏆</Text>
-                </LinearGradient>
+                  <Text style={{ fontSize: 38 }}>🏆</Text>
+                </View>
 
                 {/* Bonus XP Pill */}
                 <View
@@ -2221,25 +2213,29 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                         handleManualGenerateNextPhase(targetId);
                       }
                     }}
-                    style={{ borderRadius: 18, overflow: 'hidden' }}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#6366F1',
+                      borderRadius: 18,
+                      paddingVertical: 14,
+                      paddingHorizontal: 16,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      gap: 8,
+                    }}
                   >
-                    <LinearGradient
-                      colors={['#6366F1', '#4F46E5']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
+                    <Text style={{ fontSize: 16 }}>✨</Text>
+                    <Text
                       style={{
-                        paddingVertical: 14,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        gap: 8,
+                        color: '#FFFFFF',
+                        fontFamily: 'RedditSans-Bold',
+                        fontSize: 14,
+                        textAlign: 'center',
                       }}
                     >
-                      <Text style={{ fontSize: 14 }}>✨</Text>
-                      <Text style={{ color: '#FFFFFF', fontFamily: 'RedditSans-Bold', fontSize: 14 }}>
-                        {t('goals.generate_next_quests', 'AI ilə Növbəti Tapşırıqları Yarat')}
-                      </Text>
-                    </LinearGradient>
+                      {t('goals.generate_next_quests', 'AI ilə Növbəti Tapşırıqları Yarat')}
+                    </Text>
                   </TouchableOpacity>
 
                   {/* Secondary Close Button */}
@@ -2247,15 +2243,24 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                     activeOpacity={0.8}
                     onPress={() => setPhaseCompletedModal(null)}
                     style={{
-                      paddingVertical: 12,
+                      width: '100%',
+                      paddingVertical: 14,
+                      paddingHorizontal: 16,
                       borderRadius: 18,
                       alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
                     }}
                   >
-                    <Text style={{ color: colors.textSecondary, fontFamily: 'RedditSans-Bold', fontSize: 14 }}>
-                      {t('common.got_it', 'Anladım')}
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontFamily: 'RedditSans-Bold',
+                        fontSize: 14,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {t('goals.got_it', 'Got it')}
                     </Text>
                   </TouchableOpacity>
                 </View>
