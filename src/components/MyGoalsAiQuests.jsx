@@ -17,10 +17,11 @@ import {
   faPlus,
   faChevronUp,
   faChevronDown,
+  faChevronLeft,
+  faChevronRight,
   faTrash,
   faCheckCircle,
   faTimes,
-  faSparkles,
   faFlag,
   faClock,
   faStar,
@@ -66,14 +67,14 @@ const addDeletedGoalId = (token, goalId) => {
       existing.push(goalId);
       storage.set(key, JSON.stringify(existing));
     }
-  } catch {}
+  } catch { }
 };
 const removeDeletedGoalId = (token, goalId) => {
   try {
     const key = `deleted_goal_ids_${token || 'local'}`;
     const existing = getDeletedGoalIds(token).filter(id => id !== goalId);
     storage.set(key, JSON.stringify(existing));
-  } catch {}
+  } catch { }
 };
 
 const BouncingDots = () => {
@@ -214,6 +215,47 @@ const getTaskDifficultyInfo = (xpInput, priorityInput, index = 0) => {
   };
 };
 
+const checkIsTaskOverdue = (task) => {
+  if (!task || task.completed) return false;
+  if (task.isOverdue || task.IsOverdue) return true;
+
+  const raw = task.rawDate || task.date;
+  if (!raw) return false;
+
+  const taskDate = new Date(raw);
+  if (isNaN(taskDate.getTime())) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  taskDate.setHours(0, 0, 0, 0);
+
+  return taskDate < today;
+};
+
+const checkIsTaskToday = (task) => {
+  if (!task || task.completed) return false;
+  const raw = task.rawDate || task.date;
+  if (!raw) return false;
+
+  const taskDate = new Date(raw);
+  if (isNaN(taskDate.getTime())) return false;
+
+  const today = new Date();
+  return (
+    taskDate.getDate() === today.getDate() &&
+    taskDate.getMonth() === today.getMonth() &&
+    taskDate.getFullYear() === today.getFullYear()
+  );
+};
+
+const cleanTaskText = (text) => {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+};
+
 const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskComplete }) => {
   const { t: tHook, i18n } = useTranslation();
   const t = tProp || tHook;
@@ -228,6 +270,9 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [deletingGoalId, setDeletingGoalId] = useState(null);
+  const [generatingGoalId, setGeneratingGoalId] = useState(null);
+  const [taskPageByGoal, setTaskPageByGoal] = useState({});
+  const [phaseCompletedModal, setPhaseCompletedModal] = useState(null);
 
   useEffect(() => {
     let interval;
@@ -338,7 +383,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
     select_category: { az: 'Kateqoriya Seçin', tr: 'Kategori Seçin', ru: 'Выберите категорию', en: 'Select Category', es: 'Seleccionar categoría', de: 'Kategorie auswählen', fr: 'Sélectionner la catégorie', it: 'Seleziona categoria', ar: 'اختر الفئة', zh: '选择分类' },
     create_goal_btn: { az: '✨ Hədəf və AI Tapşırıqları Yarat', tr: '✨ Hedef ve AI Görevleri Oluştur', ru: '✨ Создать цель и ИИ-задачи', en: '✨ Create Goal & AI Tasks', es: '✨ Crear objetivo y tareas de IA', de: '✨ Ziel & KI-Aufgaben erstellen', fr: '✨ Créer un objectif et des tâches IA', it: '✨ Crea obiettivo e attività IA', ar: '✨ إنشاء الهدف ومهمات الذكاء الاصطناعي', zh: '✨ 创建目标与 AI 任务' },
     create_modal_title: { az: 'Yeni Hədəf Yaradın', tr: 'Yeni Hedef Oluşturun', ru: 'Создайте новую цель', en: 'Create New Goal', es: 'Crear nuevo objetivo', de: 'Neues Ziel erstellen', fr: 'Créer un nouvel objectif', it: 'Crea nuovo obiettivo', ar: 'إنشاء هدف جديد', zh: '创建新目标' },
-    create_modal_desc: { az: 'Hədəfinizi təyin edin, AI məşqçiniz onu günlük tapşırıqlara böləcək!', tr: 'Hedefinizi belirleyin, AI koçunuz onu günlük görevlere bölsün!', ru: 'Задайте цель, и ваш ИИ-тренер разобьет ее на ежедневные квесты!', en: 'Set your target, and your AI coach will break it down into daily quests!', es: '¡Establece tu objetivo y tu entrenador IA lo dividirá en misiones diarias!', de: 'Setze dein Ziel, und dein KI-Coach teilt es in tägliche Quests auf!', fr: 'Définissez votre objectif, et votre coach IA le divisera en quêtes quotidiennes !', it: 'Imposta il tuo obiettivo e il tuo coach IA lo dividerà in missioni giornaliere!', ar: 'حدد هدفك، وسيقوم مدرب الذكاء الاصطناعي بتقسيمه إلى مهام يومية!', zh: '设定您的目标，您的 AI 教练将其拆解为每日任务！' },
+    create_modal_desc: { az: 'Hədəfinizi təyin edin, AI bələdçiniz onu günlük tapşırıqlara böləcək!', tr: 'Hedefinizi belirleyin, AI rehberiniz onu günlük görevlere bölsün!', ru: 'Задайте цель, и ваш ИИ-наставник разобьет ее на ежедневные квесты!', en: 'Set your target, and your AI coach will break it down into daily quests!', es: '¡Establece tu objetivo y tu guía de IA lo dividirá en misiones diarias!', de: 'Setze dein Ziel, und dein KI-Begleiter teilt es in tägliche Quests auf!', fr: 'Définissez votre objectif, et votre guide IA le divisera en quêtes quotidiennes !', it: 'Imposta il tuo obiettivo e la tua guida IA lo dividerà in missioni giornaliere!', ar: 'حدد هدفك، وسيقوم مرشد الذكاء الاصطناعي بتقسيمه إلى مهام يومية!', zh: '设定您的目标，您的 AI 导师将其拆解为每日任务！' },
   };
 
   const getModalText = (key, lang) => {
@@ -350,6 +395,48 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
   useEffect(() => {
     loadGoals();
   }, [token, activeLang]);
+
+  const mergeDuplicateGoals = (goalsList) => {
+    if (!Array.isArray(goalsList)) return [];
+
+    const goalMap = new Map();
+
+    goalsList.forEach((g) => {
+      if (!g || !g.title) return;
+      const cleanTitle = g.title.replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '').trim();
+      if (!cleanTitle || g.id === 'default_goal_1') return;
+
+      const key = cleanTitle.toLowerCase();
+
+      const sanitizedTasks = (g.tasks || []).map((t, idx) => {
+        return {
+          ...t,
+          title: cleanTaskText(t.title),
+          description: cleanTaskText(t.description),
+        };
+      });
+
+      if (!goalMap.has(key)) {
+        goalMap.set(key, {
+          ...g,
+          title: cleanTitle,
+          description: g.description && !g.description.startsWith('Generate 3') ? g.description : `${cleanTitle} planı`,
+          tasks: sanitizedTasks,
+        });
+      } else {
+        const existing = goalMap.get(key);
+        const existingTaskIds = new Set(existing.tasks.map((t) => t.id || t.title));
+        const newUniqueTasks = sanitizedTasks.filter((t) => !existingTaskIds.has(t.id || t.title));
+
+        existing.tasks = [...existing.tasks, ...newUniqueTasks];
+        if (existing.description.includes('planı') && g.description && !g.description.includes('planı') && !g.description.startsWith('Generate 3')) {
+          existing.description = g.description;
+        }
+      }
+    });
+
+    return Array.from(goalMap.values());
+  };
 
   const loadGoals = async () => {
     try {
@@ -369,35 +456,48 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          // Filter out any default sample goals and localize task titles/descriptions for current language
-          const userOnly = parsed.filter(g => g.id !== 'default_goal_1').map(g => ({
-            ...g,
-            tasks: (g.tasks || []).map((t, idx) => {
-              let title = t.title;
-              let description = t.description;
-              const titleDict = t.titleTranslations || t.titleTranslationsJson;
-              if (titleDict && typeof titleDict === 'object') {
-                if (titleDict[currentLang]) title = titleDict[currentLang];
-                else if (titleDict['en']) title = titleDict['en'];
-              }
-              const descDict = t.descriptionTranslations || t.descriptionTranslationsJson;
-              if (descDict && typeof descDict === 'object') {
-                if (descDict[currentLang]) description = descDict[currentLang];
-                else if (descDict['en']) description = descDict['en'];
-              }
+          // Filter out any default sample goals and merge duplicate cards by clean title
+          const userOnly = parsed.filter(g => g.id !== 'default_goal_1').map(g => {
+            const cleanTitle = (g.title || '').replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '').trim();
+            const cleanDesc = g.description && g.description.startsWith('Generate 3')
+              ? `${cleanTitle} planı`
+              : g.description;
 
-              const diff = getTaskDifficultyInfo(t.xp, t.priority, idx);
-              return {
-                ...t,
-                title,
-                description,
-                xp: diff.xp,
-                priority: diff.tier === 'hard' ? 'Hard' : diff.tier === 'medium' ? 'Medium' : 'Easy',
-                priorityColor: diff.color,
-              };
-            })
-          }));
-          setGoals(userOnly);
+            return {
+              ...g,
+              title: cleanTitle || g.title,
+              description: cleanDesc,
+              tasks: (g.tasks || []).map((t, idx) => {
+                let title = (t.title || '').replace(/\s*Phase\s*\d+/gi, '').trim();
+                let description = t.description;
+                const titleDict = t.titleTranslations || t.titleTranslationsJson;
+                if (titleDict && typeof titleDict === 'object') {
+                  if (titleDict[currentLang]) title = titleDict[currentLang];
+                  else if (titleDict['en']) title = titleDict['en'];
+                }
+                const descDict = t.descriptionTranslations || t.descriptionTranslationsJson;
+                if (descDict && typeof descDict === 'object') {
+                  if (descDict[currentLang]) description = descDict[currentLang];
+                  else if (descDict['en']) description = descDict['en'];
+                }
+
+                const diff = getTaskDifficultyInfo(t.xp, t.priority, idx);
+                return {
+                  ...t,
+                  title: title || t.title,
+                  description,
+                  xp: diff.xp,
+                  priority: diff.tier === 'hard' ? 'Hard' : diff.tier === 'medium' ? 'Medium' : 'Easy',
+                  priorityColor: diff.color,
+                };
+              })
+            };
+          });
+
+          const mergedLocal = mergeDuplicateGoals(userOnly);
+          setGoals(mergedLocal);
+          saveGoals(mergedLocal);
+          checkAndAutoRenewExpiredGoals(mergedLocal);
         }
       } else {
         setGoals([]);
@@ -444,6 +544,8 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                 priorityColor: taskXP >= 150 ? '#EF4444' : taskXP >= 80 ? '#F59E0B' : '#10B981',
                 xp: taskXP,
                 date: new Date(t.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
+                rawDate: t.date || t.Date || new Date().toISOString(),
+                isOverdue: t.isOverdue || t.IsOverdue || false,
                 completed: t.isCompleted || false,
               };
             });
@@ -463,9 +565,9 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
             };
             if (serverGoal.tasks.length > 0) {
               setGoals(prev => {
-                const filtered = prev.filter(g => g.id !== serverGoal.id && g.id !== 'default_goal_1');
-                const merged = [serverGoal, ...filtered];
+                const merged = mergeDuplicateGoals([serverGoal, ...prev]);
                 saveGoals(merged);
+                checkAndAutoRenewExpiredGoals(merged);
                 return merged;
               });
             }
@@ -485,6 +587,44 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
     }
   };
 
+  const checkAndAutoRenewExpiredGoals = async (goalsList) => {
+    if (!Array.isArray(goalsList) || goalsList.length === 0) return;
+    let hasChanges = false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const updatedGoals = await Promise.all(
+      goalsList.map(async (goal) => {
+        if (!goal.tasks || goal.tasks.length === 0) return goal;
+
+        const lastTask = goal.tasks[goal.tasks.length - 1];
+        const raw = lastTask.rawDate || lastTask.date;
+        let lastTaskDate = raw ? new Date(raw) : null;
+
+        const isLastTaskExpired =
+          lastTaskDate &&
+          !isNaN(lastTaskDate.getTime()) &&
+          (lastTaskDate < today || checkIsTaskOverdue(lastTask));
+
+        const hasUpcomingPending = goal.tasks.some(
+          (t) => !t.completed && !checkIsTaskOverdue(t)
+        );
+
+        if (isLastTaskExpired && !hasUpcomingPending) {
+          hasChanges = true;
+          return await generateNextPhaseForGoal(goal);
+        }
+
+        return goal;
+      })
+    );
+
+    if (hasChanges) {
+      setGoals(updatedGoals);
+      saveGoals(updatedGoals);
+    }
+  };
+
   const handleToggleExpand = (goalId) => {
     const updated = goals.map((g) =>
       g.id === goalId ? { ...g, isExpanded: !g.isExpanded } : g
@@ -493,10 +633,254 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
     saveGoals(updated);
   };
 
+  const generateNextPhaseForGoal = async (targetGoal) => {
+    const currentPhase = (targetGoal.phase || 1) + 1;
+    const cleanTitle = (targetGoal.title || 'Goal')
+      .replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '')
+      .trim();
+
+    const langKey = activeLang ? activeLang.split('-')[0].toLowerCase() : 'en';
+
+    let aiTasksFromBackend = [];
+
+    if (token) {
+      try {
+        const res = await createMandalaGoalFetch(token, {
+          goalText: cleanTitle,
+          description: `Generate 3 next-level actionable quests for goal: ${cleanTitle}`,
+          category: targetGoal.category || 'learning',
+          language: activeLang,
+        });
+
+        if (res && res.data) {
+          const rawTasks = res.data.tasks?.length > 0
+            ? res.data.tasks
+            : (res.data.directions || []).flatMap((d) => d.tasks || []);
+
+          if (rawTasks.length > 0) {
+            aiTasksFromBackend = rawTasks.slice(0, 3).map((tItem, idx) => {
+              const taskXP = tItem.xp || tItem.XP || (idx === 0 ? 50 : idx === 1 ? 100 : 200);
+              const taskPriority = taskXP >= 150 ? 'Hard' : taskXP >= 80 ? 'Medium' : 'Easy';
+              const daysOffset = idx === 0 ? 1 : idx === 1 ? 3 : 5;
+              const targetDateObj = new Date(Date.now() + 86400000 * daysOffset);
+
+              const cleanTaskTitle = cleanTaskText(tItem.title || '');
+              const cleanTaskDesc = cleanTaskText(tItem.description || `Step ${idx + 1} for ${cleanTitle}`);
+
+              return {
+                id: tItem.id || `task_${Date.now()}_p${currentPhase}_${idx}`,
+                title: cleanTaskTitle || tItem.title,
+                titleTranslations: tItem.titleTranslations || tItem.TitleTranslations,
+                description: cleanTaskDesc,
+                descriptionTranslations: tItem.descriptionTranslations || tItem.DescriptionTranslations,
+                priority: taskPriority,
+                priorityColor: taskXP >= 150 ? '#EF4444' : taskXP >= 80 ? '#F59E0B' : '#10B981',
+                xp: taskXP,
+                date: targetDateObj.toLocaleDateString(activeLang, { month: 'short', day: '2-digit' }),
+                rawDate: targetDateObj.toISOString(),
+                isOverdue: false,
+                completed: false,
+              };
+            });
+          }
+        }
+      } catch (e) {
+        console.log('Backend next phase AI task generation note (using smart local AI fallback):', e);
+      }
+    }
+
+    if (aiTasksFromBackend.length === 0) {
+      const lowerTitle = title.toLowerCase();
+
+      let localTitles = null;
+      let localDescs = null;
+
+      if (lowerTitle.includes('oxu') || lowerTitle.includes('kitab') || lowerTitle.includes('read') || lowerTitle.includes('book')) {
+        localTitles = {
+          az: [
+            'Kitabda diqqət çəkən 3 əsas fikri qeyd edin',
+            'Gündəlik oxuma həcmini 30-40 dəqiqəyə çatdırın',
+            'Həftəlik oxuduğunuz mövzu üzrə qısa xülasə yazın',
+          ],
+          tr: [
+            'Okuduğunuz bölümden 3 önemli fikri not alın',
+            'Günlük okuma süresini 30-40 dakikaya çıkarın',
+            'Haftalık okuduğunuz konu hakkında kısa bir özet yazın',
+          ],
+          ru: [
+            'Выпишите 3 ключевые мысли из прочитанной главы',
+            'Увеличьте время ежедневного чтения до 30-40 минут',
+            'Напишите краткое резюме по прочитанной теме за неделю',
+          ],
+          en: [
+            'Take notes on 3 key insights from your reading',
+            'Increase daily reading duration to 30-40 minutes',
+            'Write a brief summary of the weekly chapter',
+          ],
+        };
+        localDescs = {
+          az: [
+            'Qeydlər götürərək oxumaq qavramanı 70% artırır.',
+            'Oxuma tempinizi dincələrək tənzimləyin.',
+            'Öyrəndiklərinizi öz sözlərinizlə ifadə edin.',
+          ],
+          en: [
+            'Taking notes increases retention by up to 70%.',
+            'Pace your reading session comfortably.',
+            'Summarize learnings in your own words.',
+          ],
+          tr: [
+            'Not almak kavrama oranını %70 artırır.',
+            'Okuma temponuzu rahatça ayarlayın.',
+            'Öğrendiklerinizi kendi cümlelerinizle ifade edin.',
+          ],
+          ru: [
+            'Заметки повышают запоминание до 70%.',
+            'Комфортно регулируйте темп чтения.',
+            'Сформулируйте выводы своими словами.',
+          ],
+        };
+      } else if (lowerTitle.includes('idman') || lowerTitle.includes('sağlam') || lowerTitle.includes('spor') || lowerTitle.includes('run') || lowerTitle.includes('fit') || lowerTitle.includes('workout')) {
+        localTitles = {
+          az: [
+            'Məşq intensivliyini və set sayını 15% artırın',
+            'Gündəlik 30 dəqiqə bərpaedici gəzinti edin',
+            'Həftəlik nəticələrinizi ölçüb yeni nəticə qeyd edin',
+          ],
+          tr: [
+            'Antrenman yoğunluğunu ve set sayısını %15 artırın',
+            'Günlük 30 dakika toparlanma yürüyüşü yapın',
+            'Haftalık sonuçlarınızı ölçüp yeni hedef belirleyin',
+          ],
+          ru: [
+            'Увеличьте интенсивность тренировки и сеты на 15%',
+            'Делайте ежедневную 30-минутную восстановительную прогулку',
+            'Зафиксируйте результаты недели и поставьте новый рекорд',
+          ],
+          en: [
+            'Increase workout intensity and set count by 15%',
+            'Take a daily 30-minute recovery walk',
+            'Log your weekly progress and set a new benchmark',
+          ],
+        };
+        localDescs = {
+          az: ['Əzələlərin inkişafı üçün yüklənməni artırın.', 'Gündəlik hərəkətlilik bərpa üçün çox vacibdir.', 'Göstəriciləri müqayisə edin.'],
+          en: ['Progressive overload builds endurance.', 'Active recovery maintains energy levels.', 'Compare your key performance metrics.'],
+          tr: ['Gelişim için yüklenmeyi kademeli artırın.', 'Aktif dinlenme enerji seviyenizi korur.', 'Performans metriklerinizi karşılaştırın.'],
+          ru: ['Прогрессивная нагрузка развивает выносливость.', 'Активный отдых поддерживает уровень энергии.', 'Сравните ключевые показатели за неделю.'],
+        };
+      } else {
+        localTitles = {
+          az: [
+            `Öyrəndiklərinizi tətbiq edin və vərdişi dərinləşdirin`,
+            `İntizamı gücləndirin və icra temposunu artırın`,
+            `Nəticələri analiz edin və ustalığa doğru addımlayın`,
+          ],
+          en: [
+            `Apply insights & deepen daily routine`,
+            `Strengthen discipline & boost daily pace`,
+            `Evaluate progress & master key skills`,
+          ],
+          tr: [
+            `Bilgileri uygula ve günlük rutini derinleştir`,
+            `Disiplini güçlendir ve uygulama temposunu artır`,
+            `Sonuçları değerlendir ve ustalığa adım at`,
+          ],
+          ru: [
+            `Применяйте знания и углубляйте привычку`,
+            `Укрепляйте дисциплину и повышайте темп`,
+            `Оценивайте результаты и совершенствуйте мастерство`,
+          ],
+        };
+        localDescs = {
+          az: [
+            `Gündəlik fəaliyyətinizə ${title} üzrə fokuslu seanslar əlavə edin.`,
+            `Nəticələrinizi izləyin və tempinizi bərpa edin.`,
+            `Öyrəndiklərinizi tətbiq edərək vərdişi tam otuzdurun.`,
+          ],
+          en: [
+            `Add focused sessions for ${title} to your daily routine.`,
+            `Track your output and maintain a steady pace.`,
+            `Solidify your habit by applying key insights.`,
+          ],
+          tr: [
+            `Günlük rutininize ${title} için odaklanmış seanslar ekleyin.`,
+            `Sonuçlarınızı takip edin ve temponuzu koruyun.`,
+            `Edindiğiniz bilgileri uygulayarak alışkanlığı pekiştirin.`,
+          ],
+          ru: [
+            `Добавьте фокусированные сессии для ${title} в свой день.`,
+            `Отслеживайте результаты и сохраняйте устойчивый темп.`,
+            `Закрепите привычку, применяя ключевые навыки.`,
+          ],
+        };
+      }
+
+      const selectedTitles = localTitles[langKey] || localTitles.en;
+      const selectedDescs = localDescs[langKey] || localDescs.en;
+
+      const t1Date = new Date(Date.now() + 86400000 * 1);
+      const t2Date = new Date(Date.now() + 86400000 * 3);
+      const t3Date = new Date(Date.now() + 86400000 * 5);
+
+      aiTasksFromBackend = [
+        {
+          id: `task_${Date.now()}_p${currentPhase}_1`,
+          title: cleanTaskText(selectedTitles[0]),
+          description: cleanTaskText(selectedDescs[0]),
+          priority: 'Easy',
+          priorityColor: '#10B981',
+          xp: 50,
+          date: t1Date.toLocaleDateString(activeLang, { month: 'short', day: '2-digit' }),
+          rawDate: t1Date.toISOString(),
+          isOverdue: false,
+          completed: false,
+        },
+        {
+          id: `task_${Date.now()}_p${currentPhase}_2`,
+          title: cleanTaskText(selectedTitles[1]),
+          description: cleanTaskText(selectedDescs[1]),
+          priority: 'Medium',
+          priorityColor: '#F59E0B',
+          xp: 100,
+          date: t2Date.toLocaleDateString(activeLang, { month: 'short', day: '2-digit' }),
+          rawDate: t2Date.toISOString(),
+          isOverdue: false,
+          completed: false,
+        },
+        {
+          id: `task_${Date.now()}_p${currentPhase}_3`,
+          title: cleanTaskText(selectedTitles[2]),
+          description: cleanTaskText(selectedDescs[2]),
+          priority: 'Hard',
+          priorityColor: '#EF4444',
+          xp: 200,
+          date: t3Date.toLocaleDateString(activeLang, { month: 'short', day: '2-digit' }),
+          rawDate: t3Date.toISOString(),
+          isOverdue: false,
+          completed: false,
+        },
+      ];
+    }
+
+    return {
+      ...targetGoal,
+      title: cleanTitle,
+      description: targetGoal.description && !targetGoal.description.startsWith('Generate 3')
+        ? targetGoal.description
+        : `${cleanTitle} planı`,
+      phase: currentPhase,
+      tasks: [...(targetGoal.tasks || []), ...aiTasksFromBackend],
+    };
+  };
+
   const handleToggleTask = async (goalId, taskId) => {
     Vibration.vibrate(50);
     let wasCompleted = false;
     let taskXP = 50;
+    let isGoalAllCompleted = false;
+    let completedGoalObj = null;
+
     const updated = goals.map((goal) => {
       if (goal.id !== goalId) return goal;
       const updatedTasks = goal.tasks.map((task) => {
@@ -507,6 +891,13 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
         }
         return task;
       });
+
+      const allDone = updatedTasks.length > 0 && updatedTasks.every((t) => t.completed);
+      if (!wasCompleted && allDone) {
+        isGoalAllCompleted = true;
+        completedGoalObj = { ...goal, tasks: updatedTasks };
+      }
+
       return { ...goal, tasks: updatedTasks };
     });
     setGoals(updated);
@@ -517,12 +908,48 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
       onTaskComplete(taskXP);
     }
 
+    // If all tasks in goal phase were completed just now:
+    if (isGoalAllCompleted && completedGoalObj) {
+      Vibration.vibrate([100, 100, 100]);
+      if (onTaskComplete) {
+        onTaskComplete(100); // Bonus +100 XP for completing phase
+      }
+
+      setPhaseCompletedModal({
+        goalId: goalId,
+        goalTitle: completedGoalObj?.title || '',
+      });
+    }
+
     if (token) {
       try {
         await completeMandalaTaskFetch(token, taskId);
       } catch (e) {
         console.log('Backend task complete sync note:', e);
       }
+    }
+  };
+
+  const handleManualGenerateNextPhase = async (goalId) => {
+    const targetGoal = goals.find((g) => g.id === goalId);
+    if (!targetGoal) return;
+
+    setGeneratingGoalId(goalId);
+    Vibration.vibrate(50);
+
+    try {
+      const nextGoalObj = await generateNextPhaseForGoal(targetGoal);
+      setGoals((prevGoals) => {
+        const rawGoalsList = prevGoals.map((g) => (g.id === goalId ? nextGoalObj : g));
+        const mergedList = mergeDuplicateGoals(rawGoalsList);
+        saveGoals(mergedList);
+        return mergedList;
+      });
+      Vibration.vibrate([100, 100]);
+    } catch (e) {
+      console.log('Error generating next phase quests:', e);
+    } finally {
+      setGeneratingGoalId(null);
     }
   };
 
@@ -617,6 +1044,8 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                   priorityColor: taskXP >= 150 ? '#EF4444' : taskXP >= 80 ? '#F59E0B' : '#10B981',
                   xp: taskXP,
                   date: new Date(tItem.date || Date.now()).toLocaleDateString(activeLang, { month: 'short', day: '2-digit' }),
+                  rawDate: tItem.date || tItem.Date || new Date().toISOString(),
+                  isOverdue: tItem.isOverdue || tItem.IsOverdue || false,
                   completed: tItem.isCompleted || false,
                 };
               });
@@ -967,193 +1396,322 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                 </TouchableOpacity>
               </View>
 
-              {/* Expanded Accordion: List of Sub-tasks */}
-              {goal.isExpanded && (
-                <View style={{ gap: 12 }}>
-                  {goal.tasks.map((task, idx) => {
-                    const diffInfo = getTaskDifficultyInfo(task.xp, task.priority, idx);
-                    const langKey = activeLang ? activeLang.split('-')[0].toLowerCase() : 'en';
+              {/* Expanded Accordion: List of Sub-tasks with 3-per-page Pagination */}
+              {goal.isExpanded && (() => {
+                const totalTasks = goal.tasks || [];
+                const totalPages = Math.max(1, Math.ceil(totalTasks.length / 3));
 
-                    return (
-                      <TouchableOpacity
-                        key={task.id}
-                        activeOpacity={0.85}
-                        onPress={() => handleToggleTask(goal.id, task.id)}
-                        style={{
-                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                          borderRadius: 18,
-                          padding: 14,
-                          borderWidth: 1,
-                          borderColor: task.completed
-                            ? 'rgba(76, 175, 102, 0.3)'
-                            : isDark
-                              ? '#334155'
-                              : '#E2E8F0',
-                          borderLeftWidth: 4,
-                          borderLeftColor: diffInfo.color,
-                          position: 'relative',
-                        }}
-                      >
-                        {/* Main Row: Checkbox + Task Title */}
-                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
-                          <TouchableOpacity
-                            onPress={() => handleToggleTask(goal.id, task.id)}
-                            activeOpacity={0.8}
-                            style={{
-                              width: 22,
-                              height: 22,
-                              borderRadius: 11,
-                              backgroundColor: task.completed ? '#4caf66' : 'transparent',
-                              borderWidth: task.completed ? 0 : 2,
-                              borderColor: task.completed ? '#4caf66' : colors.textSecondary,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              marginTop: 2,
-                            }}
-                          >
-                            {task.completed && (
-                              <FontAwesomeIcon icon={faCheckCircle} size={14} color="#FFFFFF" />
-                            )}
-                          </TouchableOpacity>
+                let currentPage = taskPageByGoal[goal.id];
+                if (!currentPage) {
+                  const firstUncompletedIdx = totalTasks.findIndex(t => !t.completed);
+                  if (firstUncompletedIdx !== -1) {
+                    currentPage = Math.floor(firstUncompletedIdx / 3) + 1;
+                  } else {
+                    currentPage = totalPages;
+                  }
+                }
+                currentPage = Math.min(Math.max(1, currentPage), totalPages);
 
-                          <View style={{ flex: 1 }}>
-                            <Text
-                              style={{
-                                fontSize: 14,
-                                fontFamily: 'RedditSans-Bold',
-                                color: task.completed ? colors.textSecondary : colors.text,
-                                textDecorationLine: task.completed ? 'line-through' : 'none',
-                              }}
-                            >
-                              {getLocalizedTaskTitle(task, activeLang, t)}
-                            </Text>
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                fontFamily: 'RedditSans-Regular',
-                                color: colors.textSecondary,
-                                marginTop: 4,
-                                lineHeight: 18,
-                              }}
-                            >
-                              {renderTaskDescription(task)}
-                            </Text>
+                const paginatedTasks = totalTasks.slice((currentPage - 1) * 3, currentPage * 3);
 
-                            {/* Badges / Tags Row: Priority | Completed | XP | Date */}
-                            <View
+                return (
+                  <View style={{ gap: 12 }}>
+                    {paginatedTasks.map((task, idx) => {
+                      const absoluteIdx = (currentPage - 1) * 3 + idx;
+                      const diffInfo = getTaskDifficultyInfo(task.xp, task.priority, absoluteIdx);
+                      const langKey = activeLang ? activeLang.split('-')[0].toLowerCase() : 'en';
+
+                      return (
+                        <TouchableOpacity
+                          key={task.id}
+                          activeOpacity={0.85}
+                          onPress={() => handleToggleTask(goal.id, task.id)}
+                          style={{
+                            backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                            borderRadius: 18,
+                            padding: 14,
+                            borderWidth: 1,
+                            borderColor: task.completed
+                              ? 'rgba(76, 175, 102, 0.3)'
+                              : isDark
+                                ? '#334155'
+                                : '#E2E8F0',
+                            borderLeftWidth: 4,
+                            borderLeftColor: diffInfo.color,
+                            position: 'relative',
+                          }}
+                        >
+                          {/* Main Row: Checkbox + Task Title */}
+                          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+                            <TouchableOpacity
+                              onPress={() => handleToggleTask(goal.id, task.id)}
+                              activeOpacity={0.8}
                               style={{
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
+                                width: 22,
+                                height: 22,
+                                borderRadius: 11,
+                                backgroundColor: task.completed ? '#4caf66' : 'transparent',
+                                borderWidth: task.completed ? 0 : 2,
+                                borderColor: task.completed ? '#4caf66' : colors.textSecondary,
                                 alignItems: 'center',
-                                gap: 6,
-                                marginTop: 10,
+                                justifyContent: 'center',
+                                marginTop: 2,
                               }}
                             >
-                              {/* Priority Badge */}
+                              {task.completed && (
+                                <FontAwesomeIcon icon={faCheckCircle} size={14} color="#FFFFFF" />
+                              )}
+                            </TouchableOpacity>
+
+                            <View style={{ flex: 1 }}>
+                              <Text
+                                style={{
+                                  fontSize: 14,
+                                  fontFamily: 'RedditSans-Bold',
+                                  color: task.completed ? colors.textSecondary : colors.text,
+                                  textDecorationLine: task.completed ? 'line-through' : 'none',
+                                }}
+                              >
+                                {getLocalizedTaskTitle(task, activeLang, t)}
+                              </Text>
+                              <Text
+                                style={{
+                                  fontSize: 12,
+                                  fontFamily: 'RedditSans-Regular',
+                                  color: colors.textSecondary,
+                                  marginTop: 4,
+                                  lineHeight: 18,
+                                }}
+                              >
+                                {renderTaskDescription(task)}
+                              </Text>
+
+                              {/* Badges / Tags Row: Priority | Completed | XP | Date */}
                               <View
                                 style={{
                                   flexDirection: 'row',
+                                  flexWrap: 'wrap',
                                   alignItems: 'center',
-                                  backgroundColor: diffInfo.bgColor,
-                                  paddingHorizontal: 8,
-                                  paddingVertical: 3,
-                                  borderRadius: 8,
-                                  gap: 4,
+                                  gap: 6,
+                                  marginTop: 10,
                                 }}
                               >
-                                <FontAwesomeIcon icon={faFlag} size={9} color={diffInfo.color} />
-                                <Text
+                                {/* Priority Badge */}
+                                <View
                                   style={{
-                                    color: diffInfo.color,
-                                    fontSize: 10,
-                                    fontFamily: 'RedditSans-Bold',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: diffInfo.bgColor,
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 3,
+                                    borderRadius: 8,
+                                    gap: 4,
                                   }}
                                 >
-                                  {diffInfo.label[langKey] || diffInfo.label.en}
-                                </Text>
-                              </View>
+                                  <FontAwesomeIcon icon={faFlag} size={9} color={diffInfo.color} />
+                                  <Text
+                                    style={{
+                                      color: diffInfo.color,
+                                      fontSize: 10,
+                                      fontFamily: 'RedditSans-Bold',
+                                    }}
+                                  >
+                                    {diffInfo.label[langKey] || diffInfo.label.en}
+                                  </Text>
+                                </View>
 
-                              {/* Status Badge */}
-                              <View
-                                style={{
-                                  backgroundColor: task.completed
-                                    ? 'rgba(76, 175, 102, 0.15)'
-                                    : isDark
-                                      ? 'rgba(255,255,255,0.08)'
-                                      : 'rgba(0,0,0,0.05)',
-                                  paddingHorizontal: 8,
-                                  paddingVertical: 3,
-                                  borderRadius: 8,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    color: task.completed ? '#4caf66' : colors.textSecondary,
-                                    fontSize: 10,
-                                    fontFamily: 'RedditSans-Bold',
-                                  }}
-                                >
-                                  {task.completed ? t('common.completed', 'Completed') : t('common.pending', 'Pending')}
-                                </Text>
-                              </View>
+                                {/* Status Badge */}
+                                {(() => {
+                                  const isOverdue = checkIsTaskOverdue(task);
+                                  const isToday = checkIsTaskToday(task);
+                                  return (
+                                    <View
+                                      style={{
+                                        backgroundColor: task.completed
+                                          ? 'rgba(76, 175, 102, 0.15)'
+                                          : isOverdue
+                                            ? 'rgba(239, 68, 68, 0.15)'
+                                            : isToday
+                                              ? 'rgba(245, 158, 11, 0.18)'
+                                              : isDark
+                                                ? 'rgba(255,255,255,0.08)'
+                                                : 'rgba(0,0,0,0.05)',
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 3,
+                                        borderRadius: 8,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        gap: 4,
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: task.completed
+                                            ? '#4caf66'
+                                            : isOverdue
+                                              ? '#EF4444'
+                                              : isToday
+                                                ? '#F59E0B'
+                                                : colors.textSecondary,
+                                          fontSize: 10,
+                                          fontFamily: 'RedditSans-Bold',
+                                        }}
+                                      >
+                                        {task.completed
+                                          ? t('common.completed', 'Completed')
+                                          : isOverdue
+                                            ? t('common.overdue', 'Overdue')
+                                            : isToday
+                                              ? t('common.today', 'Today')
+                                              : t('common.pending', 'Pending')}
+                                      </Text>
+                                    </View>
+                                  );
+                                })()}
 
-                              {/* XP Badge */}
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                  backgroundColor: 'rgba(245, 166, 35, 0.15)',
-                                  paddingHorizontal: 8,
-                                  paddingVertical: 3,
-                                  borderRadius: 8,
-                                  gap: 3,
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faStar} size={9} color="#F5A623" />
-                                <Text
+                                {/* XP Badge */}
+                                <View
                                   style={{
-                                    color: '#F5A623',
-                                    fontSize: 10,
-                                    fontFamily: 'RedditSans-Bold',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: 'rgba(245, 166, 35, 0.15)',
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 3,
+                                    borderRadius: 8,
+                                    gap: 3,
                                   }}
                                 >
-                                  +{task.xp || diffInfo.xp} XP
-                                </Text>
-                              </View>
+                                  <FontAwesomeIcon icon={faStar} size={9} color="#F5A623" />
+                                  <Text
+                                    style={{
+                                      color: '#F5A623',
+                                      fontSize: 10,
+                                      fontFamily: 'RedditSans-Bold',
+                                    }}
+                                  >
+                                    +{task.xp || diffInfo.xp} XP
+                                  </Text>
+                                </View>
 
-                              {/* Date Badge */}
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
-                                  backgroundColor: isDark
-                                    ? 'rgba(255, 255, 255, 0.08)'
-                                    : 'rgba(0, 0, 0, 0.05)',
-                                  paddingHorizontal: 8,
-                                  paddingVertical: 3,
-                                  borderRadius: 8,
-                                  gap: 4,
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faClock} size={9} color={colors.textSecondary} />
-                                <Text
+                                {/* Date Badge */}
+                                <View
                                   style={{
-                                    color: colors.textSecondary,
-                                    fontSize: 10,
-                                    fontFamily: 'RedditSans-Medium',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: isDark
+                                      ? 'rgba(255, 255, 255, 0.08)'
+                                      : 'rgba(0, 0, 0, 0.05)',
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 3,
+                                    borderRadius: 8,
+                                    gap: 4,
                                   }}
                                 >
-                                  {task.date}
-                                </Text>
+                                  <FontAwesomeIcon icon={faClock} size={9} color={colors.textSecondary} />
+                                  <Text
+                                    style={{
+                                      color: colors.textSecondary,
+                                      fontSize: 10,
+                                      fontFamily: 'RedditSans-Medium',
+                                    }}
+                                  >
+                                    {task.date}
+                                  </Text>
+                                </View>
                               </View>
                             </View>
                           </View>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
+                        </TouchableOpacity>
+                      );
+                    })}
+
+                    {/* Task Pagination Controls */}
+                    {totalPages > 1 && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
+                          borderRadius: 14,
+                          paddingHorizontal: 14,
+                          paddingVertical: 8,
+                          marginTop: 4,
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => setTaskPageByGoal(prev => ({ ...prev, [goal.id]: Math.max(1, currentPage - 1) }))}
+                          disabled={currentPage === 1}
+                          style={{
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            borderRadius: 10,
+                            backgroundColor: currentPage === 1 ? 'transparent' : isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+                            opacity: currentPage === 1 ? 0.3 : 1,
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faChevronLeft} size={12} color={colors.text} />
+                        </TouchableOpacity>
+
+                        <Text style={{ fontFamily: 'RedditSans-Bold', fontSize: 12, color: colors.textSecondary }}>
+                          {t('goals.page_info', { current: currentPage, total: totalPages, defaultValue: `Səhifə ${currentPage} / ${totalPages}` })}
+                        </Text>
+
+                        <TouchableOpacity
+                          onPress={() => setTaskPageByGoal(prev => ({ ...prev, [goal.id]: Math.min(totalPages, currentPage + 1) }))}
+                          disabled={currentPage === totalPages}
+                          style={{
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            borderRadius: 10,
+                            backgroundColor: currentPage === totalPages ? 'transparent' : isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+                            opacity: currentPage === totalPages ? 0.3 : 1,
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faChevronRight} size={12} color={colors.text} />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+
+                    {/* Button: Generate Next Quests with AI */}
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() => handleManualGenerateNextPhase(goal.id)}
+                      disabled={generatingGoalId === goal.id}
+                      style={{
+                        marginTop: 4,
+                        backgroundColor: isDark ? 'rgba(99, 102, 241, 0.12)' : 'rgba(99, 102, 241, 0.08)',
+                        borderWidth: 1,
+                        borderColor: 'rgba(99, 102, 241, 0.3)',
+                        borderStyle: 'dashed',
+                        borderRadius: 16,
+                        paddingVertical: 12,
+                        paddingHorizontal: 16,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      {generatingGoalId === goal.id ? (
+                        <>
+                          <BouncingDots />
+                          <Text style={{ color: '#818CF8', fontFamily: 'RedditSans-Bold', fontSize: 13 }}>
+                            {t('goals.generating_next', '🤖 AI yeni tapşırıqları hazırlayır...')}
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <Text style={{ fontSize: 13 }}>✨</Text>
+                          <Text style={{ color: '#818CF8', fontFamily: 'RedditSans-Bold', fontSize: 13 }}>
+                            {t('goals.generate_next_quests', 'AI ilə Növbəti Tapşırıqları Yarat')}
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                );
+              })()}
             </View>
           );
         })
@@ -1468,7 +2026,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                     marginBottom: 8,
                   }}
                 >
-                  {t ? t('common.delete', 'Delete Goal') : 'Delete Goal'}
+                  {t ? t('goals.delete_title', 'Delete Goal') : 'Delete Goal'}
                 </Text>
 
                 <Text
@@ -1508,7 +2066,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                     </Text>
                   </TouchableOpacity>
 
-                  {/* Yes Button */}
+                  {/* Yes / Delete Button */}
                   <TouchableOpacity
                     onPress={confirmDeleteGoal}
                     activeOpacity={0.85}
@@ -1533,7 +2091,171 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                         fontSize: 14.5,
                       }}
                     >
-                      {t ? t('common.yes', 'Yes') : 'Yes'}
+                      {t ? t('goals.delete_btn', 'Yes, Delete') : 'Yes, Delete'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Gamified Phase Completion Celebration Modal */}
+      <Modal
+        visible={!!phaseCompletedModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPhaseCompletedModal(null)}
+      >
+        <TouchableWithoutFeedback onPress={() => setPhaseCompletedModal(null)}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.82)',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 24,
+            }}
+          >
+            <TouchableWithoutFeedback onPress={() => { }}>
+              <View
+                style={{
+                  width: '100%',
+                  maxWidth: 340,
+                  backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+                  borderRadius: 28,
+                  padding: 24,
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: isDark ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.2)',
+                  shadowColor: '#6366F1',
+                  shadowOffset: { width: 0, height: 10 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 20,
+                  elevation: 12,
+                }}
+              >
+                {/* Floating Trophy Badge */}
+                <LinearGradient
+                  colors={['#6366F1', '#10B981']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: 36,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: -48,
+                    marginBottom: 16,
+                    borderWidth: 4,
+                    borderColor: isDark ? '#0F172A' : '#FFFFFF',
+                    shadowColor: '#10B981',
+                    shadowOffset: { width: 0, height: 6 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 12,
+                    elevation: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 36 }}>🏆</Text>
+                </LinearGradient>
+
+                {/* Bonus XP Pill */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                    paddingHorizontal: 12,
+                    paddingVertical: 5,
+                    borderRadius: 20,
+                    gap: 6,
+                    marginBottom: 12,
+                    borderWidth: 1,
+                    borderColor: 'rgba(245, 158, 11, 0.3)',
+                  }}
+                >
+                  <FontAwesomeIcon icon={faStar} size={12} color="#F59E0B" />
+                  <Text style={{ color: '#F59E0B', fontFamily: 'RedditSans-Bold', fontSize: 13 }}>
+                    +100 XP BONUS
+                  </Text>
+                </View>
+
+                {/* Modal Title */}
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontFamily: 'RedditSans-Bold',
+                    color: colors.text,
+                    textAlign: 'center',
+                    marginBottom: 8,
+                  }}
+                >
+                  {t('goals.phase_completed_modal_title', '🎉 Mərhələ Tamamlandı!')}
+                </Text>
+
+                {/* Modal Description */}
+                <Text
+                  style={{
+                    fontSize: 13.5,
+                    fontFamily: 'RedditSans-Regular',
+                    color: colors.textSecondary,
+                    textAlign: 'center',
+                    lineHeight: 20,
+                    marginBottom: 24,
+                  }}
+                >
+                  {t('goals.phase_completed_desc', 'Təbriklər! Bütün tapşırıqları tamamladınız. Növbəti tapşırıqları aşağıdakı düymə ilə yarada və ya deadline-ın bitməsini gözləyə bilərsiniz. 🚀')}
+                </Text>
+
+                {/* Buttons Stack */}
+                <View style={{ width: '100%', gap: 10 }}>
+                  {/* Primary Action Button */}
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => {
+                      const targetId = phaseCompletedModal?.goalId;
+                      setPhaseCompletedModal(null);
+                      if (targetId) {
+                        handleManualGenerateNextPhase(targetId);
+                      }
+                    }}
+                    style={{ borderRadius: 18, overflow: 'hidden' }}
+                  >
+                    <LinearGradient
+                      colors={['#6366F1', '#4F46E5']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{
+                        paddingVertical: 14,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        gap: 8,
+                      }}
+                    >
+                      <Text style={{ fontSize: 14 }}>✨</Text>
+                      <Text style={{ color: '#FFFFFF', fontFamily: 'RedditSans-Bold', fontSize: 14 }}>
+                        {t('goals.generate_next_quests', 'AI ilə Növbəti Tapşırıqları Yarat')}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+
+                  {/* Secondary Close Button */}
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setPhaseCompletedModal(null)}
+                    style={{
+                      paddingVertical: 12,
+                      borderRadius: 18,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    <Text style={{ color: colors.textSecondary, fontFamily: 'RedditSans-Bold', fontSize: 14 }}>
+                      {t('common.got_it', 'Anladım')}
                     </Text>
                   </TouchableOpacity>
                 </View>

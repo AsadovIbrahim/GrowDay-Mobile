@@ -190,5 +190,8 @@ export const getTranslatedTask = (task, currentLanguage, t) => {
 export const getLocalizedTaskTitle = (originalText, currentLanguage, t) => {
   const taskObj = (originalText && typeof originalText === 'object') ? originalText : { title: originalText };
   const { title } = getTranslatedTask(taskObj, currentLanguage, t);
-  return title;
+  return (title || '')
+    .replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 };

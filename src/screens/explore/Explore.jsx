@@ -802,16 +802,16 @@ const Explore = () => {
                     activeOpacity={0.85}
                     onPress={() => navigation.navigate('MemoryGame')}
                     style={{
-                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      backgroundColor: isDark ? '#141E30' : '#FFFFFF',
                       borderRadius: 24,
                       padding: 18,
                       borderWidth: 1,
-                      borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)',
-                      shadowColor: '#10B981',
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: isDark ? 0.25 : 0.08,
-                      shadowRadius: 12,
-                      elevation: 5,
+                      borderColor: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(16, 185, 129, 0.15)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isDark ? 0.3 : 0.06,
+                      shadowRadius: 8,
+                      elevation: 3,
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -894,16 +894,16 @@ const Explore = () => {
                     activeOpacity={0.85}
                     onPress={() => navigation.navigate('SequenceGame')}
                     style={{
-                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      backgroundColor: isDark ? '#141E30' : '#FFFFFF',
                       borderRadius: 24,
                       padding: 18,
                       borderWidth: 1,
-                      borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
-                      shadowColor: '#3B82F6',
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: isDark ? 0.25 : 0.08,
-                      shadowRadius: 12,
-                      elevation: 5,
+                      borderColor: isDark ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isDark ? 0.3 : 0.06,
+                      shadowRadius: 8,
+                      elevation: 3,
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -986,16 +986,16 @@ const Explore = () => {
                     activeOpacity={0.85}
                     onPress={() => navigation.navigate('StroopGame')}
                     style={{
-                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      backgroundColor: isDark ? '#141E30' : '#FFFFFF',
                       borderRadius: 24,
                       padding: 18,
                       borderWidth: 1,
-                      borderColor: isDark ? 'rgba(139, 92, 246, 0.3)' : 'rgba(139, 92, 246, 0.2)',
-                      shadowColor: '#8B5CF6',
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: isDark ? 0.25 : 0.08,
-                      shadowRadius: 12,
-                      elevation: 5,
+                      borderColor: isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(139, 92, 246, 0.15)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isDark ? 0.3 : 0.06,
+                      shadowRadius: 8,
+                      elevation: 3,
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -1078,16 +1078,16 @@ const Explore = () => {
                     activeOpacity={0.85}
                     onPress={() => navigation.navigate('ReactionGame')}
                     style={{
-                      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
+                      backgroundColor: isDark ? '#141E30' : '#FFFFFF',
                       borderRadius: 24,
                       padding: 18,
                       borderWidth: 1,
-                      borderColor: isDark ? 'rgba(249, 115, 22, 0.3)' : 'rgba(249, 115, 22, 0.2)',
-                      shadowColor: '#F97316',
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: isDark ? 0.25 : 0.08,
-                      shadowRadius: 12,
-                      elevation: 5,
+                      borderColor: isDark ? 'rgba(249, 115, 22, 0.25)' : 'rgba(249, 115, 22, 0.15)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isDark ? 0.3 : 0.06,
+                      shadowRadius: 8,
+                      elevation: 3,
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
