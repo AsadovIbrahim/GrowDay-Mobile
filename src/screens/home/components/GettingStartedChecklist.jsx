@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Modal, Animated } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Animated, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCheck, faChevronRight, faTrophy } from "@fortawesome/free-solid-svg-icons";
@@ -26,47 +26,6 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
 
   const [showCelebration, setShowCelebration] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
-
-  // Layout states for active guided card replication
-  const [logMoodLayout, setLogMoodLayout] = useState(null);
-  const [createHabitLayout, setCreateHabitLayout] = useState(null);
-  const [completeHabitLayout, setCompleteHabitLayout] = useState(null);
-
-  const [absoluteLayout, setAbsoluteLayout] = useState(null);
-  const activeCardRef = useRef(null);
-
-  const [isFocused, setIsFocused] = useState(true);
-
-  useEffect(() => {
-    const unsubscribeFocus = navigation.addListener("focus", () => {
-      setIsFocused(true);
-    });
-    const unsubscribeBlur = navigation.addListener("blur", () => {
-      setIsFocused(false);
-    });
-    return () => {
-      unsubscribeFocus();
-      unsubscribeBlur();
-    };
-  }, [navigation]);
-
-  // Measure active card screen-relative coordinates dynamically
-  useEffect(() => {
-    if (isGuidanceActive && activeGuidedItemId && isSplashFinished === true && isFocused) {
-      const timer = setTimeout(() => {
-        if (activeCardRef.current) {
-          activeCardRef.current.measureInWindow((x, y, width, height) => {
-            if (width > 0 && height > 0) {
-              setAbsoluteLayout({ x, y, width, height });
-            }
-          });
-        }
-      }, 150);
-      return () => clearTimeout(timer);
-    } else {
-      setAbsoluteLayout(null);
-    }
-  }, [activeGuidedItemId, isGuidanceActive, logMoodLayout, createHabitLayout, completeHabitLayout, isSplashFinished, isFocused]);
 
   // Horizontal bounce animation for guiding chevron arrow
   useEffect(() => {
@@ -217,7 +176,6 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
   };
 
   const handleTaskPress = (id) => {
-    setAbsoluteLayout(null);
     if (id === "log_mood") {
       if (onLogMoodPress) onLogMoodPress();
     } else if (id === "create_habit") {
@@ -266,44 +224,16 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
     return null;
   }
 
-  const renderChecklistCard = (item, isReplica = false, layout = null, isModalReplica = false) => {
+  const renderChecklistCard = (item) => {
     const isActiveGuided = isGuidanceActive && activeGuidedItemId === item.id;
     return (
       <TouchableOpacity
-        ref={isActiveGuided && !isReplica && !isModalReplica ? activeCardRef : null}
-        key={item.id + (isReplica ? "-replica" : "") + (isModalReplica ? "-modal" : "")}
+        key={item.id}
         activeOpacity={0.7}
         onPress={() => handleTaskPress(item.id)}
         disabled={isGuidanceActive && !isActiveGuided}
-        onLayout={(e) => {
-          if (isReplica) return;
-          const { x, y, width, height } = e.nativeEvent.layout;
-          const checkChanged = (curr) => !curr || curr.x !== x || curr.y !== y || curr.width !== width || curr.height !== height;
-          if (item.id === "log_mood") {
-            if (checkChanged(logMoodLayout)) setLogMoodLayout({ x, y, width, height });
-          } else if (item.id === "create_habit") {
-            if (checkChanged(createHabitLayout)) setCreateHabitLayout({ x, y, width, height });
-          } else if (item.id === "complete_habit") {
-            if (checkChanged(completeHabitLayout)) setCompleteHabitLayout({ x, y, width, height });
-          }
-        }}
         className="flex-row items-center justify-between p-4 rounded-2xl border mb-3"
-        style={(isReplica || isModalReplica) ? {
-          position: "absolute",
-          left: layout.x,
-          top: isModalReplica ? layout.y : layout.y,
-          width: layout.width,
-          height: layout.height,
-          backgroundColor: colors.card,
-          borderColor: colors.primary,
-          borderWidth: 1.5,
-          shadowColor: colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
-          zIndex: 100,
-        } : {
+        style={{
           backgroundColor: colors.card,
           borderColor: isActiveGuided ? colors.primary : colors.border,
           borderWidth: isActiveGuided ? 1.5 : 1,
@@ -417,48 +347,6 @@ const GettingStartedChecklist = ({ accountData, onLogMoodPress, userHabitCount, 
       {/* Checklist items */}
       <View style={{ position: "relative" }}>
         {checklistItems.map((item) => renderChecklistCard(item))}
-
-        {/* Full-Screen Dark Mask & Focused Card Modal (covers headers and tabs) */}
-        <Modal
-          visible={isGuidanceActive && absoluteLayout !== null && isSplashFinished === true}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => { }}
-        >
-          <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.72)" }}>
-            {(() => {
-              const activeItem = checklistItems.find((i) => i.id === activeGuidedItemId);
-              if (!activeItem || !absoluteLayout) return null;
-              return renderChecklistCard(activeItem, false, absoluteLayout, true);
-            })()}
-
-            {/* Skip Guide Button */}
-            {absoluteLayout && (
-              <TouchableOpacity
-                onPress={() => setChecklistSkipped(true)}
-                style={{
-                  position: "absolute",
-                  top: absoluteLayout.y + absoluteLayout.height + 24,
-                  alignSelf: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.45)",
-                  borderRadius: 999,
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                  shadowColor: "#000000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 6,
-                  elevation: 5,
-                }}
-                activeOpacity={0.8}
-              >
-                <Text style={{ color: "#ffffff", fontWeight: "600" }} className="text-sm font-redditsans-bold">
-                  {getSkipText()} ✕
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </Modal>
       </View>
 
       {/* Success / Celebration Modal */}

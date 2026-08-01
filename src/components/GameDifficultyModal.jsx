@@ -46,7 +46,7 @@ export default function GameDifficultyModal({ visible, onClose, onSelect }) {
       </Animated.View>
 
       <View className="flex-1 justify-center items-center px-6">
-        <Animated.View 
+        <Animated.View
           className="w-full rounded-3xl overflow-hidden"
           style={{
             backgroundColor: colors.card,
@@ -60,32 +60,36 @@ export default function GameDifficultyModal({ visible, onClose, onSelect }) {
           }}
         >
           {/* Header */}
-          <LinearGradient
-            colors={[colors.primary + '20', 'transparent']}
-            className="px-6 py-6 items-center border-b"
+          <View
+            className="px-6 py-6 items-center border-b relative overflow-hidden"
             style={{ borderBottomColor: colors.border }}
           >
-            <TouchableOpacity 
+            <LinearGradient
+              colors={[colors.primary + '20', 'transparent']}
+              style={StyleSheet.absoluteFill}
+            />
+            <TouchableOpacity
               onPress={onClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full items-center justify-center z-10"
               style={{ backgroundColor: colors.background }}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesomeIcon icon={faTimes} color={colors.textSecondary} size={16} />
             </TouchableOpacity>
-            
-            <View className="w-14 h-14 rounded-full items-center justify-center mb-3" style={{ backgroundColor: colors.primary + '20' }}>
+
+            <View className="w-14 h-14 rounded-full items-center justify-center mb-3 z-10" style={{ backgroundColor: colors.primary + '20' }}>
               <Text className="text-2xl">🎮</Text>
             </View>
-            <Text className="text-xl font-redditsans-bold text-center" style={{ color: colors.text }}>
+            <Text className="text-xl font-redditsans-bold text-center z-10" style={{ color: colors.text }}>
               {t('games.select_diff_title', 'Select Difficulty')}
             </Text>
-            <Text className="text-sm font-redditsans-regular text-center mt-2" style={{ color: colors.textSecondary }}>
+            <Text className="text-sm font-redditsans-regular text-center mt-2 z-10" style={{ color: colors.textSecondary }}>
               {t('games.diff_desc', 'Higher difficulty grants higher score multipliers!')}
             </Text>
-          </LinearGradient>
+          </View>
 
           {/* Options */}
-          <View className="p-4 space-y-3">
+          <View className="p-4 gap-3">
             {DIFFICULTIES.map((diff, index) => (
               <TouchableOpacity
                 key={diff.id}
@@ -95,26 +99,34 @@ export default function GameDifficultyModal({ visible, onClose, onSelect }) {
                 }}
                 activeOpacity={0.8}
               >
-                <LinearGradient
-                  colors={[colors.cardSecondary, colors.cardSecondary]}
-                  className="flex-row items-center p-4 rounded-2xl border"
-                  style={{ borderColor: diff.color + '40' }}
+                <View
+                  className="flex-row items-center p-4 rounded-2xl border relative overflow-hidden"
+                  style={{
+                    backgroundColor: colors.cardSecondary || colors.card,
+                    borderColor: diff.color + '40'
+                  }}
                 >
-                  <View className="w-12 h-12 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: diff.color + '15' }}>
+                  <LinearGradient
+                    colors={[diff.color + '12', 'transparent']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={StyleSheet.absoluteFill}
+                  />
+                  <View className="w-12 h-12 rounded-xl items-center justify-center mr-4 z-10" style={{ backgroundColor: diff.color + '15' }}>
                     <FontAwesomeIcon icon={diff.icon} size={22} color={diff.color} />
                   </View>
-                  <View className="flex-1">
+                  <View className="flex-1 z-10">
                     <Text className="text-lg font-redditsans-bold mb-1" style={{ color: diff.color }}>
                       {t(diff.titleKey, diff.defaultTitle)}
                     </Text>
-                    <Text className="text-xs font-redditsans-medium text-gray-500">
+                    <Text className="text-xs font-redditsans-medium z-10" style={{ color: colors.textSecondary }}>
                       {t('games.score_multiplier', 'Score Multiplier: ')}<Text className="font-redditsans-bold" style={{ color: colors.text }}>x{diff.mult.toFixed(1)}</Text>
                     </Text>
                   </View>
-                  <View className="w-8 h-8 rounded-full items-center justify-center" style={{ backgroundColor: diff.color + '20' }}>
+                  <View className="w-8 h-8 rounded-full items-center justify-center z-10" style={{ backgroundColor: diff.color + '20' }}>
                     <Text className="font-redditsans-bold text-xs" style={{ color: diff.color }}>GO</Text>
                   </View>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
