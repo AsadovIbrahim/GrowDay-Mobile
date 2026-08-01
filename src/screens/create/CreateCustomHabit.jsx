@@ -188,6 +188,13 @@ const CreateCustomHabit = () => {
 
   const hourRef = useRef(null);
   const minuteRef = useRef(null);
+  const mainScrollViewRef = useRef(null);
+
+  useEffect(() => {
+    if (tutorialStep > 0 && !title) {
+      setTitle(getOnboardingHabitTitle(i18n.language));
+    }
+  }, [tutorialStep, title, i18n.language]);
 
   const [hourIndex, setHourIndex] = useState(HOURS.length + 9);
   const [minuteIndex, setMinuteIndex] = useState(MINUTES.length + 30);
@@ -540,6 +547,7 @@ const CreateCustomHabit = () => {
         style={{ flex: 1 }}
       >
         <ScrollView
+          ref={mainScrollViewRef}
           style={{ flex: 1 }}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -1285,6 +1293,10 @@ const CreateCustomHabit = () => {
                         setTutorialStep(prev => prev + 1);
                       } else {
                         setTutorialStep(0);
+                        mainScrollViewRef.current?.scrollToEnd({ animated: true });
+                        setTimeout(() => {
+                          handleCreateHabit();
+                        }, 300);
                       }
                     }}
                     style={{ backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 14 }}
