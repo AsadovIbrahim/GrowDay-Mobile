@@ -1387,19 +1387,21 @@
     "booster_limit_desc": "2x XP Takviyesinin maksimum süresi 72 saat olabilir. Yenisini almadan önce mevcut sürenin azalmasını bekleyin!",
     "theme_locked_title": "Tema Kilitli 🔒",
     "theme_locked_desc": "Bu premium temayı etkinleştirmek için XP Mağazasından 'Premium Tema Paketi' satın almalısınız!",
+    "badge_premium": "PREMİUM 🔒",
+    "badge_unlocked": "AÇIK ✨",
     "themes": {
       "header": "Uygulama Temaları",
       "light": "Açık Tema",
       "light_desc": "Klasik yeşil ve açık tonlar",
       "dark": "Koyu Tema",
       "dark_desc": "Gözleri yormayan koyu mod",
-      "sunset": "Sunset Glow 🌅",
+      "sunset": "Gün Batımı 🌅",
       "sunset_desc": "Sıcak turuncu gradyanlar",
-      "ocean": "Ocean Wave 🌊",
+      "ocean": "Okyanus Dalgası 🌊",
       "ocean_desc": "Derin mavi okyanus tonları",
-      "cyber": "Cyber Neon 🎆",
+      "cyber": "Siber Neon 🎆",
       "cyber_desc": "Neon fütüristik koyu mor",
-      "rose": "Rose Gold 🌸",
+      "rose": "Roze Altın 🌸",
       "rose_desc": "Zarif altın-pembe tonlar"
     },
     "perks": {
@@ -1538,9 +1540,13 @@
     "priority_low": "Düşük",
     "create_modal_title": "🎯 Hedef ve Yapay Zeka Görevi Oluştur",
     "create_modal_desc": "Kişisel hedefinizi tanımlayın. GrowDay AI sizin için odaklanmış görevler oluşturacaktır.",
+    "goal_title": "Hedef Başlığı *",
     "goal_title_placeholder": "ör: Her gün 30 sayfa oku...",
+    "description": "Açıklama / Motivasyon",
     "goal_desc_placeholder": "ör: Bu ay 2 kitap bitir...",
     "select_category": "Kategori Seçin",
-    "create_btn": "✨ Hedef ve Yapay Zeka Görevi Oluştur"
+    "create_btn": "✨ Hedef ve Yapay Zeka Görevi Oluştur",
+    "title_required": "Lütfen bir hedef başlığı girin!",
+    "ai_mandala_plan_for": "{{goal}} için AI Mandala Planı"
   }
 }

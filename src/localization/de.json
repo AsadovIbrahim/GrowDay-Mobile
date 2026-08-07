@@ -1389,19 +1389,21 @@
     "booster_limit_desc": "Die maximale Dauer für den 2x XP Booster beträgt 72 Stunden. Bitte warte, bis die verbleibende Zeit abnimmt, bevor du weitere kaufst!",
     "theme_locked_title": "Design gesperrt 🔒",
     "theme_locked_desc": "Um dieses Premium-Design zu aktivieren, musst du das 'Premium-Design-Paket' im XP-Shop kaufen!",
+    "badge_premium": "PREMIUM 🔒",
+    "badge_unlocked": "FREIGESCHALTET ✨",
     "themes": {
       "header": "App-Designs",
       "light": "Helles Design",
       "light_desc": "Klassische grüne und helle Töne",
       "dark": "Dunkles Design",
       "dark_desc": "Augenfreundlicher Dunkelmodus",
-      "sunset": "Sunset Glow 🌅",
+      "sunset": "Sonnenuntergang 🌅",
       "sunset_desc": "Warme orangefarbene Verläufe",
-      "ocean": "Ocean Wave 🌊",
+      "ocean": "Ozeanwelle 🌊",
       "ocean_desc": "Tiefblaue Ozeantöne",
-      "cyber": "Cyber Neon 🎆",
+      "cyber": "Cyber-Neon 🎆",
       "cyber_desc": "Neon-futuristisches Dunkellila",
-      "rose": "Rose Gold 🌸",
+      "rose": "Roségold 🌸",
       "rose_desc": "Elegante Gold-Rosa-Töne"
     },
     "perks": {
@@ -1539,9 +1541,13 @@
     "priority_low": "Niedrig",
     "create_modal_title": "🎯 Ziel & KI-Quests erstellen",
     "create_modal_desc": "Beschreiben Sie Ihr persönliches Ziel. GrowDay KI erstellt zielgerichtete Aufgaben für Sie.",
+    "goal_title": "Ziel-Titel *",
     "goal_title_placeholder": "z. B. Jeden Tag 30 Seiten lesen...",
+    "description": "Beschreibung / Motivation",
     "goal_desc_placeholder": "z. B. 2 Bücher diesen Monat fertig lesen...",
     "select_category": "Kategorie auswählen",
-    "create_btn": "✨ Ziel & KI-Aufgaben erstellen"
+    "create_btn": "✨ Ziel & KI-Aufgaben erstellen",
+    "title_required": "Bitte geben Sie einen Zieltitel ein!",
+    "ai_mandala_plan_for": "KI-Mandala-Plan für: {{goal}}"
   }
 }

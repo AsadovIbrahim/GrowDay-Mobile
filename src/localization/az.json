@@ -1332,19 +1332,21 @@
     "booster_limit_desc": "XP Gücləndiricinin maksimum aktiv müddəti 72 saat ola bilər. Mövcud müddət azalana qədər yenisini ala bilməzsiniz!",
     "theme_locked_title": "Tema Kilidlidir 🔒",
     "theme_locked_desc": "Bu premium temanı aktivləşdirmək üçün XP Mağazasından 'Premium Tema Paketi'ni satın almalısınız!",
+    "badge_premium": "PREMİUM 🔒",
+    "badge_unlocked": "AÇIQ ✨",
     "themes": {
       "header": "Tətbiq Temaları",
       "light": "Açıq Rəng",
       "light_desc": "Klassik yaşıl və açıq tonlar",
       "dark": "Qaranlıq Rəng",
       "dark_desc": "Gözləri yormayan qaranlıq rejim",
-      "sunset": "Sunset Glow 🌅",
+      "sunset": "Qürub Parıltısı 🌅",
       "sunset_desc": "İsti narıncı gradientlər",
-      "ocean": "Ocean Wave 🌊",
+      "ocean": "Okean Dalgası 🌊",
       "ocean_desc": "Dərin mavi okean tonları",
-      "cyber": "Cyber Neon 🎆",
+      "cyber": "Kiber Neon 🎆",
       "cyber_desc": "Neon futuristik tünd bənövşəyi",
-      "rose": "Rose Gold 🌸",
+      "rose": "Qızılı Çəhrayı 🌸",
       "rose_desc": "Elegant qızılı-çəhrayı tonlar"
     },
     "perks": {
@@ -1537,9 +1539,13 @@
     "priority_low": "Aşağı",
     "create_modal_title": "🎯 Məqsəd və AI Tapşırığı Yarat",
     "create_modal_desc": "Şəxsi məqsədinizi təsvir edin. GrowDay AI sizin üçün fokuslanmış tapşırıqlar yaradacaq.",
+    "goal_title": "Hədəf Başlığı *",
     "goal_title_placeholder": "məs: Hər gün 30 səhifə oxumaq...",
+    "description": "Təsvir / Motivasiya",
     "goal_desc_placeholder": "məs: Bu ay 2 kitab bitirmək...",
     "select_category": "Kateqoriya Seçin",
-    "create_btn": "✨ Məqsəd və AI Tapşırıqları Yarat"
+    "create_btn": "✨ Məqsəd və AI Tapşırıqları Yarat",
+    "title_required": "Zəhmət olmasa, məqsəd başlığını daxil edin!",
+    "ai_mandala_plan_for": "{{goal}} üçün AI Mandala Planı"
   }
 }
