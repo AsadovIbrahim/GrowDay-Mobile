@@ -499,17 +499,17 @@ const Profile = ({ navigation }) => {
           >
             <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
               <Text className="font-redditsans-bold" style={[styles.modalTitle, { color: colors.text }]}>
-                {t("store.themes.header", "Tətbiq Temaları")}
+                {t("store.themes.header", "App Themes")}
               </Text>
               
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
                 {[
-                  { id: 'light', name: t('store.themes.light', 'Açıq Rəng'), desc: t('store.themes.light_desc', 'Klassik yaşıl və açıq tonlar'), icon: '☀️', isPremium: false },
-                  { id: 'dark', name: t('store.themes.dark', 'Qaranlıq Rəng'), desc: t('store.themes.dark_desc', 'Gözləri yormayan qaranlıq rejim'), icon: '🌙', isPremium: false },
-                  { id: 'sunset', name: t('store.themes.sunset', 'Sunset Glow 🌅'), desc: t('store.themes.sunset_desc', 'İsti narıncı gradientlər'), icon: '🌅', isPremium: true },
-                  { id: 'ocean', name: t('store.themes.ocean', 'Ocean Wave 🌊'), desc: t('store.themes.ocean_desc', 'Dərin mavi okean tonları'), icon: '🌊', isPremium: true },
-                  { id: 'cyber', name: t('store.themes.cyber', 'Cyber Neon 🎆'), desc: t('store.themes.cyber_desc', 'Neon futuristik tünd bənövşəyi'), icon: '🎆', isPremium: true },
-                  { id: 'rose', name: t('store.themes.rose', 'Rose Gold 🌸'), desc: t('store.themes.rose_desc', 'Elegant qızılı-çəhrayı tonlar'), icon: '🌸', isPremium: true },
+                  { id: 'light', name: t('store.themes.light', 'Light Theme'), desc: t('store.themes.light_desc', 'Classic green and light tones'), icon: '☀️', isPremium: false },
+                  { id: 'dark', name: t('store.themes.dark', 'Dark Theme'), desc: t('store.themes.dark_desc', 'Eye-friendly dark mode'), icon: '🌙', isPremium: false },
+                  { id: 'sunset', name: t('store.themes.sunset', 'Sunset Glow 🌅'), desc: t('store.themes.sunset_desc', 'Warm orange gradients'), icon: '🌅', isPremium: true },
+                  { id: 'ocean', name: t('store.themes.ocean', 'Ocean Wave 🌊'), desc: t('store.themes.ocean_desc', 'Deep blue ocean tones'), icon: '🌊', isPremium: true },
+                  { id: 'cyber', name: t('store.themes.cyber', 'Cyber Neon 🎆'), desc: t('store.themes.cyber_desc', 'Neon futuristic dark purple'), icon: '🎆', isPremium: true },
+                  { id: 'rose', name: t('store.themes.rose', 'Rose Gold 🌸'), desc: t('store.themes.rose_desc', 'Elegant gold-pink tones'), icon: '🌸', isPremium: true },
                 ].map((item) => {
                   const isLocked = item.isPremium && !accountData?.hasThemePack;
                   const isSelected = themeName === item.id;
@@ -526,11 +526,11 @@ const Profile = ({ navigation }) => {
                       onPress={() => {
                         if (isLocked) {
                           Alert.alert(
-                            t('store.theme_locked_title', 'Tema Kilidlidir 🔒'),
-                            t('store.theme_locked_desc', "Bu premium temanı aktivləşdirmək üçün XP Mağazasından 'Premium Tema Paketi'ni satın almalısınız!"),
+                            t('store.theme_locked_title', 'Theme Locked 🔒'),
+                            t('store.theme_locked_desc', "To activate this premium theme, you must purchase the 'Premium Theme Pack' from the XP Store!"),
                             [
-                              { text: t('common.cancel', 'Ləğv et'), style: 'cancel' },
-                              { text: t('store.header_title', 'Mağazaya Get'), onPress: () => { setShowThemeModal(false); navigation.navigate('StoreScreen'); } }
+                              { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+                              { text: t('store.header_title', 'Go to Store'), onPress: () => { setShowThemeModal(false); navigation.navigate('StoreScreen'); } }
                             ]
                           );
                         } else {
@@ -550,7 +550,7 @@ const Profile = ({ navigation }) => {
                           {item.isPremium && (
                             <View style={{ backgroundColor: isLocked ? '#f9731615' : '#10b98115', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
                               <Text style={{ fontSize: 9, color: isLocked ? '#f97316' : '#10b981', fontFamily: 'RedditSans-Bold' }}>
-                                {isLocked ? 'PREMIUM 🔒' : 'UNLOCKED ✨'}
+                                {isLocked ? t('store.badge_premium', 'PREMIUM 🔒') : t('store.badge_unlocked', 'UNLOCKED ✨')}
                               </Text>
                             </View>
                           )}

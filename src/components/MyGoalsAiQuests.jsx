@@ -248,6 +248,22 @@ const checkIsTaskToday = (task) => {
   );
 };
 
+const formatTaskDisplayDate = (task, lang) => {
+  if (!task) return '';
+  const raw = task.rawDate || task.date;
+  if (!raw) return task.date || '';
+
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return task.date || '';
+
+  const langKey = lang ? lang.split('-')[0].toLowerCase() : 'en';
+  try {
+    return d.toLocaleDateString(langKey, { month: 'short', day: '2-digit' });
+  } catch (e) {
+    return task.date || '';
+  }
+};
+
 const cleanTaskText = (text) => {
   if (!text || typeof text !== 'string') return text || '';
   return text
@@ -384,12 +400,38 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
     create_goal_btn: { az: '✨ Hədəf və AI Tapşırıqları Yarat', tr: '✨ Hedef ve AI Görevleri Oluştur', ru: '✨ Создать цель и ИИ-задачи', en: '✨ Create Goal & AI Tasks', es: '✨ Crear objetivo y tareas de IA', de: '✨ Ziel & KI-Aufgaben erstellen', fr: '✨ Créer un objectif et des tâches IA', it: '✨ Crea obiettivo e attività IA', ar: '✨ إنشاء الهدف ومهمات الذكاء الاصطناعي', zh: '✨ 创建目标与 AI 任务' },
     create_modal_title: { az: 'Yeni Hədəf Yaradın', tr: 'Yeni Hedef Oluşturun', ru: 'Создайте новую цель', en: 'Create New Goal', es: 'Crear nuevo objetivo', de: 'Neues Ziel erstellen', fr: 'Créer un nouvel objectif', it: 'Crea nuovo obiettivo', ar: 'إنشاء هدف جديد', zh: '创建新目标' },
     create_modal_desc: { az: 'Hədəfinizi təyin edin, AI bələdçiniz onu günlük tapşırıqlara böləcək!', tr: 'Hedefinizi belirleyin, AI rehberiniz onu günlük görevlere bölsün!', ru: 'Задайте цель, и ваш ИИ-наставник разобьет ее на ежедневные квесты!', en: 'Set your target, and your AI coach will break it down into daily quests!', es: '¡Establece tu objetivo y tu guía de IA lo dividirá en misiones diarias!', de: 'Setze dein Ziel, und dein KI-Begleiter teilt es in tägliche Quests auf!', fr: 'Définissez votre objectif, et votre guide IA le divisera en quêtes quotidiennes !', it: 'Imposta il tuo obiettivo e la tua guida IA lo dividerà in missioni giornaliere!', ar: 'حدد هدفك، وسيقوم مرشد الذكاء الاصطناعي بتقسيمه إلى مهام يومية!', zh: '设定您的目标，您的 AI 导师将其拆解为每日任务！' },
+    title_required: { az: 'Zəhmət olmasa, məqsəd başlığını daxil edin!', tr: 'Lütfen bir hedef başlığı girin!', ru: 'Пожалуйста, введите название цели!', en: 'Please enter a goal title!', es: '¡Por favor, introduce un título para el objetivo!', de: 'Bitte geben Sie einen Zieltitel ein!', fr: 'Veuillez saisir un titre d\'objectif !', it: 'Inserisci un titolo per l\'obiettivo!', ar: 'يرجى إدخال عنوان الهدف!', zh: '请输入目标名称！' },
+    ai_mandala_plan_for: { az: '{{goal}} üçün AI Mandala Planı', tr: '{{goal}} için AI Mandala Planı', ru: 'ИИ План Мандала для: {{goal}}', en: 'AI Mandala Plan for: {{goal}}', es: 'Plan Mandala de IA para: {{goal}}', de: 'KI-Mandala-Plan für: {{goal}}', fr: 'Plan Mandala IA pour : {{goal}}', it: 'Piano Mandala IA per: {{goal}}', ar: 'خطة ماندالا بالذكاء الاصطناعي لـ: {{goal}}', zh: '{{goal}} 的 AI 曼陀罗计划' },
   };
 
-  const getModalText = (key, lang) => {
+  const getModalText = (key, lang, param) => {
     const langKey = lang ? lang.split('-')[0].toLowerCase() : 'en';
     const dict = MODAL_LOCALIZATION[key];
-    return (dict && dict[langKey]) || (dict && dict.en) || '';
+    let val = (dict && dict[langKey]) || (dict && dict.en) || '';
+    if (param !== undefined && typeof val === 'string' && val.includes('{{goal}}')) {
+      val = val.replace('{{goal}}', param);
+    }
+    return val;
+  };
+
+  const formatGoalDescription = (desc, title) => {
+    const cleanGoalTitle = (title || '').replace(/\s*(Phase|Mərhələ)\s*\d+/gi, '').trim();
+    if (!desc || desc.startsWith('AI Mandala Plan for:') || desc.endsWith(' planı') || desc === 'AI Mandala Plan' || desc.startsWith('Generate 3') || desc.includes('Mandala Plan') || desc.includes('Мандала')) {
+      let rawGoalName = cleanGoalTitle;
+      if (desc && desc.includes(':')) {
+        rawGoalName = desc.split(':')[1]?.trim() || cleanGoalTitle;
+      } else if (desc && desc.endsWith(' planı')) {
+        rawGoalName = desc.replace(/\s*planı$/, '').trim() || cleanGoalTitle;
+      }
+      if (t) {
+        return t('goals.ai_mandala_plan_for', {
+          goal: rawGoalName,
+          defaultValue: getModalText('ai_mandala_plan_for', activeLang, rawGoalName),
+        });
+      }
+      return getModalText('ai_mandala_plan_for', activeLang, rawGoalName);
+    }
+    return desc;
   };
 
   useEffect(() => {
@@ -543,7 +585,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                 priority: taskPriority,
                 priorityColor: taskXP >= 150 ? '#EF4444' : taskXP >= 80 ? '#F59E0B' : '#10B981',
                 xp: taskXP,
-                date: new Date(t.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
+                date: new Date(t.date || Date.now()).toLocaleDateString(activeLang || 'en', { month: 'short', day: '2-digit' }),
                 rawDate: t.date || t.Date || new Date().toISOString(),
                 isOverdue: t.isOverdue || t.IsOverdue || false,
                 completed: t.isCompleted || false,
@@ -993,9 +1035,10 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
 
   const handleCreateGoal = async () => {
     if (!goalTitle.trim()) {
+      const fallbackTitleReq = getModalText('title_required', activeLang) || 'Please enter a goal title!';
       Alert.alert(
         t ? t('common.error', 'Error') : 'Error',
-        t ? t('goals.title_required', 'Please enter a goal title!') : 'Please enter a goal title!'
+        t ? t('goals.title_required', fallbackTitleReq) : fallbackTitleReq
       );
       return;
     }
@@ -1297,7 +1340,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                       }}
                       numberOfLines={1}
                     >
-                      {goal.description}
+                      {formatGoalDescription(goal.description, goal.title)}
                     </Text>
                   </View>
                 </View>
@@ -1615,7 +1658,7 @@ const MyGoalsAiQuests = ({ colors, isDark, t: tProp, searchQuery = '', onTaskCom
                                       fontFamily: 'RedditSans-Medium',
                                     }}
                                   >
-                                    {task.date}
+                                    {formatTaskDisplayDate(task, activeLang)}
                                   </Text>
                                 </View>
                               </View>

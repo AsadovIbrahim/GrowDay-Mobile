@@ -1389,19 +1389,21 @@
     "booster_limit_desc": "La durata massima del Potenziatore 2x XP è di 72 ore. Attendi che il tempo rimanente diminuisca prima di acquistarne altri!",
     "theme_locked_title": "Tema Bloccato 🔒",
     "theme_locked_desc": "Per attivare questo tema premium, devi acquistare il 'Pacchetto Temi Premium' nel negozio XP!",
+    "badge_premium": "PREMIUM 🔒",
+    "badge_unlocked": "SBLOCCATO ✨",
     "themes": {
       "header": "Temi dell'Applicazione",
       "light": "Tema Chiaro",
       "light_desc": "Toni classici verdi e chiari",
       "dark": "Tema Scuro",
       "dark_desc": "Modalità scura riposante per gli occhi",
-      "sunset": "Sunset Glow 🌅",
+      "sunset": "Bagliore del Tramonto 🌅",
       "sunset_desc": "Sfumature arancioni calde",
-      "ocean": "Ocean Wave 🌊",
+      "ocean": "Onda dell'Oceano 🌊",
       "ocean_desc": "Toni blu oceano profondo",
       "cyber": "Cyber Neon 🎆",
       "cyber_desc": "Viola scuro futuristico neon",
-      "rose": "Rose Gold 🌸",
+      "rose": "Oro Rosa 🌸",
       "rose_desc": "Eleganti toni oro rosa"
     },
     "perks": {
@@ -1539,9 +1541,13 @@
     "priority_low": "Bassa",
     "create_modal_title": "🎯 Crea obiettivo e quest IA",
     "create_modal_desc": "Descrivi il tuo obiettivo personale. GrowDay IA genererà quest mirate per te.",
+    "goal_title": "Titolo dell’obiettivo *",
     "goal_title_placeholder": "ad es. Leggi 30 pagine ogni giorno...",
+    "description": "Descrizione / Motivazione",
     "goal_desc_placeholder": "ad es. Finisci di leggere 2 libri questo mese...",
     "select_category": "Seleziona categoria",
-    "create_btn": "✨ Crea obiettivo e attività IA"
+    "create_btn": "✨ Crea obiettivo e attività IA",
+    "title_required": "Inserisci un titolo per l'obiettivo!",
+    "ai_mandala_plan_for": "Piano Mandala IA per: {{goal}}"
   }
 }

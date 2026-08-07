@@ -1389,6 +1389,8 @@
     "booster_limit_desc": "The maximum duration for 2x XP Booster is 72 hours. Please wait until your active booster time decreases before purchasing more!",
     "theme_locked_title": "Theme Locked 🔒",
     "theme_locked_desc": "To activate this premium theme, you must purchase the 'Premium Theme Pack' from the XP Store!",
+    "badge_premium": "PREMIUM 🔒",
+    "badge_unlocked": "UNLOCKED ✨",
     "themes": {
       "header": "App Themes",
       "light": "Light Theme",
@@ -1540,9 +1542,13 @@
     "priority_low": "Low",
     "create_modal_title": "🎯 Create Goal & AI Quests",
     "create_modal_desc": "Describe your personal goal. GrowDay AI will generate focused, actionable quests for you.",
+    "goal_title": "Goal Title *",
     "goal_title_placeholder": "e.g. Read 30 pages everyday...",
+    "description": "Description / Motivation",
     "goal_desc_placeholder": "e.g. Finish reading 2 books this month...",
     "select_category": "Select Category",
-    "create_btn": "✨ Create Goal & AI Tasks"
+    "create_btn": "✨ Create Goal & AI Tasks",
+    "title_required": "Please enter a goal title!",
+    "ai_mandala_plan_for": "AI Mandala Plan for: {{goal}}"
   }
 }

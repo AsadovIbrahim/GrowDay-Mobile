@@ -1390,6 +1390,8 @@
     "booster_limit_desc": "双倍经验值加速器的最长持续时间为 72 小时。请等待当前的加速器时间减少后再购买更多！",
     "theme_locked_title": "主题已锁定 🔒",
     "theme_locked_desc": "要激活此高级主题，您必须在 XP 商店购买“高级主题包”！",
+    "badge_premium": "高级 🔒",
+    "badge_unlocked": "已解锁 ✨",
     "themes": {
       "header": "应用主题",
       "light": "浅色主题",
@@ -1540,9 +1542,13 @@
     "priority_low": "低",
     "create_modal_title": "🎯 创建目标与 AI 任务",
     "create_modal_desc": "描述您的个人目标。GrowDay AI 将为您生成专注、可执行的任务。",
+    "goal_title": "目标名称 *",
     "goal_title_placeholder": "例如：每天阅读 30 页...",
+    "description": "描述 / 动机",
     "goal_desc_placeholder": "例如：本月读完 2 本书...",
     "select_category": "选择分类",
-    "create_btn": "✨ 创建目标与 AI 任务"
+    "create_btn": "✨ 创建目标与 AI 任务",
+    "title_required": "请输入目标名称！",
+    "ai_mandala_plan_for": "{{goal}} 的 AI 曼陀罗计划"
   }
 }
