@@ -1,11 +1,30 @@
 import { API_URL } from '@env';
+import { Platform } from 'react-native';
 import { storage, clearUserSession } from './MMKVStore';
 
 const VITE_API_URL = API_URL;
 
+const getDeviceModelName = () => {
+    try {
+        const brand = Platform.constants?.Brand || Platform.constants?.Manufacturer || '';
+        const model = Platform.constants?.Model || '';
+        if (brand || model) {
+            const formattedBrand = brand ? brand.charAt(0).toUpperCase() + brand.slice(1) : '';
+            return `${formattedBrand} ${model}`.trim();
+        }
+        return Platform.OS === 'ios' ? 'iPhone' : 'Android Phone';
+    } catch (e) {
+        return Platform.OS === 'ios' ? 'iPhone' : 'Android Phone';
+    }
+};
+
+const DEVICE_MODEL_NAME = getDeviceModelName();
+
 const getHeaders = (token = null, contentType = "application/json") => {
     const headers = {
         "Accept-Language": storage.getString('userLanguage') || 'en',
+        "X-Device-Model": DEVICE_MODEL_NAME,
+        "X-Device-Platform": Platform.OS === 'ios' ? 'iOS' : 'Android',
     };
     if (contentType) {
         headers["Content-Type"] = contentType;
